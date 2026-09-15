@@ -12,3 +12,5 @@
 - **Résumé PDF and career/project content** — supplied by Jack. The original attachment is copied as `static/resume.pdf`. Project illustrations are conceptual island dioramas, not screenshots of the underlying applications.
 
 Dependency-specific license files remain available with their installed packages.
+
+- **V3 fleet, marine fauna and island detail overlays** — original procedural assets authored for Jack’s Archipelago. Sources: `scripts/fleet-vessels.mjs`, `scripts/animals.mjs`, `scripts/island-details.mjs`. Small applied labels use original stroke geometry; no external model or animal imagery is embedded.

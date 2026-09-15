@@ -1,3 +1,4 @@
+export {inDockZone} from './core/dock.js';
 import modelManifest from '../static/models/manifest.json' with {type:'json'};
 export const WORLD_RADIUS=174;
 export const islands=[
@@ -10,13 +11,13 @@ export const islands=[
  {id:'catering',n:7,x:58,z:-77,r:11,rotation:-Math.PI/2,name:'Business Catering',kind:'project'},
  {id:'learning',n:8,x:0,z:-103,r:11,rotation:0,name:'Learning Island',kind:'about'},
  {id:'connect',n:9,x:0,z:17,r:11,rotation:0,name:'Connect Island',kind:'contact'}
-].map(i=>({...i,shore:modelManifest.models.find(m=>m.id===i.id)?.shorePolygon,animation:modelManifest.models.find(m=>m.id===i.id)?.animation,dock:{x:i.x+Math.sin(i.rotation)*24,z:i.z+Math.cos(i.rotation)*24},yaw:i.rotation+Math.PI,camera:{distance:46+(i.n%3)*2,azimuth:Math.PI/4+(i.n%3-1)*.12,elevation:.64,height:i.id==='harbor'?4:3},action:{x:i.x+Math.sin(i.rotation)*22+Math.cos(i.rotation)*5,z:i.z+Math.cos(i.rotation)*22-Math.sin(i.rotation)*5}}));
+].map(i=>({...i,shore:modelManifest.models.find(m=>m.id===i.id)?.shorePolygon,pier:modelManifest.models.find(m=>m.id===i.id)?.dock,animation:modelManifest.models.find(m=>m.id===i.id)?.animation,dock:{x:i.x+Math.sin(i.rotation)*24,z:i.z+Math.cos(i.rotation)*24},yaw:i.rotation+Math.PI,camera:{distance:46+(i.n%3)*2,azimuth:Math.PI/4+(i.n%3-1)*.12,elevation:.64,height:i.id==='harbor'?4:3},action:{x:i.x+Math.sin(i.rotation)*22+Math.cos(i.rotation)*5,z:i.z+Math.cos(i.rotation)*22-Math.sin(i.rotation)*5}}));
 export const gates=[{x:-75,z:118,r:11},{x:-128,z:40,r:11},{x:-117,z:-80,r:10},{x:0,z:-139,r:9},{x:117,z:-70,r:11},{x:119,z:70,r:11}].map((g,n,all)=>{const p=n?all[n-1]:{x:-31,z:125};const d=Math.hypot(g.x-p.x,g.z-p.z);return {...g,nx:(g.x-p.x)/d,nz:(g.z-p.z)/d};});
 export const raceStart={x:-31,z:125,yaw:Math.PI/2};
 export const boatSpawn={x:0,z:67,yaw:0};
 export function nearestIsland(p){return islands.reduce((a,b)=>Math.hypot(p.x-a.dock.x,p.z-a.dock.z)<Math.hypot(p.x-b.dock.x,p.z-b.dock.z)?a:b);}
 
-export function inDockZone(p,i){const dx=p.x-i.x,dz=p.z-i.z;const along=dx*Math.sin(i.rotation)+dz*Math.cos(i.rotation),side=dx*Math.cos(i.rotation)-dz*Math.sin(i.rotation);return along>=18&&along<=32&&Math.abs(side)<=6;}
+
 export function toWorld(i,x,z,y=0){return{x:i.x+x*Math.cos(i.rotation)+z*Math.sin(i.rotation),y,z:i.z-x*Math.sin(i.rotation)+z*Math.cos(i.rotation)};}
 export const cargoBay={x:-31,z:-43,width:40,depth:32,spawn:{x:-31,z:-30,yaw:0}};
 export const cargoBerths=[{id:'circle',symbol:'●',color:'#f2a254',x:-43,z:-55},{id:'triangle',symbol:'▲',color:'#56a9ad',x:-31,z:-55},{id:'square',symbol:'■',color:'#df8190',x:-19,z:-55}].map(b=>({...b,halfWidth:3.7,halfDepth:4}));

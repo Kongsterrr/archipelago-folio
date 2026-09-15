@@ -12,6 +12,12 @@ import { IslandController } from './world/island.js';
 import { FeedbackSystem } from './world/feedback.js';
 import { Interactable } from './world/interactable.js';
 import { PropManager } from './world/props.js';
+import {DockInteraction} from './core/dock.js';
+import {AmbientFleet} from './world/fleet.js';
+import {MarineLife} from './world/marine.js';
+import {BoatAppearance} from './world/boat-appearance.js';
+import {IslandDetails} from './world/island-details.js';
+import {oceanHeight} from './world/water-space.js';
 import { Environment } from './world/environment.js';
 import { mesh, box, cylinder, label, material } from './world/geometry.js';
 import { islands, gates, boatSpawn, WORLD_RADIUS, nearestIsland, inDockZone, cargoBerths, lamps, challenges, secretPlaces, islandActions } from './config.js';
@@ -34,11 +40,15 @@ export class Game {
   this.renderer.shadowMap.enabled=this.settings.quality!=='low';this.renderer.toneMapping=THREE.ACESFilmicToneMapping;this.renderer.toneMappingExposure=1.08;
   await RAPIER.init();this.world=new RAPIER.World({x:0,y:0,z:0});this.world.timestep=STEP;this.queue=new RAPIER.EventQueue(true);
   this.boat=new BoatController(RAPIER,this.world,boatSpawn);this.prev=vec(boatSpawn.x,.35,boatSpawn.z);this.prevYaw=this.boat.yaw;this.visualPosition=this.prev.clone();
+  this.docks=new DockInteraction(islands);this.appearance=new BoatAppearance(this.settings);this.simTime=0;
   this.cameraRig=new CameraRig(this.camera,this.settings,innerWidth,innerHeight);
-  this.feedback=new FeedbackSystem(this.scene,this.settings,(kind,strength)=>this.events.trigger('sound',[{kind,strength}]));
+  this.feedback=new FeedbackSystem(this.scene,this.settings,(kind,strength,p)=>this.spatialSound(kind,p||this.boat.position,strength));
   this.createLight();this.createWater();this.createIslands();this.createBoat();this.createBoundary();
   this.environment=new Environment(this.scene,RAPIER,this.world,this.settings);
   this.props=new PropManager(this.scene,RAPIER,this.world,{settings:this.settings,feedback:this.feedback,onSecret:id=>this.findSecret(id)});
+  this.fleet=new AmbientFleet(this.scene,RAPIER,this.world,this.settings,this.loader,(kind,p,strength)=>this.spatialSound(kind,p,strength));
+  this.marine=new MarineLife(this.scene,this.settings,this.loader,this.discovery,(kind,p,strength)=>this.spatialSound(kind,p,strength));
+  this.details=new IslandDetails(this.scene,this.settings,this.loader);
   this.toys=this.props.items;this.createInteractables();this.createWake();this.resetCamera();this.bindPointer();
   this.world.step(this.queue);this.queue.clear();
   await Promise.all([this.loadModel('boat'),this.loadModel('harbor'),this.loadModel('connect')]);
@@ -46,6 +56,7 @@ export class Game {
   window.addEventListener('resize',()=>{this.cameraRig.resize(innerWidth,innerHeight);this.renderer.setSize(innerWidth,innerHeight);});
   this.renderer.setAnimationLoop(()=>this.safeFrame());
   this.readyMs=Math.round(performance.now());this.events.trigger('ready',[this.renderer.backend.isWebGPUBackend?'WebGPU':'WebGL2']);
+  this.fleet.load().catch(e=>console.warn('Fleet unavailable',e.message));this.marine.load().catch(e=>console.warn('Sea life unavailable',e.message));
  }
  safeFrame(){try{this.frame();}catch(error){this.renderer.setAnimationLoop(null);this.events.trigger('failure',[error]);}}
  createLight(){
@@ -84,7 +95,7 @@ export class Game {
     if(glazing){for(const material of materials)material.depthWrite=false;o.renderOrder=1;}
    }});
    if(id==='boat'){
-    this.boatVisual.clear();this.boatVisual.add(gltf.scene);this.boatModel=gltf.scene;
+    this.boatVisual.clear();this.boatVisual.add(gltf.scene);this.boatModel=gltf.scene;this.appearance.bind(gltf.scene);
     this.boatOutline=gltf.scene.clone(true);this.boatOutline.traverse(o=>{if(o.isMesh){o.material=new THREE.MeshBasicMaterial({color:'#fff8da',depthTest:false,transparent:true,opacity:.35});o.castShadow=false;o.renderOrder=9;}});this.boatOutline.scale.setScalar(1.025);this.boatOutline.visible=false;this.boatVisual.add(this.boatOutline);
    }else{
     const shore=item.group.children.filter(o=>o.userData.shore);if(item.model)item.model.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});item.group.clear();item.quality=quality;item.group.add(...shore,gltf.scene);item.model=gltf.scene;this.controllers.get(id).bind(gltf.scene);
@@ -125,10 +136,10 @@ export class Game {
   const p=this.visualPosition,speed=this.boat.speed;
   if(!frozen&&speed>.7&&this.time-this.lastWake>.055){this.lastWake=this.time;for(const sign of [-1,1])this.wakes.push({x:p.x+Math.sin(this.boat.yaw)*1.8+Math.cos(this.boat.yaw)*sign*.4,z:p.z+Math.cos(this.boat.yaw)*1.8-Math.sin(this.boat.yaw)*sign*.4,dx:Math.cos(this.boat.yaw)*sign,dz:-Math.sin(this.boat.yaw)*sign,t:this.time,scale:.25+speed*.012});}
   this.wakes=this.wakes.filter(w=>this.time-w.t<2).slice(-100);
-  for(let i=0;i<100;i++){const w=this.wakes[i];if(w){const age=this.time-w.t;this.wakeDummy.position.set(w.x+w.dx*age*.8,.065,w.z+w.dz*age*.8);this.wakeDummy.rotation.set(-Math.PI/2,0,0);const scale=(w.scale+age*.35)*(1-age/2);this.wakeDummy.scale.set(scale*1.8,scale,1);}else this.wakeDummy.scale.setScalar(0);this.wakeDummy.updateMatrix();this.wakeMesh.setMatrixAt(i,this.wakeDummy.matrix);}this.wakeMesh.instanceMatrix.needsUpdate=true;
+  for(let i=0;i<100;i++){const w=this.wakes[i];if(w){const age=this.time-w.t;const x=w.x+w.dx*age*.8,z=w.z+w.dz*age*.8;this.wakeDummy.position.set(x,oceanHeight(x,z,this.settings.reduced?0:this.time)+.025,z);this.wakeDummy.rotation.set(-Math.PI/2,0,0);const scale=(w.scale+age*.35)*(1-age/2);this.wakeDummy.scale.set(scale*1.8,scale,1);}else this.wakeDummy.scale.setScalar(0);this.wakeDummy.updateMatrix();this.wakeMesh.setMatrixAt(i,this.wakeDummy.matrix);}this.wakeMesh.instanceMatrix.needsUpdate=true;
  }
  frame(){
-  const now=performance.now(),dt=Math.min((now-this.last)/1000,.1);this.last=now;this.time+=dt;this.fpsSamples=(this.fpsSamples||0)+1;if(!this.fpsSince)this.fpsSince=now;if(now-this.fpsSince>1000){this.fps=Math.round(this.fpsSamples*1000/(now-this.fpsSince));this.fpsSince=now;this.fpsSamples=0;}this.waterTime.value=this.settings.reduced?0:this.time;
+  const now=performance.now(),dt=Math.min((now-this.last)/1000,.1);this.last=now;this.time+=dt;this.fpsSamples=(this.fpsSamples||0)+1;if(!this.fpsSince)this.fpsSince=now;if(now-this.fpsSince>1000){this.fps=Math.round(this.fpsSamples*1000/(now-this.fpsSince));this.fpsSince=now;this.fpsSamples=0;this.fpsHistory=(this.fpsHistory||[]).concat(this.fps).slice(-30);}this.waterTime.value=this.settings.reduced?0:this.time;
   if(this.mode==='exploring')this.challenges.updateClock();
   const frozen=this.mode!=='exploring'||this.challenges.frozen;
   const input=this.inputs.read(this.boat.yaw,this.cameraRig.yaw);
@@ -136,6 +147,7 @@ export class Game {
    this.accumulator+=dt;
    while(this.accumulator>=STEP){
     const before={...this.boat.position};this.prev.set(before.x,before.y,before.z);this.prevYaw=this.boat.yaw;
+    this.simTime+=STEP;this.fleet?.beforeStep(STEP,this.boat);this.marine?.step(STEP,this.boat);
     this.props.beforeStep(before);this.boat.step(this.inputs.read(this.boat.yaw,this.cameraRig.yaw),STEP);this.enforceBoundary(before);this.world.step(this.queue);this.props.afterStep(this.queue,this.boat.collider,this.boat.position);
     this.challenges.tick(before,this.boat.position,STEP,this.challenges.kind==='cargo'?this.props.cargoData():[]);
     this.accumulator-=STEP;if(this.mode!=='exploring'||this.challenges.frozen)break;
@@ -149,6 +161,8 @@ export class Game {
   this.boatVisual.rotation.x=THREE.MathUtils.damp(this.boatVisual.rotation.x,this.settings.reduced||frozen?0:-Math.max(0,this.boat.forwardSpeed)*.0025,8,dt);
   this.props.update(alpha,this.time,this.settings.reduced);this.bottle.position.y=.25+(this.settings.reduced?0:Math.sin(this.time)*.07);
   for(const controller of this.controllers.values())controller.update(dt,p,this.time,this.focus?.id===controller.island.id,this.settings.reduced);
+  this.appearance?.update(dt,input,this.boat.speed,this.settings.reduced,frozen);
+  this.fleet?.update(alpha,p,this.settings.reduced?0:this.time);this.marine?.update(alpha,p,this.camera,this.settings.reduced?0:this.simTime,[...this.loaded.values()].map(i=>i.group).concat(this.fleet?.items.map(i=>i.group)||[]));this.details?.update(frozen?0:dt,p,this.simTime,this.settings.reduced?0:this.time,this.controllers);
   this.environment.update(this.challenges,this.time,p);this.updateWake(frozen);this.feedback.update(dt);this.updateCamera(dt);this.updateNearby(dt,now,frozen);this.updateOcclusion(now);
   this.sun.position.set(p.x-35,65,p.z+20);this.sun.target.position.set(p.x,0,p.z);this.sun.target.updateMatrixWorld();
   this.events.trigger('frame',[{position:p,yaw:this.boat.yaw,speed:this.boat.speed,dt,now,frozen}]);this.renderer.render(this.scene,this.camera);
@@ -160,9 +174,9 @@ export class Game {
  }
  enforceBoundary(p){const distance=Math.hypot(p.x,p.z);if(distance>WORLD_RADIUS-10){const v=this.boat.velocity,out=(v.x*p.x+v.z*p.z)/distance;if(out>0){const f=Math.min(1,(distance-WORLD_RADIUS+10)/10)*.14;this.boat.body.setLinvel({x:v.x-p.x/distance*out*f,y:0,z:v.z-p.z/distance*out*f},true);}}}
  updateNearby(dt,now,frozen){
-  const p=this.boat.position;this.nearby=null;
+  const p=this.boat.position;this.nearby=this.docks?.update(p)||null;
   for(const i of islands){const distance=Math.hypot(p.x-i.x,p.z-i.z),near=inDockZone(p,i);
-   if(near&&(!this.nearby||Math.hypot(p.x-i.dock.x,p.z-i.dock.z)<Math.hypot(p.x-this.nearby.dock.x,p.z-this.nearby.dock.z)))this.nearby=i;
+
    if(!frozen){if(distance<40)this.discovery?.discover(i.id);this.discovery?.visit(i.id,near,dt);}
    const asset=this.loaded.get(i.id);if(!asset.requested&&distance<72)this.loadModel(i.id);
   }
@@ -213,9 +227,9 @@ export class Game {
   if(this.snapshot&&this.challenges.active&&this.snapshot.epoch===this.challenges.epoch){this.pendingResume=this.snapshot;this.challenges.resume();}else this.boat.hold();
   this.snapshot=null;this.focus=null;this.mode='exploring';this.accumulator=0;this.inputs.setEnabled(!this.challenges.frozen);this.last=performance.now();
  }
- cancelChallenge(){this.recovery=null;this.challenges.cancel();this.snapshot=null;this.pendingResume=null;this.props?.resetCargo();}
+ cancelChallenge(){this.recovery=null;this.marine?.onTravel();this.challenges.cancel();this.snapshot=null;this.pendingResume=null;this.props?.resetCargo();}
  teleport(point){
-  this.cancelChallenge();this.focus=null;this.mode='exploring';this.props.resetNear(point);point=this.safePoint(point);this.boat.teleport(point);this.accumulator=0;this.clearWake();this.feedback.clear();this.resetCamera();this.updateNearby(0,performance.now(),false);this.inputs.setEnabled(true);this.last=performance.now();
+  this.cancelChallenge();this.fleet?.onTravel();this.marine?.onTravel();this.docks?.reset();this.focus=null;this.mode='exploring';this.props.resetNear(point);point=this.safePoint(point);this.boat.teleport(point);this.accumulator=0;this.clearWake();this.feedback.clear();this.resetCamera();this.updateNearby(0,performance.now(),false);this.inputs.setEnabled(true);this.last=performance.now();
  }
  safePoint(point){
   this.world.propagateModifiedBodyPositionsToColliders();this.world.updateSceneQueries();
@@ -228,7 +242,10 @@ export class Game {
  startChallenge(id){const config=challenges.find(c=>c.id===id);if(!config)return;this.teleport(config.spawn);this.challenges.start(id);this.inputs.setEnabled(!this.challenges.frozen);}
  startRace(){this.startChallenge('buoy');}
  setZoom(index){this.cameraRig.setZoom(index);this.discovery?.save();this.events.trigger('zoom',[this.settings.zoom]);}
- setQuality(level){this.settings.quality=level;this.renderer.setPixelRatio(Math.min(devicePixelRatio,level==='low'?1:1.5));this.renderer.shadowMap.enabled=level!=='low';this.glints.visible=level!=='low';for(const [id,item] of this.loaded)if(item.requested&&item.requestedQuality!==level)this.loadModel(id,true);}
+ setQuality(level){this.settings.quality=level;this.renderer.setPixelRatio(Math.min(devicePixelRatio,level==='low'?1:1.5));this.renderer.shadowMap.enabled=level!=='low';this.glints.visible=level!=='low';this.details?.setQuality();for(const [id,item] of this.loaded)if(item.requested&&item.requestedQuality!==level)this.loadModel(id,true);}
  project(point){return vec(point.x,point.y||0,point.z).project(this.camera);}
- status(){return{available3D:true,renderer:this.renderer.backend.isWebGPUBackend?'WebGPU':'WebGL2',fps:this.fps,quality:this.settings.quality,cameraDistance:this.cameraRig.distance,viewport:{width:innerWidth,height:innerHeight},mode:this.mode,position:{...this.boat.position},speed:this.boat.speed,heading:this.boat.yaw,nearby:this.nearby?.id||null,action:this.nearAction?{id:this.nearAction.id,label:this.nearAction.label}:null,challenge:{kind:this.challenges.kind,state:this.challenges.state,index:this.challenges.index,elapsed:this.challenges.elapsed},zoom:this.settings.zoom,readyMs:this.readyMs,stamps:this.discovery?.stamps||0};}
+ spatialSound(kind,p,strength=1){const distance=Math.hypot(p.x-this.boat.position.x,p.z-this.boat.position.z),gain=Math.max(0,1-distance/60)*strength;if(gain>.01)this.events.trigger('sound',[{kind,strength:gain}]);}
+ horn(){if(this.mode==='exploring'&&!this.challenges.frozen&&this.fleet?.horn(this.boat.position)){this.feedback.splash(this.boat.position,{strength:.3,kind:'water'});return true;}return false;}
+ setLivery(id){const livery=this.appearance?.setLivery(id);this.discovery?.save();return livery;}
+ status(){return{performance:{fpsWindow:this.fpsHistory||[],drawCalls:this.renderer.info.render.drawCalls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,loadedIslands:[...this.loaded.values()].filter(i=>i.model).length,detailVariants:[...this.details.items.values()].reduce((n,i)=>n+i.cache.size,0)},livery:this.settings.livery,fleet:this.fleet?.status(),seaLife:{...this.marine?.status(),sightings:[...(this.discovery?.seaLife||[])]},simulationTime:this.simTime,available3D:true,renderer:this.renderer.backend.isWebGPUBackend?'WebGPU':'WebGL2',fps:this.fps,quality:this.settings.quality,cameraDistance:this.cameraRig.distance,viewport:{width:innerWidth,height:innerHeight},mode:this.mode,position:{...this.boat.position},speed:this.boat.speed,heading:this.boat.yaw,nearby:this.nearby?.id||null,action:this.nearAction?{id:this.nearAction.id,label:this.nearAction.label}:null,challenge:{kind:this.challenges.kind,state:this.challenges.state,index:this.challenges.index,elapsed:this.challenges.elapsed},zoom:this.settings.zoom,readyMs:this.readyMs,stamps:this.discovery?.stamps||0};}
 }

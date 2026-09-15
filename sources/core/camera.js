@@ -43,7 +43,7 @@ export class CameraRig {
   pose(distance, point, heading, ahead) {
     // Ground-plane framing puts the boat below centre without tilting the world.
     const bias = distance * Math.tan(THREE.MathUtils.degToRad(FOV / 2)) * .2 / Math.sin(ELEVATION);
-    const target = new THREE.Vector3(point.x, point.y + .65, point.z)
+    const target = new THREE.Vector3(point.x, point.y + .03, point.z)
       .addScaledVector(this.flatForward, bias).addScaledVector(heading, ahead);
     return {target, position: target.clone().addScaledVector(this.direction, distance)};
   }
@@ -62,7 +62,13 @@ export class CameraRig {
     if(this.lastPoint&&!focus&&!this.lastFocus&&!snap){const delta=new THREE.Vector3(position.x-this.lastPoint.x,position.y-this.lastPoint.y,position.z-this.lastPoint.z);this.position.add(delta);this.target.add(delta);}
     this.lastPoint={...position};this.lastFocus=!!focus;
     let desired;
-    if (focus) {
+    if(focus?.boatStudio){
+      const point=new THREE.Vector3(position.x,position.y+.1,position.z),right=new THREE.Vector3(Math.cos(AZIMUTH),0,-Math.sin(AZIMUTH));
+      const desktopDistance=16;
+      if(this.width>this.height)point.addScaledVector(right,(this.width>=900?460:360)/this.height*desktopDistance*Math.tan(THREE.MathUtils.degToRad(FOV/2)));
+      if(this.height>this.width)point.addScaledVector(this.flatForward,-4.5);
+      const distance=this.width>=900?desktopDistance:this.height>this.width?24:16;desired={target:point,position:point.clone().addScaledVector(this.direction,distance)};
+    } else if (focus) {
       const cfg = focus.camera || {};
       const az = cfg.azimuth ?? AZIMUTH;
       const el = cfg.elevation ?? .64;

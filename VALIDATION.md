@@ -56,3 +56,33 @@ All 68 existing actual-GLB camera checks pass. Standard stationary tight-mesh pr
 The boat's transparent material skips depth writes and shadow casting/receiving so glazing does not obscure the instruments. Browser checks on the existing Mac/Codex in-app browser covered WebGPU low/high rendering, WebGL2 high rendering and a short throttle/turn trial, close view and the 390×844 portrait layout. New boat loading produced no renderer/model errors; the existing Rapier initialization deprecation warning remains. Desktop viewport emulation is not physical-phone testing. Production build passed.
 
 Updated high-quality model payload is 3,212,012 bytes; low set with the shared boat is 2,371,724 bytes. Added boat payload is 88,824 bytes. Earlier V2 payload figures above are the pre-refresh baseline. No new network texture dependencies were introduced.
+
+## V3 living bay — 2026-09-15
+
+Implemented five vessel classes / six finite-mass NPC boats, dolphin/shark/turtle habitats, three 12-fish shoals, gulls, three shared-model finishes, Boat Studio, full-pier docking, four independent Sea Life observations, and nine detail overlays. All authored V3 GLBs are original, generated locally without network textures. Existing résumé, content.json, confirmed external links, dependency manifest/lockfile, course keys and private hosting configuration are unchanged.
+
+### Automated and geometric checks
+
+121 tests pass, including existing challenge/input/physics/camera checks and new V3 regressions. New checks cover complete vessel hull clearance, two minutes of actual Rapier traffic, high-speed predictive yielding, displaced vessel recovery, horn cooldown/pending-reply cancellation, all dock sides/tips/diagonals, the concave Connect root, land-blocked detection, entry/exit hysteresis, marine habitat/scatter limits, normalized WebGPU instance geometry, finish reuse and denied storage. Additional independent simulation checked 108 displaced vessel poses without a stuck or worsened route result. The initial cargo route was moved away from the complete Buoy Run corridor. NPC motion under 30/60/120 FPS render schedules agrees within 0.01 units; all physics remains at 60 Hz.
+
+The final boat is 139,100 bytes, 11,129 triangles and 16 material batches (12 static, four animated). Its main controls, gauges and outboard use cached pivots. Named materials and palette-matched vertex colors change together. Tight transformed-mesh stationary projection: 20.97% at 1440×900, 1920×1080 and 844×390; 25.75% at 390×844. All existing moving-view tests remain within their forward-water and on-screen bounds. The waterline and stern wake anchors were lowered to meet the hull rather than float below it.
+
+### Browser validation
+
+Host: Apple M3 Max, Mac15,8, 64 GiB RAM, Codex in-app browser. These are desktop measurements, including viewport emulation; no physical phone was used.
+
+- All nine islands traveled to, docked/read, closed, and returned to an exploring/stationary boat. Amtrak detail overlays and desktop focus composition inspected.
+- Boat Studio checked on desktop, 390×844 portrait and 844×390 landscape. All three finishes selected; Graphite survived refresh. Portrait uses a scrollable lower panel that keeps the preview visible. Close remains accessible.
+- Actual medium-speed sailing triggered two-dolphin companionship and a Dolphin sighting. Opening Projects froze simulation time, every NPC position and animal state across separate readings. Traveling to Research and then closing left speed zero and companion inactive.
+- Actual head-on approach to the ferry caused it to yield at about 0.06 units/second. Horn button cooldown exercised; delayed sound/light reply and cancellation also covered by simulation.
+- Sea Life page displayed two observed types independently of the original 18-stamp logbook.
+- WebGPU/high and WebGL2/low/reduced rendered all six vessels and seven larger animals. A quantized-buffer stride issue in instanced fish/gulls was fixed by decoding into aligned float accessors. Final render runs did not reproduce it; the existing Rapier initialization deprecation warning remains.
+- No-3D mode exposes all nine content cards and the original résumé download link. Storage denial is exercised in tests. Network model failure retains the existing placeholder/HTML handling; an actual failed request was not injected in the browser.
+
+Short sailing/status samples reported 144 FPS on this host. A 30-second sampled window after all nine islands loaded ranged 115–144 FPS (the lower sample includes route changes/loading); another sailing window ranged 132–144 FPS. One complete-tour state reported nine islands, nine detail variants, 529–536 active geometries, 18–19 textures, and 171–236 draw calls depending on view. These are observations of bounded asset loading, not a long-duration thermal or leak certification. Warm localhost initialization was 111–149ms; this does not measure cold network load.
+
+### Payload and limits
+
+38 additional compressed GLBs total **705,992 bytes** (fleet 229,132; fauna 97,024; island details 379,836), below the 1.5 MB new-resource target before transport gzip. The main boat replacement adds 12,452 bytes over the preceding revision. Initial HTML/CSS/JS plus boat, Harbor and Connect total 4,232,970 bytes raw and approximately **1,557,564 bytes gzip**, excluding remotely served fonts. Fleet/fauna requests begin after the initial ready event; detail overlays are loaded by proximity. Asset caches are bounded by the two detail variants per island and fixed fleet/fauna model sets.
+
+Physical mobile Safari/Android, sustained mobile 30 FPS, controlled 20 Mbps cold startup and prolonged memory/thermal behavior remain unmeasured. The 5-second cold-start target is not certified. Existing human challenge-completion-time targets still require playtesting. High/low geometry variants share gameplay boundaries and cues. No access expansion or domain change is part of this delivery.

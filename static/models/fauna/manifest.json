@@ -1,0 +1,498 @@
+{
+  "revision": "original-toy-bay-fauna-v3",
+  "units": "metres",
+  "up": "+Y",
+  "forward": "-Z",
+  "source": "animals.mjs",
+  "compression": "EXT_meshopt_compression",
+  "textures": 0,
+  "models": [
+    {
+      "kind": "dolphin",
+      "quality": "high",
+      "file": "dolphin.glb",
+      "triangles": 572,
+      "triangleBudget": 1200,
+      "drawCalls": 4,
+      "materials": 1,
+      "bytes": 11296,
+      "rawBytes": 19900,
+      "dimensions": [
+        1.1438297924000305,
+        0.922314916327562,
+        2.399999994198086
+      ],
+      "bounds": {
+        "min": [
+          -0.5719148962000152,
+          -0.24827233381566016,
+          -1.2255319356918335
+        ],
+        "max": [
+          0.5719148962000152,
+          0.6740425825119019,
+          1.1744680585062524
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.5719158164206176,
+          -0.2482599353803373,
+          -1.2255319356918335
+        ],
+        "max": [
+          0.5719158164206176,
+          0.674097816399664,
+          1.1744778731821988
+        ]
+      },
+      "animationNodes": [
+        "anim_flipper_L",
+        "anim_flipper_R",
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "x",
+        "flipperAxis": "z"
+      }
+    },
+    {
+      "kind": "dolphin",
+      "quality": "low",
+      "file": "low/dolphin.glb",
+      "triangles": 396,
+      "triangleBudget": 1200,
+      "drawCalls": 4,
+      "materials": 1,
+      "bytes": 10052,
+      "rawBytes": 15456,
+      "dimensions": [
+        1.1438297924000305,
+        0.922314916327562,
+        2.399999994198086
+      ],
+      "bounds": {
+        "min": [
+          -0.5719148962000152,
+          -0.24827233381566016,
+          -1.2255319356918335
+        ],
+        "max": [
+          0.5719148962000152,
+          0.6740425825119019,
+          1.1744680585062524
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.5719158164206176,
+          -0.2482599353803373,
+          -1.2255319356918335
+        ],
+        "max": [
+          0.5719158164206176,
+          0.674097816399664,
+          1.1744778731821988
+        ]
+      },
+      "animationNodes": [
+        "anim_flipper_L",
+        "anim_flipper_R",
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "x",
+        "flipperAxis": "z"
+      }
+    },
+    {
+      "kind": "shark",
+      "quality": "high",
+      "file": "shark.glb",
+      "triangles": 660,
+      "triangleBudget": 1200,
+      "drawCalls": 4,
+      "materials": 1,
+      "bytes": 12064,
+      "rawBytes": 22572,
+      "dimensions": [
+        1.8099999447166921,
+        1.294900020286441,
+        3.2000000327825546
+      ],
+      "bounds": {
+        "min": [
+          -0.9049999723583461,
+          -0.3649000131338835,
+          -1.600000023841858
+        ],
+        "max": [
+          0.9049999723583461,
+          0.9300000071525574,
+          1.600000008940697
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.9049999723583461,
+          -0.36489959474940303,
+          -1.600000023841858
+        ],
+        "max": [
+          0.9049999723583461,
+          0.9299551284744861,
+          1.599975286053848
+        ]
+      },
+      "animationNodes": [
+        "anim_flipper_L",
+        "anim_flipper_R",
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "y",
+        "flipperAxis": "z"
+      }
+    },
+    {
+      "kind": "shark",
+      "quality": "low",
+      "file": "low/shark.glb",
+      "triangles": 500,
+      "triangleBudget": 1200,
+      "drawCalls": 4,
+      "materials": 1,
+      "bytes": 11008,
+      "rawBytes": 18516,
+      "dimensions": [
+        1.8099999447166921,
+        1.294900020286441,
+        3.2000000327825546
+      ],
+      "bounds": {
+        "min": [
+          -0.9049999723583461,
+          -0.3649000131338835,
+          -1.600000023841858
+        ],
+        "max": [
+          0.9049999723583461,
+          0.9300000071525574,
+          1.600000008940697
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.9049999723583461,
+          -0.36489959474940303,
+          -1.600000023841858
+        ],
+        "max": [
+          0.9049999723583461,
+          0.9299551284744861,
+          1.599975286053848
+        ]
+      },
+      "animationNodes": [
+        "anim_flipper_L",
+        "anim_flipper_R",
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "y",
+        "flipperAxis": "z"
+      }
+    },
+    {
+      "kind": "turtle",
+      "quality": "high",
+      "file": "turtle.glb",
+      "triangles": 772,
+      "triangleBudget": 1000,
+      "drawCalls": 4,
+      "materials": 1,
+      "bytes": 12896,
+      "rawBytes": 25280,
+      "dimensions": [
+        1.3711425950472926,
+        0.4783689081668854,
+        1.1999999761271583
+      ],
+      "bounds": {
+        "min": [
+          -0.6855712975236463,
+          -0.1751459538936615,
+          -0.6195162534713745
+        ],
+        "max": [
+          0.6855712975236463,
+          0.3032229542732239,
+          0.5804837226557836
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.6855712975236463,
+          -0.17511645798256856,
+          -0.6195162534713745
+        ],
+        "max": [
+          0.6855712975236463,
+          0.30319345836213096,
+          0.5804837226557836
+        ]
+      },
+      "animationNodes": [
+        "anim_flipper_L",
+        "anim_flipper_R",
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "y",
+        "flipperAxis": "z"
+      }
+    },
+    {
+      "kind": "turtle",
+      "quality": "low",
+      "file": "low/turtle.glb",
+      "triangles": 584,
+      "triangleBudget": 1000,
+      "drawCalls": 4,
+      "materials": 1,
+      "bytes": 11636,
+      "rawBytes": 20764,
+      "dimensions": [
+        1.3911956643676608,
+        0.4853650778532028,
+        1.2000000035032126
+      ],
+      "bounds": {
+        "min": [
+          -0.6955978321838304,
+          -0.1777074784040451,
+          -0.6110266447067261
+        ],
+        "max": [
+          0.6955978321838304,
+          0.3076575994491577,
+          0.5889733587964866
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.6955978321838304,
+          -0.17767525948662524,
+          -0.6110266447067261
+        ],
+        "max": [
+          0.6955978321838304,
+          0.3076253805317378,
+          0.5889733587964866
+        ]
+      },
+      "animationNodes": [
+        "anim_flipper_L",
+        "anim_flipper_R",
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "y",
+        "flipperAxis": "z"
+      }
+    },
+    {
+      "kind": "tropicalfish",
+      "quality": "high",
+      "file": "tropicalfish.glb",
+      "triangles": 120,
+      "triangleBudget": 150,
+      "drawCalls": 2,
+      "materials": 1,
+      "bytes": 5200,
+      "rawBytes": 6384,
+      "dimensions": [
+        0.10985154658555984,
+        0.2758389264345169,
+        0.44999999664490636
+      ],
+      "bounds": {
+        "min": [
+          -0.05492577329277992,
+          -0.12483221292495728,
+          -0.22651006281375885
+        ],
+        "max": [
+          0.05492577329277992,
+          0.15100671350955963,
+          0.2234899338311475
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.054932164046079465,
+          -0.12482878491957783,
+          -0.22651006281375885
+        ],
+        "max": [
+          0.054932164046079465,
+          0.15100328550418018,
+          0.22348800092209137
+        ]
+      },
+      "animationNodes": [
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "y"
+      }
+    },
+    {
+      "kind": "tropicalfish",
+      "quality": "low",
+      "file": "low/tropicalfish.glb",
+      "triangles": 120,
+      "triangleBudget": 150,
+      "drawCalls": 2,
+      "materials": 1,
+      "bytes": 5200,
+      "rawBytes": 6384,
+      "dimensions": [
+        0.10985154658555984,
+        0.2758389264345169,
+        0.44999999664490636
+      ],
+      "bounds": {
+        "min": [
+          -0.05492577329277992,
+          -0.12483221292495728,
+          -0.22651006281375885
+        ],
+        "max": [
+          0.05492577329277992,
+          0.15100671350955963,
+          0.2234899338311475
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.054932164046079465,
+          -0.12482878491957783,
+          -0.22651006281375885
+        ],
+        "max": [
+          0.054932164046079465,
+          0.15100328550418018,
+          0.22348800092209137
+        ]
+      },
+      "animationNodes": [
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "y"
+      }
+    },
+    {
+      "kind": "seagull",
+      "quality": "high",
+      "file": "seagull.glb",
+      "triangles": 236,
+      "triangleBudget": 250,
+      "drawCalls": 4,
+      "materials": 1,
+      "bytes": 8836,
+      "rawBytes": 11800,
+      "dimensions": [
+        0.6999999852984292,
+        0.1379999965429306,
+        0.33699999877214437
+      ],
+      "bounds": {
+        "min": [
+          -0.3499999926492146,
+          -0.052000001072883606,
+          -0.18799999356269836
+        ],
+        "max": [
+          0.3499999926492146,
+          0.085999995470047,
+          0.149000005209446
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.3499999926492146,
+          -0.05199731646250204,
+          -0.18799999356269836
+        ],
+        "max": [
+          0.3499999926492146,
+          0.08599731085966543,
+          0.1490021239614534
+        ]
+      },
+      "animationNodes": [
+        "anim_flipper_L",
+        "anim_flipper_R",
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "x",
+        "flipperAxis": "z",
+        "wing": true
+      }
+    },
+    {
+      "kind": "seagull",
+      "quality": "low",
+      "file": "low/seagull.glb",
+      "triangles": 236,
+      "triangleBudget": 250,
+      "drawCalls": 4,
+      "materials": 1,
+      "bytes": 8836,
+      "rawBytes": 11800,
+      "dimensions": [
+        0.6999999852984292,
+        0.1379999965429306,
+        0.33699999877214437
+      ],
+      "bounds": {
+        "min": [
+          -0.3499999926492146,
+          -0.052000001072883606,
+          -0.18799999356269836
+        ],
+        "max": [
+          0.3499999926492146,
+          0.085999995470047,
+          0.149000005209446
+        ]
+      },
+      "compressedBounds": {
+        "min": [
+          -0.3499999926492146,
+          -0.05199731646250204,
+          -0.18799999356269836
+        ],
+        "max": [
+          0.3499999926492146,
+          0.08599731085966543,
+          0.1490021239614534
+        ]
+      },
+      "animationNodes": [
+        "anim_flipper_L",
+        "anim_flipper_R",
+        "anim_tail"
+      ],
+      "animation": {
+        "tailAxis": "x",
+        "flipperAxis": "z",
+        "wing": true
+      }
+    }
+  ],
+  "totalBytes": 97024
+}

@@ -1,0 +1,757 @@
+{
+  "version": 3,
+  "originalAssets": true,
+  "units": "meters",
+  "coordinateSystem": "Y up, bow -Z",
+  "seaLevel": 0,
+  "compression": "EXT_meshopt_compression",
+  "models": [
+    {
+      "kind": "cargo",
+      "quality": "high",
+      "file": "cargo.glb",
+      "bytes": 45224,
+      "rawBytes": 218796,
+      "triangles": 3200,
+      "drawCalls": 4,
+      "bounds": {
+        "min": [
+          -2.1500000953674316,
+          -0.6200000047683716,
+          -7
+        ],
+        "max": [
+          2.1500000953674316,
+          4.465000152587891,
+          7
+        ]
+      },
+      "dimensions": [
+        4.300000190734863,
+        5.085000157356262,
+        14
+      ],
+      "attachments": {
+        "radar": {
+          "position": [
+            -0.48,
+            3.9099999999999997,
+            4.04
+          ],
+          "axis": "Y",
+          "span": 1.13
+        },
+        "navlights": [
+          {
+            "position": [
+              -1.7,
+              3.6199999999999997,
+              3.49
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              1.7,
+              3.6199999999999997,
+              3.49
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              1.06,
+              6.02
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            5.88
+          ],
+          "axis": "Z",
+          "radius": 0.3
+        }
+      }
+    },
+    {
+      "kind": "cargo",
+      "quality": "low",
+      "file": "low/cargo.glb",
+      "bytes": 11468,
+      "rawBytes": 25028,
+      "triangles": 270,
+      "drawCalls": 4,
+      "bounds": {
+        "min": [
+          -2.1500000953674316,
+          -0.6200000047683716,
+          -7
+        ],
+        "max": [
+          2.1500000953674316,
+          4.465000152587891,
+          7
+        ]
+      },
+      "dimensions": [
+        4.300000190734863,
+        5.085000157356262,
+        14
+      ],
+      "attachments": {
+        "radar": {
+          "position": [
+            -0.48,
+            3.9099999999999997,
+            4.04
+          ],
+          "axis": "Y",
+          "span": 1.13
+        },
+        "navlights": [
+          {
+            "position": [
+              -1.7,
+              3.6199999999999997,
+              3.49
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              1.7,
+              3.6199999999999997,
+              3.49
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              1.06,
+              6.02
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            5.88
+          ],
+          "axis": "Z",
+          "radius": 0.3
+        }
+      }
+    },
+    {
+      "kind": "ferry",
+      "quality": "high",
+      "file": "ferry.glb",
+      "bytes": 34936,
+      "rawBytes": 145700,
+      "triangles": 2196,
+      "drawCalls": 4,
+      "bounds": {
+        "min": [
+          -1.7000000476837158,
+          -0.47999998927116394,
+          -4.5
+        ],
+        "max": [
+          1.7000000476837158,
+          4.204999923706055,
+          4.5
+        ]
+      },
+      "dimensions": [
+        3.4000000953674316,
+        4.684999912977219,
+        9
+      ],
+      "attachments": {
+        "radar": {
+          "position": [
+            0,
+            3.78,
+            -1.2
+          ],
+          "axis": "Y",
+          "span": 0.84
+        },
+        "navlights": [
+          {
+            "position": [
+              -1.29,
+              3.43,
+              -1.95
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              1.29,
+              3.43,
+              -1.95
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              0.8899999999999999,
+              3.87
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            3.78
+          ],
+          "axis": "Z",
+          "radius": 0.2
+        }
+      }
+    },
+    {
+      "kind": "ferry",
+      "quality": "low",
+      "file": "low/ferry.glb",
+      "bytes": 11680,
+      "rawBytes": 26920,
+      "triangles": 278,
+      "drawCalls": 4,
+      "bounds": {
+        "min": [
+          -1.7000000476837158,
+          -0.47999998927116394,
+          -4.5
+        ],
+        "max": [
+          1.7000000476837158,
+          4.204999923706055,
+          4.5
+        ]
+      },
+      "dimensions": [
+        3.4000000953674316,
+        4.684999912977219,
+        9
+      ],
+      "attachments": {
+        "radar": {
+          "position": [
+            0,
+            3.78,
+            -1.2
+          ],
+          "axis": "Y",
+          "span": 0.84
+        },
+        "navlights": [
+          {
+            "position": [
+              -1.29,
+              3.43,
+              -1.95
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              1.29,
+              3.43,
+              -1.95
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              0.8899999999999999,
+              3.87
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            3.78
+          ],
+          "axis": "Z",
+          "radius": 0.2
+        }
+      }
+    },
+    {
+      "kind": "fishing",
+      "quality": "high",
+      "file": "fishing.glb",
+      "bytes": 32608,
+      "rawBytes": 124468,
+      "triangles": 2320,
+      "drawCalls": 4,
+      "bounds": {
+        "min": [
+          -1.2000000476837158,
+          -0.4300000071525574,
+          -3
+        ],
+        "max": [
+          1.2000000476837158,
+          2.8119614124298096,
+          3
+        ]
+      },
+      "dimensions": [
+        2.4000000953674316,
+        3.241961419582367,
+        6
+      ],
+      "attachments": {
+        "radar": {
+          "position": [
+            0,
+            2.19,
+            -1
+          ],
+          "axis": "Y",
+          "span": 0.66
+        },
+        "navlights": [
+          {
+            "position": [
+              -0.8,
+              1.9,
+              -1.58
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              0.8,
+              1.9,
+              -1.58
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              0.77,
+              2.58
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            2.52
+          ],
+          "axis": "Z",
+          "radius": 0.2
+        }
+      }
+    },
+    {
+      "kind": "fishing",
+      "quality": "low",
+      "file": "low/fishing.glb",
+      "bytes": 9588,
+      "rawBytes": 21644,
+      "triangles": 234,
+      "drawCalls": 3,
+      "bounds": {
+        "min": [
+          -1.2000000476837158,
+          -0.4300000071525574,
+          -3
+        ],
+        "max": [
+          1.2000000476837158,
+          2.819999933242798,
+          3
+        ]
+      },
+      "dimensions": [
+        2.4000000953674316,
+        3.2499999403953552,
+        6
+      ],
+      "attachments": {
+        "radar": {
+          "position": [
+            0,
+            2.19,
+            -1
+          ],
+          "axis": "Y",
+          "span": 0.66
+        },
+        "navlights": [
+          {
+            "position": [
+              -0.8,
+              1.9,
+              -1.58
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              0.8,
+              1.9,
+              -1.58
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              0.77,
+              2.58
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            2.52
+          ],
+          "axis": "Z",
+          "radius": 0.2
+        }
+      }
+    },
+    {
+      "kind": "yacht",
+      "quality": "high",
+      "file": "yacht.glb",
+      "bytes": 35952,
+      "rawBytes": 148644,
+      "triangles": 2384,
+      "drawCalls": 4,
+      "bounds": {
+        "min": [
+          -1.75,
+          -0.5099999904632568,
+          -5.5
+        ],
+        "max": [
+          1.75,
+          3.8613197803497314,
+          5.5
+        ]
+      },
+      "dimensions": [
+        3.5,
+        4.371319770812988,
+        11
+      ],
+      "attachments": {
+        "radar": {
+          "position": [
+            0,
+            3.6399999999999997,
+            0.63
+          ],
+          "axis": "Y",
+          "span": 0.95
+        },
+        "navlights": [
+          {
+            "position": [
+              -1.26,
+              2.0300000000000002,
+              -1.38
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              1.26,
+              2.0300000000000002,
+              -1.38
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              0.8899999999999999,
+              4.7299999999999995
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            4.62
+          ],
+          "axis": "Z",
+          "radius": 0.2
+        }
+      }
+    },
+    {
+      "kind": "yacht",
+      "quality": "low",
+      "file": "low/yacht.glb",
+      "bytes": 11104,
+      "rawBytes": 29028,
+      "triangles": 330,
+      "drawCalls": 3,
+      "bounds": {
+        "min": [
+          -1.75,
+          -0.5099999904632568,
+          -5.5
+        ],
+        "max": [
+          1.75,
+          3.6875,
+          5.5
+        ]
+      },
+      "dimensions": [
+        3.5,
+        4.197499990463257,
+        11
+      ],
+      "attachments": {
+        "radar": {
+          "position": [
+            0,
+            3.6399999999999997,
+            0.63
+          ],
+          "axis": "Y",
+          "span": 0.95
+        },
+        "navlights": [
+          {
+            "position": [
+              -1.26,
+              2.0300000000000002,
+              -1.38
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              1.26,
+              2.0300000000000002,
+              -1.38
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              0.8899999999999999,
+              4.7299999999999995
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            4.62
+          ],
+          "axis": "Z",
+          "radius": 0.2
+        }
+      }
+    },
+    {
+      "kind": "sailboat",
+      "quality": "high",
+      "file": "sailboat.glb",
+      "bytes": 25940,
+      "rawBytes": 93188,
+      "triangles": 1606,
+      "drawCalls": 4,
+      "bounds": {
+        "min": [
+          -1.2000000476837158,
+          -0.7849999666213989,
+          -3.5
+        ],
+        "max": [
+          1.2000000476837158,
+          7.900000095367432,
+          3.5
+        ]
+      },
+      "dimensions": [
+        2.4000000953674316,
+        8.68500006198883,
+        7
+      ],
+      "attachments": {
+        "masthead": {
+          "position": [
+            0,
+            7.9,
+            -0.58
+          ]
+        },
+        "navlights": [
+          {
+            "position": [
+              -0.91,
+              1.1400000000000001,
+              -1.17
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              0.91,
+              1.1400000000000001,
+              -1.17
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              0.72,
+              3.01
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            2.94
+          ],
+          "axis": "Z",
+          "radius": 0.2
+        }
+      }
+    },
+    {
+      "kind": "sailboat",
+      "quality": "low",
+      "file": "low/sailboat.glb",
+      "bytes": 10632,
+      "rawBytes": 20088,
+      "triangles": 194,
+      "drawCalls": 4,
+      "bounds": {
+        "min": [
+          -1.2000000476837158,
+          -0.7849999666213989,
+          -3.5
+        ],
+        "max": [
+          1.2000000476837158,
+          7.900000095367432,
+          3.5
+        ]
+      },
+      "dimensions": [
+        2.4000000953674316,
+        8.68500006198883,
+        7
+      ],
+      "attachments": {
+        "masthead": {
+          "position": [
+            0,
+            7.9,
+            -0.58
+          ]
+        },
+        "navlights": [
+          {
+            "position": [
+              -0.91,
+              1.1400000000000001,
+              -1.17
+            ],
+            "color": "#ed795f",
+            "side": "port"
+          },
+          {
+            "position": [
+              0.91,
+              1.1400000000000001,
+              -1.17
+            ],
+            "color": "#88e0b2",
+            "side": "starboard"
+          },
+          {
+            "position": [
+              0,
+              0.72,
+              3.01
+            ],
+            "color": "#ffe9bd",
+            "side": "stern"
+          }
+        ],
+        "propeller": {
+          "position": [
+            0,
+            -0.2,
+            2.94
+          ],
+          "axis": "Z",
+          "radius": 0.2
+        }
+      }
+    }
+  ],
+  "totalBytes": 229132
+}

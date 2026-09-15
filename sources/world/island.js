@@ -33,14 +33,15 @@ export class IslandController {
     o.position.set(c[0]+Math.cos(a)*r[0],node.position.y,c[2]+Math.sin(a)*r[1]);o.rotation.y=Math.atan2(Math.sin(a)*r[0],-Math.cos(a)*r[1]);
    }else if(n.includes('bell'))o.rotation.z+=Math.sin(t*13)*.3*envelope;
    else if(n.includes('flag'))o.rotation.y+=Math.sin(t*6)*.12;
-   else if(n.includes('packet')||n.includes('data')){const index=Number(n.split('_').at(-1))||0;o.position.x+=Math.sin(t*2-index)*1.4;o.position.y+=Math.sin(t*3-index)*.25;}
+   else if(n.includes('packet')||n.includes('data')){const index=Number(n.split('_').at(-1))||0,stage=Math.max(0,Math.min(1,(t-index*1.5)/1.2));o.position.x+=stage*1.1;o.position.y+=Math.sin(stage*Math.PI)*.45;o.scale.multiplyScalar(.75+stage*.4);}
+   else if(n.includes('signal'))o.rotation.y+=playing?Math.PI:0;
    else if(n.includes('rotor')||n.includes('antenna')||n.includes('dish')||n.includes('sprinkler'))o.rotation.y+=Math.sin(t*1.2)*.65;
    else if(n.includes('plant'))o.scale.y*=1+.22*envelope;
-   else if(n.includes('card')||n.includes('order'))o.rotation.x+=Math.PI*Math.min(1,t/1.2);
-   else if(n.includes('meal'))o.position.x+=Math.sin(t*.8)*2;
+   else if(n.includes('card')||n.includes('order'))o.rotation.x+=Math.PI*Math.min(1,Math.max(0,t-(n.includes('order')?3:0))/1.2);
+   else if(n.includes('meal'))o.position.x+=Math.min(1,t/3)*2;
    else if(n.includes('beacon'))o.rotation.y+=t*1.2;
    else if(n.includes('book'))o.rotation.z+=Math.sin(t)*.12;
-   else if(n.includes('light'))o.scale.multiplyScalar(1+Math.sin(t*4-(Number(n.at(-1))||0))*.15);
+   else if(n.includes('light'))o.scale.multiplyScalar(1+Math.max(0,Math.sin(t*2-(Number(n.at(-1))||0)*1.3))*.6);
   }
   if(playing||focused||this.lastActive){for(const m of this.glowing){m.emissive.set('#ffd68a');m.emissiveIntensity=playing?.25+Math.sin(time*3)*.1:focused?.15:0;}}
   this.lastActive=playing||focused;

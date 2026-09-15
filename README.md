@@ -47,7 +47,7 @@ npm run compress
 
 The boat source is `scripts/premium-boat.mjs`. Run `node scripts/rebuild-boat.mjs` to regenerate and compress only the shared boat and update its high/low manifest statistics without rebuilding the islands.
 
-See `static/models/compression.json` for the before/after sizes. The ten high-quality GLBs total 3.21 MB. The low-quality set totals 2.37 MB including the shared boat; it reduces scene triangles by 22.0%, keeping full dock and animation geometry.
+See `static/models/compression.json` for the before/after sizes. The ten core high-quality GLBs total approximately 3.22 MB. The low-quality core set totals approximately 2.38 MB including the shared boat; it reduces scene triangles by 22.0%, keeping full dock and animation geometry.
 
 Generate the low variant after the high-quality models with `node scripts/build-low-assets.mjs` and `node scripts/finalize-low-assets.mjs`. Intermediate output lives in ignored `.asset-build/`. Flat-color materials require no KTX2 texture payload. Collisions are intentionally independent of the visual mesh in `sources/core/collisions.js`. Boats use fixed 60 Hz Rapier simulation, planar constraints, CCD and interpolated render positions.
 
@@ -60,3 +60,11 @@ The original lockfile was used as the dependency baseline. The boat uses Rapier'
 ## Validation and deployment
 
 See `VALIDATION.md` for verified behavior and remaining device-specific checks. The selected private Site is identified in `.openai/hosting.json`; no source credential is stored in this repository. Built static assets are deployed to owner-only Sites hosting. Do not make access public without the owner's request.
+
+## V3 ambient systems
+
+`DockInteraction` tests exposed pier edges against the shoreline and retains a small exit margin. `AmbientFleet` uses finite-mass Rapier bodies, preset clear-water routes, predictive yielding and a shared contact-event dispatcher. `MarineLife` uses a paused simulation clock, bounded water habitats, float-aligned instanced fish shadows, and separate sighting records. `BoatAppearance` switches shared materials and cached animated parts. `IslandDetails` loads a bounded high/low overlay per island and uses instanced fenders, ropes, ripples and sprinkler mist.
+
+Boat Studio is available from Harbor and Settings. H sounds the horn (also available on touch). The V3 store migrates V2 stamps, course times and preferences without enlarging the original 18-stamp denominator. Sea Life can be reset independently. Travel invalidates temporary companionship and delayed replies.
+
+Additional original assets can be reproduced with `node scripts/build-fleet.mjs`, `node scripts/export-fauna.mjs`, and `node scripts/export-details.mjs`. These scripts produce compressed GLBs plus their manifests. They do not modify the résumé or the original island coastlines. See the V3 section of VALIDATION.md for measurements and device limitations.

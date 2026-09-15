@@ -1,0 +1,2394 @@
+{
+  "version": 3,
+  "type": "supplementary-island-overlays",
+  "generator": "export-details.mjs",
+  "originalAssets": true,
+  "source": "island-details.mjs",
+  "units": "meters",
+  "coordinateSystem": "right-handed, Y up",
+  "groundY": 0.85,
+  "palette": {
+    "ivory": "#fff7e4",
+    "navy": "#254d64",
+    "teal": "#338e8b",
+    "orange": "#f47e45",
+    "wood": "#c49465",
+    "leaf": "#458760",
+    "gold": "#f3c863"
+  },
+  "models": [
+    {
+      "id": "harbor",
+      "lod": "high",
+      "file": "details/harbor.glb",
+      "bytes": 20016,
+      "uncompressedBytes": 56184,
+      "triangles": 1060,
+      "vertices": 1824,
+      "drawCalls": 5,
+      "materials": [
+        "detail_teal",
+        "detail_ivory",
+        "detail_wood",
+        "detail_navy",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -10.5233736038208,
+          0.8500000238418579,
+          -5.622403144836426
+        ],
+        "max": [
+          10.429646492004395,
+          3.194999933242798,
+          2.9856090545654297
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_harbormaster_chart",
+          "origin": [
+            -9.3,
+            0.85,
+            1.6
+          ],
+          "rotation": 0.12,
+          "bounds": {
+            "min": [
+              -10.523373334868179,
+              0.8500000476837157,
+              1.3937840263971406
+            ],
+            "max": [
+              -8.076626665131823,
+              3.1950000047683718,
+              2.1930200922195566
+            ]
+          }
+        },
+        {
+          "name": "cluster_repair_and_livery",
+          "origin": [
+            8.5,
+            0.85,
+            -5.05
+          ],
+          "rotation": -0.13,
+          "bounds": {
+            "min": [
+              7.401821036437234,
+              0.8500000083446502,
+              -5.6224030744396805
+            ],
+            "max": [
+              9.598178963562766,
+              3.020000023841858,
+              -4.447532938436137
+            ]
+          }
+        },
+        {
+          "name": "cluster_rescue_station",
+          "origin": [
+            9.6,
+            0.85,
+            2.6
+          ],
+          "rotation": -0.15,
+          "bounds": {
+            "min": [
+              8.770353734066978,
+              0.8500000238418579,
+              2.415308211940379
+            ],
+            "max": [
+              10.429646265933021,
+              3.100000002980232,
+              2.985608998793706
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 1.097229659995886,
+        "triangleBudget": 4000,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "harbor",
+      "lod": "low",
+      "file": "details/low/harbor.glb",
+      "bytes": 19308,
+      "uncompressedBytes": 53396,
+      "triangles": 948,
+      "vertices": 1736,
+      "drawCalls": 5,
+      "materials": [
+        "detail_teal",
+        "detail_ivory",
+        "detail_wood",
+        "detail_navy",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -10.5233736038208,
+          0.8500000238418579,
+          -5.622403144836426
+        ],
+        "max": [
+          10.429646492004395,
+          3.194999933242798,
+          2.9856090545654297
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_harbormaster_chart",
+          "origin": [
+            -9.3,
+            0.85,
+            1.6
+          ],
+          "rotation": 0.12,
+          "bounds": {
+            "min": [
+              -10.523373334868179,
+              0.8500000476837157,
+              1.3937840263971406
+            ],
+            "max": [
+              -8.076626665131823,
+              3.1950000047683718,
+              2.1930200922195566
+            ]
+          }
+        },
+        {
+          "name": "cluster_repair_and_livery",
+          "origin": [
+            8.5,
+            0.85,
+            -5.05
+          ],
+          "rotation": -0.13,
+          "bounds": {
+            "min": [
+              7.401821036437234,
+              0.8500000083446502,
+              -5.6224030744396805
+            ],
+            "max": [
+              9.598178963562766,
+              3.020000023841858,
+              -4.447532938436137
+            ]
+          }
+        },
+        {
+          "name": "cluster_rescue_station",
+          "origin": [
+            9.6,
+            0.85,
+            2.6
+          ],
+          "rotation": -0.15,
+          "bounds": {
+            "min": [
+              8.770353734066978,
+              0.8500000238418579,
+              2.415308211940379
+            ],
+            "max": [
+              10.429646265933021,
+              3.100000002980232,
+              2.985608998793706
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 1.097229659995886,
+        "triangleBudget": 2500,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "amtrak",
+      "lod": "high",
+      "file": "details/amtrak.glb",
+      "bytes": 18140,
+      "uncompressedBytes": 44444,
+      "triangles": 936,
+      "vertices": 1378,
+      "drawCalls": 5,
+      "materials": [
+        "detail_teal",
+        "detail_ivory",
+        "detail_navy",
+        "detail_wood",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -5.96244478225708,
+          0.8500000238418579,
+          0.8286036849021912
+        ],
+        "max": [
+          4.727909088134766,
+          3.4600000381469727,
+          2.5329999923706055
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_waiting_canopy",
+          "origin": [
+            -2,
+            0.85,
+            1.9
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              -3.7100000381469727,
+              0.8500000000000001,
+              1.2849999904632567
+            ],
+            "max": [
+              -0.28999996185302734,
+              3.3425000014901163,
+              2.5330000162124633
+            ]
+          }
+        },
+        {
+          "name": "cluster_station_clock_and_cart",
+          "origin": [
+            3.65,
+            0.85,
+            1.1
+          ],
+          "rotation": -0.05,
+          "bounds": {
+            "min": [
+              2.7849818786622196,
+              0.8500000238418579,
+              0.9107330798078939
+            ],
+            "max": [
+              4.727908908150086,
+              3.4600000131130217,
+              1.5979215737800623
+            ]
+          }
+        },
+        {
+          "name": "cluster_inner_signal",
+          "origin": [
+            -5.65,
+            0.85,
+            1.2
+          ],
+          "rotation": 0.1,
+          "bounds": {
+            "min": [
+              -5.962444630348719,
+              0.8499999997019767,
+              0.828603709695873
+            ],
+            "max": [
+              -4.874395911466088,
+              3.375000011920929,
+              1.5094995771392183
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 4.267000007629394,
+        "minTrackCenterlineClearance": 1.2169904559364673,
+        "triangleBudget": 4000,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "amtrak",
+      "lod": "low",
+      "file": "details/low/amtrak.glb",
+      "bytes": 16500,
+      "uncompressedBytes": 38200,
+      "triangles": 728,
+      "vertices": 1170,
+      "drawCalls": 5,
+      "materials": [
+        "detail_teal",
+        "detail_ivory",
+        "detail_navy",
+        "detail_wood",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -5.96244478225708,
+          0.8500000238418579,
+          0.8286036849021912
+        ],
+        "max": [
+          4.727909088134766,
+          3.4600000381469727,
+          2.5329999923706055
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_waiting_canopy",
+          "origin": [
+            -2,
+            0.85,
+            1.9
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              -3.7100000381469727,
+              0.8500000000000001,
+              1.2849999904632567
+            ],
+            "max": [
+              -0.28999996185302734,
+              3.3425000014901163,
+              2.5330000162124633
+            ]
+          }
+        },
+        {
+          "name": "cluster_station_clock_and_cart",
+          "origin": [
+            3.65,
+            0.85,
+            1.1
+          ],
+          "rotation": -0.05,
+          "bounds": {
+            "min": [
+              2.8130070680820207,
+              0.8500000238418579,
+              0.9107330798078939
+            ],
+            "max": [
+              4.727908908150086,
+              3.4600000131130217,
+              1.5979215737800623
+            ]
+          }
+        },
+        {
+          "name": "cluster_inner_signal",
+          "origin": [
+            -5.65,
+            0.85,
+            1.2
+          ],
+          "rotation": 0.1,
+          "bounds": {
+            "min": [
+              -5.962444630348719,
+              0.8499999997019767,
+              0.828603709695873
+            ],
+            "max": [
+              -4.874395911466088,
+              3.375000011920929,
+              1.5094995771392183
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 4.267000007629394,
+        "minTrackCenterlineClearance": 1.2169904559364673,
+        "triangleBudget": 2500,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "beaconfire",
+      "lod": "high",
+      "file": "details/beaconfire.glb",
+      "bytes": 20048,
+      "uncompressedBytes": 53896,
+      "triangles": 944,
+      "vertices": 1774,
+      "drawCalls": 5,
+      "materials": [
+        "detail_navy",
+        "detail_wood",
+        "detail_orange",
+        "detail_ivory",
+        "detail_teal"
+      ],
+      "bounds": {
+        "min": [
+          -9.430765151977539,
+          0.843999981880188,
+          -6.375
+        ],
+        "max": [
+          9.37319564819336,
+          3.819999933242798,
+          0.503555417060852
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_service_crane",
+          "origin": [
+            7.9,
+            0.85,
+            -1.1
+          ],
+          "rotation": -0.12,
+          "bounds": {
+            "min": [
+              7.190029815860628,
+              0.8499999991059303,
+              -1.7139296165480862
+            ],
+            "max": [
+              9.37319562246355,
+              3.8200000014901163,
+              -0.486070383451914
+            ]
+          }
+        },
+        {
+          "name": "cluster_assembly_bench",
+          "origin": [
+            -8.4,
+            0.85,
+            0
+          ],
+          "rotation": -0.08,
+          "bounds": {
+            "min": [
+              -9.430765452192176,
+              0.8439999997615815,
+              -0.5035554310305883
+            ],
+            "max": [
+              -7.369234547807825,
+              2.7949999940395354,
+              0.5035554310305883
+            ]
+          }
+        },
+        {
+          "name": "cluster_cable_and_cargo",
+          "origin": [
+            -0.5,
+            0.85,
+            -6
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              -1.625,
+              0.8999999992549419,
+              -6.375000001788139
+            ],
+            "max": [
+              0.625,
+              1.7600000059604644,
+              -5.624999998211861
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 1.6192348480224599,
+        "triangleBudget": 4000,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "beaconfire",
+      "lod": "low",
+      "file": "details/low/beaconfire.glb",
+      "bytes": 19644,
+      "uncompressedBytes": 52452,
+      "triangles": 896,
+      "vertices": 1726,
+      "drawCalls": 5,
+      "materials": [
+        "detail_navy",
+        "detail_wood",
+        "detail_orange",
+        "detail_ivory",
+        "detail_teal"
+      ],
+      "bounds": {
+        "min": [
+          -9.430765151977539,
+          0.843999981880188,
+          -6.375
+        ],
+        "max": [
+          9.37319564819336,
+          3.819999933242798,
+          0.503555417060852
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_service_crane",
+          "origin": [
+            7.9,
+            0.85,
+            -1.1
+          ],
+          "rotation": -0.12,
+          "bounds": {
+            "min": [
+              7.190029815860628,
+              0.8499999991059303,
+              -1.7139296165480862
+            ],
+            "max": [
+              9.37319562246355,
+              3.8200000014901163,
+              -0.486070383451914
+            ]
+          }
+        },
+        {
+          "name": "cluster_assembly_bench",
+          "origin": [
+            -8.4,
+            0.85,
+            0
+          ],
+          "rotation": -0.08,
+          "bounds": {
+            "min": [
+              -9.430765452192176,
+              0.8439999997615815,
+              -0.5035554310305883
+            ],
+            "max": [
+              -7.369234547807825,
+              2.7949999940395354,
+              0.5035554310305883
+            ]
+          }
+        },
+        {
+          "name": "cluster_cable_and_cargo",
+          "origin": [
+            -0.5,
+            0.85,
+            -6
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              -1.625,
+              0.8999999992549419,
+              -6.375000001788139
+            ],
+            "max": [
+              0.625,
+              1.7600000059604644,
+              -5.624999998211861
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 1.6192348480224599,
+        "triangleBudget": 2500,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "visionx",
+      "lod": "high",
+      "file": "details/visionx.glb",
+      "bytes": 27836,
+      "uncompressedBytes": 71768,
+      "triangles": 1862,
+      "vertices": 2202,
+      "drawCalls": 7,
+      "materials": [
+        "detail_wood",
+        "detail_navy",
+        "detail_teal",
+        "detail_leaf",
+        "detail_ivory",
+        "detail_gold",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -6.881665229797363,
+          0.8499999642372131,
+          -8.143880844116211
+        ],
+        "max": [
+          4.869563579559326,
+          2.4774999618530273,
+          5.9571356773376465
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_propagation_frames",
+          "origin": [
+            0.2,
+            0.85,
+            -6.4
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              -1.4499999761581421,
+              0.8500000011920928,
+              -7.052000001519919
+            ],
+            "max": [
+              1.849999976158142,
+              2.160433809384704,
+              -5.6839999794960026
+            ]
+          }
+        },
+        {
+          "name": "cluster_botanical_collection",
+          "origin": [
+            -5.7,
+            0.85,
+            -7.4
+          ],
+          "rotation": 0.2,
+          "bounds": {
+            "min": [
+              -6.905022793572535,
+              0.8499999927282333,
+              -8.16872039050318
+            ],
+            "max": [
+              -4.618056678548144,
+              2.477499985694885,
+              -6.686122873375846
+            ]
+          }
+        },
+        {
+          "name": "cluster_irrigation_and_pots",
+          "origin": [
+            4,
+            0.85,
+            5.35
+          ],
+          "rotation": -0.1,
+          "bounds": {
+            "min": [
+              3.330734833294992,
+              0.8499999982118607,
+              4.91347921940209
+            ],
+            "max": [
+              4.904006237866007,
+              1.9000000007450581,
+              5.991578218323067
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 0.33189444654966355,
+        "triangleBudget": 4000,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "visionx",
+      "lod": "low",
+      "file": "details/low/visionx.glb",
+      "bytes": 23328,
+      "uncompressedBytes": 53712,
+      "triangles": 1222,
+      "vertices": 1610,
+      "drawCalls": 7,
+      "materials": [
+        "detail_wood",
+        "detail_navy",
+        "detail_teal",
+        "detail_leaf",
+        "detail_ivory",
+        "detail_gold",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -6.881665229797363,
+          0.8499999642372131,
+          -8.143880844116211
+        ],
+        "max": [
+          4.869563579559326,
+          2.4774999618530273,
+          5.9571356773376465
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_propagation_frames",
+          "origin": [
+            0.2,
+            0.85,
+            -6.4
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              -1.4499999761581421,
+              0.8500000011920928,
+              -7.052000001519919
+            ],
+            "max": [
+              1.849999976158142,
+              2.157712812647224,
+              -5.6839999794960026
+            ]
+          }
+        },
+        {
+          "name": "cluster_botanical_collection",
+          "origin": [
+            -5.7,
+            0.85,
+            -7.4
+          ],
+          "rotation": 0.2,
+          "bounds": {
+            "min": [
+              -6.905022793572535,
+              0.8499999927282333,
+              -8.16872039050318
+            ],
+            "max": [
+              -4.6264483968389865,
+              2.477499985694885,
+              -6.686122873375846
+            ]
+          }
+        },
+        {
+          "name": "cluster_irrigation_and_pots",
+          "origin": [
+            4,
+            0.85,
+            5.35
+          ],
+          "rotation": -0.1,
+          "bounds": {
+            "min": [
+              3.330734833294992,
+              0.8499999982118607,
+              4.91347921940209
+            ],
+            "max": [
+              4.904006237866007,
+              1.9000000007450581,
+              5.991578218323067
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 0.34673199436941365,
+        "triangleBudget": 2500,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "affirmation",
+      "lod": "high",
+      "file": "details/affirmation.glb",
+      "bytes": 24500,
+      "uncompressedBytes": 61052,
+      "triangles": 1174,
+      "vertices": 1910,
+      "drawCalls": 7,
+      "materials": [
+        "detail_wood",
+        "detail_leaf",
+        "detail_ivory",
+        "detail_gold",
+        "detail_navy",
+        "detail_teal"
+      ],
+      "bounds": {
+        "min": [
+          -11.146581649780273,
+          0.8500000238418579,
+          -7.401909828186035
+        ],
+        "max": [
+          9.653745651245117,
+          3.2200000286102295,
+          0.4581027626991272
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_flower_border",
+          "origin": [
+            -9.45,
+            0.85,
+            0.05
+          ],
+          "rotation": -0.08,
+          "bounds": {
+            "min": [
+              -11.146582094164533,
+              0.8499999994039535,
+              -0.35810274934650194
+            ],
+            "max": [
+              -7.753417905835467,
+              1.7249999993294476,
+              0.4581027493465019
+            ]
+          }
+        },
+        {
+          "name": "cluster_quiet_cushions",
+          "origin": [
+            -0.2,
+            0.85,
+            -6.5
+          ],
+          "rotation": 0.1,
+          "bounds": {
+            "min": [
+              -1.7470483334676066,
+              0.849999999254942,
+              -7.401909974462553
+            ],
+            "max": [
+              1.486815116773166,
+              1.7249999993294476,
+              -5.493514652186544
+            ]
+          }
+        },
+        {
+          "name": "cluster_wind_chime",
+          "origin": [
+            8.9,
+            0.85,
+            -2
+          ],
+          "rotation": -0.22,
+          "bounds": {
+            "min": [
+              8.146253950368772,
+              0.8500000238418579,
+              -2.261261963697913
+            ],
+            "max": [
+              9.653746049631229,
+              3.220000000745058,
+              -1.738738036302087
+            ]
+          }
+        }
+      ],
+      "animationNodes": [
+        {
+          "name": "anim_detail_chime",
+          "position": [
+            8.9,
+            2.82,
+            -2
+          ],
+          "rotation": [
+            0,
+            -0.22,
+            0
+          ],
+          "quaternion": [
+            0,
+            -0.10977830083717481,
+            0,
+            0.9939560979566968
+          ],
+          "animated": true,
+          "animation": {
+            "axis": "z",
+            "amplitude": 0.07,
+            "speed": 1.25
+          },
+          "basePosition": [
+            8.9,
+            2.82,
+            -2
+          ],
+          "baseQuaternion": [
+            0,
+            -0.10977830083717481,
+            0,
+            0.9939560979566968
+          ],
+          "baseRotation": [
+            0,
+            -0.22,
+            0
+          ]
+        }
+      ],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 1.6034183502197266,
+        "triangleBudget": 4000,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "affirmation",
+      "lod": "low",
+      "file": "details/low/affirmation.glb",
+      "bytes": 23232,
+      "uncompressedBytes": 54808,
+      "triangles": 966,
+      "vertices": 1702,
+      "drawCalls": 7,
+      "materials": [
+        "detail_wood",
+        "detail_leaf",
+        "detail_ivory",
+        "detail_gold",
+        "detail_navy",
+        "detail_teal"
+      ],
+      "bounds": {
+        "min": [
+          -11.146581649780273,
+          0.8500000238418579,
+          -7.401909828186035
+        ],
+        "max": [
+          9.653745651245117,
+          3.2200000286102295,
+          0.4581027626991272
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_flower_border",
+          "origin": [
+            -9.45,
+            0.85,
+            0.05
+          ],
+          "rotation": -0.08,
+          "bounds": {
+            "min": [
+              -11.146582094164533,
+              0.8499999994039535,
+              -0.35810274934650194
+            ],
+            "max": [
+              -7.753417905835467,
+              1.7249999993294476,
+              0.4581027493465019
+            ]
+          }
+        },
+        {
+          "name": "cluster_quiet_cushions",
+          "origin": [
+            -0.2,
+            0.85,
+            -6.5
+          ],
+          "rotation": 0.1,
+          "bounds": {
+            "min": [
+              -1.7470483334676066,
+              0.849999999254942,
+              -7.401909974462553
+            ],
+            "max": [
+              1.486815116773166,
+              1.7249999993294476,
+              -5.493514652186544
+            ]
+          }
+        },
+        {
+          "name": "cluster_wind_chime",
+          "origin": [
+            8.9,
+            0.85,
+            -2
+          ],
+          "rotation": -0.22,
+          "bounds": {
+            "min": [
+              8.146253950368772,
+              0.8500000238418579,
+              -2.261261963697913
+            ],
+            "max": [
+              9.653746049631229,
+              3.220000000745058,
+              -1.738738036302087
+            ]
+          }
+        }
+      ],
+      "animationNodes": [
+        {
+          "name": "anim_detail_chime",
+          "position": [
+            8.9,
+            2.82,
+            -2
+          ],
+          "rotation": [
+            0,
+            -0.22,
+            0
+          ],
+          "quaternion": [
+            0,
+            -0.10977830083717481,
+            0,
+            0.9939560979566968
+          ],
+          "animated": true,
+          "animation": {
+            "axis": "z",
+            "amplitude": 0.07,
+            "speed": 1.25
+          },
+          "basePosition": [
+            8.9,
+            2.82,
+            -2
+          ],
+          "baseQuaternion": [
+            0,
+            -0.10977830083717481,
+            0,
+            0.9939560979566968
+          ],
+          "baseRotation": [
+            0,
+            -0.22,
+            0
+          ]
+        }
+      ],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 1.6034183502197266,
+        "triangleBudget": 2500,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "research",
+      "lod": "high",
+      "file": "details/research.glb",
+      "bytes": 22612,
+      "uncompressedBytes": 66620,
+      "triangles": 1262,
+      "vertices": 2220,
+      "drawCalls": 5,
+      "materials": [
+        "detail_wood",
+        "detail_navy",
+        "detail_ivory",
+        "detail_teal",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -8.621858596801758,
+          0.8399999737739563,
+          -8.012203216552734
+        ],
+        "max": [
+          8.879715919494629,
+          2.5404820442199707,
+          0.06348328292369843
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_observation_deck",
+          "origin": [
+            7.4,
+            0.85,
+            -7.1
+          ],
+          "rotation": -0.12,
+          "bounds": {
+            "min": [
+              5.920283778008301,
+              0.8399999997019767,
+              -8.012203564240725
+            ],
+            "max": [
+              8.8797162219917,
+              2.54048213498779,
+              -5.735869545677036
+            ]
+          }
+        },
+        {
+          "name": "cluster_specimen_collection",
+          "origin": [
+            -7.6,
+            0.85,
+            -0.5
+          ],
+          "rotation": 0.12,
+          "bounds": {
+            "min": [
+              -8.621858935480855,
+              0.8439999943971634,
+              -1.0634832792598963
+            ],
+            "max": [
+              -6.578141064519144,
+              2.129999999329448,
+              0.06348327925989639
+            ]
+          }
+        },
+        {
+          "name": "cluster_survey_markers",
+          "origin": [
+            1.1,
+            0.85,
+            -5.6
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              0.10000000000000009,
+              0.8499999997019767,
+              -5.949999994039535
+            ],
+            "max": [
+              2.1,
+              2.2699999993294475,
+              -5.250000005960464
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 1.0659375108133347,
+        "triangleBudget": 4000,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "research",
+      "lod": "low",
+      "file": "details/low/research.glb",
+      "bytes": 21752,
+      "uncompressedBytes": 62780,
+      "triangles": 1134,
+      "vertices": 2092,
+      "drawCalls": 5,
+      "materials": [
+        "detail_wood",
+        "detail_navy",
+        "detail_ivory",
+        "detail_teal",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -8.621858596801758,
+          0.8399999737739563,
+          -8.012203216552734
+        ],
+        "max": [
+          8.879715919494629,
+          2.5404820442199707,
+          0.06348328292369843
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_observation_deck",
+          "origin": [
+            7.4,
+            0.85,
+            -7.1
+          ],
+          "rotation": -0.12,
+          "bounds": {
+            "min": [
+              5.920283778008301,
+              0.8399999997019767,
+              -8.012203564240725
+            ],
+            "max": [
+              8.8797162219917,
+              2.54048213498779,
+              -5.735869545677036
+            ]
+          }
+        },
+        {
+          "name": "cluster_specimen_collection",
+          "origin": [
+            -7.6,
+            0.85,
+            -0.5
+          ],
+          "rotation": 0.12,
+          "bounds": {
+            "min": [
+              -8.621858935480855,
+              0.8439999943971634,
+              -1.0634832792598963
+            ],
+            "max": [
+              -6.578141064519144,
+              2.129999999329448,
+              0.06348327925989639
+            ]
+          }
+        },
+        {
+          "name": "cluster_survey_markers",
+          "origin": [
+            1.1,
+            0.85,
+            -5.6
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              0.10000000000000009,
+              0.8499999997019767,
+              -5.949999994039535
+            ],
+            "max": [
+              2.1,
+              2.2699999993294475,
+              -5.250000005960464
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 1.0659375108133347,
+        "triangleBudget": 2500,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "catering",
+      "lod": "high",
+      "file": "details/catering.glb",
+      "bytes": 21152,
+      "uncompressedBytes": 59612,
+      "triangles": 1184,
+      "vertices": 1950,
+      "drawCalls": 5,
+      "materials": [
+        "detail_wood",
+        "detail_teal",
+        "detail_ivory",
+        "detail_orange",
+        "detail_navy"
+      ],
+      "bounds": {
+        "min": [
+          -6.20753812789917,
+          0.8495000004768372,
+          -6.991036415100098
+        ],
+        "max": [
+          8.441412925720215,
+          2.859999895095825,
+          0.6048644185066223
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_menu_and_condiments",
+          "origin": [
+            7.5,
+            0.85,
+            0.1
+          ],
+          "rotation": -0.12,
+          "bounds": {
+            "min": [
+              6.558587367772815,
+              0.8500000143051147,
+              -0.4048644439650132
+            ],
+            "max": [
+              8.441412632227186,
+              2.834999988079071,
+              0.6048644439650132
+            ]
+          }
+        },
+        {
+          "name": "cluster_small_cafe_table",
+          "origin": [
+            -5,
+            0.85,
+            -6.4
+          ],
+          "rotation": 0.25,
+          "bounds": {
+            "min": [
+              -6.207538173241156,
+              0.8495000011920929,
+              -7.134566628676982
+            ],
+            "max": [
+              -3.792461826758844,
+              1.8450000029802323,
+              -5.665433371323019
+            ]
+          }
+        },
+        {
+          "name": "cluster_takeout_shelf",
+          "origin": [
+            2.1,
+            0.85,
+            -6.35
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              1.1249999761581422,
+              0.849999976158142,
+              -6.694999998807907
+            ],
+            "max": [
+              3.075000023841858,
+              2.8600000071525575,
+              -6.0050000011920925
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 2.4906017196146033,
+        "triangleBudget": 4000,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "catering",
+      "lod": "low",
+      "file": "details/low/catering.glb",
+      "bytes": 19988,
+      "uncompressedBytes": 54324,
+      "triangles": 1008,
+      "vertices": 1774,
+      "drawCalls": 5,
+      "materials": [
+        "detail_wood",
+        "detail_teal",
+        "detail_ivory",
+        "detail_orange",
+        "detail_navy"
+      ],
+      "bounds": {
+        "min": [
+          -6.20753812789917,
+          0.8495000004768372,
+          -6.991036415100098
+        ],
+        "max": [
+          8.441412925720215,
+          2.859999895095825,
+          0.6048644185066223
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_menu_and_condiments",
+          "origin": [
+            7.5,
+            0.85,
+            0.1
+          ],
+          "rotation": -0.12,
+          "bounds": {
+            "min": [
+              6.558587367772815,
+              0.8500000143051147,
+              -0.4048644439650132
+            ],
+            "max": [
+              8.441412632227186,
+              2.834999988079071,
+              0.6048644439650132
+            ]
+          }
+        },
+        {
+          "name": "cluster_small_cafe_table",
+          "origin": [
+            -5,
+            0.85,
+            -6.4
+          ],
+          "rotation": 0.25,
+          "bounds": {
+            "min": [
+              -6.207538173241156,
+              0.8495000011920929,
+              -7.121734038859303
+            ],
+            "max": [
+              -3.792461826758844,
+              1.8450000029802323,
+              -5.678265961140697
+            ]
+          }
+        },
+        {
+          "name": "cluster_takeout_shelf",
+          "origin": [
+            2.1,
+            0.85,
+            -6.35
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              1.1249999761581422,
+              0.849999976158142,
+              -6.694999998807907
+            ],
+            "max": [
+              3.075000023841858,
+              2.8600000071525575,
+              -6.0050000011920925
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 2.4906017196146033,
+        "triangleBudget": 2500,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "learning",
+      "lod": "high",
+      "file": "details/learning.glb",
+      "bytes": 23900,
+      "uncompressedBytes": 71020,
+      "triangles": 1638,
+      "vertices": 2312,
+      "drawCalls": 5,
+      "materials": [
+        "detail_teal",
+        "detail_wood",
+        "detail_navy",
+        "detail_ivory",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -10.076617240905762,
+          0.8500000238418579,
+          -7.510000228881836
+        ],
+        "max": [
+          9.81718635559082,
+          3.0299999713897705,
+          3.1964759826660156
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_campus_noticeboard",
+          "origin": [
+            -8.9,
+            0.85,
+            1.55
+          ],
+          "rotation": 0.1,
+          "bounds": {
+            "min": [
+              -10.076617353302224,
+              0.8500000572204591,
+              1.3580704248392097
+            ],
+            "max": [
+              -7.723382646697777,
+              3.030000009536743,
+              1.7751273511834282
+            ]
+          }
+        },
+        {
+          "name": "cluster_bicycle_parking",
+          "origin": [
+            8.4,
+            0.85,
+            2.6
+          ],
+          "rotation": 0.12,
+          "bounds": {
+            "min": [
+              6.982813315244838,
+              0.8505000005960465,
+              2.0035239560142637
+            ],
+            "max": [
+              9.817186684755162,
+              1.835000000372529,
+              3.1964760439857365
+            ]
+          }
+        },
+        {
+          "name": "cluster_book_exchange",
+          "origin": [
+            0.2,
+            0.85,
+            -7.1
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              -0.600000011920929,
+              0.8499999964237213,
+              -7.509999996423721
+            ],
+            "max": [
+              1.000000011920929,
+              2.7899999986588955,
+              -6.679999996423721
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 0.21187237855544833,
+        "triangleBudget": 4000,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "learning",
+      "lod": "low",
+      "file": "details/low/learning.glb",
+      "bytes": 21332,
+      "uncompressedBytes": 61132,
+      "triangles": 1270,
+      "vertices": 1992,
+      "drawCalls": 5,
+      "materials": [
+        "detail_teal",
+        "detail_wood",
+        "detail_navy",
+        "detail_ivory",
+        "detail_orange"
+      ],
+      "bounds": {
+        "min": [
+          -10.076617240905762,
+          0.8500000238418579,
+          -7.510000228881836
+        ],
+        "max": [
+          9.81718635559082,
+          3.0299999713897705,
+          3.1964759826660156
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_campus_noticeboard",
+          "origin": [
+            -8.9,
+            0.85,
+            1.55
+          ],
+          "rotation": 0.1,
+          "bounds": {
+            "min": [
+              -10.076617353302224,
+              0.8500000572204591,
+              1.3580704248392097
+            ],
+            "max": [
+              -7.723382646697777,
+              3.030000009536743,
+              1.7751273511834282
+            ]
+          }
+        },
+        {
+          "name": "cluster_bicycle_parking",
+          "origin": [
+            8.4,
+            0.85,
+            2.6
+          ],
+          "rotation": 0.12,
+          "bounds": {
+            "min": [
+              6.982813315244838,
+              0.8505000005960465,
+              2.0035239560142637
+            ],
+            "max": [
+              9.817186684755162,
+              1.835000000372529,
+              3.1964760439857365
+            ]
+          }
+        },
+        {
+          "name": "cluster_book_exchange",
+          "origin": [
+            0.2,
+            0.85,
+            -7.1
+          ],
+          "rotation": 0,
+          "bounds": {
+            "min": [
+              -0.600000011920929,
+              0.8499999964237213,
+              -7.509999996423721
+            ],
+            "max": [
+              1.000000011920929,
+              2.7899999986588955,
+              -6.679999996423721
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 0.21187237855544833,
+        "triangleBudget": 2500,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "connect",
+      "lod": "high",
+      "file": "details/connect.glb",
+      "bytes": 18316,
+      "uncompressedBytes": 46592,
+      "triangles": 768,
+      "vertices": 1498,
+      "drawCalls": 5,
+      "materials": [
+        "detail_wood",
+        "detail_ivory",
+        "detail_navy",
+        "detail_orange",
+        "detail_teal"
+      ],
+      "bounds": {
+        "min": [
+          -7.687279224395752,
+          0.8499999642372131,
+          -7.322022914886475
+        ],
+        "max": [
+          8.005868911743164,
+          3.3550000190734863,
+          -5.784539699554443
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_parcel_sorting",
+          "origin": [
+            6.95,
+            0.85,
+            -6.4
+          ],
+          "rotation": -0.1,
+          "bounds": {
+            "min": [
+              5.894130761020497,
+              0.849999976158142,
+              -7.008283864663905
+            ],
+            "max": [
+              8.005869238979503,
+              2.495000006556511,
+              -5.791716135336095
+            ]
+          }
+        },
+        {
+          "name": "cluster_postcard_counter",
+          "origin": [
+            -0.25,
+            0.85,
+            -6.25
+          ],
+          "rotation": -0.05,
+          "bounds": {
+            "min": [
+              -1.289466601383489,
+              0.8500000131130219,
+              -6.715460101432504
+            ],
+            "max": [
+              0.789466601383489,
+              2.546375012397766,
+              -5.784539898567496
+            ]
+          }
+        },
+        {
+          "name": "cluster_post_office_desk",
+          "origin": [
+            -6.8,
+            0.85,
+            -6.65
+          ],
+          "rotation": 0.16,
+          "bounds": {
+            "min": [
+              -7.687279113626605,
+              0.8500000143051147,
+              -7.322022741825313
+            ],
+            "max": [
+              -5.91543749245335,
+              3.3549999976158142,
+              -6.084182479110925
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 0.3880556774387412,
+        "triangleBudget": 4000,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    },
+    {
+      "id": "connect",
+      "lod": "low",
+      "file": "details/low/connect.glb",
+      "bytes": 18232,
+      "uncompressedBytes": 46112,
+      "triangles": 752,
+      "vertices": 1482,
+      "drawCalls": 5,
+      "materials": [
+        "detail_wood",
+        "detail_ivory",
+        "detail_navy",
+        "detail_orange",
+        "detail_teal"
+      ],
+      "bounds": {
+        "min": [
+          -7.687279224395752,
+          0.8499999642372131,
+          -7.322022914886475
+        ],
+        "max": [
+          8.005868911743164,
+          3.3550000190734863,
+          -5.784539699554443
+        ]
+      },
+      "clusters": [
+        {
+          "name": "cluster_parcel_sorting",
+          "origin": [
+            6.95,
+            0.85,
+            -6.4
+          ],
+          "rotation": -0.1,
+          "bounds": {
+            "min": [
+              5.894130761020497,
+              0.849999976158142,
+              -7.008283864663905
+            ],
+            "max": [
+              8.005869238979503,
+              2.495000006556511,
+              -5.791716135336095
+            ]
+          }
+        },
+        {
+          "name": "cluster_postcard_counter",
+          "origin": [
+            -0.25,
+            0.85,
+            -6.25
+          ],
+          "rotation": -0.05,
+          "bounds": {
+            "min": [
+              -1.289466601383489,
+              0.8500000131130219,
+              -6.715460101432504
+            ],
+            "max": [
+              0.789466601383489,
+              2.546375012397766,
+              -5.784539898567496
+            ]
+          }
+        },
+        {
+          "name": "cluster_post_office_desk",
+          "origin": [
+            -6.8,
+            0.85,
+            -6.65
+          ],
+          "rotation": 0.16,
+          "bounds": {
+            "min": [
+              -7.687279113626605,
+              0.8500000143051147,
+              -7.322022741825313
+            ],
+            "max": [
+              -5.91543749245335,
+              3.3549999976158142,
+              -6.084182479110925
+            ]
+          }
+        }
+      ],
+      "animationNodes": [],
+      "validation": {
+        "outsideGrassVertices": 0,
+        "dockIntrusions": 0,
+        "minGrassEdgeClearance": 0.3880556774387412,
+        "triangleBudget": 2500,
+        "triangleBudgetPass": true,
+        "drawCallBudgetPass": true,
+        "byteBudgetPass": true
+      }
+    }
+  ],
+  "notes": [
+    "Overlay origins match corresponding island GLB origins.",
+    "All 27 cluster placements are identical between high and low.",
+    "Geometry is merged per material and animation owner.",
+    "No textures. Meshopt compression required.",
+    "anim_detail_chime pivots about local Z. Optional motion: sin(time*1.25)*.07.",
+    "Collider-relevant bounds are the high/low union for each cluster."
+  ],
+  "colliderFootprints": [
+    {
+      "id": "harbor",
+      "clusters": [
+        {
+          "name": "cluster_harbormaster_chart",
+          "min": [
+            -10.523373334868179,
+            0.8500000476837157,
+            1.3937840263971406
+          ],
+          "max": [
+            -8.076626665131823,
+            3.1950000047683718,
+            2.1930200922195566
+          ]
+        },
+        {
+          "name": "cluster_repair_and_livery",
+          "min": [
+            7.401821036437234,
+            0.8500000083446502,
+            -5.6224030744396805
+          ],
+          "max": [
+            9.598178963562766,
+            3.020000023841858,
+            -4.447532938436137
+          ]
+        },
+        {
+          "name": "cluster_rescue_station",
+          "min": [
+            8.770353734066978,
+            0.8500000238418579,
+            2.415308211940379
+          ],
+          "max": [
+            10.429646265933021,
+            3.100000002980232,
+            2.985608998793706
+          ]
+        }
+      ]
+    },
+    {
+      "id": "amtrak",
+      "clusters": [
+        {
+          "name": "cluster_waiting_canopy",
+          "min": [
+            -3.7100000381469727,
+            0.8500000000000001,
+            1.2849999904632567
+          ],
+          "max": [
+            -0.28999996185302734,
+            3.3425000014901163,
+            2.5330000162124633
+          ]
+        },
+        {
+          "name": "cluster_station_clock_and_cart",
+          "min": [
+            2.7849818786622196,
+            0.8500000238418579,
+            0.9107330798078939
+          ],
+          "max": [
+            4.727908908150086,
+            3.4600000131130217,
+            1.5979215737800623
+          ]
+        },
+        {
+          "name": "cluster_inner_signal",
+          "min": [
+            -5.962444630348719,
+            0.8499999997019767,
+            0.828603709695873
+          ],
+          "max": [
+            -4.874395911466088,
+            3.375000011920929,
+            1.5094995771392183
+          ]
+        }
+      ]
+    },
+    {
+      "id": "beaconfire",
+      "clusters": [
+        {
+          "name": "cluster_service_crane",
+          "min": [
+            7.190029815860628,
+            0.8499999991059303,
+            -1.7139296165480862
+          ],
+          "max": [
+            9.37319562246355,
+            3.8200000014901163,
+            -0.486070383451914
+          ]
+        },
+        {
+          "name": "cluster_assembly_bench",
+          "min": [
+            -9.430765452192176,
+            0.8439999997615815,
+            -0.5035554310305883
+          ],
+          "max": [
+            -7.369234547807825,
+            2.7949999940395354,
+            0.5035554310305883
+          ]
+        },
+        {
+          "name": "cluster_cable_and_cargo",
+          "min": [
+            -1.625,
+            0.8999999992549419,
+            -6.375000001788139
+          ],
+          "max": [
+            0.625,
+            1.7600000059604644,
+            -5.624999998211861
+          ]
+        }
+      ]
+    },
+    {
+      "id": "visionx",
+      "clusters": [
+        {
+          "name": "cluster_propagation_frames",
+          "min": [
+            -1.4499999761581421,
+            0.8500000011920928,
+            -7.052000001519919
+          ],
+          "max": [
+            1.849999976158142,
+            2.160433809384704,
+            -5.6839999794960026
+          ]
+        },
+        {
+          "name": "cluster_botanical_collection",
+          "min": [
+            -6.905022793572535,
+            0.8499999927282333,
+            -8.16872039050318
+          ],
+          "max": [
+            -4.618056678548144,
+            2.477499985694885,
+            -6.686122873375846
+          ]
+        },
+        {
+          "name": "cluster_irrigation_and_pots",
+          "min": [
+            3.330734833294992,
+            0.8499999982118607,
+            4.91347921940209
+          ],
+          "max": [
+            4.904006237866007,
+            1.9000000007450581,
+            5.991578218323067
+          ]
+        }
+      ]
+    },
+    {
+      "id": "affirmation",
+      "clusters": [
+        {
+          "name": "cluster_flower_border",
+          "min": [
+            -11.146582094164533,
+            0.8499999994039535,
+            -0.35810274934650194
+          ],
+          "max": [
+            -7.753417905835467,
+            1.7249999993294476,
+            0.4581027493465019
+          ]
+        },
+        {
+          "name": "cluster_quiet_cushions",
+          "min": [
+            -1.7470483334676066,
+            0.849999999254942,
+            -7.401909974462553
+          ],
+          "max": [
+            1.486815116773166,
+            1.7249999993294476,
+            -5.493514652186544
+          ]
+        },
+        {
+          "name": "cluster_wind_chime",
+          "min": [
+            8.146253950368772,
+            0.8500000238418579,
+            -2.261261963697913
+          ],
+          "max": [
+            9.653746049631229,
+            3.220000000745058,
+            -1.738738036302087
+          ]
+        }
+      ]
+    },
+    {
+      "id": "research",
+      "clusters": [
+        {
+          "name": "cluster_observation_deck",
+          "min": [
+            5.920283778008301,
+            0.8399999997019767,
+            -8.012203564240725
+          ],
+          "max": [
+            8.8797162219917,
+            2.54048213498779,
+            -5.735869545677036
+          ]
+        },
+        {
+          "name": "cluster_specimen_collection",
+          "min": [
+            -8.621858935480855,
+            0.8439999943971634,
+            -1.0634832792598963
+          ],
+          "max": [
+            -6.578141064519144,
+            2.129999999329448,
+            0.06348327925989639
+          ]
+        },
+        {
+          "name": "cluster_survey_markers",
+          "min": [
+            0.10000000000000009,
+            0.8499999997019767,
+            -5.949999994039535
+          ],
+          "max": [
+            2.1,
+            2.2699999993294475,
+            -5.250000005960464
+          ]
+        }
+      ]
+    },
+    {
+      "id": "catering",
+      "clusters": [
+        {
+          "name": "cluster_menu_and_condiments",
+          "min": [
+            6.558587367772815,
+            0.8500000143051147,
+            -0.4048644439650132
+          ],
+          "max": [
+            8.441412632227186,
+            2.834999988079071,
+            0.6048644439650132
+          ]
+        },
+        {
+          "name": "cluster_small_cafe_table",
+          "min": [
+            -6.207538173241156,
+            0.8495000011920929,
+            -7.134566628676982
+          ],
+          "max": [
+            -3.792461826758844,
+            1.8450000029802323,
+            -5.665433371323019
+          ]
+        },
+        {
+          "name": "cluster_takeout_shelf",
+          "min": [
+            1.1249999761581422,
+            0.849999976158142,
+            -6.694999998807907
+          ],
+          "max": [
+            3.075000023841858,
+            2.8600000071525575,
+            -6.0050000011920925
+          ]
+        }
+      ]
+    },
+    {
+      "id": "learning",
+      "clusters": [
+        {
+          "name": "cluster_campus_noticeboard",
+          "min": [
+            -10.076617353302224,
+            0.8500000572204591,
+            1.3580704248392097
+          ],
+          "max": [
+            -7.723382646697777,
+            3.030000009536743,
+            1.7751273511834282
+          ]
+        },
+        {
+          "name": "cluster_bicycle_parking",
+          "min": [
+            6.982813315244838,
+            0.8505000005960465,
+            2.0035239560142637
+          ],
+          "max": [
+            9.817186684755162,
+            1.835000000372529,
+            3.1964760439857365
+          ]
+        },
+        {
+          "name": "cluster_book_exchange",
+          "min": [
+            -0.600000011920929,
+            0.8499999964237213,
+            -7.509999996423721
+          ],
+          "max": [
+            1.000000011920929,
+            2.7899999986588955,
+            -6.679999996423721
+          ]
+        }
+      ]
+    },
+    {
+      "id": "connect",
+      "clusters": [
+        {
+          "name": "cluster_parcel_sorting",
+          "min": [
+            5.894130761020497,
+            0.849999976158142,
+            -7.008283864663905
+          ],
+          "max": [
+            8.005869238979503,
+            2.495000006556511,
+            -5.791716135336095
+          ]
+        },
+        {
+          "name": "cluster_postcard_counter",
+          "min": [
+            -1.289466601383489,
+            0.8500000131130219,
+            -6.715460101432504
+          ],
+          "max": [
+            0.789466601383489,
+            2.546375012397766,
+            -5.784539898567496
+          ]
+        },
+        {
+          "name": "cluster_post_office_desk",
+          "min": [
+            -7.687279113626605,
+            0.8500000143051147,
+            -7.322022741825313
+          ],
+          "max": [
+            -5.91543749245335,
+            3.3549999976158142,
+            -6.084182479110925
+          ]
+        }
+      ]
+    }
+  ],
+  "totalBytes": 379836,
+  "totalTriangles": 19752,
+  "validationPass": true
+}

@@ -176,9 +176,9 @@ export function createPremiumBoat() {
   for (const x of [-.045, .025]) {
     cylinder(.024, .024, .01, x, -.004, .025, 'satinMetal', 10, [Math.PI / 2, 0, 0], dash);
     cylinder(.016, .016, .012, x, -.004, .033, 'display', 10, [Math.PI / 2, 0, 0], dash);
-    rod([x, -.004, .041], [x + .009, .005, .041], .0025, 'displayLight', dash, 4);
+    const needle=new THREE.Group();needle.name=x<0?'anim_gauge_0':'anim_gauge_1';needle.position.set(x,-.004,.041);dash.add(needle);rod([0,0,0],[.009,.009,0],.0025,'displayLight',needle,4);
   }
-  const wheel = group('three_spoke_wheel', [.290, .940, -.259], [-.53, 0, 0]);
+  const wheel = group('anim_helm', [.290, .940, -.259], [-.53, 0, 0]);
   cylinder(.033, .04, .095, 0, 0, -.05, 'navy', 10, [Math.PI / 2, 0, 0], wheel);
   torus(.108, .015, 0, 0, 0, 'rubber', undefined, wheel, 22);
   torus(.104, .0035, 0, 0, .013, 'cognac', undefined, wheel, 22);
@@ -237,6 +237,7 @@ export function createPremiumBoat() {
   }
   for (const x of [-.54, -.36]) rod([x, .692, 1.59], [x, .585, 1.72], .010, 'satinMetal');
   for (const z of [1.61, 1.685]) rod([-.54, .627, z], [-.36, .627, z], .010, 'satinMetal');
+  const engineStart=root.children.length;
   rounded(.39, .44, .40, 0, .633, 1.606, 'navy', .078, [-.07, 0, 0]);
   rounded(.347, .078, .335, 0, .851, 1.582, 'hullOrange', .025, [-.07, 0, 0]);
   rounded(.275, .052, .018, 0, .735, 1.813, 'hullIvory', .011);
@@ -256,17 +257,25 @@ export function createPremiumBoat() {
     const p = (r, t, z) => [c * r - s * t, .306 + s * r + c * t, z];
     custom([p(.03, -.015, 1.903), p(.135, -.031, 1.898), p(.118, .038, 1.925), p(.033, .023, 1.915)], [0, 1, 2, 0, 2, 3, 2, 1, 0, 3, 2, 0], 'satinMetal');
   }
+  const engineParts=root.children.slice(engineStart);const motor=group('anim_engine',[0,0,1.42]);root.updateMatrixWorld(true);for(const part of engineParts)motor.attach(part);
   // A short stern pennant preserves the playful identity without introducing a roof-like silhouette.
   rod([-.567, .856, 1.224], [-.567, 1.504, 1.31], .009, 'satinMetal');
   cylinder(.017, .017, .019, -.567, 1.511, 1.311, 'hullIvory', 8);
   custom([[-.565, 1.484, 1.311], [-.220, 1.410, 1.341], [-.314, 1.275, 1.326], [-.565, 1.301, 1.286]], [0, 1, 2, 0, 2, 3, 2, 1, 0, 3, 2, 0], 'hullOrange');
   path([[-.535, 1.461, 1.315], [-.273, 1.407, 1.339]], .009, 'upholstery', root, 4);
+  // Original stroke lettering, merged into existing material batches.
+  const alphabet={J:[[[0,1],[1,1]],[[.7,1],[.7,0],[.2,0],[0,.2]]],A:[[[0,0],[.5,1],[1,0]],[[.2,.4],[.8,.4]]],C:[[[1,1],[0,1],[0,0],[1,0]]],K:[[[0,0],[0,1]],[[1,1],[0,.5],[1,0]]],'0':[[[0,0],[0,1],[1,1],[1,0],[0,0]]],'1':[[[.25,.8],[.6,1],[.6,0]]], ' ':[]};
+  for(const side of [-1,1]){const plate=group('jack_01_nameplate',[side*.708,.66,.69],[0,side*Math.PI/2,0]);rounded(.44,.106,.012,0,0,0,'navy',.014,undefined,plate);[...'JACK 01'].forEach((letter,i)=>{for(const stroke of alphabet[letter])path(stroke.map(([x,y])=>[-.195+i*.056+x*.034,-.033+y*.065,.010]),.0028,'hullIvory',plate,4);});}
   root.userData = {
     originalProceduralAsset: true, author: 'Jack portfolio original premium boat builder',
-    forward: '-Z', seaLevel: 0, design: 'Orange and ivory open-cockpit luxury sport runabout',
+    forward: '-Z', seaLevel: 0, design: 'Jack 01 open-cockpit luxury sport runabout, three signature finishes',
     materialNames: Object.keys(materials),
   };
   // Keep the detailed silhouette inside the established portrait camera framing.
   root.scale.setScalar(.97);
+  root.position.y=-.76;
+  // Each moving assembly uses one vertex-colored material batch.
+  const moving=new THREE.MeshStandardMaterial({name:'movingHardware',vertexColors:true,roughness:.43,metalness:.18});
+  root.traverse(node=>{if(node.name.startsWith('anim_'))node.traverse(o=>{if(o.isMesh){o.geometry=o.geometry.clone();const color=o.material.color,a=new Float32Array(o.geometry.getAttribute('position').count*3);for(let n=0;n<a.length;n+=3){a[n]=color.r;a[n+1]=color.g;a[n+2]=color.b;}o.geometry.setAttribute('color',new THREE.BufferAttribute(a,3));o.material=moving;}});});
   return root;
 }

@@ -561,7 +561,7 @@ async function exportModel(name) {
     if(!o.isMesh)return;sourceMeshes++;
     let owner=o.parent;while(owner!==root&&!owner.name.startsWith('anim_'))owner=owner.parent;
     if(owner!==root&&!batches.has(owner))throw Error('Unknown dynamic owner');
-    const g=o.geometry.clone();for(const a of Object.keys(g.attributes))if(a!=='position'&&a!=='normal')g.deleteAttribute(a);g.clearGroups();
+    const g=o.geometry.clone();for(const a of Object.keys(g.attributes))if(a!=='position'&&a!=='normal'&&a!=='color')g.deleteAttribute(a);g.clearGroups();
     const matrix=owner===root?o.matrixWorld:new THREE.Matrix4().copy(owner.matrixWorld).invert().multiply(o.matrixWorld);g.applyMatrix4(matrix);
     if(!g.index)g.setIndex(Array.from({length:g.attributes.position.count},(_,i)=>i));
     const key=o.material.name,bins=batches.get(owner);materials.set(key,o.material);if(!bins.has(key))bins.set(key,[]);bins.get(key).push(g);
@@ -569,7 +569,7 @@ async function exportModel(name) {
   const merged=new THREE.Group();merged.name=name;let vertices=0,triangles=0,drawCalls=0;const animationNodes=[];
   for(const [owner,bins]of batches){
     let target=merged;
-    if(owner!==root){target=new THREE.Group();target.name=owner.name;target.position.copy(owner.position);target.quaternion.copy(owner.quaternion);target.scale.copy(owner.scale);target.userData={animated:true,basePosition:owner.position.toArray(),baseRotation:owner.rotation.toArray().slice(0,3),baseScale:owner.scale.toArray()};merged.add(target);animationNodes.push({name:owner.name,position:owner.position.toArray(),rotation:owner.rotation.toArray().slice(0,3),quaternion:owner.quaternion.toArray(),scale:owner.scale.toArray(),materials:[...bins.keys()]});}
+    if(owner!==root){target=new THREE.Group();target.name=owner.name;owner.matrixWorld.decompose(target.position,target.quaternion,target.scale);target.userData={animated:true,basePosition:owner.position.toArray(),baseRotation:owner.rotation.toArray().slice(0,3),baseScale:owner.scale.toArray()};merged.add(target);animationNodes.push({name:owner.name,position:owner.position.toArray(),rotation:owner.rotation.toArray().slice(0,3),quaternion:owner.quaternion.toArray(),scale:owner.scale.toArray(),materials:[...bins.keys()]});}
     for(const[key,gs]of bins){const combined=mergeGeometries(gs,false);if(!combined)throw Error('Geometry merge failed '+key);const geom=mergeVertices(combined,1e-6);geom.normalizeNormals();const m=new THREE.Mesh(geom,materials.get(key));m.name=(owner===root?'static_':owner.name+'_')+key;m.castShadow=true;m.receiveShadow=true;target.add(m);vertices+=geom.attributes.position.count;triangles+=geom.index.count/3;drawCalls++;}
   }
   merged.userData={originalProceduralAsset:true,author:'Jack portfolio original V2 toy asset builder',forward:name==='boat'?'-Z':undefined,seaLevel:0,dock:name==='boat'?undefined:{direction:'+Z',width:3,endZ:15.8,deckY:.85},animationNodes:animationNodes.map(n=>n.name)};

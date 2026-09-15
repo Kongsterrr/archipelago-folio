@@ -1,0 +1,29 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import * as THREE from 'three';
+import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
+import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
+import {DiscoveryStore} from '../sources/core/discovery.js';
+import {DockInteraction,inDockZone} from '../sources/core/dock.js';
+import {islands,toWorld} from '../sources/config.js';
+import {FLEET_ROUTES,routePoint,routeYaw,waterClear} from '../sources/world/water-space.js';
+import {HABITATS,SHOALS,MarineLife,mergedModel} from '../sources/world/marine.js';
+import {BoatAppearance} from '../sources/world/boat-appearance.js';
+
+const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
+const load=async path=>{const b=fs.readFileSync(new URL('../static/models/'+path,import.meta.url));return (await loader.parseAsync(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength),'')).scene;};
+for(const i of islands)test(`V3 ${i.id}: both sides, end, diagonal and exposed root can read; land cannot`,()=>{
+ for(const [x,z]of [[-5,12],[5,12],[0,20],[-4.7,18.8],[4.7,18.8],[0,30]])assert.equal(inDockZone(toWorld(i,x,z),i),true,`${x},${z}`);
+ assert.equal(inDockZone({x:i.x,z:i.z},i),false);
+ assert.equal(inDockZone(toWorld(i,0,12),i),false,'pier deck is not water');
+});
+test('concave Connect root sees an exposed edge even when the nearest corner is hidden',()=>{const i=islands.find(i=>i.id==='connect');assert.equal(inDockZone(toWorld(i,-6.25,7.15),i),true);});
+test('dock exit margin is hysteresis only; it does not enlarge entry or visit stamping',()=>{const i=islands[0],d=new DockInteraction([i]);assert.equal(d.update(toWorld(i,6.4,12))?.id,i.id);assert.equal(d.update(toWorld(i,7.2,12))?.id,i.id);assert.equal(inDockZone(toWorld(i,7.2,12),i),false);assert.equal(d.update(toWorld(i,7.3,12)),null);assert.equal(d.update(toWorld(i,6.6,12)),null);});
+test('all six authored hulls clear shore, docks and complete challenge corridors',()=>{for(const r of FLEET_ROUTES)for(let n=0;n<360;n++){const a=n*Math.PI/180,p=routePoint(r,a),yaw=routeYaw(r,a);for(const x of [-.5,0,.5])for(const z of[-.5,-.25,0,.25,.5]){const q={x:p.x+Math.cos(yaw)*x*r.width+Math.sin(yaw)*z*r.length,z:p.z-Math.sin(yaw)*x*r.width+Math.cos(yaw)*z*r.length};assert.ok(waterClear(q,0,{activities:true,docks:true}),`${r.id} ${n}`);}}});
+test('all habitat and fish scatter perimeters stay in clear water',()=>{for(const h of HABITATS)for(let n=0;n<120;n++){const a=n/120*Math.PI*2,p={x:h.x+Math.cos(a)*h.rx,z:h.z+Math.sin(a)*h.rz};assert.ok(waterClear(p,h.kind==='turtle'?.7:1.3,{activities:true,docks:h.kind==='shark'}),h.kind);}for(const h of SHOALS)for(let n=0;n<120;n++){const a=n/120*Math.PI*2;assert.ok(waterClear({x:h.x+Math.cos(a)*4,z:h.z+Math.sin(a)*2.4},.35,{activities:true}));}});
+test('V2 stamps, times and preferences migrate intact; four sightings do not change 18-stamp total',()=>{const data=new Map([['jack-archipelago-v2',JSON.stringify({settings:{quality:'low',zoom:2,sound:true},discovered:['harbor'],visited:['harbor'],viewed:['research'],secrets:['bell'],completed:['buoy'],bests:{'buoy-v2':51000,'cargo-v2':92000}})]]),storage={getItem:k=>data.get(k),setItem:(k,v)=>data.set(k,v)};const s=new DiscoveryStore({storage});assert.equal(s.stamps,3);assert.equal(s.settings.livery,'marina');assert.equal(s.best('buoy'),51000);assert.equal(s.best('cargo'),92000);assert.equal(s.settings.quality,'low');for(const id of ['fish','dolphin','shark','turtle'])s.observe(id);s.settings.livery='graphite';s.save();const reloaded=new DiscoveryStore({storage});assert.equal(reloaded.stamps,3);assert.equal(reloaded.seaLife.size,4);assert.equal(reloaded.settings.livery,'graphite');assert.ok(reloaded.viewed.has('research'));reloaded.clearSeaLife();assert.equal(reloaded.stamps,3);});
+test('sightings require continuous observation and stop accumulating when simulation pauses',()=>{const observed=[],m=new MarineLife(new THREE.Scene(),{reduced:false},null,{observe:id=>observed.push(id)}),p={position:{x:0,z:0},velocity:{x:0,z:0},yaw:0};m.observed=new Set(['dolphin']);for(let n=0;n<59;n++)m.step(1/60,p);assert.equal(observed.length,0);m.observed.clear();m.step(1/60,p);m.observed.add('dolphin');for(let n=0;n<61;n++)m.step(1/60,p);assert.ok(observed.includes('dolphin'));const time=m.time;m.onTravel();assert.equal(m.time,time);assert.equal(m.observed.size,0);assert.equal(m.companionUntil,0);});
+test('denied local storage keeps finishes and sightings available in memory',()=>{const s=new DiscoveryStore({storage:{getItem(){throw Error('denied');},setItem(){throw Error('denied');}}});s.settings.livery='sunset';s.observe('fish');s.save();assert.equal(s.settings.livery,'sunset');assert.ok(s.seaLife.has('fish'));});
+test('decoded fish/bird instance geometry uses WebGPU-aligned float accessors',async()=>{for(const kind of ['tropicalfish','seagull']){const {geometry}=mergedModel(await load(`fauna/${kind}.glb`));for(const a of Object.values(geometry.attributes)){assert.ok(a.array instanceof Float32Array);assert.equal(a.itemSize*a.array.BYTES_PER_ELEMENT%4,0);for(const v of a.array)assert.ok(Number.isFinite(v));}}});
+test('all finishes reuse one hull and keep glass transparent and the four controls animatable',async()=>{const model=await load('boat.glb'),settings={livery:'marina'},appearance=new BoatAppearance(settings);appearance.bind(model);const geometry=[];model.traverse(o=>{if(o.isMesh)geometry.push(o.geometry);});assert.equal(appearance.nodes.length,4);for(const id of ['sunset','graphite','marina']){appearance.setLivery(id);assert.equal(settings.livery,id);assert.ok(appearance.materials.find(m=>m.name==='windshield').opacity<1);appearance.update(1,{steer:1},12,false,false);const after=[];model.traverse(o=>{if(o.isMesh)after.push(o.geometry);});assert.deepEqual(after,geometry);}});

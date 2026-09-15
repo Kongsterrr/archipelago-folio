@@ -8,7 +8,7 @@ export class FeedbackSystem {
  }
  splash(p,{strength=1,kind='water',celebrate=false,key=null}={}){
   const now=performance.now();if(key&&now-(this.cooldowns.get(key)||-Infinity)<300)return;
-  if(key)this.cooldowns.set(key,now);this.onSound(kind,strength);
+  if(key)this.cooldowns.set(key,now);this.onSound(kind,strength,p);
   if(this.settings.reduced)return;
   const count=this.settings.quality==='low'?(celebrate?18:6):(celebrate?40:12);
   for(let i=0;i<count;i++){

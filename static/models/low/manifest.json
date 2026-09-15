@@ -3750,41 +3750,187 @@
       "id": "boat",
       "name": "boat",
       "file": "../boat.glb",
-      "revision": "premium-runabout-1",
-      "bytes": 126648,
-      "rawBytes": 404652,
-      "sourceMeshes": 396,
-      "drawCalls": 12,
+      "revision": "v3-marina-runabout",
+      "bytes": 139100,
+      "rawBytes": 452728,
+      "sourceMeshes": 436,
+      "drawCalls": 16,
       "staticDrawCalls": 12,
-      "vertices": 13754,
-      "triangles": 10433,
+      "vertices": 14570,
+      "triangles": 11129,
       "bounds": {
         "min": [
           -0.7449045181274414,
-          0.10379000008106232,
+          -0.6562100052833557,
           -1.9482219219207764
         ],
         "max": [
           0.7449073791503906,
-          1.4748849868774414,
-          1.8672499656677246
+          0.7148849964141846,
+          1.8672499375581741
         ]
       },
       "dimensions": [
         1.489811897277832,
-        1.371094986796379,
-        3.815471887588501
+        1.3710950016975403,
+        3.8154718594789507
       ],
-      "animationNodes": [],
-      "nodes": [],
+      "animationNodes": [
+        {
+          "name": "anim_gauge_0",
+          "position": [
+            -0.043649999999999994,
+            0.20438270457895563,
+            -0.4404798725850954
+          ],
+          "rotation": [
+            -0.6100000000000001,
+            0,
+            0
+          ],
+          "scale": [
+            0.97,
+            0.97,
+            0.97
+          ]
+        },
+        {
+          "name": "anim_gauge_1",
+          "position": [
+            0.02425,
+            0.20438270457895563,
+            -0.4404798725850954
+          ],
+          "rotation": [
+            -0.6100000000000001,
+            0,
+            0
+          ],
+          "scale": [
+            0.97,
+            0.97,
+            0.97
+          ]
+        },
+        {
+          "name": "anim_helm",
+          "position": [
+            0.2813,
+            0.15179999999999993,
+            -0.25123
+          ],
+          "rotation": [
+            -0.53,
+            0,
+            0
+          ],
+          "scale": [
+            0.97,
+            0.97,
+            0.97
+          ]
+        },
+        {
+          "name": "anim_engine",
+          "position": [
+            0,
+            -0.76,
+            1.3774
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.97,
+            0.97,
+            0.97
+          ]
+        }
+      ],
+      "nodes": [
+        {
+          "name": "anim_gauge_0",
+          "position": [
+            -0.043649999999999994,
+            0.20438270457895563,
+            -0.4404798725850954
+          ],
+          "rotation": [
+            -0.6100000000000001,
+            0,
+            0
+          ],
+          "scale": [
+            0.97,
+            0.97,
+            0.97
+          ]
+        },
+        {
+          "name": "anim_gauge_1",
+          "position": [
+            0.02425,
+            0.20438270457895563,
+            -0.4404798725850954
+          ],
+          "rotation": [
+            -0.6100000000000001,
+            0,
+            0
+          ],
+          "scale": [
+            0.97,
+            0.97,
+            0.97
+          ]
+        },
+        {
+          "name": "anim_helm",
+          "position": [
+            0.2813,
+            0.15179999999999993,
+            -0.25123
+          ],
+          "rotation": [
+            -0.53,
+            0,
+            0
+          ],
+          "scale": [
+            0.97,
+            0.97,
+            0.97
+          ]
+        },
+        {
+          "name": "anim_engine",
+          "position": [
+            0,
+            -0.76,
+            1.3774
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "scale": [
+            0.97,
+            0.97,
+            0.97
+          ]
+        }
+      ],
       "quality": "original",
-      "highQualityTriangles": 10433,
-      "highQualityBytes": 126648,
+      "highQualityTriangles": 11129,
+      "highQualityBytes": 139100,
       "triangleReductionPercent": 0
     }
   ],
-  "totalBytes": 2371724,
-  "totalTriangles": 176612,
+  "totalBytes": 2384176,
+  "totalTriangles": 177308,
   "quality": "low",
   "compression": "EXT_meshopt_compression"
 }
