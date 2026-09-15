@@ -1,5 +1,5 @@
 {
-  "generator": "build-assets.mjs",
+  "generator": "build-low-assets.mjs + finalize-low-assets.mjs",
   "version": 2,
   "originalAssets": true,
   "units": "meters",
@@ -29,12 +29,12 @@
       "id": "harbor",
       "name": "harbor",
       "file": "harbor.glb",
-      "bytes": 299140,
-      "sourceMeshes": 562,
-      "drawCalls": 19,
-      "staticDrawCalls": 16,
-      "vertices": 35594,
-      "triangles": 22680,
+      "bytes": 237748,
+      "sourceMeshes": 444,
+      "drawCalls": 20,
+      "staticDrawCalls": 17,
+      "vertices": 27478,
+      "triangles": 19084,
       "bounds": {
         "min": [
           -15,
@@ -339,18 +339,21 @@
           24
         ]
       },
-      "rawBytes": 1008408
+      "quality": "low",
+      "highQualityTriangles": 22680,
+      "highQualityBytes": 299140,
+      "triangleReductionPercent": 15.9
     },
     {
       "id": "amtrak",
       "name": "amtrak",
       "file": "amtrak.glb",
-      "bytes": 399468,
-      "sourceMeshes": 873,
-      "drawCalls": 25,
-      "staticDrawCalls": 16,
-      "vertices": 47890,
-      "triangles": 30162,
+      "bytes": 313528,
+      "sourceMeshes": 763,
+      "drawCalls": 26,
+      "staticDrawCalls": 17,
+      "vertices": 35836,
+      "triangles": 24590,
       "bounds": {
         "min": [
           -16,
@@ -1005,18 +1008,21 @@
         "rootY": 0,
         "railY": 1.045
       },
-      "rawBytes": 1352872
+      "quality": "low",
+      "highQualityTriangles": 30162,
+      "highQualityBytes": 399468,
+      "triangleReductionPercent": 18.5
     },
     {
       "id": "beaconfire",
       "name": "beaconfire",
       "file": "beaconfire.glb",
-      "bytes": 286112,
-      "sourceMeshes": 561,
-      "drawCalls": 26,
-      "staticDrawCalls": 18,
-      "vertices": 33819,
-      "triangles": 20258,
+      "bytes": 216296,
+      "sourceMeshes": 418,
+      "drawCalls": 27,
+      "staticDrawCalls": 19,
+      "vertices": 23983,
+      "triangles": 15854,
       "bounds": {
         "min": [
           -15,
@@ -1451,18 +1457,21 @@
           24
         ]
       },
-      "rawBytes": 957296
+      "quality": "low",
+      "highQualityTriangles": 20258,
+      "highQualityBytes": 286112,
+      "triangleReductionPercent": 21.7
     },
     {
       "id": "visionx",
       "name": "visionx",
       "file": "visionx.glb",
-      "bytes": 537192,
-      "sourceMeshes": 1138,
-      "drawCalls": 21,
-      "staticDrawCalls": 16,
-      "vertices": 63067,
-      "triangles": 31721,
+      "bytes": 298432,
+      "sourceMeshes": 652,
+      "drawCalls": 22,
+      "staticDrawCalls": 17,
+      "vertices": 32913,
+      "triangles": 19409,
       "bounds": {
         "min": [
           -12,
@@ -1867,18 +1876,21 @@
           24
         ]
       },
-      "rawBytes": 1724188
+      "quality": "low",
+      "highQualityTriangles": 31721,
+      "highQualityBytes": 537192,
+      "triangleReductionPercent": 38.8
     },
     {
       "id": "affirmation",
       "name": "affirmation",
       "file": "affirmation.glb",
-      "bytes": 373320,
-      "sourceMeshes": 789,
-      "drawCalls": 21,
-      "staticDrawCalls": 15,
-      "vertices": 45383,
-      "triangles": 26445,
+      "bytes": 296332,
+      "sourceMeshes": 663,
+      "drawCalls": 22,
+      "staticDrawCalls": 16,
+      "vertices": 34264,
+      "triangles": 20233,
       "bounds": {
         "min": [
           -15,
@@ -2233,18 +2245,21 @@
           24
         ]
       },
-      "rawBytes": 1267488
+      "quality": "low",
+      "highQualityTriangles": 26445,
+      "highQualityBytes": 373320,
+      "triangleReductionPercent": 23.5
     },
     {
       "id": "research",
       "name": "research",
       "file": "research.glb",
-      "bytes": 267456,
-      "sourceMeshes": 476,
-      "drawCalls": 24,
-      "staticDrawCalls": 18,
-      "vertices": 30787,
-      "triangles": 19606,
+      "bytes": 209428,
+      "sourceMeshes": 348,
+      "drawCalls": 25,
+      "staticDrawCalls": 19,
+      "vertices": 23142,
+      "triangles": 16236,
       "bounds": {
         "min": [
           -13,
@@ -2659,18 +2674,21 @@
           24
         ]
       },
-      "rawBytes": 879168
+      "quality": "low",
+      "highQualityTriangles": 19606,
+      "highQualityBytes": 267456,
+      "triangleReductionPercent": 17.2
     },
     {
       "id": "catering",
       "name": "catering",
       "file": "catering.glb",
-      "bytes": 315052,
-      "sourceMeshes": 644,
-      "drawCalls": 21,
-      "staticDrawCalls": 16,
-      "vertices": 37217,
-      "triangles": 22739,
+      "bytes": 237568,
+      "sourceMeshes": 503,
+      "drawCalls": 22,
+      "staticDrawCalls": 17,
+      "vertices": 26869,
+      "triangles": 18047,
       "bounds": {
         "min": [
           -15,
@@ -2987,18 +3005,21 @@
           24
         ]
       },
-      "rawBytes": 1049340
+      "quality": "low",
+      "highQualityTriangles": 22739,
+      "highQualityBytes": 315052,
+      "triangleReductionPercent": 20.6
     },
     {
       "id": "learning",
       "name": "learning",
       "file": "learning.glb",
-      "bytes": 342004,
-      "sourceMeshes": 690,
-      "drawCalls": 22,
-      "staticDrawCalls": 16,
-      "vertices": 40406,
-      "triangles": 23075,
+      "bytes": 226056,
+      "sourceMeshes": 464,
+      "drawCalls": 23,
+      "staticDrawCalls": 17,
+      "vertices": 25296,
+      "triangles": 16631,
       "bounds": {
         "min": [
           -15,
@@ -3317,18 +3338,21 @@
           24
         ]
       },
-      "rawBytes": 1128704
+      "quality": "low",
+      "highQualityTriangles": 23075,
+      "highQualityBytes": 342004,
+      "triangleReductionPercent": 27.9
     },
     {
       "id": "connect",
       "name": "connect",
       "file": "connect.glb",
-      "bytes": 265620,
-      "sourceMeshes": 556,
-      "drawCalls": 21,
-      "staticDrawCalls": 16,
-      "vertices": 29280,
-      "triangles": 19391,
+      "bytes": 209688,
+      "sourceMeshes": 455,
+      "drawCalls": 22,
+      "staticDrawCalls": 17,
+      "vertices": 22198,
+      "triangles": 16095,
       "bounds": {
         "min": [
           -11,
@@ -3717,7 +3741,10 @@
           24
         ]
       },
-      "rawBytes": 839456
+      "quality": "low",
+      "highQualityTriangles": 19391,
+      "highQualityBytes": 265620,
+      "triangleReductionPercent": 17
     },
     {
       "id": "boat",
@@ -3748,9 +3775,14 @@
       ],
       "animationNodes": [],
       "nodes": [],
-      "rawBytes": 105564
+      "quality": "original",
+      "highQualityTriangles": 2636,
+      "highQualityBytes": 37824,
+      "triangleReductionPercent": 0
     }
   ],
-  "totalBytes": 10312484,
-  "totalTriangles": 218713
+  "totalBytes": 2282900,
+  "totalTriangles": 168815,
+  "quality": "low",
+  "compression": "EXT_meshopt_compression"
 }

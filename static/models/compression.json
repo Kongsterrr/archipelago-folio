@@ -1,52 +1,52 @@
 [
   {
-    "name": "affirmation.glb",
-    "before": 241136,
-    "after": 88144
+    "name": "harbor.glb",
+    "before": 1008408,
+    "after": 299140
   },
   {
     "name": "amtrak.glb",
-    "before": 194972,
-    "after": 77392
+    "before": 1352872,
+    "after": 399468
   },
   {
     "name": "beaconfire.glb",
-    "before": 169036,
-    "after": 70560
-  },
-  {
-    "name": "boat.glb",
-    "before": 37072,
-    "after": 17776
-  },
-  {
-    "name": "catering.glb",
-    "before": 220568,
-    "after": 84164
-  },
-  {
-    "name": "connect.glb",
-    "before": 183108,
-    "after": 72580
-  },
-  {
-    "name": "harbor.glb",
-    "before": 179652,
-    "after": 73352
-  },
-  {
-    "name": "learning.glb",
-    "before": 173696,
-    "after": 73604
-  },
-  {
-    "name": "research.glb",
-    "before": 164552,
-    "after": 68972
+    "before": 957296,
+    "after": 286112
   },
   {
     "name": "visionx.glb",
-    "before": 205828,
-    "after": 81196
+    "before": 1724188,
+    "after": 537192
+  },
+  {
+    "name": "affirmation.glb",
+    "before": 1267488,
+    "after": 373320
+  },
+  {
+    "name": "research.glb",
+    "before": 879168,
+    "after": 267456
+  },
+  {
+    "name": "catering.glb",
+    "before": 1049340,
+    "after": 315052
+  },
+  {
+    "name": "learning.glb",
+    "before": 1128704,
+    "after": 342004
+  },
+  {
+    "name": "connect.glb",
+    "before": 839456,
+    "after": 265620
+  },
+  {
+    "name": "boat.glb",
+    "before": 105564,
+    "after": 37824
   }
 ]

@@ -1,36 +1,48 @@
-# Validation record
+# V2 delivery validation
 
 ## Automated checks
 
-`npm test`: 19 passing checks using the actual production boat controller, island/boundary collider builders, race state machine, input manager and game pause/teleport methods.
+`node --test tests/*.test.js`: 97 passing checks (Node 24; Three.js 0.183.2; Rapier 0.17.3).
 
-- Identical fixed-step voyages across simulated 30, 60 and 120 FPS schedules (720 physics ticks each; position/yaw differences below numerical tolerance).
-- Normal/boost/reverse speed limits and braking.
-- All nine spawn points and complete boat hulls clear of shores and docks.
-- Top-speed head-on/oblique shore impacts, pier impacts and boundary seams do not tunnel in the tested cases.
-- Teleport resets position, yaw and velocity.
-- Forward gate-plane crossings count, including a whole gate crossed in one update; backward/sideways/wide misses do not.
-- Gate order, complete-run scoring, pause duration, interrupted resume countdown and initial-countdown pause.
-- Keyboard focus restoration, lost keyup, paused repeats, canceled/held touch and camera-relative mobile steering.
-- Boost → panel → travel → close leaves no old race, velocity, wake or camera interpolation.
-- Docking anchors the current position; closing leaves the boat stationary.
+- Four real-GLB vertex projections, excluding wake, outline and empty bounding-box corners: 1440×900 and 1920×1080 = 20.91%; 390×844 = 25.70%; 844×390 = 20.91%. Tight boat centre is 61.2–61.7% from the top. The portrait reference distance was tuned from 52 to 53.
+- 64 camera checks: four viewports × eight directions × 12/18 units per second, continuously moving through the actual smoothing update. Forward water at speed + 2 units and every boat vertex remain in view after the camera settles. These do not claim instant visibility when velocity changes discontinuously. Resume countdown supplies time for the camera to frame retained momentum.
+- Identical fixed-step voyage and heading at simulated 30/60/120 render schedules; planar speed caps, smooth boost release, braking and reverse.
+- Safe full-hull spawns, pier/coast/boundary impacts with CCD. Runtime travel validates an enlarged full-boat shape against all enabled colliders.
+- All 24 toys have no initial collision overlap. Harbor scenery, the industrial bay entrance, Learning station and Catering channel post were moved away from dock safety margins.
+- Real Rapier boat pushes a crate into its matching berth, confirms one second of rest, disables the delivered collider, and reverses clear. Cargo recovery checks all enabled shapes; when no recovery point is free, the round remains paused with Reset cargo available.
+- Ordered directed six-gate crossing rejects misses, reverse passage and duplicate gates. Cargo checks full rotated bounds, linear/angular rest, wrong or incomplete placement. Lighthouse retry preserves the clue and replay changes it.
+- Boost → read → travel → close invalidates both pending snapshots and old challenge state. Cargo background pause restores boat and prop velocities behind a two-second countdown. Nested pauses and initial countdown pauses exclude paused time.
+- Quick reading does not award a visit. Local storage denial retains in-memory operation; old course times are not imported.
+- Keyboard repeat after blur, held inputs after menus, touch cancel and camera-relative joystick direction.
+
+A separate Rapier layout audit found connected routes to all nine docks with obstacles expanded by 6 units on a 2-unit sampling grid. This supports the 12-unit main route clearance; it is not a formal certification of every turning radius. The outer loop retains open acceleration water. Harbor was shifted slightly west to frame the pier in the opening close view.
 
 ## Browser checks
 
-Codex in-app browser on the supplied Mac, with WebGPU enabled and forced WebGL2 verified. Desktop viewport and responsive 390×844 and 844×390 sizes checked. These are viewport checks, not a claim of testing on physical iOS/Android hardware.
+Host: Apple M3 Max, Mac15,8. Browser: Codex in-app browser. Actual WebGPU/high and forced WebGL2/low paths both rendered without console errors in observed sessions.
 
-- All nine destinations were traveled to, opened and closed in the running browser. E docking and a real joystick drag were also exercised.
-- Original compressed models render; the browser console reports no application errors.
-- Desktop project directory and project details, mobile full-height scrolling content and visible close/focus controls.
-- Map/portfolio navigation tools exercise real read/travel actions; valid inputs update the same UI and invalid island IDs reject without navigation.
-- User-selected 2D mode retains all nine entries; work details remain readable and 3D-only travel is hidden.
-- Race Start run displays its countdown, ordered course information and direction indicator.
-- Navigation/reset/race controls remain available in phone portrait and landscape layouts.
+Checked desktop 1440×900 and 1920×1080, portrait 390×844 and landscape 844×390. Phone-sized views are desktop viewport emulation, not physical phone measurements. The portrait map and tool buttons were moved clear of the boat. At 390px width the document has no horizontal overflow; Read starts below the hull, the map starts below/right, and the joystick remains reachable.
 
-## Performance budgets and limits
+- All nine destinations: travel, dock/read, close and return to a stationary boat.
+- Independent Amtrak and VisionX reading compositions; scrollable HTML content and Escape focus restoration.
+- All three challenge start flows; actual boosted first-gate passage at 18 units/second; map freezes elapsed time and position; travel cancels the round.
+- Actual cargo pushing; lighthouse clue is visible in landscape with symbol names, progress and a target bearing. Logical completion paths also covered by automated tests.
+- Settings low/high model switching, read-without-3D mode and all nine fallback entries. Resume and verified contact links remain accessible.
+- WebMCP navigation, status, play and bounded steering use the same visible actions; valid calls and an invalid steering input were exercised.
 
-Ten compressed GLBs total 707,740 bytes; no image textures are required. The production game bundle is approximately 1.2 MB gzipped and is loaded after the initial HTML/portfolio UI. The complete initial code plus even all ten models is below the 6 MB transfer budget; distant islands are requested progressively.
+Short local frame-loop samples reported 119–120 FPS during high-quality WebGPU sailing and 120 FPS with WebGL2/low on this Mac. Warm localhost initialization-ready events ranged about 105–326ms. These are short samples and warm-cache initialization measurements, not sustained mobile FPS or cold-start service guarantees.
 
-A throttled 20 Mbps cold-start measurement, physical-phone sustained 30 FPS, full browser/OS matrix, screen-reader testing, and manual completion of the full course on physical touch devices remain release checks. No unmeasured sustained frame-rate or 5-second cold-start guarantee is claimed.
+## Payload and content
 
-The fixed-step tests validate simulation consistency, not actual rendering speed. The remaining Rapier initialization deprecation warning originates in its pinned compatibility build and does not prevent simulation.
+High GLBs: 3,123,188 bytes across the boat and nine islands. Low set including the shared boat: 2,282,900 bytes, 22.8% fewer scene triangles and 26.9% fewer model bytes. Low models keep identical dynamic node names/poses, docks and shore polygons. No texture payload is needed for the flat-color materials.
+
+Initial HTML/CSS/JS plus the boat, Harbor and Connect total approximately 1.50MB when gzip-compressed locally; their GLBs alone are 602,584 bytes before transport gzip. Nearby island requests begin after the ready gate. This fits the 6MB primary resource budget. Google Font requests use display=swap with system fallback.
+
+The resume PDF and shared content.json are unchanged from the verified V1. Package manifest/lockfile and existing owner-private hosting ID are preserved. No guessed GitHub/demo URLs, backend, account system or external leaderboard were added. Sound remains off by default.
+
+## Explicit limits of validation
+
+- No physical iPhone, Android phone, mobile Safari or long-running thermal test was available. The 30 FPS mobile target remains to be measured on representative hardware.
+- No controlled 20Mbps cold-connection run was available; the five-second target is supported by payload size but has not been certified.
+- Human first-attempt completion times of 45–60s / 60–120s / 60–90s need playtesting. The tests establish rules and recoverability, not player difficulty calibration.
+- Runtime asset-load errors retain the geometric placeholder and working HTML content. The no-3D reading path was exercised; an actual failed network model request was not injected in the browser.

@@ -7,6 +7,7 @@
 - **meshoptimizer** — https://github.com/zeux/meshoptimizer — MIT. Meshopt encoding and decoding.
 - **Vite** — https://github.com/vitejs/vite — MIT. Development and static production build.
 - **Manrope** — Mikhail Sharanda and contributors, SIL Open Font License 1.1. **DM Sans** — Colophon Foundry and contributors, SIL Open Font License 1.1. Served with display=swap through Google Fonts; system sans-serif fallback remains available.
+- **Helvetiker Bold** — bundled Three.js typeface, used for original 3D island lettering; Copyright © 2004 Magenta Ltd. The font permission notice is included in `static/licenses/helvetiker.txt`.
 - **Boat, nine islands, duck, bottle, ocean material and interface** — original work made for this portfolio. Procedural geometry is reproducible from `scripts/build-assets.mjs`; no third-party model, photographic project screenshot, texture, music recording, or illustration is presented as Jack's work.
 - **Résumé PDF and career/project content** — supplied by Jack. The original attachment is copied as `static/resume.pdf`. Project illustrations are conceptual island dioramas, not screenshots of the underlying applications.
 

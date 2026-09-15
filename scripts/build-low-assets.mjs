@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
 const font = new FontLoader().parse(JSON.parse(await fs.readFile(new URL('../node_modules/three/examples/fonts/helvetiker_bold.typeface.json', import.meta.url),'utf8')));
-const OUT = fileURLToPath(new URL('../static/models/', import.meta.url));
+const OUT = fileURLToPath(new URL('../.asset-build/low-raw/', import.meta.url));
 await fs.mkdir(OUT,{recursive:true});
 globalThis.FileReader = class {
   async readAsArrayBuffer(blob) { this.result = await blob.arrayBuffer(); this.onloadend?.({ target: this }); }
@@ -30,7 +30,10 @@ const mats = Object.fromEntries(Object.entries(colors).map(([name,color]) => [na
   new THREE.MeshStandardMaterial({name, color, roughness:name==='glass'||name==='glassBlue'?0.3:0.76, metalness:name==='metal'?0.25:0})]));
 // Palette aliases keep the entire toy world within a practical material budget.
 for (const [alias,key] of Object.entries({grassDark:'grass', leafLight:'leaf', trunk:'darkWood', woodLight:'wood', glassBlue:'glass', stoneLight:'stone', cream:'ivory', white:'ivory', red:'terracotta'})) mats[alias]=mats[key];
+mats.leafPalm=mats.leaf.clone();mats.leafPalm.name='leafPalm';
 let root, seed;
+let preserveFullDetail=false;
+function protectedDetail(parent){for(let n=parent;n;n=n.parent)if(n.name.startsWith('anim_'))return true;return preserveFullDetail;}
 const SHORELINES = {};
 const TRACK={center:[0,1.05,-1.4],radiusX:8.8,radiusZ:5.8,clockwise:false,initialAngle:0,speed:0.22};
 function random() { seed = (seed*1664525+1013904223)>>>0; return seed/4294967296; }
@@ -41,9 +44,9 @@ function group(pos=[0,0,0], rot=[0,0,0], parent=root) { const g=new THREE.Group(
 function box(w,h,d,x,y,z,mat='ivory',rot=[0,0,0],parent=root) { return mesh(new THREE.BoxGeometry(w,h,d),mat,[x,y,z],rot,parent); }
 const bevelCache = new Map();
 function bevel(w,h,d,x,y,z,mat='ivory',b=.06,rot=[0,0,0],parent=root) {
-  b=Math.min(b,w/4,h/4,d/4); const key=[w,h,d,b].join(','); let g=bevelCache.get(key);
+  b=Math.min(b,w/4,h/4,d/4); const detailSegments=protectedDetail(parent)?2:1; const key=[w,h,d,b,detailSegments].join(','); let g=bevelCache.get(key);
   if(!g) { const s=new THREE.Shape();const a=w/2-b,c=h/2-b;s.moveTo(-a,-c);s.lineTo(a,-c);s.lineTo(a,c);s.lineTo(-a,c);s.closePath();
-    g=new THREE.ExtrudeGeometry(s,{depth:d-2*b,bevelEnabled:true,bevelThickness:b,bevelSize:b,bevelSegments:2,steps:1});g.translate(0,0,-d/2+b);bevelCache.set(key,g); }
+    g=new THREE.ExtrudeGeometry(s,{depth:d-2*b,bevelEnabled:true,bevelThickness:b,bevelSize:b,bevelSegments:detailSegments,steps:1});g.translate(0,0,-d/2+b);bevelCache.set(key,g); }
   return mesh(g,mat,[x,y,z],rot,parent);
 }
 function cyl(rt,rb,h,x,y,z,mat='ivory',segments=12,rot=[0,0,0],parent=root) { return mesh(new THREE.CylinderGeometry(rt,rb,h,segments,1),mat,[x,y,z],rot,parent); }
@@ -74,7 +77,7 @@ function palm(x,z,h=4.2,angle=.3,parent=root) {
   const g=group([x,.78,z],[0,angle,0],parent); const p0=[0,0,0],p1=[.15,h*.36,0],p2=[.44,h*.7,-.06],p3=[.68,h,-.11];
   rod(p0,p1,.18,'trunk',g,7);rod(p1,p2,.155,'trunk',g,7);rod(p2,p3,.125,'trunk',g,7);
   for(let i=0;i<7;i++){const a=i*Math.PI*2/7,cs=Math.cos(a),sn=Math.sin(a),len=1.55+(i%3)*.17; const q=(r,y,w=0)=>[p3[0]+cs*r-sn*w,h+y,p3[2]+sn*r+cs*w];
-    const vs=[q(0,.03),q(len*.45,.29,-.31),q(len*.45,.38),q(len*.45,.29,.31),q(len,-.52)];custom(vs,[0,1,2,0,2,3,1,4,2,2,4,3,2,1,0,3,2,0,2,4,1,3,4,2],i%2?'leaf':'leafLight',g);}
+    const vs=[q(0,.03),q(len*.45,.29,-.31),q(len*.45,.38),q(len*.45,.29,.31),q(len,-.52)];custom(vs,[0,1,2,0,2,3,1,4,2,2,4,3,2,1,0,3,2,0,2,4,1,3,4,2],'leafPalm',g);}
   sphere(.19,.65,h-.2,-.12,'trunk',0,g);sphere(.17,.78,h-.24,.07,'trunk',0,g);
 }
 function flag(x,y,z,h=2.2,mat='orange',parent=root) {
@@ -101,6 +104,7 @@ const outlines={
   connect:[[-3,8],[-5,7],[-8,4],[-10,0],[-11,-4],[-10,-8],[-7,-11],[-2,-13],[4,-13],[9,-10],[12,-6],[12,-2],[10,2],[7,5],[3,8]],
 };
 function basicIsland(name,index) {
+  preserveFullDetail=true;
   root=new THREE.Group();root.name=name; seed=12731+index*891;
   const points=outlines[name];
   const area=points.reduce((s,p,i)=>{const q=points[(i+1)%points.length];return s+p[0]*q[1]-q[0]*p[1]},0)/2;
@@ -130,6 +134,7 @@ function basicIsland(name,index) {
   }
   for(const z of[7.25,6.25,5.25])pathStone((random()-.5)*.22,z,.5);
   for(const [x,z]of[[-6,5.7],[6,5.7]]){rocks(x,z,.8);shrub(x+.8,z-1,.8);}
+  preserveFullDetail=false;
   return root;
 }
 
@@ -360,6 +365,7 @@ function connect() {
 }
 
 function boat() {
+  preserveFullDetail=true;
   root=new THREE.Group();root.name='boat';seed=332;
   const hull=[[-.65,1.35],[-.76,.8],[-.78,-.55],[-.57,-1.35],[0,-2.02],[.57,-1.35],[.78,-.55],[.76,.8],[.65,1.35]];
   ringShape(hull,[[.70,.12],[.88,.28],[1,.68]],'ivory');
@@ -423,7 +429,7 @@ function pottedPlant(x,z,s=1,parent=root,y=.85){
 }
 function leafy(x,y,z,s=1,parent=root){
   rod([x,y,z],[x,y+1.2*s,z],.035*s,'leaf',parent);
-  for(let i=0;i<7;i++){const a=i*2.4;const m=sphere(.29*s,x+Math.cos(a)*.24*s,y+.18*s+i*.145*s,z+Math.sin(a)*.23*s,'leaf',0,parent);m.scale.set(1.5,.35,.7);m.rotation.z=Math.cos(a)*.4;}
+  for(let i=0;i<(protectedDetail(parent)?7:4);i++){const a=i*2.4;const m=sphere(.29*s,x+Math.cos(a)*.24*s,y+.18*s+i*.145*s,z+Math.sin(a)*.23*s,'leaf',0,parent);m.scale.set(1.5,.35,.7);m.rotation.z=Math.cos(a)*.4;}
 }
 function flowers(x,z,s=.8){
   shrub(x,z,s,'leaf');
@@ -433,7 +439,7 @@ function conifer(x,z,h=3.8){rod([x,.85,z],[x,.85+h,z],.13,'darkWood');for(let i=
 function pathLine(points){for(let i=1;i<points.length;i++){const a=new THREE.Vector2(...points[i-1]),b=new THREE.Vector2(...points[i]),n=Math.ceil(a.distanceTo(b)/.85);for(let j=0;j<n;j++){const p=a.clone().lerp(b,j/n);pathStone(p.x,p.y,.37);}}}
 function gardenBed(x,z,w,d,a=0){
   const g=group([x,.85,z],[0,a,0]);bevel(w,.32,d,0,.16,0,'wood',.045,[0,0,0],g);bevel(w-.2,.07,d-.2,0,.34,0,'darkWood',.03,[0,0,0],g);
-  const n=Math.max(2,Math.floor(w/.58));for(let i=0;i<n;i++){for(const zz of[-d*.22,d*.22])leafy(-w*.38+i*w*.76/(n-1),.39,zz,.45,g);}
+  const n=Math.max(2,Math.floor(w/.95));for(let i=0;i<n;i++){for(const zz of[-d*.22,d*.22])leafy(-w*.38+i*w*.76/(n-1),.39,zz,.45,g);}
 }
 function inside(poly,x,z){let c=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const[a,b]=poly[i],[d,e]=poly[j];if(((b>z)!=(e>z))&&(x<(d-a)*(z-b)/(e-b)+a))c=!c;}return c;}
 function sharedDetails(name){
@@ -442,7 +448,7 @@ function sharedDetails(name){
   for(const [x,z]of[[-2.3,7.2],[2.5,7.0]])for(let i=0;i<3;i++)torus(.22+i*.045,.022,x,.89+i*.025,z,'ivory',[Math.PI/2,0,0],5,12);
   const polygon=SHORELINES[name];
   // Original clustered shrubs, stones, reeds and shell accents along the broad beaches.
-  for(let i=0;i<polygon.length;i++){
+  for(let i=0;i<polygon.length;i+=2){
     const [xx,zz]=polygon[i],x=xx*.79,z=zz*.79;
     if(Math.abs(x)<4&&z>4)continue;
     if(i%4===0){if(name==='research'||name==='learning')conifer(x,z,3.4);else palm(x,z,3.1+random()*.9,random()*5);}
@@ -450,11 +456,11 @@ function sharedDetails(name){
     else shrub(x,z,.7+random()*.25);
     const bx=xx*.94,bz=zz*.94;
     if(i%2===0)rocks(bx,bz,.52);
-    for(let k=0;k<3;k++){const sx=bx+(random()-.5)*.45,sz=bz+(random()-.5)*.45;const o=sphere(.055+random()*.035,sx,.65,sz,'ivory');o.scale.set(1.5,.4,1);}
-    if(i%3===1)for(let k=0;k<4;k++){const rx=x+.5+(random()-.5)*.5,rz=z+(random()-.5)*.5;rod([rx,.84,rz],[rx+.13,1.1+random()*.3,rz+.08],.014,'leaf');}
+    for(let k=0;k<1;k++){const sx=bx+(random()-.5)*.45,sz=bz+(random()-.5)*.45;const o=sphere(.055+random()*.035,sx,.65,sz,'ivory');o.scale.set(1.5,.4,1);}
+    if(i%3===1)for(let k=0;k<2;k++){const rx=x+.5+(random()-.5)*.5,rz=z+(random()-.5)*.5;rod([rx,.84,rz],[rx+.13,1.1+random()*.3,rz+.08],.014,'leaf');}
   }
   // Low stone border accents draw attention to intentionally irregular shore shoulders.
-  for(let i=0;i<polygon.length;i+=2){const p=polygon[i],q=polygon[(i+1)%polygon.length];if(Math.abs(p[0])<4&&p[1]>5)continue;for(let k=0;k<3;k++){const t=k/3,x=(p[0]*(1-t)+q[0]*t)*.88,z=(p[1]*(1-t)+q[1]*t)*.88;const o=sphere(.20,x,.88,z,'stone');o.scale.set(1.5,.48,1);}}
+  for(let i=0;i<polygon.length;i+=4){const p=polygon[i],q=polygon[(i+1)%polygon.length];if(Math.abs(p[0])<4&&p[1]>5)continue;for(let k=0;k<1;k++){const t=k/3,x=(p[0]*(1-t)+q[0]*t)*.88,z=(p[1]*(1-t)+q[1]*t)*.88;const o=sphere(.20,x,.88,z,'stone');o.scale.set(1.5,.48,1);}}
 }
 function harborDetails(){
   bevel(7.6,.28,.83,0,1.0,4.23,'stone',.09);text3D('JACK KONG',.72,0,1.15,4.22,'navy',.14);
@@ -630,7 +636,7 @@ async function exportModel(name) {
   return result;
 }
 const builders={harbor,amtrak,beaconfire,visionx,affirmation,research,catering,learning,connect};
-const manifest={generator:'build-assets.mjs',version:2,originalAssets:true,units:'meters',coordinateSystem:'right-handed, Y up',seaLevel:0,boatForward:'-Z',islandOrigin:[0,0,0],dock:{direction:'+Z',centerX:0,width:3,deckY:.85,outerEndZ:15.8,clearWaterFromZ:18,boatSpawn:[0,0,24]},models:[]};
+const manifest={generator:'build-low-assets.mjs',quality:'low',version:2,originalAssets:true,units:'meters',coordinateSystem:'right-handed, Y up',seaLevel:0,boatForward:'-Z',islandOrigin:[0,0,0],dock:{direction:'+Z',centerX:0,width:3,deckY:.85,outerEndZ:15.8,clearWaterFromZ:18,boatSpawn:[0,0,24]},models:[]};
 for(const [i,[name,fn]]of Object.entries(builders).entries()){basicIsland(name,i);fn();sharedDetails(name);detailBuilders[name]();manifest.models.push(await exportModel(name));}
 boat();manifest.models.push(await exportModel('boat'));
 manifest.totalBytes=manifest.models.reduce((s,m)=>s+m.bytes,0);
