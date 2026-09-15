@@ -3723,34 +3723,35 @@
       "id": "boat",
       "name": "boat",
       "file": "boat.glb",
-      "bytes": 37824,
-      "sourceMeshes": 74,
-      "drawCalls": 7,
-      "staticDrawCalls": 7,
-      "vertices": 3454,
-      "triangles": 2636,
+      "revision": "premium-runabout-1",
+      "bytes": 126648,
+      "rawBytes": 404652,
+      "sourceMeshes": 396,
+      "drawCalls": 12,
+      "staticDrawCalls": 12,
+      "vertices": 13754,
+      "triangles": 10433,
       "bounds": {
         "min": [
-          -0.7831199765205383,
-          -0.10000000894069672,
-          -2.0280799865722656
+          -0.7449045181274414,
+          0.10379000008106232,
+          -1.9482219219207764
         ],
         "max": [
-          0.7831199765205383,
-          1.96164870262146,
-          1.9574999809265137
+          0.7449073791503906,
+          1.4748849868774414,
+          1.8672499656677246
         ]
       },
       "dimensions": [
-        1.5662399530410767,
-        2.0616487115621567,
-        3.9855799674987793
+        1.489811897277832,
+        1.371094986796379,
+        3.815471887588501
       ],
       "animationNodes": [],
-      "nodes": [],
-      "rawBytes": 105564
+      "nodes": []
     }
   ],
-  "totalBytes": 10312484,
-  "totalTriangles": 218713
+  "totalBytes": 3212012,
+  "totalTriangles": 226510
 }

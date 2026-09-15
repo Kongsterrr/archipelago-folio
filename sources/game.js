@@ -76,7 +76,13 @@ export class Game {
  async loadModel(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);if(item?.requested&&!force)return;const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb');if(item&&item.revision!==revision)return;gltf.scene.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb');if(item&&item.revision!==revision)return;gltf.scene.traverse(o=>{if(o.isMesh){
+    const materials=Array.isArray(o.material)?o.material:[o.material];
+    const glazing=id==='boat'&&materials.some(m=>m.transparent);
+    // The clear windscreen should reveal the helm, including in the shadow pass.
+    o.castShadow=!glazing;o.receiveShadow=!glazing;
+    if(glazing){for(const material of materials)material.depthWrite=false;o.renderOrder=1;}
+   }});
    if(id==='boat'){
     this.boatVisual.clear();this.boatVisual.add(gltf.scene);this.boatModel=gltf.scene;
     this.boatOutline=gltf.scene.clone(true);this.boatOutline.traverse(o=>{if(o.isMesh){o.material=new THREE.MeshBasicMaterial({color:'#fff8da',depthTest:false,transparent:true,opacity:.35});o.castShadow=false;o.renderOrder=9;}});this.boatOutline.scale.setScalar(1.025);this.boatOutline.visible=false;this.boatVisual.add(this.boatOutline);

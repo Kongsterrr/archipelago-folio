@@ -38,14 +38,16 @@ No backend, accounts, remote database, private Bruno services or network leaderb
 
 ## Original assets
 
-The boat and each island are separate, original GLBs. They have flat color materials, so no external texture downloads or KTX2 textures are needed. Geometry uses Meshopt compression. To reproduce all models:
+The boat and each island are separate, original GLBs. They use texture-free materials, so no external texture downloads or KTX2 textures are needed. The premium boat uses sculpted geometry, satin hardware and translucent glazing. Geometry uses Meshopt compression. To reproduce all models:
 
 ```sh
 npm run models
 npm run compress
 ```
 
-See `static/models/compression.json` for the before/after sizes. The ten high-quality GLBs total 3.12 MB. The low-quality set totals 2.28 MB including the shared boat; it reduces scene triangles by 22.8%, keeping full dock and animation geometry.
+The boat source is `scripts/premium-boat.mjs`. Run `node scripts/rebuild-boat.mjs` to regenerate and compress only the shared boat and update its high/low manifest statistics without rebuilding the islands.
+
+See `static/models/compression.json` for the before/after sizes. The ten high-quality GLBs total 3.21 MB. The low-quality set totals 2.37 MB including the shared boat; it reduces scene triangles by 22.0%, keeping full dock and animation geometry.
 
 Generate the low variant after the high-quality models with `node scripts/build-low-assets.mjs` and `node scripts/finalize-low-assets.mjs`. Intermediate output lives in ignored `.asset-build/`. Flat-color materials require no KTX2 texture payload. Collisions are intentionally independent of the visual mesh in `sources/core/collisions.js`. Boats use fixed 60 Hz Rapier simulation, planar constraints, CCD and interpolated render positions.
 

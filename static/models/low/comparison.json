@@ -1,11 +1,11 @@
 {
   "allChecksPassed": true,
-  "highTotalTriangles": 218713,
-  "lowTotalTriangles": 168815,
-  "totalTriangleReductionPercent": 22.8,
-  "highTotalBytes": 3123188,
-  "lowTotalBytes": 2282900,
-  "totalByteReductionPercent": 26.9,
+  "highTotalTriangles": 226510,
+  "lowTotalTriangles": 176612,
+  "totalTriangleReductionPercent": 22,
+  "highTotalBytes": 3212012,
+  "lowTotalBytes": 2371724,
+  "totalByteReductionPercent": 26.2,
   "models": [
     {
       "id": "harbor",
@@ -126,16 +126,16 @@
     },
     {
       "id": "boat",
-      "highTriangles": 2636,
-      "lowTriangles": 2636,
+      "highTriangles": 10433,
+      "lowTriangles": 10433,
       "triangleReductionPercent": 0,
-      "highCompressedBytes": 37824,
-      "lowCompressedBytes": 37824,
+      "highCompressedBytes": 126648,
+      "lowCompressedBytes": 126648,
       "byteReductionPercent": 0,
-      "drawCalls": 7,
-      "animatedGeometry": "identical full-quality geometry and base poses",
-      "shorePolygon": "identical high-quality polygon",
-      "dock": "full geometry retained by builder"
+      "drawCalls": 12,
+      "animatedGeometry": "shared original boat geometry",
+      "shorePolygon": "not applicable",
+      "dock": "not applicable"
     }
   ]
 }

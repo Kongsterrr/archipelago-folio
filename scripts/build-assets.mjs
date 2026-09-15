@@ -9,6 +9,7 @@ import { mergeGeometries, mergeVertices } from 'three/addons/utils/BufferGeometr
 import { fileURLToPath } from 'node:url';
 import { FontLoader } from 'three/addons/loaders/FontLoader.js';
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+import { createPremiumBoat } from './premium-boat.mjs';
 const font = new FontLoader().parse(JSON.parse(await fs.readFile(new URL('../node_modules/three/examples/fonts/helvetiker_bold.typeface.json', import.meta.url),'utf8')));
 const OUT = fileURLToPath(new URL('../static/models/', import.meta.url));
 await fs.mkdir(OUT,{recursive:true});
@@ -360,29 +361,7 @@ function connect() {
 }
 
 function boat() {
-  root=new THREE.Group();root.name='boat';seed=332;
-  const hull=[[-.65,1.35],[-.76,.8],[-.78,-.55],[-.57,-1.35],[0,-2.02],[.57,-1.35],[.78,-.55],[.76,.8],[.65,1.35]];
-  ringShape(hull,[[.70,.12],[.88,.28],[1,.68]],'ivory');
-  ringShape(hull,[[1.001,.62],[1.004,.75]],'orange');
-  shapePrism(hull,.75,.82,'ivory');
-  // Recessed-looking dark cockpit, orange deck margin, and forward sun deck.
-  bevel(1.13,.055,1.88,0,.86,.27,'navy',.09);
-  shapePrism([[-.63,-.72],[-.45,-1.28],[0,-1.83],[.45,-1.28],[.63,-.72]],.83,.88,'orange');
-  // Rear bench and two sculptural bucket seats.
-  bevel(1.16,.22,.43,0,1.00,1.03,'ivory',.065);bevel(1.16,.37,.15,0,1.17,1.23,'orange',.055);
-  for(const x of[-.31,.31]){bevel(.47,.19,.50,x,1.01,.08,'orange',.06);bevel(.47,.43,.14,x,1.20,.31,'ivory',.045,[.09,0,0]);}
-  bevel(1.13,.34,.32,0,1.00,-.56,'ivory',.045);
-  // Teal wraparound windscreen with slim ivory rails.
-  custom([[-.61,1.08,-.72],[.61,1.08,-.72],[.51,1.49,-.91],[-.51,1.49,-.91]], [0,1,2,0,2,3,2,1,0,3,2,0],'glass');
-  rod([-.61,1.08,-.72],[-.51,1.49,-.91],.028,'ivory');rod([.61,1.08,-.72],[.51,1.49,-.91],.028,'ivory');rod([-.51,1.49,-.91],[.51,1.49,-.91],.025,'ivory');
-  mesh(new THREE.TorusGeometry(.13,.025,5,10),'navy',[.29,1.24,-.39],[-.65,0,0]);
-  // Small black outboard at the stern; waterline fin remains below hull lip.
-  bevel(.46,.65,.48,0,.77,1.65,'black',.085);box(.23,.65,.21,0,.25,1.75,'metal');bevel(.54,.14,.25,0,-.02,1.75,'black',.04);
-  cyl(.15,.15,.055,0,.05,1.93,'black',6,[Math.PI/2,0,0]);
-  rod([-.55,.87,1.16],[-.55,1.96,1.24],.025,'ivory');
-  custom([[-.55,1.94,1.24],[.02,1.83,1.24],[-.10,1.48,1.24],[-.55,1.58,1.24]], [0,1,2,0,2,3,2,1,0,3,2,0],'orange');
-  for(const x of[-.61,.61])bevel(.10,.07,.29,x,.89,-.18,'metal',.025);
-  boatDetails();
+  root=createPremiumBoat();
   return root;
 }
 
@@ -571,40 +550,13 @@ function connectDetails(){
   rope([[1,.91,-.2],[2.1,.91,.4],[3.2,.91,.3],[4.2,.91,-.6]],.045,'navy');
   for(const [x,z]of[[-3.7,-7.4],[3.0,-8.2]]){pottedPlant(x,z,1.0);flowers(x+1,z,.6);}
 }
-function boatDetails(){
-  // Small surface details stay within the familiar original hull envelope.
-  for(const x of[-.67,.67])for(const z of[.3,.87]){
-    cyl(.052,.052,.25,x,.62,z,'ivory',8);
-    rod([x,.79,z-.05],[x,.96,z-.02],.012,'navy');
-  }
-  // Teak strips and tiny deck plugs along the sun deck.
-  for(const x of[-.26,-.13,0,.13,.26])rod([x,.889,-.95],[x*.53,.889,-1.5],.012,'wood');
-  for(const x of[-.46,.46]){bevel(.16,.04,.055,x,.93,-1.02,'metal',.016);for(const dx of[-.05,.05])cyl(.02,.02,.03,x+dx,.965,-1.02,'metal',7);}
-  // Separate helm hub, three spokes, instrument binnacle and throttle.
-  cyl(.04,.04,.045,.29,1.24,-.375,'metal',9,[Math.PI/2-.65,0,0]);
-  for(let i=0;i<3;i++){const a=i*2.094;rod([.29,1.24,-.37],[.29+Math.cos(a)*.105,1.24+Math.sin(a)*.085,-.39+Math.sin(a)*.04],.012,'metal');}
-  for(const x of[-.24,.01,.25]){cyl(.052,.052,.018,x,1.181,-.535,'navy',10,[-.35,0,0]);rod([x,1.193,-.535],[x+.025,1.195,-.55],.007,'ivory');}
-  rod([.52,1.04,-.16],[.52,1.22,-.23],.018,'navy');sphere(.038,.52,1.23,-.23,'orange');
-  // Seat piping follows the cushions, with metal seat bases beneath.
-  for(const x of[-.31,.31]){rod([x-.17,1.116,-.10],[x+.17,1.116,-.10],.012,'ivory');cyl(.065,.10,.13,x,.88,.08,'metal',8);}
-  for(const x of[-.31,0,.31])rod([x,.89,.86],[x,.89,1.13],.008,'wood');
-  for(let i=0;i<3;i++)bevel(.29,.021,.012,0,.88+i*.075,1.895,'metal',.005);
-  bevel(.30,.095,.015,0,1.018,1.892,'orange',.02);
-  // Gentle wraparound side panes stay clear of the silhouette bounds.
-  custom([[-.61,1.08,-.72],[-.51,1.49,-.91],[-.64,1.37,-.40],[-.67,1.08,-.20]],[0,1,2,0,2,3,2,1,0,3,2,0],'glass');
-  custom([[.61,1.08,-.72],[.51,1.49,-.91],[.64,1.37,-.40],[.67,1.08,-.20]],[0,2,1,0,3,2,1,2,0,2,3,0],'glass');
-  rod([-.51,1.49,-.91],[-.64,1.37,-.4],.018,'ivory');rod([.51,1.49,-.91],[.64,1.37,-.4],.018,'ivory');
-  // Coiled bow line and a chrome bow eye.
-  for(let i=0;i<2;i++)torus(.085+i*.025,.012,0,.907+i*.018,-1.42,'ivory',[Math.PI/2,0,0],5,12);
-  torus(.045,.014,0,.66,-1.99,'metal',[0,0,0],5,10);
-}
 const detailBuilders={harbor:harborDetails,amtrak:amtrakDetails,beaconfire:beaconfireDetails,visionx:visionxDetails,affirmation:affirmationDetails,research:researchDetails,catering:cateringDetails,learning:learningDetails,connect:connectDetails};
 
 async function exportModel(name) {
   root.updateMatrixWorld(true);
   const animated=[];root.traverse(o=>{if(o.name.startsWith('anim_'))animated.push(o);});
   const batches=new Map([[root,new Map()]]);for(const node of animated)batches.set(node,new Map());
-  let sourceMeshes=0;
+  let sourceMeshes=0;const materials=new Map();
   root.traverse(o=>{
     if(!o.isMesh)return;sourceMeshes++;
     let owner=o.parent;while(owner!==root&&!owner.name.startsWith('anim_'))owner=owner.parent;
@@ -612,13 +564,13 @@ async function exportModel(name) {
     const g=o.geometry.clone();for(const a of Object.keys(g.attributes))if(a!=='position'&&a!=='normal')g.deleteAttribute(a);g.clearGroups();
     const matrix=owner===root?o.matrixWorld:new THREE.Matrix4().copy(owner.matrixWorld).invert().multiply(o.matrixWorld);g.applyMatrix4(matrix);
     if(!g.index)g.setIndex(Array.from({length:g.attributes.position.count},(_,i)=>i));
-    const key=o.material.name,bins=batches.get(owner);if(!bins.has(key))bins.set(key,[]);bins.get(key).push(g);
+    const key=o.material.name,bins=batches.get(owner);materials.set(key,o.material);if(!bins.has(key))bins.set(key,[]);bins.get(key).push(g);
   });
   const merged=new THREE.Group();merged.name=name;let vertices=0,triangles=0,drawCalls=0;const animationNodes=[];
   for(const [owner,bins]of batches){
     let target=merged;
     if(owner!==root){target=new THREE.Group();target.name=owner.name;target.position.copy(owner.position);target.quaternion.copy(owner.quaternion);target.scale.copy(owner.scale);target.userData={animated:true,basePosition:owner.position.toArray(),baseRotation:owner.rotation.toArray().slice(0,3),baseScale:owner.scale.toArray()};merged.add(target);animationNodes.push({name:owner.name,position:owner.position.toArray(),rotation:owner.rotation.toArray().slice(0,3),quaternion:owner.quaternion.toArray(),scale:owner.scale.toArray(),materials:[...bins.keys()]});}
-    for(const[key,gs]of bins){const combined=mergeGeometries(gs,false);if(!combined)throw Error('Geometry merge failed '+key);const geom=mergeVertices(combined,1e-6);geom.normalizeNormals();const m=new THREE.Mesh(geom,mats[key]);m.name=(owner===root?'static_':owner.name+'_')+key;m.castShadow=true;m.receiveShadow=true;target.add(m);vertices+=geom.attributes.position.count;triangles+=geom.index.count/3;drawCalls++;}
+    for(const[key,gs]of bins){const combined=mergeGeometries(gs,false);if(!combined)throw Error('Geometry merge failed '+key);const geom=mergeVertices(combined,1e-6);geom.normalizeNormals();const m=new THREE.Mesh(geom,materials.get(key));m.name=(owner===root?'static_':owner.name+'_')+key;m.castShadow=true;m.receiveShadow=true;target.add(m);vertices+=geom.attributes.position.count;triangles+=geom.index.count/3;drawCalls++;}
   }
   merged.userData={originalProceduralAsset:true,author:'Jack portfolio original V2 toy asset builder',forward:name==='boat'?'-Z':undefined,seaLevel:0,dock:name==='boat'?undefined:{direction:'+Z',width:3,endZ:15.8,deckY:.85},animationNodes:animationNodes.map(n=>n.name)};
   const bbox=new THREE.Box3().setFromObject(merged);const data=await new GLTFExporter().parseAsync(merged,{binary:true,onlyVisible:true,trs:true});

@@ -46,3 +46,13 @@ The resume PDF and shared content.json are unchanged from the verified V1. Packa
 - No controlled 20Mbps cold-connection run was available; the five-second target is supported by payload size but has not been certified.
 - Human first-attempt completion times of 45–60s / 60–120s / 60–90s need playtesting. The tests establish rules and recoverability, not player difficulty calibration.
 - Runtime asset-load errors retain the geometric placeholder and working HTML content. The no-3D reading path was exercised; an actual failed network model request was not injected in the browser.
+
+## Premium boat refresh — 2026-09-15
+
+Replaced the shared boat with an original sculpted runabout: open cockpit, teak decking, upholstered seats with geometric stitching and aft grab handles, framed translucent windscreen, dual helm displays, satin deck fittings, swim platforms and compact engine. Final compressed model: 126,648 bytes, 10,433 triangles, 12 material batches. The boat source is `scripts/premium-boat.mjs`; `scripts/rebuild-boat.mjs` exports, compresses, validates numeric geometry and updates both manifests. The nine island GLBs, résumé, content, physics/controller, camera parameters and package lockfile are unchanged.
+
+All 68 existing actual-GLB camera checks pass. Standard stationary tight-mesh projection is 21.04% of the short viewport edge at 1440×900, 1920×1080 and 844×390; portrait 390×844 is 25.80%. Tight boat centre is approximately 61% of viewport height. All eight headings at 12 and 18 units/second remain in frame. A 3% visual scale adjustment preserves the established portrait framing without changing physics or camera behavior.
+
+The boat's transparent material skips depth writes and shadow casting/receiving so glazing does not obscure the instruments. Browser checks on the existing Mac/Codex in-app browser covered WebGPU low/high rendering, WebGL2 high rendering and a short throttle/turn trial, close view and the 390×844 portrait layout. New boat loading produced no renderer/model errors; the existing Rapier initialization deprecation warning remains. Desktop viewport emulation is not physical-phone testing. Production build passed.
+
+Updated high-quality model payload is 3,212,012 bytes; low set with the shared boat is 2,371,724 bytes. Added boat payload is 88,824 bytes. Earlier V2 payload figures above are the pre-refresh baseline. No new network texture dependencies were introduced.
