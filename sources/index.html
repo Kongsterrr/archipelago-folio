@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#1d8f9b">
+  <meta name="description" content="Explore Jack Kong’s work, island by island. A full-stack engineer building systems, AI products, and data tools.">
+  <title>Jack Kong — An archipelago of ideas</title>
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <canvas id="world" tabindex="0" aria-label="An interactive sea with nine portfolio islands"></canvas>
+  <div class="sea-vignette" aria-hidden="true"></div>
+  <header class="header">
+    <a class="brand" href="#home" aria-label="Jack Kong home"><span class="brand-icon">J<span>↗</span></span><span>Jack Kong<span class="brand-sub">THE ARCHIPELAGO</span></span></a>
+    <nav aria-label="Portfolio navigation"><button data-category="project">Projects</button><button data-category="experience">Experience</button><button data-category="about">About</button><a href="/resume.pdf" target="_blank" rel="noopener">Résumé <span aria-hidden="true">↗</span></a><button class="contact-nav" data-open="connect">Say hello <span aria-hidden="true">↗</span></button></nav>
+    <button class="mobile-menu" id="mobile-menu" aria-label="Open portfolio directory">☰</button>
+  </header>
+  <main>
+    <section class="intro" aria-labelledby="headline"><span class="eyebrow"><span class="small-wave">≈</span> A LITTLE WORLD OF WHAT I BUILD</span><h1 id="headline">An archipelago<br>of <em>ideas.</em></h1><p>Hi, I’m Jack. Full-stack engineer building<br> systems, AI products, and data tools.</p><p class="invitation">Hop aboard. Explore my work, island by island.</p><button class="text-link" id="browse-button">Or, take the scenic shortcut <span>↗</span></button></section>
+    <div class="loading-status" id="loading" role="status"><span class="loading-dot"></span><span>Preparing your boat…</span></div>
+    <div class="island-labels" id="island-labels" aria-hidden="true"></div>
+    <div class="dock-prompt" id="dock-prompt" hidden><span id="dock-name"></span><button id="dock-button"><kbd>E</kbd> Dock & explore <span>↗</span></button></div>
+    <section class="race-hud" id="race-hud" aria-label="Buoy run" hidden><div><span class="eyebrow">BUOY RUN</span><strong id="race-time">00:00.00</strong></div><span id="race-progress">0 / 6 gates</span><span id="race-bearing" aria-label="Next gate direction"></span><button id="race-exit" aria-label="End race">×</button></section>
+    <div class="countdown" id="countdown" aria-live="polite" hidden></div>
+    <div class="toast" id="toast" role="status" hidden></div>
+    <section class="fallback" id="fallback" hidden><h2>Explore my work</h2><p>You can visit every island right here.</p><button class="secondary-button" id="back-to-sea">Back to the sea ↗</button><div id="fallback-cards"></div></section>
+  </main>
+  <footer class="hud"><div class="controls"><div class="key-group"><kbd>W</kbd><div><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd></div></div><span>Take the helm</span><span class="control-separator"></span><kbd>SHIFT</kbd><span>Boost</span><kbd>SPACE</kbd><span>Brake</span><button id="reset-button" title="Return to a safe harbor (R)"><kbd>R</kbd> Reset</button></div><div class="journey"><span class="journey-dots" id="journey-dots"></span><span id="visited-label">0 of 9 islands explored</span></div></footer>
+  <aside class="map-widget"><div class="utility-buttons"><button id="sound-button" aria-label="Enable sound" aria-pressed="false" title="Sound off">♫<span class="slash"></span></button><button id="settings-button" aria-label="Settings" title="Settings">⚙</button><button id="touch-reset" aria-label="Reset to safe water" title="Reset to safe water">⤴</button><button id="race-button" aria-label="Play Buoy Run" title="Buoy Run">⚑</button></div><button id="minimap-button" class="minimap-button" aria-label="Open archipelago map"><span class="minimap-top">THE ARCHIPELAGO <span>↗</span></span><canvas id="minimap" width="300" height="210"></canvas><span class="map-caption"><span class="compass">N ↑</span><span>Explore the map <kbd>M</kbd></span></span></button></aside>
+  <div class="touch-controls"><div id="joystick" aria-label="Boat steering joystick"><div id="joystick-knob"></div></div><div class="touch-actions"><button data-hold="reverse">Reverse</button><button data-hold="brake">Brake</button><button data-hold="boost">Boost</button></div></div>
+  <dialog id="panel" aria-labelledby="panel-title"><button class="panel-close" id="panel-close" aria-label="Close panel">×</button><div id="panel-content"></div></dialog>
+  <div id="travel-fade" aria-hidden="true"></div>
+  <noscript><section class="noscript"><h1>Jack Kong</h1><p>Full-stack engineer. Amtrak · BeaconFire · VisionX.</p><p>Projects: ADHD Affirmation, Movie Piracy Research (CMU), and Business Catering Dashboard.</p><p>Education: Carnegie Mellon University, Master of Information Systems Management (2023); Boston University, BA in Computer Science and Mathematics (2022).</p><a href="/resume.pdf">Download my complete résumé</a> · <a href="mailto:kongsterrr@gmail.com">Email me</a> · <a href="https://www.linkedin.com/in/mankitjackkong">LinkedIn</a></section></noscript>
+  <script type="module" src="/main.js"></script>
+</body></html>

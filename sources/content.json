@@ -1,0 +1,288 @@
+[
+  {
+    "id": "harbor",
+    "title": "Jack Kong",
+    "eyebrow": "Full Stack Engineer",
+    "category": "home",
+    "period": "",
+    "summary": "I build enterprise applications, AI-powered experiences, and data systems. Explore the work that connects them.",
+    "contributions": [
+      "Full-stack engineering across Angular, React, Java, and Python.",
+      "REST APIs, microservices, messaging, and cloud deployment.",
+      "AI integrations and research pipelines grounded in practical use cases."
+    ],
+    "results": [
+      "Workforce systems supporting 8,000+ union employees at Amtrak.",
+      "A background in information systems, computer science, and mathematics."
+    ],
+    "technologies": [
+      "TypeScript",
+      "Java",
+      "Python",
+      "Angular",
+      "React",
+      "Spring Boot",
+      "AWS"
+    ],
+    "links": [
+      {
+        "label": "Download Resume",
+        "url": "/resume.pdf"
+      }
+    ],
+    "accent": "#F8C466"
+  },
+  {
+    "id": "amtrak",
+    "title": "Amtrak",
+    "eyebrow": "Full Stack Engineer · New York, NY",
+    "category": "experience",
+    "period": "Nov 2024 - Present",
+    "summary": "Digitizing workforce operations for 8,000+ union employees, from job postings and bids to awards and seniority.",
+    "contributions": [
+      "Led development of workforce workflows that replace legacy manual processes.",
+      "Built bid ranking and award interfaces with Angular Signals and TypeScript for real-time state updates.",
+      "Designed Spring Boot APIs with JPA Specifications and PostgreSQL for bid validation, award transitions, duplicate prevention, and transactional integrity.",
+      "Deployed Docker services to AWS ECS/ECR, secured APIs with Azure AD JWT validation, and automated testing and security checks."
+    ],
+    "results": [
+      "Supported 8,000+ union employees through a unified workforce management system.",
+      "Digitized job postings, bid cycles, award decisions, and seniority management."
+    ],
+    "technologies": [
+      "Angular Signals",
+      "TypeScript",
+      "Spring Boot",
+      "JPA",
+      "PostgreSQL",
+      "Docker",
+      "AWS ECS/ECR",
+      "API Gateway",
+      "AWS Lambda",
+      "Azure AD",
+      "JUnit",
+      "Mockito",
+      "Jasmine",
+      "SonarQube",
+      "Checkmarx",
+      "Invicti"
+    ],
+    "links": [],
+    "accent": "#79B9F1"
+  },
+  {
+    "id": "beaconfire",
+    "title": "BeaconFire",
+    "eyebrow": "Full Stack Engineer · East Windsor, NJ",
+    "category": "experience",
+    "period": "Feb 2024 - Sep 2024",
+    "summary": "Built full-stack services, operational dashboards, and document-based AI search for an e-commerce news interface.",
+    "contributions": [
+      "Built and deployed Flask REST APIs with SQLAlchemy, AWS RDS, and S3 for a news interface and admin dashboard.",
+      "Designed RabbitMQ messaging and Flask-Mail delivery for subscriptions and marketing workflows.",
+      "Created a React dashboard with React Charts to visualize operational metrics in real time.",
+      "Integrated GPT-3.5-turbo with LangChain, OpenAI embeddings, and Pinecone for document retrieval and semantic search."
+    ],
+    "results": [
+      "Connected backend services, messaging, and operational reporting.",
+      "Enabled semantic document search through a retrieval-augmented generation pipeline."
+    ],
+    "technologies": [
+      "Flask",
+      "React",
+      "React Charts",
+      "SQLAlchemy",
+      "AWS RDS",
+      "AWS S3",
+      "RabbitMQ",
+      "Flask-Mail",
+      "GPT-3.5-turbo",
+      "LangChain",
+      "OpenAI Embeddings",
+      "Pinecone"
+    ],
+    "links": [],
+    "accent": "#FF966D"
+  },
+  {
+    "id": "visionx",
+    "title": "VisionX",
+    "eyebrow": "Software Engineer Intern · San Jose, CA",
+    "category": "experience",
+    "period": "May 2023 - Aug 2023",
+    "summary": "Developed personalized plant recommendations and a conversational assistant for the Smart Planting platform.",
+    "contributions": [
+      "Built a Django data mining system to improve user profiling and recommendation targeting.",
+      "Deployed services on AWS EC2, with media on S3 and structured data in RDS.",
+      "Implemented a ChatGPT-powered forum assistant with context-aware responses.",
+      "Created an interactive Django front end and custom ordering flow for the recommendation service."
+    ],
+    "results": [
+      "Improved user engagement by 15% through more targeted recommendations.",
+      "Improved support satisfaction by 19% with the virtual assistant."
+    ],
+    "technologies": [
+      "Python",
+      "Django",
+      "HTML",
+      "CSS",
+      "ChatGPT",
+      "AWS EC2",
+      "AWS S3",
+      "AWS RDS"
+    ],
+    "links": [],
+    "accent": "#92C982"
+  },
+  {
+    "id": "affirmation",
+    "title": "ADHD Affirmation",
+    "eyebrow": "AI & Product Experience",
+    "category": "project",
+    "period": "Apr 2025 - Present",
+    "summary": "Exploring a focused, mobile-first affirmation experience with simple interactions and AI-assisted task breakdowns.",
+    "contributions": [
+      "Reviewed published ADHD research to inform product requirements and interface choices.",
+      "Designed a React Native and FastAPI architecture around two-tap interactions and fewer on-screen elements.",
+      "Integrated GPT-4o to turn user-entered tasks into smaller steps and support conversational interactions.",
+      "Launched a public Instagram channel with three short affirmation videos per day, combining natural visual loops and music."
+    ],
+    "results": [
+      "The Instagram channel grew organically by 100 followers every two weeks.",
+      "The Instagram content achieved 11% engagement."
+    ],
+    "technologies": [
+      "React Native",
+      "FastAPI",
+      "GPT-4o"
+    ],
+    "links": [],
+    "accent": "#D7A4D7"
+  },
+  {
+    "id": "research",
+    "title": "Movie Piracy Research",
+    "eyebrow": "Carnegie Mellon University · Capstone Project",
+    "category": "project",
+    "period": "Oct 2023 - Dec 2023",
+    "summary": "Built a research pipeline to estimate U.S. movie piracy streaming volume using domain discovery, traffic data, and content sampling.",
+    "contributions": [
+      "Identified and monitored approximately 200 active movie piracy domains.",
+      "Expanded domain coverage with Selenium and BeautifulSoup, combined related-site results with social and SEO sources, and stored deduplicated CSV and Parquet snapshots in S3.",
+      "Automated nightly traffic-data ETL with AWS Lambda and Glue, validating schemas and cleaning anomalies before loading Aurora RDS.",
+      "Used runtime-weighted content sampling to estimate English-language share and extrapolate national stream counts."
+    ],
+    "results": [
+      "Estimated approximately 9.15 million English-language streams during a one-month research window.",
+      "Delivered an interactive Excel dashboard and Python notebooks adopted by IDEA Lab for studio and congressional briefings."
+    ],
+    "technologies": [
+      "Python",
+      "Selenium",
+      "BeautifulSoup",
+      "AWS S3",
+      "AWS Lambda",
+      "AWS Glue",
+      "Aurora RDS",
+      "Parquet",
+      "Excel"
+    ],
+    "links": [],
+    "accent": "#78CFC4"
+  },
+  {
+    "id": "catering",
+    "title": "Business Catering Dashboard",
+    "eyebrow": "Full-Stack Application",
+    "category": "project",
+    "period": "Mar 2023 - May 2023",
+    "summary": "Connected employee food preferences, employer budgets, authentication, and delivery updates in one catering dashboard.",
+    "contributions": [
+      "Built independently containerized Flask microservices for preferences, order histories, and subsidy tracking.",
+      "Created Angular employer views for food choices and budget allocation, with Redux for shared state.",
+      "Implemented organization-restricted authentication with JWT and Google OAuth, plus verification messages through RabbitMQ and Flask-Mail.",
+      "Streamed delivery status with Kafka and Zookeeper, and persisted service data in AWS RDS MySQL with Flask-SQLAlchemy."
+    ],
+    "results": [
+      "Gave employers visibility into food choices and budget allocation.",
+      "Made delivery progress visible through real-time status updates."
+    ],
+    "technologies": [
+      "Flask",
+      "Angular",
+      "Redux",
+      "Docker",
+      "RabbitMQ",
+      "Flask-Mail",
+      "Kafka",
+      "Zookeeper",
+      "JWT",
+      "Google OAuth",
+      "AWS RDS",
+      "MySQL",
+      "Flask-SQLAlchemy"
+    ],
+    "links": [],
+    "accent": "#F1B279"
+  },
+  {
+    "id": "learning",
+    "title": "Education",
+    "eyebrow": "Carnegie Mellon University & Boston University",
+    "category": "about",
+    "period": "CMU: Dec 2023 | BU: May 2022",
+    "summary": "A foundation in information systems, computer science, and mathematics that connects software engineering with data analysis.",
+    "contributions": [
+      "Carnegie Mellon University: Master of Information Systems Management, completed December 2023.",
+      "Boston University: Bachelor of Arts in Computer Science and Mathematics, double major, completed May 2022.",
+      "At CMU, studied distributed systems, machine learning, database management, and web application development.",
+      "At BU, studied software engineering, database systems, full-stack development, and foundations of data science."
+    ],
+    "results": [
+      "Carnegie Mellon University GPA: 3.61 / 4.0.",
+      "Boston University GPA: 3.53 / 4.0."
+    ],
+    "technologies": [
+      "Java",
+      "Python",
+      "Distributed Systems",
+      "Machine Learning",
+      "Database Systems",
+      "Data Science"
+    ],
+    "links": [],
+    "accent": "#F0CF69"
+  },
+  {
+    "id": "connect",
+    "title": "Let's Connect",
+    "eyebrow": "Jack Kong · Full Stack Engineer",
+    "category": "contact",
+    "period": "",
+    "summary": "Have a role, a project, or an idea to discuss? Reach me by email or connect on LinkedIn.",
+    "contributions": [
+      "Enterprise applications and full-stack engineering.",
+      "AI integrations and thoughtful product experiences.",
+      "Data pipelines, research, and analysis."
+    ],
+    "results": [
+      "Explore my full background in the resume."
+    ],
+    "technologies": [],
+    "links": [
+      {
+        "label": "Email Jack",
+        "url": "mailto:kongsterrr@gmail.com"
+      },
+      {
+        "label": "Open LinkedIn",
+        "url": "https://www.linkedin.com/in/mankitjackkong"
+      },
+      {
+        "label": "Download Resume",
+        "url": "/resume.pdf"
+      }
+    ],
+    "accent": "#A8ADE8"
+  }
+]
