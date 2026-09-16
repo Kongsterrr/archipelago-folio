@@ -1,4 +1,4 @@
-# Jack’s Archipelago
+# archipelago-folio
 
 **A playable 3D portfolio by Jack Kong. Explore my work, island by island.**
 
@@ -24,10 +24,10 @@ These milestones describe the actual source history. “V2.1” names the boat r
 
 | Version | Focus | Source snapshot |
 | --- | --- | --- |
-| **V1 — First Voyage** | A complete boat-driven portfolio across nine islands | [b955e1b](https://github.com/Kongsterrr/jack-archipelago/commit/b955e1baef1a26522f3a3df5d50054b0213f0fb2) |
-| **V2 — Exploration Playground** | Closer sailing, richer waterways, physical toys, and three challenges | [891195f](https://github.com/Kongsterrr/jack-archipelago/commit/891195f3a941d53c889a3d2fd2d32294ffb310c8) |
-| **V2.1 — Premium Boat** | A sculpted runabout and more distinct materials | [ece35a5](https://github.com/Kongsterrr/jack-archipelago/commit/ece35a51b2edac19f3c3596ccc8d31bbe7aa6eeb) |
-| **V3 — Living Bay** | Ambient traffic, marine life, finishes, full-pier docking, and island details | [07904dd](https://github.com/Kongsterrr/jack-archipelago/commit/07904ddebaf799780b56adeb3f86d7f30103784d) |
+| **V1 — First Voyage** | A complete boat-driven portfolio across nine islands | [b955e1b](https://github.com/Kongsterrr/archipelago-folio/commit/b955e1baef1a26522f3a3df5d50054b0213f0fb2) |
+| **V2 — Exploration Playground** | Closer sailing, richer waterways, physical toys, and three challenges | [891195f](https://github.com/Kongsterrr/archipelago-folio/commit/891195f3a941d53c889a3d2fd2d32294ffb310c8) |
+| **V2.1 — Premium Boat** | A sculpted runabout and more distinct materials | [ece35a5](https://github.com/Kongsterrr/archipelago-folio/commit/ece35a51b2edac19f3c3596ccc8d31bbe7aa6eeb) |
+| **V3 — Living Bay** | Ambient traffic, marine life, finishes, full-pier docking, and island details | [07904dd](https://github.com/Kongsterrr/archipelago-folio/commit/07904ddebaf799780b56adeb3f86d7f30103784d) |
 
 ### V1 — First Voyage
 
@@ -81,8 +81,8 @@ Added activity on the water and a new layer of island detail:
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
 
 ```sh
-git clone https://github.com/Kongsterrr/jack-archipelago.git
-cd jack-archipelago
+git clone https://github.com/Kongsterrr/archipelago-folio.git
+cd archipelago-folio
 npm ci
 npm run dev
 ```
