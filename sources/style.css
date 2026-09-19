@@ -32,3 +32,11 @@ dialog{border:1px solid #ffffff80;color:var(--ink);background:#fffbf3;padding:0 
 @media(max-height:560px) and (orientation:landscape){.utility-buttons{width:max-content;position:relative;float:right}.minimap-button{clear:both}.boat-studio dialog{width:360px}.boat-studio .livery-card{min-height:78px}}
 
 .boat-studio .map-widget,.boat-studio .hud,.boat-studio .zoom-control,.boat-studio .touch-controls{visibility:hidden}
+
+/* V4: on-foot controls retain the same compact vocabulary as the helm. */
+#boarding-fade{position:fixed;inset:0;background:#c9e7dd;z-index:49;opacity:0;pointer-events:none}
+.walking-hud{position:fixed;left:32px;top:104px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;background:#fffaf0ef;border:1px solid #fff8e0;border-radius:17px;padding:17px 20px;z-index:6;box-shadow:0 5px 24px #034b5812}
+.walking-hud strong{font:800 20px Manrope,sans-serif}.walking-hud .eyebrow{font-size:10px;color:#64827c}.walking-hud button{font-size:14px;background:none;padding:6px 0;border-bottom:1px solid #9bb2a4}
+.context-actions .quiet-action{background:#fffaf0e8;color:#254f62;box-shadow:none;font-size:13px}.exhibit-copy{font-size:17px;line-height:1.8;margin:24px 0 28px}.exhibit-copy ul{padding-left:22px}.exhibit-copy li{margin-bottom:12px}.walking .island-labels{display:none}.walking .controls{gap:18px}.no-3d .walking-hud{display:none!important}
+@media(max-width:700px){.walking-hud{left:20px;top:86px;padding:12px 14px;max-width:210px;gap:5px}.walking-hud strong{font-size:17px}.walking-hud button{min-height:36px}.walking-hud .eyebrow{font-size:9px}.context-actions .quiet-action{padding:8px 12px;min-height:36px}.walking .context-actions{max-width:215px}}
+@media(max-height:560px) and (orientation:landscape){.walking-hud{top:70px;left:20px;padding:10px 14px}.walking-hud strong{font-size:16px}.walking-hud .eyebrow{display:none}}

@@ -1,0 +1,149 @@
+{
+  "assets": [
+    {
+      "id": "harbor",
+      "quality": "high",
+      "bytes": 259252,
+      "triangles": 19264,
+      "drawCalls": 43,
+      "routeSeconds": 31
+    },
+    {
+      "id": "amtrak",
+      "quality": "high",
+      "bytes": 330804,
+      "triangles": 25568,
+      "drawCalls": 43,
+      "routeSeconds": 29.2
+    },
+    {
+      "id": "beaconfire",
+      "quality": "high",
+      "bytes": 256032,
+      "triangles": 20312,
+      "drawCalls": 38,
+      "routeSeconds": 38.1
+    },
+    {
+      "id": "visionx",
+      "quality": "high",
+      "bytes": 365804,
+      "triangles": 23324,
+      "drawCalls": 43,
+      "routeSeconds": 35.8
+    },
+    {
+      "id": "affirmation",
+      "quality": "high",
+      "bytes": 257852,
+      "triangles": 18872,
+      "drawCalls": 42,
+      "routeSeconds": 31
+    },
+    {
+      "id": "research",
+      "quality": "high",
+      "bytes": 242028,
+      "triangles": 19162,
+      "drawCalls": 41,
+      "routeSeconds": 36.3
+    },
+    {
+      "id": "catering",
+      "quality": "high",
+      "bytes": 271560,
+      "triangles": 20032,
+      "drawCalls": 40,
+      "routeSeconds": 30.2
+    },
+    {
+      "id": "learning",
+      "quality": "high",
+      "bytes": 241076,
+      "triangles": 18288,
+      "drawCalls": 47,
+      "routeSeconds": 31.5
+    },
+    {
+      "id": "connect",
+      "quality": "high",
+      "bytes": 229660,
+      "triangles": 16636,
+      "drawCalls": 41,
+      "routeSeconds": 29.6
+    },
+    {
+      "id": "harbor",
+      "quality": "low",
+      "bytes": 175952,
+      "triangles": 13696,
+      "drawCalls": 41,
+      "routeSeconds": 31
+    },
+    {
+      "id": "amtrak",
+      "quality": "low",
+      "bytes": 259064,
+      "triangles": 20540,
+      "drawCalls": 41,
+      "routeSeconds": 29.2
+    },
+    {
+      "id": "beaconfire",
+      "quality": "low",
+      "bytes": 171644,
+      "triangles": 14576,
+      "drawCalls": 36,
+      "routeSeconds": 38.1
+    },
+    {
+      "id": "visionx",
+      "quality": "low",
+      "bytes": 297996,
+      "triangles": 18368,
+      "drawCalls": 42,
+      "routeSeconds": 35.8
+    },
+    {
+      "id": "affirmation",
+      "quality": "low",
+      "bytes": 162788,
+      "triangles": 12644,
+      "drawCalls": 41,
+      "routeSeconds": 31
+    },
+    {
+      "id": "research",
+      "quality": "low",
+      "bytes": 158432,
+      "triangles": 13594,
+      "drawCalls": 39,
+      "routeSeconds": 36.3
+    },
+    {
+      "id": "catering",
+      "quality": "low",
+      "bytes": 189436,
+      "triangles": 14320,
+      "drawCalls": 39,
+      "routeSeconds": 30.2
+    },
+    {
+      "id": "learning",
+      "quality": "low",
+      "bytes": 165728,
+      "triangles": 13140,
+      "drawCalls": 45,
+      "routeSeconds": 31.5
+    },
+    {
+      "id": "connect",
+      "quality": "low",
+      "bytes": 159132,
+      "triangles": 11728,
+      "drawCalls": 39,
+      "routeSeconds": 29.6
+    }
+  ],
+  "totalBytes": 4194240
+}

@@ -25,9 +25,9 @@ export class MarineLife{
   this.ready=true;
  }
  step(dt,player){this.time+=dt;const p=player.position,v=player.velocity,speed=Math.hypot(v.x,v.z),dolphins=this.items.filter(i=>i.h.kind==='dolphin');
-  if(!this.settings.reduced&&speed>1&&speed<9&&this.time-this.lastCompanion>45&&this.time>=this.companionUntil&&dolphins.some(i=>Math.hypot(i.p.x-p.x,i.p.z-p.z)<16)){this.companionUntil=this.time+8;this.lastCompanion=this.companionUntil;}
+  if(player.canCompanion!==false&&!this.settings.reduced&&speed>1&&speed<9&&this.time-this.lastCompanion>45&&this.time>=this.companionUntil&&dolphins.some(i=>Math.hypot(i.p.x-p.x,i.p.z-p.z)<16)){this.companionUntil=this.time+8;this.lastCompanion=this.companionUntil;}
   for(const i of this.items){i.previous={...i.p};i.phase+=dt*(i.h.kind==='turtle'?.13:i.h.kind==='shark'?.17:.28)*(this.settings.reduced?.4:1);let target={x:i.h.x+Math.cos(i.phase)*i.h.rx,z:i.h.z+Math.sin(i.phase)*i.h.rz};let pace=i.h.kind==='dolphin'?3.5:i.h.kind==='shark'?2:.6;
-   if(i.h.kind==='dolphin'&&i.n<2&&this.time<this.companionUntil&&speed<12){const side=i.n?1:-1,heading=player.yaw;target={x:p.x-Math.sin(heading)*5+Math.cos(heading)*side*4,z:p.z-Math.cos(heading)*5-Math.sin(heading)*side*4};pace=Math.min(8,speed+2);}
+   if(player.canCompanion!==false&&i.h.kind==='dolphin'&&i.n<2&&this.time<this.companionUntil&&speed<12){const side=i.n?1:-1,heading=player.yaw;target={x:p.x-Math.sin(heading)*5+Math.cos(heading)*side*4,z:p.z-Math.cos(heading)*5-Math.sin(heading)*side*4};pace=Math.min(8,speed+2);}
    if(i.h.kind==='shark'&&Math.hypot(p.x-i.p.x,p.z-i.p.z)<12)target={x:i.p.x+(i.p.x-p.x),z:i.p.z+(i.p.z-p.z)};
    const dx=target.x-i.p.x,dz=target.z-i.p.z,dist=Math.hypot(dx,dz)||1,step=Math.min(dist,pace*dt),next={x:i.p.x+dx/dist*step,z:i.p.z+dz/dist*step};
    if(waterClear(next,i.h.kind==='turtle'?.7:1.3,{activities:true,docks:i.h.kind==='shark'})&&clearSegment(i.p,next,.4)){i.p=next;i.yaw+=angle(Math.atan2(-dx,-dz),i.yaw)*Math.min(1,dt*3);}

@@ -14,3 +14,5 @@
 Dependency-specific license files remain available with their installed packages.
 
 - **V3 fleet, marine fauna and island detail overlays** — original procedural assets authored for Jack’s Archipelago. Sources: `scripts/fleet-vessels.mjs`, `scripts/animals.mjs`, `scripts/island-details.mjs`. Small applied labels use original stroke geometry; no external model or animal imagery is embedded.
+
+- **V4 Jack character and walkable islands** — original procedural geometry, rig and animation authored for this portfolio, reproduced by `scripts/jack-character.mjs`, `scripts/build-jack.mjs`, and `scripts/build-walk-islands.mjs`. No third-party character scan, photograph or motion-capture clip is included. V4 replaces the original island GLBs while retaining their maritime shorelines and uses the same licensed Helvetiker typeface for plaques.

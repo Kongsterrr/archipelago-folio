@@ -58,7 +58,7 @@ export class CameraRig {
     return Math.abs(projected.x) < .94 && projected.y > -.85 && projected.y < .82 && Math.abs(boat.x) < .7 && Math.abs(boat.y) < .68;
   }
 
-  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null}, snap = false) {
+  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null, locomotion = 'sailing'}, snap = false) {
     if(this.lastPoint&&!focus&&!this.lastFocus&&!snap){const delta=new THREE.Vector3(position.x-this.lastPoint.x,position.y-this.lastPoint.y,position.z-this.lastPoint.z);this.position.add(delta);this.target.add(delta);}
     this.lastPoint={...position};this.lastFocus=!!focus;
     let desired;
@@ -75,8 +75,17 @@ export class CameraRig {
       const distance = (cfg.distance || 47) * Math.max(1, this.height / this.width * .9);
       const right = new THREE.Vector3(Math.cos(az), 0, -Math.sin(az));
       const target = new THREE.Vector3(focus.x, cfg.height || 3, focus.z);
-      if (this.width >= 900) target.addScaledVector(right, 7.4);
+      if (this.width >= 900) target.addScaledVector(right, focus.exhibit?460/this.height*distance*Math.tan(THREE.MathUtils.degToRad(FOV/2)):7.4);
       desired = {target, position: target.clone().add(new THREE.Vector3(Math.sin(az)*Math.cos(el), Math.sin(el), Math.cos(az)*Math.cos(el)).multiplyScalar(distance))};
+    } else if (locomotion === 'walking') {
+      const base = Math.max(12.5, 24 * (this.height / this.width) / (844 / 390));
+      const distance = base * ZOOM_LEVELS[this.settings.walkZoom ?? 1];
+      const heading = new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+      this.heading.lerp(heading,snap?1:1-Math.exp(-5*dt)).normalize();
+      const target=new THREE.Vector3(position.x,position.y+.65,position.z);
+      target.addScaledVector(this.flatForward,distance*Math.tan(THREE.MathUtils.degToRad(FOV/2))*.16/Math.sin(ELEVATION));
+      if(!this.settings.reduced)target.addScaledVector(this.heading,Math.min(1.2,speed*.3));
+      this.distance=distance;desired={target,position:target.clone().addScaledVector(this.direction,distance)};
     } else {
       const moving = Math.hypot(velocity.x, velocity.z) > 2;
       const wantedHeading = moving ? new THREE.Vector3(velocity.x, 0, velocity.z).normalize() : new THREE.Vector3(-Math.sin(yaw), 0, -Math.cos(yaw));

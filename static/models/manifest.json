@@ -1,6 +1,6 @@
 {
-  "generator": "build-assets.mjs",
-  "version": 2,
+  "generator": "build-walk-islands.mjs",
+  "version": 4,
   "originalAssets": true,
   "units": "meters",
   "coordinateSystem": "right-handed, Y up",
@@ -29,12 +29,12 @@
       "id": "harbor",
       "name": "harbor",
       "file": "harbor.glb",
-      "bytes": 299140,
-      "sourceMeshes": 562,
-      "drawCalls": 19,
-      "staticDrawCalls": 16,
-      "vertices": 35594,
-      "triangles": 22680,
+      "bytes": 259252,
+      "sourceMeshes": 442,
+      "drawCalls": 43,
+      "staticDrawCalls": 17,
+      "vertices": 28631,
+      "triangles": 19264,
       "bounds": {
         "min": [
           -15,
@@ -42,23 +42,23 @@
           -12.800000190734863
         ],
         "max": [
-          14,
-          11.75,
+          14.139172554016113,
+          9.75,
           15.800000190734863
         ]
       },
       "dimensions": [
-        29,
-        12.370000004768372,
+        29.139172554016113,
+        10.370000004768372,
         28.600000381469727
       ],
       "animationNodes": [
         {
-          "name": "anim_flag",
+          "name": "anim_bell",
           "position": [
-            4.85,
-            3.9699999999999993,
-            2.65
+            -5.1,
+            3.1,
+            2
           ],
           "rotation": [
             0,
@@ -75,17 +75,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange"
           ]
         },
         {
-          "name": "anim_bell",
+          "name": "anim_flag",
           "position": [
-            -4.5,
-            3.26,
-            3.4
+            5.2,
+            3.4699999999999998,
+            -5.7
           ],
           "rotation": [
             0,
@@ -102,20 +99,16 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow",
-            "darkWood"
           ]
         }
       ],
       "nodes": [
         {
-          "name": "anim_flag",
+          "name": "anim_bell",
           "position": [
-            4.85,
-            3.9699999999999993,
-            2.65
+            -5.1,
+            3.1,
+            2
           ],
           "rotation": [
             0,
@@ -132,17 +125,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange"
           ]
         },
         {
-          "name": "anim_bell",
+          "name": "anim_flag",
           "position": [
-            -4.5,
-            3.26,
-            3.4
+            5.2,
+            3.4699999999999998,
+            -5.7
           ],
           "rotation": [
             0,
@@ -159,10 +149,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow",
-            "darkWood"
           ]
         }
       ],
@@ -339,34 +325,42 @@
           24
         ]
       },
-      "rawBytes": 1008408
+      "quality": "high",
+      "occluders": [
+        "occluder_harbor_lantern",
+        "occluder_harbor_roof",
+        "occluder_harbor_tree_4",
+        "occluder_harbor_tree_8",
+        "occluder_harbor_tree_12",
+        "occluder_harbor_tree_16"
+      ]
     },
     {
       "id": "amtrak",
       "name": "amtrak",
       "file": "amtrak.glb",
-      "bytes": 399468,
-      "sourceMeshes": 873,
-      "drawCalls": 25,
-      "staticDrawCalls": 16,
-      "vertices": 47890,
-      "triangles": 30162,
+      "bytes": 330804,
+      "sourceMeshes": 671,
+      "drawCalls": 43,
+      "staticDrawCalls": 17,
+      "vertices": 38311,
+      "triangles": 25568,
       "bounds": {
         "min": [
           -16,
           -0.6200000047683716,
-          -10.5
+          -10.929505348205566
         ],
         "max": [
-          16,
-          4.960000038146973,
+          16.005056381225586,
+          4.780888080596924,
           15.800000190734863
         ]
       },
       "dimensions": [
-        32,
-        5.580000042915344,
-        26.300000190734863
+        32.005056381225586,
+        5.400888085365295,
+        26.72950553894043
       ],
       "animationNodes": [
         {
@@ -377,9 +371,9 @@
             -1.4
           ],
           "rotation": [
-            0,
-            3.141592653589793,
-            0
+            -3.141592653589793,
+            1.2246467991473532e-16,
+            -3.141592653589793
           ],
           "quaternion": [
             0,
@@ -391,22 +385,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "navy",
-            "ivory",
-            "orange",
-            "glass",
-            "black",
-            "yellow"
           ]
         },
         {
           "name": "anim_signal",
           "position": [
-            6.6,
-            3.5,
-            3.8
+            4,
+            2.2,
+            2.5
           ],
           "rotation": [
             0,
@@ -423,11 +409,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "navy",
-            "orange",
-            "yellow"
           ]
         }
       ],
@@ -440,9 +421,9 @@
             -1.4
           ],
           "rotation": [
-            0,
-            3.141592653589793,
-            0
+            -3.141592653589793,
+            1.2246467991473532e-16,
+            -3.141592653589793
           ],
           "quaternion": [
             0,
@@ -454,22 +435,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "navy",
-            "ivory",
-            "orange",
-            "glass",
-            "black",
-            "yellow"
           ]
         },
         {
           "name": "anim_signal",
           "position": [
-            6.6,
-            3.5,
-            3.8
+            4,
+            2.2,
+            2.5
           ],
           "rotation": [
             0,
@@ -486,11 +459,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "navy",
-            "orange",
-            "yellow"
           ]
         }
       ],
@@ -651,6 +619,14 @@
           24
         ]
       },
+      "quality": "high",
+      "occluders": [
+        "occluder_amtrak_roof",
+        "occluder_amtrak_canopy",
+        "occluder_amtrak_tree_4",
+        "occluder_amtrak_tree_8",
+        "occluder_amtrak_tree_12"
+      ],
       "animation": {
         "train": {
           "trackCentre": [
@@ -1003,20 +979,19 @@
         ],
         "trainForward": "-Z",
         "rootY": 0,
-        "railY": 1.045
-      },
-      "rawBytes": 1352872
+        "railY": 0.9199999999999999
+      }
     },
     {
       "id": "beaconfire",
       "name": "beaconfire",
       "file": "beaconfire.glb",
-      "bytes": 286112,
-      "sourceMeshes": 561,
-      "drawCalls": 26,
-      "staticDrawCalls": 18,
-      "vertices": 33819,
-      "triangles": 20258,
+      "bytes": 256032,
+      "sourceMeshes": 447,
+      "drawCalls": 38,
+      "staticDrawCalls": 16,
+      "vertices": 30529,
+      "triangles": 20312,
       "bounds": {
         "min": [
           -15,
@@ -1024,23 +999,23 @@
           -14
         ],
         "max": [
-          15,
-          5.409999847412109,
+          15.024389266967773,
+          4.853722095489502,
           15.800000190734863
         ]
       },
       "dimensions": [
-        30,
-        6.029999852180481,
+        30.024389266967773,
+        5.4737221002578735,
         29.800000190734863
       ],
       "animationNodes": [
         {
           "name": "anim_packet_0",
           "position": [
-            -3.3,
-            2.62,
-            2.8
+            -3.6,
+            1.8,
+            -6
           ],
           "rotation": [
             0,
@@ -1057,18 +1032,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange",
-            "ivory"
           ]
         },
         {
           "name": "anim_packet_1",
           "position": [
-            -3.3,
-            2.62,
-            1.6999999999999997
+            0,
+            1.8,
+            -6
           ],
           "rotation": [
             0,
@@ -1085,18 +1056,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange",
-            "ivory"
           ]
         },
         {
           "name": "anim_packet_2",
           "position": [
-            -3.3,
-            2.62,
-            0.5999999999999996
+            3.6,
+            1.8,
+            -6
           ],
           "rotation": [
             0,
@@ -1113,18 +1080,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange",
-            "ivory"
           ]
         },
         {
           "name": "anim_rotor",
           "position": [
-            -1.8,
-            4.3,
-            -3
+            -2.1,
+            4.55,
+            -3.3
           ],
           "rotation": [
             0,
@@ -1141,10 +1104,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "navy",
-            "ivory"
           ]
         }
       ],
@@ -1152,9 +1111,9 @@
         {
           "name": "anim_packet_0",
           "position": [
-            -3.3,
-            2.62,
-            2.8
+            -3.6,
+            1.8,
+            -6
           ],
           "rotation": [
             0,
@@ -1171,18 +1130,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange",
-            "ivory"
           ]
         },
         {
           "name": "anim_packet_1",
           "position": [
-            -3.3,
-            2.62,
-            1.6999999999999997
+            0,
+            1.8,
+            -6
           ],
           "rotation": [
             0,
@@ -1199,18 +1154,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange",
-            "ivory"
           ]
         },
         {
           "name": "anim_packet_2",
           "position": [
-            -3.3,
-            2.62,
-            0.5999999999999996
+            3.6,
+            1.8,
+            -6
           ],
           "rotation": [
             0,
@@ -1227,18 +1178,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange",
-            "ivory"
           ]
         },
         {
           "name": "anim_rotor",
           "position": [
-            -1.8,
-            4.3,
-            -3
+            -2.1,
+            4.55,
+            -3.3
           ],
           "rotation": [
             0,
@@ -1255,10 +1202,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "navy",
-            "ivory"
           ]
         }
       ],
@@ -1451,18 +1394,24 @@
           24
         ]
       },
-      "rawBytes": 957296
+      "quality": "high",
+      "occluders": [
+        "occluder_beaconfire_roof",
+        "occluder_beaconfire_tree_4",
+        "occluder_beaconfire_tree_8",
+        "occluder_beaconfire_tree_16"
+      ]
     },
     {
       "id": "visionx",
       "name": "visionx",
       "file": "visionx.glb",
-      "bytes": 537192,
-      "sourceMeshes": 1138,
-      "drawCalls": 21,
+      "bytes": 365804,
+      "sourceMeshes": 665,
+      "drawCalls": 43,
       "staticDrawCalls": 16,
-      "vertices": 63067,
-      "triangles": 31721,
+      "vertices": 41088,
+      "triangles": 23324,
       "bounds": {
         "min": [
           -12,
@@ -1470,23 +1419,23 @@
           -16
         ],
         "max": [
-          14,
-          5.460000038146973,
+          14.09278392791748,
+          4.8999409675598145,
           15.800000190734863
         ]
       },
       "dimensions": [
-        26,
-        6.080000042915344,
+        26.09278392791748,
+        5.519940972328186,
         31.800000190734863
       ],
       "animationNodes": [
         {
           "name": "anim_plant_0",
           "position": [
-            -1.5,
-            1.39,
-            2.7
+            -2.1,
+            1.91,
+            -4
           ],
           "rotation": [
             0,
@@ -1503,17 +1452,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "leaf"
           ]
         },
         {
           "name": "anim_plant_1",
           "position": [
-            0,
-            1.39,
-            2.7
+            -2.1,
+            1.91,
+            -3
           ],
           "rotation": [
             0,
@@ -1530,17 +1476,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "leaf"
           ]
         },
         {
           "name": "anim_plant_2",
           "position": [
-            1.5,
-            1.39,
-            2.7
+            -2.1,
+            1.91,
+            -2
           ],
           "rotation": [
             0,
@@ -1557,17 +1500,134 @@
             1,
             1,
             1
+          ]
+        },
+        {
+          "name": "anim_plant_3",
+          "position": [
+            -2.1,
+            1.91,
+            -1
           ],
-          "materials": [
-            "leaf"
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_plant_4",
+          "position": [
+            2.1,
+            1.91,
+            -4
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_plant_5",
+          "position": [
+            2.1,
+            1.91,
+            -3
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_plant_6",
+          "position": [
+            2.1,
+            1.91,
+            -2
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_plant_7",
+          "position": [
+            2.1,
+            1.91,
+            -1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
           ]
         },
         {
           "name": "anim_sprinkler",
           "position": [
-            4.4,
-            1.62,
-            4
+            4.8,
+            1.75,
+            -4.1
           ],
           "rotation": [
             0,
@@ -1584,10 +1644,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "metal",
-            "glass"
           ]
         }
       ],
@@ -1595,9 +1651,9 @@
         {
           "name": "anim_plant_0",
           "position": [
-            -1.5,
-            1.39,
-            2.7
+            -2.1,
+            1.91,
+            -4
           ],
           "rotation": [
             0,
@@ -1614,17 +1670,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "leaf"
           ]
         },
         {
           "name": "anim_plant_1",
           "position": [
-            0,
-            1.39,
-            2.7
+            -2.1,
+            1.91,
+            -3
           ],
           "rotation": [
             0,
@@ -1641,17 +1694,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "leaf"
           ]
         },
         {
           "name": "anim_plant_2",
           "position": [
-            1.5,
-            1.39,
-            2.7
+            -2.1,
+            1.91,
+            -2
           ],
           "rotation": [
             0,
@@ -1668,17 +1718,134 @@
             1,
             1,
             1
+          ]
+        },
+        {
+          "name": "anim_plant_3",
+          "position": [
+            -2.1,
+            1.91,
+            -1
           ],
-          "materials": [
-            "leaf"
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_plant_4",
+          "position": [
+            2.1,
+            1.91,
+            -4
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_plant_5",
+          "position": [
+            2.1,
+            1.91,
+            -3
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_plant_6",
+          "position": [
+            2.1,
+            1.91,
+            -2
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_plant_7",
+          "position": [
+            2.1,
+            1.91,
+            -1
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
           ]
         },
         {
           "name": "anim_sprinkler",
           "position": [
-            4.4,
-            1.62,
-            4
+            4.8,
+            1.75,
+            -4.1
           ],
           "rotation": [
             0,
@@ -1695,10 +1862,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "metal",
-            "glass"
           ]
         }
       ],
@@ -1867,42 +2030,48 @@
           24
         ]
       },
-      "rawBytes": 1724188
+      "quality": "high",
+      "occluders": [
+        "occluder_visionx_roof",
+        "occluder_visionx_tree_4",
+        "occluder_visionx_tree_8",
+        "occluder_visionx_tree_12"
+      ]
     },
     {
       "id": "affirmation",
       "name": "affirmation",
       "file": "affirmation.glb",
-      "bytes": 373320,
-      "sourceMeshes": 789,
-      "drawCalls": 21,
-      "staticDrawCalls": 15,
-      "vertices": 45383,
-      "triangles": 26445,
+      "bytes": 257852,
+      "sourceMeshes": 432,
+      "drawCalls": 42,
+      "staticDrawCalls": 14,
+      "vertices": 29122,
+      "triangles": 18872,
       "bounds": {
         "min": [
           -15,
           -0.6200000047683716,
-          -12
+          -12.219505310058594
         ],
         "max": [
-          14,
-          6.079999923706055,
+          14.134903907775879,
+          4.808215141296387,
           15.800000190734863
         ]
       },
       "dimensions": [
-        29,
-        6.699999928474426,
-        27.800000190734863
+        29.13490390777588,
+        5.428215146064758,
+        28.019505500793457
       ],
       "animationNodes": [
         {
           "name": "anim_card_0",
           "position": [
             -3,
-            3.53,
-            -0.9
+            2.25,
+            -1.8
           ],
           "rotation": [
             0,
@@ -1919,18 +2088,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "leaf"
           ]
         },
         {
           "name": "anim_card_1",
           "position": [
             0,
-            4.05,
-            -2.05
+            2.25,
+            -1.8
           ],
           "rotation": [
             0,
@@ -1947,18 +2112,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "leaf"
           ]
         },
         {
           "name": "anim_card_2",
           "position": [
             3,
-            4.57,
-            -3.1999999999999997
+            2.25,
+            -1.8
           ],
           "rotation": [
             0,
@@ -1975,10 +2136,30 @@
             1,
             1,
             1
+          ]
+        },
+        {
+          "name": "anim_wind_chime",
+          "position": [
+            -5.7,
+            2.9,
+            1.4
           ],
-          "materials": [
-            "ivory",
-            "leaf"
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
           ]
         }
       ],
@@ -1987,8 +2168,8 @@
           "name": "anim_card_0",
           "position": [
             -3,
-            3.53,
-            -0.9
+            2.25,
+            -1.8
           ],
           "rotation": [
             0,
@@ -2005,18 +2186,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "leaf"
           ]
         },
         {
           "name": "anim_card_1",
           "position": [
             0,
-            4.05,
-            -2.05
+            2.25,
+            -1.8
           ],
           "rotation": [
             0,
@@ -2033,18 +2210,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "leaf"
           ]
         },
         {
           "name": "anim_card_2",
           "position": [
             3,
-            4.57,
-            -3.1999999999999997
+            2.25,
+            -1.8
           ],
           "rotation": [
             0,
@@ -2061,10 +2234,30 @@
             1,
             1,
             1
+          ]
+        },
+        {
+          "name": "anim_wind_chime",
+          "position": [
+            -5.7,
+            2.9,
+            1.4
           ],
-          "materials": [
-            "ivory",
-            "leaf"
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
           ]
         }
       ],
@@ -2233,18 +2426,23 @@
           24
         ]
       },
-      "rawBytes": 1267488
+      "quality": "high",
+      "occluders": [
+        "occluder_affirmation_tree_4",
+        "occluder_affirmation_tree_8",
+        "occluder_affirmation_tree_12"
+      ]
     },
     {
       "id": "research",
       "name": "research",
       "file": "research.glb",
-      "bytes": 267456,
-      "sourceMeshes": 476,
-      "drawCalls": 24,
-      "staticDrawCalls": 18,
-      "vertices": 30787,
-      "triangles": 19606,
+      "bytes": 242028,
+      "sourceMeshes": 402,
+      "drawCalls": 41,
+      "staticDrawCalls": 13,
+      "vertices": 28556,
+      "triangles": 19162,
       "bounds": {
         "min": [
           -13,
@@ -2252,52 +2450,47 @@
           -14
         ],
         "max": [
-          14,
-          5.699999809265137,
+          14.111725807189941,
+          5.159999847412109,
           15.800000190734863
         ]
       },
       "dimensions": [
-        27,
-        6.319999814033508,
+        27.11172580718994,
+        5.779999852180481,
         29.800000190734863
       ],
       "animationNodes": [
         {
           "name": "anim_dish",
           "position": [
-            -5.4,
-            2.6,
-            2.8
+            -5,
+            2.45,
+            0.6
           ],
           "rotation": [
-            -0.4,
-            0.25,
-            0
+            -0.4000000000000001,
+            0.10000000000000003,
+            3.486866761994082e-18
           ],
           "quaternion": [
-            -0.19711924656487165,
-            0.1221895392921293,
-            -0.024769045848695864,
-            0.9724197722635115
+            -0.1984210458640611,
+            0.04898291339046186,
+            -0.00992932811269875,
+            0.9788417498233436
           ],
           "scale": [
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "glass",
-            "navy"
           ]
         },
         {
           "name": "anim_data_0",
           "position": [
-            2.4,
-            1.5,
-            4.2
+            2.7,
+            1.5499999999999998,
+            1.5
           ],
           "rotation": [
             0,
@@ -2314,17 +2507,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         },
         {
           "name": "anim_data_1",
           "position": [
-            3.08,
-            1.95,
-            4.2
+            3.45,
+            1.7499999999999998,
+            1.5
           ],
           "rotation": [
             0,
@@ -2341,17 +2531,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         },
         {
           "name": "anim_data_2",
           "position": [
-            3.76,
-            2.4,
-            4.2
+            4.2,
+            1.9499999999999997,
+            1.5
           ],
           "rotation": [
             0,
@@ -2368,9 +2555,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         }
       ],
@@ -2378,38 +2562,33 @@
         {
           "name": "anim_dish",
           "position": [
-            -5.4,
-            2.6,
-            2.8
+            -5,
+            2.45,
+            0.6
           ],
           "rotation": [
-            -0.4,
-            0.25,
-            0
+            -0.4000000000000001,
+            0.10000000000000003,
+            3.486866761994082e-18
           ],
           "quaternion": [
-            -0.19711924656487165,
-            0.1221895392921293,
-            -0.024769045848695864,
-            0.9724197722635115
+            -0.1984210458640611,
+            0.04898291339046186,
+            -0.00992932811269875,
+            0.9788417498233436
           ],
           "scale": [
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "glass",
-            "navy"
           ]
         },
         {
           "name": "anim_data_0",
           "position": [
-            2.4,
-            1.5,
-            4.2
+            2.7,
+            1.5499999999999998,
+            1.5
           ],
           "rotation": [
             0,
@@ -2426,17 +2605,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         },
         {
           "name": "anim_data_1",
           "position": [
-            3.08,
-            1.95,
-            4.2
+            3.45,
+            1.7499999999999998,
+            1.5
           ],
           "rotation": [
             0,
@@ -2453,17 +2629,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         },
         {
           "name": "anim_data_2",
           "position": [
-            3.76,
-            2.4,
-            4.2
+            4.2,
+            1.9499999999999997,
+            1.5
           ],
           "rotation": [
             0,
@@ -2480,9 +2653,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         }
       ],
@@ -2659,18 +2829,25 @@
           24
         ]
       },
-      "rawBytes": 879168
+      "quality": "high",
+      "occluders": [
+        "occluder_research_dome",
+        "occluder_research_tree_4",
+        "occluder_research_tree_8",
+        "occluder_research_tree_12",
+        "occluder_research_tree_16"
+      ]
     },
     {
       "id": "catering",
       "name": "catering",
       "file": "catering.glb",
-      "bytes": 315052,
-      "sourceMeshes": 644,
-      "drawCalls": 21,
-      "staticDrawCalls": 16,
-      "vertices": 37217,
-      "triangles": 22739,
+      "bytes": 271560,
+      "sourceMeshes": 478,
+      "drawCalls": 40,
+      "staticDrawCalls": 15,
+      "vertices": 31194,
+      "triangles": 20032,
       "bounds": {
         "min": [
           -15,
@@ -2678,51 +2855,47 @@
           -12
         ],
         "max": [
-          14,
-          5.510000228881836,
+          14.08210277557373,
+          4.748297691345215,
           15.800000190734863
         ]
       },
       "dimensions": [
-        29,
-        6.1300002336502075,
+        29.08210277557373,
+        5.368297696113586,
         27.800000190734863
       ],
       "animationNodes": [
         {
-          "name": "anim_order",
+          "name": "anim_meal",
           "position": [
-            2.65,
-            2.29,
-            2.9
+            3.75,
+            1.76,
+            -2.1
           ],
           "rotation": [
             0,
-            0.06,
+            0,
             0
           ],
           "quaternion": [
             0,
-            0.02999550020249566,
             0,
-            0.9995500337489875
+            0,
+            1
           ],
           "scale": [
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "navy"
           ]
         },
         {
-          "name": "anim_meal",
+          "name": "anim_order",
           "position": [
-            4.1,
-            1.97,
-            -2.7
+            3.6,
+            2.58,
+            -2.8
           ],
           "rotation": [
             0,
@@ -2739,49 +2912,40 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "yellow",
-            "leaf"
           ]
         }
       ],
       "nodes": [
         {
-          "name": "anim_order",
+          "name": "anim_meal",
           "position": [
-            2.65,
-            2.29,
-            2.9
+            3.75,
+            1.76,
+            -2.1
           ],
           "rotation": [
             0,
-            0.06,
+            0,
             0
           ],
           "quaternion": [
             0,
-            0.02999550020249566,
             0,
-            0.9995500337489875
+            0,
+            1
           ],
           "scale": [
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "navy"
           ]
         },
         {
-          "name": "anim_meal",
+          "name": "anim_order",
           "position": [
-            4.1,
-            1.97,
-            -2.7
+            3.6,
+            2.58,
+            -2.8
           ],
           "rotation": [
             0,
@@ -2798,11 +2962,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "ivory",
-            "yellow",
-            "leaf"
           ]
         }
       ],
@@ -2987,18 +3146,25 @@
           24
         ]
       },
-      "rawBytes": 1049340
+      "quality": "high",
+      "occluders": [
+        "occluder_catering_canopy",
+        "occluder_catering_tree_4",
+        "occluder_catering_tree_8",
+        "occluder_catering_tree_12",
+        "occluder_catering_tree_16"
+      ]
     },
     {
       "id": "learning",
       "name": "learning",
       "file": "learning.glb",
-      "bytes": 342004,
-      "sourceMeshes": 690,
-      "drawCalls": 22,
-      "staticDrawCalls": 16,
-      "vertices": 40406,
-      "triangles": 23075,
+      "bytes": 241076,
+      "sourceMeshes": 387,
+      "drawCalls": 47,
+      "staticDrawCalls": 17,
+      "vertices": 27471,
+      "triangles": 18288,
       "bounds": {
         "min": [
           -15,
@@ -3007,52 +3173,46 @@
         ],
         "max": [
           16,
-          6.030000004172325,
+          6.059999942779541,
           15.800000190734863
         ]
       },
       "dimensions": [
         31,
-        6.6500000089406965,
+        6.679999947547913,
         28.800000190734863
       ],
       "animationNodes": [
         {
           "name": "anim_book",
           "position": [
-            0.1,
-            1.32,
-            2.7
+            0,
+            1.22,
+            2.8
           ],
           "rotation": [
             0,
-            -0.12,
+            0,
             0
           ],
           "quaternion": [
             0,
-            -0.059964006479444595,
             0,
-            0.9982005399352042
+            0,
+            1
           ],
           "scale": [
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange",
-            "ivory",
-            "teal",
-            "wood"
           ]
         },
         {
           "name": "anim_beacon",
           "position": [
             0,
-            5.8,
-            -3.25
+            5.1,
+            -4.5
           ],
           "rotation": [
             0,
@@ -3069,10 +3229,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow",
-            "ivory"
           ]
         }
       ],
@@ -3080,39 +3236,33 @@
         {
           "name": "anim_book",
           "position": [
-            0.1,
-            1.32,
-            2.7
+            0,
+            1.22,
+            2.8
           ],
           "rotation": [
             0,
-            -0.12,
+            0,
             0
           ],
           "quaternion": [
             0,
-            -0.059964006479444595,
             0,
-            0.9982005399352042
+            0,
+            1
           ],
           "scale": [
             1,
             1,
             1
-          ],
-          "materials": [
-            "orange",
-            "ivory",
-            "teal",
-            "wood"
           ]
         },
         {
           "name": "anim_beacon",
           "position": [
             0,
-            5.8,
-            -3.25
+            5.1,
+            -4.5
           ],
           "rotation": [
             0,
@@ -3129,10 +3279,6 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow",
-            "ivory"
           ]
         }
       ],
@@ -3317,42 +3463,50 @@
           24
         ]
       },
-      "rawBytes": 1128704
+      "quality": "high",
+      "occluders": [
+        "occluder_learning_BU_roof",
+        "occluder_learning_CMU_roof",
+        "occluder_learning_tree_4",
+        "occluder_learning_tree_8",
+        "occluder_learning_tree_12",
+        "occluder_learning_tree_16"
+      ]
     },
     {
       "id": "connect",
       "name": "connect",
       "file": "connect.glb",
-      "bytes": 265620,
-      "sourceMeshes": 556,
-      "drawCalls": 21,
-      "staticDrawCalls": 16,
-      "vertices": 29280,
-      "triangles": 19391,
+      "bytes": 229660,
+      "sourceMeshes": 392,
+      "drawCalls": 41,
+      "staticDrawCalls": 14,
+      "vertices": 24631,
+      "triangles": 16636,
       "bounds": {
         "min": [
           -11,
           -0.6200000047683716,
-          -13
+          -13.07950496673584
         ],
         "max": [
-          12,
-          9.58,
+          12.160521507263184,
+          8.700000047683716,
           15.800000190734863
         ]
       },
       "dimensions": [
-        23,
-        10.200000004768372,
-        28.800000190734863
+        23.160521507263184,
+        9.320000052452087,
+        28.879505157470703
       ],
       "animationNodes": [
         {
           "name": "anim_antenna",
           "position": [
-            0,
-            8.58,
-            -2
+            2.85,
+            7.5,
+            -2.8
           ],
           "rotation": [
             0,
@@ -3369,18 +3523,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "navy",
-            "ivory"
           ]
         },
         {
           "name": "anim_light_0",
           "position": [
-            0,
-            6.2,
-            -1.54
+            2.85,
+            5.2,
+            -1.99
           ],
           "rotation": [
             0,
@@ -3397,17 +3547,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         },
         {
           "name": "anim_light_1",
           "position": [
-            0,
-            6.86,
-            -1.54
+            2.85,
+            5.8,
+            -1.99
           ],
           "rotation": [
             0,
@@ -3424,17 +3571,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         },
         {
           "name": "anim_light_2",
           "position": [
-            0,
-            7.5200000000000005,
-            -1.54
+            2.85,
+            6.4,
+            -1.99
           ],
           "rotation": [
             0,
@@ -3451,9 +3595,126 @@
             1,
             1,
             1
+          ]
+        },
+        {
+          "name": "anim_signal_light_0",
+          "position": [
+            1.7,
+            1.25,
+            4.5
           ],
-          "materials": [
-            "yellow"
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_signal_light_1",
+          "position": [
+            1.95,
+            1.25,
+            3.4
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_signal_light_2",
+          "position": [
+            2.2,
+            1.25,
+            2.3
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_signal_light_3",
+          "position": [
+            2.45,
+            1.25,
+            1.1999999999999997
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_signal_light_4",
+          "position": [
+            2.7,
+            1.25,
+            0.09999999999999964
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
           ]
         }
       ],
@@ -3461,9 +3722,9 @@
         {
           "name": "anim_antenna",
           "position": [
-            0,
-            8.58,
-            -2
+            2.85,
+            7.5,
+            -2.8
           ],
           "rotation": [
             0,
@@ -3480,18 +3741,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "navy",
-            "ivory"
           ]
         },
         {
           "name": "anim_light_0",
           "position": [
-            0,
-            6.2,
-            -1.54
+            2.85,
+            5.2,
+            -1.99
           ],
           "rotation": [
             0,
@@ -3508,17 +3765,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         },
         {
           "name": "anim_light_1",
           "position": [
-            0,
-            6.86,
-            -1.54
+            2.85,
+            5.8,
+            -1.99
           ],
           "rotation": [
             0,
@@ -3535,17 +3789,14 @@
             1,
             1,
             1
-          ],
-          "materials": [
-            "yellow"
           ]
         },
         {
           "name": "anim_light_2",
           "position": [
-            0,
-            7.5200000000000005,
-            -1.54
+            2.85,
+            6.4,
+            -1.99
           ],
           "rotation": [
             0,
@@ -3562,9 +3813,126 @@
             1,
             1,
             1
+          ]
+        },
+        {
+          "name": "anim_signal_light_0",
+          "position": [
+            1.7,
+            1.25,
+            4.5
           ],
-          "materials": [
-            "yellow"
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_signal_light_1",
+          "position": [
+            1.95,
+            1.25,
+            3.4
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_signal_light_2",
+          "position": [
+            2.2,
+            1.25,
+            2.3
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_signal_light_3",
+          "position": [
+            2.45,
+            1.25,
+            1.1999999999999997
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_signal_light_4",
+          "position": [
+            2.7,
+            1.25,
+            0.09999999999999964
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
           ]
         }
       ],
@@ -3717,7 +4085,13 @@
           24
         ]
       },
-      "rawBytes": 839456
+      "quality": "high",
+      "occluders": [
+        "occluder_connect_roof",
+        "occluder_connect_tree_4",
+        "occluder_connect_tree_8",
+        "occluder_connect_tree_12"
+      ]
     },
     {
       "id": "boat",
@@ -3898,6 +4272,8 @@
       ]
     }
   ],
-  "totalBytes": 3224464,
-  "totalTriangles": 227206
+  "totalBytes": 2593168,
+  "totalTriangles": 192587,
+  "quality": "high",
+  "walkLayout": "walk-layout.json"
 }

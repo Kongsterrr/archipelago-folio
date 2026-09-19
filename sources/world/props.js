@@ -64,7 +64,7 @@ export class PropManager {
  recoverCargo(item,boat){
   this.world.propagateModifiedBodyPositionsToColliders();this.world.updateSceneQueries();
   const candidates=[item.home];for(const z of [-34,-42,-49])for(const x of [-45,-37,-29,-21,-15])candidates.push({x,z});
-  const free=candidates.find(p=>Math.hypot(p.x-boat.x,p.z-boat.z)>4.5&&!this.world.intersectionWithShape({x:p.x,y:.35,z:p.z},{x:0,y:0,z:0,w:1},new this.R.Cuboid(1.4,.85,1.4),undefined,undefined,item.collider,item.body));
+  const free=candidates.find(p=>Math.hypot(p.x-boat.x,p.z-boat.z)>4.5&&!this.world.intersectionWithShape({x:p.x,y:.35,z:p.z},{x:0,y:0,z:0,w:1},new this.R.Cuboid(1.4,.85,1.4),undefined,0x00010001,item.collider,item.body));
   if(free)this.resetItem(item,free);return !!free;
  }
  snapshot(){return this.items.map(i=>({id:i.id,position:{...i.body.translation()},rotation:{...i.body.rotation()},velocity:{...i.body.linvel()},angularVelocity:{...i.body.angvel()},sleeping:i.body.isSleeping(),delivered:i.delivered}));}

@@ -1,3 +1,42 @@
+# V4 — Meet Jack validation · 2026-09-19
+
+## Automated checks
+
+`node --test tests/*.test.js`: **148 passing checks**, Node 24.19.0, Three.js 0.183.2, Rapier 0.17.3. The existing 121 checks remain passing; 27 V4 checks cover real character projections, Rapier movement, all nine routes, boarding state and migration. Production build passes with Node 24.19.0 and Vite 7.3.6.
+
+- Actual compressed, skinned Jack vertices (four headings and three idle phases): height 19.46–19.63% of the short edge at 1440×900,1920×1080 and 844×390; 21.92–22.14% at 390×844. Centre 58.56–59.17% from the top. Walking minimum distance tuned from 12 to 12.5; portrait remains 24.
+- All nine authored scenic loops complete with the real Rapier capsule, no recovery teleports, ground error below 0.005 units. Both full-hull berths on each island are free of sea colliders. All 28 station anchors and nine bench approaches are clear. Independent grid/path analysis checks station connectivity; Research’s raised exhibit uses the authored ramp.
+- Character floor uses one subdivided trimesh with internal-edge correction; triangles are capped at 8-unit edges to avoid numerical floor-sweep errors. Sea collision groups remain independent. Real wall collision stops the run animation’s driving speed, and the character can move away again.
+- 30/60/120 render schedules produce equal fixed-step walking results; diagonal movement is normalized. Camera resize does not modify character coordinates. Walking/boat zoom preferences are independent.
+- Repeated E commits once; canceled loading cannot commit later. Interruption before/after the fade midpoint uses the last committed actor. Nested read/background pauses freeze the transition; Travel preserves the background pause. Failed required loading leaves Jack aboard and retryable. A parked boat withstands external force and becomes dynamic again after boarding.
+- V3 preferences, livery, sightings and history migrate into V4. Island Walks remains separate from the 18 stamps. Original challenge order, crate settlement, pause accounting, storage-denial handling, fleet safety, marine configuration and boat CCD regression checks remain passing.
+- Amtrak’s train progress pauses before its projected path reaches Jack; clearing the path resumes its existing phase.
+
+## Browser verification
+
+Host: Apple M3 Max / Mac15,8 / 64 GB. Codex in-app browser, macOS. Checked 1440×900,1920×1080,390×844 and 844×390; phone dimensions are desktop viewport emulation.
+
+- All nine islands: map Travel → Go ashore → safe landing → island record → Return to boat. All nine records survive reload, with the prior 18-stamp count preserved.
+- Walked Harbor and Connect approaches; opened nearby exhibits and confirmed same-position return. Tested mobile full-screen reading, contact/repository links, map opening, Island Walks, and the nine-entry no-3D reading page with résumé access.
+- Activated Connect’s signal array, sat on its bench and stood by moving. Bench facing was corrected after visual inspection. Ground caps were separated from the coast ring so grass and clear paths render without coplanar overlap. Plaques, roofs and foliage can fade where they obstruct Jack.
+- Opened Boat Studio on land, changed finish and closed back to the same walking position. Starting each of Buoy Run, Cargo Dock and Lighthouse Link from shore returns Jack to sailing and initializes the existing challenge state.
+- WebGPU/high and forced WebGL2/low render the character and walking scene. No console errors observed in the WebGL2 session. Reduced-motion camera behavior is checked automatically; physical touch and mobile browser behavior still need device testing.
+- After traveling through all nine islands, a 1920×1080 WebGPU/high sample reported 139–144 FPS over the recent 30 one-second samples, 227 draw calls, 158,176 visible triangles, 617 geometries and 17 textures. WebGL2/low reported 144 FPS in a short local sample. These are this desktop’s observations, not mobile or long-duration guarantees.
+- Warm localhost ready measurements included 132 ms (WebGL2) and 144 ms (WebGPU). They exclude controlled cold-network conditions.
+
+## Assets and delivery
+
+- Jack: 87,280 bytes, 5,148 triangles, 6 material primitives, one skin/17 bones and seven clips. The seated and standing poses use one shared instance; no external textures.
+- Nine V4 high island models: 2,454,068 bytes. Low alternatives: 1,740,172 bytes. Only the selected quality is needed. The shared manifest and walk layout retain maritime coastlines and both land/water semantics.
+- Built HTML/CSS/JS plus boat, Harbor, Connect, Jack and walk configuration: approximately **1.54 MB gzip**, below the 6 MB initial-resource budget. Later nearby islands, traffic/fauna and optional fonts are outside this initial estimate. The V4 high island set plus Jack is below 3 MB.
+- Résumé and verified career/project facts are preserved; Connect adds the verified public repository URL. The source repository remains public; the hosted preview remains owner-private.
+
+## Remaining measurement limits
+
+Physical iPhone/Android devices, mobile Safari, a controlled 20 Mbps cold start and prolonged thermal/memory soak are not measured. Runtime network failure for an individual model was covered by the boarding failure test, not browser network fault injection. Human 25–40-second routes and visit duration remain playtesting targets; authored lengths are 29.2–38.1 seconds at 2.4 units/sec. No claims of mobile 30 FPS or a certified five-second cold start are made.
+
+---
+
 # V2 delivery validation
 
 ## Automated checks

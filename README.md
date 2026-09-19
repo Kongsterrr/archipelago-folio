@@ -2,20 +2,21 @@
 
 **A playable 3D portfolio by Jack Kong. Explore my work, island by island.**
 
-Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Dock to read, try a challenge, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
+Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V3 — Living Bay** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V4 — Meet Jack** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The hosted preview currently requires owner access. You can run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
 - **Nine content islands:** Jack’s Harbor; Amtrak, BeaconFire, and VisionX for experience; Affirmation, Research, and Catering for projects; Learning for education; and Connect for contact details.
+- **Meet Jack:** a shared animated character at the helm and on foot, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
 - **Boat Studio:** three selectable finishes on one detailed runabout model.
-- **Exploration records:** 18 island/discovery/challenge stamps plus a separate Sea Life journal.
+- **Exploration records:** 18 island/discovery/challenge stamps plus separate Sea Life and nine-island Island Walks journals.
 - **Direct access:** navigation, map shortcuts, dock panels, résumé download, and complete 2D reading mode.
 
 ## Version history
@@ -28,6 +29,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V2 — Exploration Playground** | Closer sailing, richer waterways, physical toys, and three challenges | [891195f](https://github.com/Kongsterrr/archipelago-folio/commit/891195f3a941d53c889a3d2fd2d32294ffb310c8) |
 | **V2.1 — Premium Boat** | A sculpted runabout and more distinct materials | [ece35a5](https://github.com/Kongsterrr/archipelago-folio/commit/ece35a51b2edac19f3c3596ccc8d31bbe7aa6eeb) |
 | **V3 — Living Bay** | Ambient traffic, marine life, finishes, full-pier docking, and island details | [07904dd](https://github.com/Kongsterrr/archipelago-folio/commit/07904ddebaf799780b56adeb3f86d7f30103784d) |
+
+| **V4 — Meet Jack** | A visible captain, nine walkable exhibitions, boarding, benches, and independent walking records | [Current V4 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -76,6 +79,20 @@ Added activity on the water and a new layer of island detail:
 - Coordinated simulation pausing so traffic and animals freeze with menus and challenges; travel clears temporary companion and horn-reply state.
 - Added 38 compressed fleet/fauna/detail GLBs totaling 705,992 bytes. The current main boat is 139,100 bytes, 11,129 triangles, and 16 material batches.
 
+### V4 — Meet Jack
+
+Made the islands places to visit on foot while preserving the sea and all existing portfolio content:
+
+- Added **one original animated Jack**: short dark hair, cream jacket, navy layers, a wristwatch, and light sneakers. The same skeleton sits at the helm, walks, runs, operates devices, sits, and stands up.
+- Changed the full-pier **E** action to **Go ashore**. A short fade safely parks the boat at one of two berths, switches to a capsule character controller, and brings the camera closer. **Read island** remains a separate shortcut.
+- Added walking ground, ramps, dock surfaces, building obstacles, and water-edge protection independently of the boat collision layer. Character movement uses 60 Hz Rapier updates, actual-speed animations, and screen-relative keyboard/touch input.
+- Rebuilt all **nine high/low island models** with continuous paths, **28 themed exhibit/action stops**, **nine benches**, detailed plaques and props, an open workshop and greenhouse, and a connected research platform.
+- Added pedestrian-aware train stopping, local roof/canopy/plaque fading, exhibit reading cameras, a parked-boat minimap icon, and **Return to boat**. Boat Studio returns to the same walking position.
+- Added **Island Walks (9)** without changing the original **18 stamps**. V3 finishes, settings, Sea Life sightings, and challenge bests migrate automatically. Walking and boat zoom preferences are independent.
+- Kept all three sea challenges: starting one from land first returns Jack to the boat. Epoch-guarded transitions prevent old callbacks from restoring a previous actor after travel, reset, or an interrupted boarding sequence.
+- Expanded the public WebMCP bridge with bounded `walk_jack`, boarding, and player/parked-boat state; sailing commands explain when Jack must board first.
+- Preserved direct HTML reading, verified résumé facts, the original boat physics, fleet, marine life, and private preview access. Added the confirmed public repository link to Connect Island.
+
 ## Run locally
 
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
@@ -94,7 +111,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V3 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and V1–V4 regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 
@@ -107,17 +124,19 @@ No API keys, backend, account setup, or environment variables are required to ru
 | Steer | A / D or ← / → |
 | Boost | Hold Shift |
 | Quick brake | Space |
-| Read a nearby island | E / Enter |
+| Go ashore / read a nearby exhibit / board | E / Enter |
+| Walk on land | WASD / arrows, relative to the screen |
+| Run on land | Hold Shift |
 | Operate the nearest available device | F |
 | Horn | H |
 | Map | M |
-| Return to a safe harbor | R |
+| Reset to safe harbor / current island dock | R |
 | Close a panel | Escape |
 | Camera zoom | Mouse wheel or + / − controls |
 
-Touch devices have a camera-relative joystick and on-screen driving, horn, reading, and action buttons. Boat Studio is available from Jack’s Harbor and Settings.
+Touch devices have a camera-relative joystick and on-screen driving, horn, reading, and action buttons. Boat Studio is available from Jack’s Harbor and Settings. On land, the joystick moves Jack and Boost becomes Run. Move to stand up from a bench; use Return to boat from anywhere on the current island.
 
-Opening a menu or switching away pauses simulation; an active challenge resumes after a short countdown. Docking, resetting, and traveling cancel an unfinished challenge. Sound starts off, and visual cues remain available while muted.
+Opening a menu or switching away pauses simulation; an active challenge resumes after a short countdown. Going ashore, resetting, and traveling cancel an unfinished challenge. On land, the parked boat stays locked while sea life and traffic continue. Reading pauses the whole simulation. Sound starts off, and visual cues remain available while muted.
 
 ## Technology and structure
 
@@ -139,7 +158,7 @@ static/
 tests/                   Automated regression checks
 ```
 
-`CameraRig` manages framing; `ChallengeManager` owns challenge state and timing; `DiscoveryStore` persists local progress. `AmbientFleet`, `MarineLife`, `DockInteraction`, `BoatAppearance`, and `IslandDetails` provide the V3 systems. Contact feedback uses a shared dispatch path.
+`PlayerController` separates locomotion from pause reasons; `BoardingController` commits one actor transition at the fade midpoint; `CharacterController` handles the kinematic capsule; `IslandWalkWorld` consumes `walk-layout.json` for shared high/low terrain and obstacles. `JackAvatar` reparents one skin between the boat and world. `CameraRig` manages framing; `ChallengeManager` owns challenge state and timing; `DiscoveryStore` persists local progress. `AmbientFleet`, `MarineLife`, `DockInteraction`, `BoatAppearance`, provide the sea systems. V4 island details are integrated into the walkable models; legacy `IslandDetails` overlays are disabled to keep paths clear. Contact feedback uses a shared dispatch path.
 
 ## Customize the content
 
@@ -152,14 +171,14 @@ Career facts and project claims come from the supplied résumé. Island devices 
 
 ## Rebuild the original assets
 
-Generated assets are checked in. When modifying source geometry, rebuild the core high/low models in this order:
+Generated assets are checked in. Regenerate the current V4 character and islands with:
 
 ```sh
-npm run models
-npm run compress
-node scripts/build-low-assets.mjs
-node scripts/finalize-low-assets.mjs
+node scripts/build-jack.mjs
+node scripts/build-walk-islands.mjs
 ```
+
+The island builder exports both quality variants plus `walk-layout.json`, preserving the existing boat. The earlier `build-assets`, compression, and low-asset scripts are retained for the V1/V2 source history; running them would replace the V4 island design. Use the V4 builder for current islands.
 
 To rebuild only the main boat:
 
@@ -181,8 +200,8 @@ Intermediate files live in ignored `.asset-build/`. Models use geometry and flat
 
 - **Rendering fallback:** WebGPU normally falls back to WebGL2, then to HTML reading mode if 3D fails. Use `?webgl` to request WebGL2 or `?no3d` for reading mode.
 - **Accessibility:** keyboard navigation, visible focus, panel focus restoration, reduced motion, optional sound, and direct access to all portfolio entries.
-- **Local storage only:** preferences, boat finish, exploration records, Sea Life observations, and versioned challenge bests. Blocked storage falls back to an in-memory session. There are no accounts, remote leaderboards, or application database.
-- **Recorded V3 verification:** 121 automated checks passed, with desktop WebGPU/WebGL2 and portrait/landscape viewport checks. See [`VALIDATION.md`](VALIDATION.md) for conditions, measurements, and remaining limits.
+- **Local storage only:** preferences, boat finish, exploration records, Sea Life observations, Island Walks, separate camera zoom preferences, and versioned challenge bests. Transient world positions are never saved; every refresh starts Jack aboard at the harbor. Blocked storage falls back to an in-memory session. There are no accounts, remote leaderboards, or application database.
+- **Recorded V4 verification:** 148 automated checks passed, with desktop WebGPU/WebGL2 and portrait/landscape viewport checks. See [`VALIDATION.md`](VALIDATION.md) for conditions, measurements, and remaining limits.
 
 Physical iPhone/Android performance, sustained mobile 30 FPS, controlled 20 Mbps cold-start timing, and long-duration thermal behavior have not yet been measured. Desktop viewport emulation does not establish those results.
 
@@ -194,6 +213,6 @@ Physical iPhone/Android performance, sustained mobile 30 FPS, controlled 20 Mbps
 
 Inspired by [Bruno Simon’s portfolio](https://bruno-simon.com/) and the organization of [`folio-2025` at commit `41046b5`](https://github.com/brunosimon/folio-2025/tree/41046b57eeed8d156d9c3fd7fa259900baef7816). This project retains the small event dispatcher and its MIT attribution and adapts the input, update-loop, interaction-area, and camera-mode approach for an original ocean world.
 
-The boat, islands, fleet, animals, effects, progression, and portfolio content are specific to Jack’s Archipelago. Bruno’s car, world assets, branding, personal content, music, and private services are not shipped.
+Jack’s character, boat, islands, fleet, animals, effects, progression, and portfolio content are specific to Jack’s Archipelago. Bruno’s car, world assets, branding, personal content, music, and private services are not shipped.
 
 See [`LICENSE`](LICENSE) for the preserved MIT license and [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for dependency, font, résumé, and asset provenance.

@@ -1,0 +1,137 @@
+{
+  "revision": "v4-meet-jack",
+  "file": "jack.glb",
+  "height": 1.3,
+  "forward": "-Z",
+  "helmAnchor": [
+    0.28324,
+    -0.4496,
+    0.00485
+  ],
+  "helmScale": 0.97,
+  "helmAuthorAnchor": [
+    0.292,
+    0.32,
+    0.005
+  ],
+  "benchAnchorHeight": 0.32,
+  "clips": [
+    "idle",
+    "walk",
+    "run",
+    "helm",
+    "interact",
+    "sit",
+    "stand"
+  ],
+  "bytes": 87280,
+  "rawBytes": 417520,
+  "triangles": 5148,
+  "materials": 6,
+  "drawCalls": 6,
+  "joints": [
+    "Hips",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "LeftArm",
+    "LeftForeArm",
+    "LeftHand",
+    "LeftUpLeg",
+    "LeftLeg",
+    "LeftFoot",
+    "RightArm",
+    "RightForeArm",
+    "RightHand",
+    "RightUpLeg",
+    "RightLeg",
+    "RightFoot"
+  ],
+  "skins": 1,
+  "bounds": {
+    "min": [
+      -0.2290000021457672,
+      3.3527608467309733e-10,
+      -0.1614999920129776
+    ],
+    "max": [
+      0.2290000021457672,
+      1.2999999523162842,
+      0.12678417563438416
+    ]
+  },
+  "dimensions": [
+    0.4580000042915344,
+    1.2999999519810082,
+    0.28828416764736176
+  ],
+  "animations": [
+    {
+      "name": "idle",
+      "tracks": 18,
+      "duration": 2
+    },
+    {
+      "name": "walk",
+      "tracks": 18,
+      "duration": 0.9200000166893005
+    },
+    {
+      "name": "run",
+      "tracks": 18,
+      "duration": 0.6200000047683716
+    },
+    {
+      "name": "helm",
+      "tracks": 18,
+      "duration": 2
+    },
+    {
+      "name": "interact",
+      "tracks": 18,
+      "duration": 1.100000023841858
+    },
+    {
+      "name": "sit",
+      "tracks": 18,
+      "duration": 2
+    },
+    {
+      "name": "stand",
+      "tracks": 18,
+      "duration": 0.6000000238418579
+    }
+  ],
+  "textures": 0,
+  "compression": "EXT_meshopt_compression",
+  "placement": {
+    "originalProceduralAsset": true,
+    "height": 1.3,
+    "forward": "-Z",
+    "helmAnchor": [
+      0.28324,
+      -0.4496,
+      0.00485
+    ],
+    "helmScale": 0.97,
+    "helmAuthorAnchor": [
+      0.292,
+      0.32,
+      0.005
+    ],
+    "benchAnchorHeight": 0.32,
+    "clips": [
+      "idle",
+      "walk",
+      "run",
+      "helm",
+      "interact",
+      "sit",
+      "stand"
+    ],
+    "rig": "rigid-weight shared skeleton",
+    "benchPlacement": "Set root Y to bench seat surface minus 0.52; sit clip keeps pelvis height. Cross-fade sit/stand while runtime adjusts the root to floor level.",
+    "helm": "Parent beneath runtime boatVisual; position [.28324,-.4496,.00485], scale .97, identity rotation. This includes the boat builder baked transform (scale .97, Y -.76). Restore scale 1 on land. Clip helm does not move root."
+  }
+}

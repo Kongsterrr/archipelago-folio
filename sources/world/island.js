@@ -9,7 +9,7 @@ export class IslandController {
    if(o.name.startsWith('anim_'))this.nodes.push({object:o,name:o.name,position:o.position.clone(),rotation:o.rotation.clone(),scale:o.scale.clone()});
    if(o.isMesh){
     const list=Array.isArray(o.material)?o.material:[o.material];
-    if(!/sand|grass|wood|stone|trunk/i.test(list[0]?.name||'')){
+    let branch=o,occludes=false;while(branch&&branch!==model){if(branch.name.startsWith('occluder_')||branch.name.startsWith('station_')||branch.userData.occluder)occludes=true;branch=branch.parent;}if(occludes){
      o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();
      const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.transparent=true;m.opacity=1;}
      this.occluders.push(o);
@@ -22,7 +22,7 @@ export class IslandController {
  activate(){this.elapsed=0;this.duration=this.island.id==='amtrak'?10:this.island.id==='learning'?10:6;return islandActions[this.island.id]?.[1];}
  update(dt,position,time,focused=false,reduced=false){
   const distance=Math.hypot(position.x-this.island.x,position.z-this.island.z);
-  this.elapsed+=dt;const playing=this.elapsed<this.duration;
+  let advance=dt;if(this.island.id==='amtrak'&&this.pedestrian&&this.elapsed<this.duration){const tr=this.island.animation?.train,c=tr?.trackCentre||[0,0,-1.4],r=tr?.trackRadii||[8.8,5.8],p=this.pedestrian,dx=p.x-this.island.x,dz=p.z-this.island.z,co=Math.cos(this.island.rotation),si=Math.sin(this.island.rotation),px=dx*co-dz*si,pz=dx*si+dz*co;for(let n=0;n<=8;n++){const a=(this.elapsed+n*.06)/Math.max(1,this.duration)*Math.PI*2;if(Math.hypot(c[0]+Math.cos(a)*r[0]-px,c[2]+Math.sin(a)*r[1]-pz)<2.2){advance=0;break;}}}this.elapsed+=advance;const playing=this.elapsed<this.duration;
   if(distance>80&&!focused&&!playing)return;
   const t=this.elapsed,phase=Math.min(1,t/Math.max(1,this.duration)),envelope=playing?Math.sin(Math.min(1,t*2)*Math.PI/2)*Math.min(1,(this.duration-t)*2):0;
   for(const node of this.nodes){
