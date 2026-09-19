@@ -1,3 +1,35 @@
+# V4.2 — A Livelier Jack validation · 2026-09-19
+
+## Automated checks
+
+`node --test tests/*.test.js`: **168 passing checks**, Node 24.19.0 / Three.js 0.183.2 / Rapier 0.17.3. The 157 existing checks remain, plus eleven checks for the rebuilt model and animation behavior:
+
+- Interrupted idle/walk/run/interaction blends keep normalized action weights, including stopped strides; walk/run transfer their stride phase and use speed hysteresis.
+- Pausing holds the complete rendered pose, expression clock and bench-exit interpolation. Boarding/reset clears outgoing gestures and transition state.
+- Natural blinking scales both eyes and their highlights about their own centers; expressions restore the authored pose before applying offsets, preventing cumulative deformation. Reduced motion keeps the neutral face and head.
+- Continuous two-bone skin weights bridge elbows and knees. Actual deformed-vertex projection checks still meet desktop 16–20% / portrait 18–24% character-height targets at 1440×900, 1920×1080, 390×844 and 844×390.
+- Existing helm tests confirm fixed hand positions and orientations under steering, boat motion, pauses and 30/60/120 FPS schedules. The original nine-island route, collision, challenge and storage tests remain passing.
+
+## Character asset
+
+The original shared GLB is **155,476 bytes**, **15,564 triangles**, six material primitives, one 22-joint skin and seven clips, with no external textures. Height remains **1.30 units**; the 0.596-unit head gives approximately **2.18 heads tall**, compared with V4.1's 2.7. Rounded cheeks, inset blush, larger highlighted eyes, swept hair, jacket seams/zipper and compact shoes replace the earlier proportions. Continuous cloth around joints replaces separate bead-like segments.
+
+The decoded asset builder samples 481 frames per gait: lowest sole is 1.16–2.15 mm above ground while walking and 1.09–19.48 mm while running. Across 121 helm frames, hands have no angular drift and only floating-point position noise. Dominant-weight lower-leg geometry clears the bench front by 22.6 mm. These numeric checks accompany visual inspection; they do not prove every possible animation blend is free of intersections. The extra geometry raises the previous 12,000-triangle target to a documented 16,000 limit while keeping the six-material and 350 KB limits.
+
+Production Vite build passed; the built Jack GLB matches the checked source asset byte for byte.
+
+## Browser verification
+
+Host remains Apple M3 Max / Mac15,8 / 64 GB, macOS, Codex in-app browser. Phone dimensions are desktop viewport emulation.
+
+- Reviewed the actual exported GLB front, side, three-quarter and seated helm poses. Inspected the final character in the live local scene, including Connect's bench, standing again, walking/running, Harbor landing and returning to the boat.
+- Checked 1440×900, 1920×1080, 390×844 and 844×390. The character stays clear of primary touch controls. Paused screenshots were resumed by focusing the canvas before judging an animation transition.
+- WebGPU low/high and WebGL2 high render the new character. Reduced motion remains usable. Alternating boosted turns → reading → Travel → close returns a stopped boat in sailing mode without old input.
+- No console errors in the final WebGL2 session. A short WebGL2/high desktop observation reported 144 FPS; this is not a sustained performance guarantee.
+- Physical phones, mobile Safari, controlled cold-network loading and a long thermal/memory soak were not measured. Existing HTML fallback and résumé/content data are unchanged.
+
+---
+
 # V4.1 — Little Captain Jack validation · 2026-09-19
 
 ## Automated checks

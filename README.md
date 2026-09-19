@@ -4,14 +4,14 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V4.1 — Little Captain Jack** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V4.2 — A Livelier Jack** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The hosted preview currently requires owner access. You can run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
 - **Nine content islands:** Jack’s Harbor; Amtrak, BeaconFire, and VisionX for experience; Affirmation, Research, and Catering for projects; Learning for education; and Connect for contact details.
-- **Meet Jack:** a round, 2.7-head-tall cartoon captain with a steady helm pose and shared animations on foot, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
+- **Meet Jack:** a round, approximately 2.2-head-tall cartoon captain with blinking eyes, gentle expressions, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
@@ -30,7 +30,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V2.1 — Premium Boat** | A sculpted runabout and more distinct materials | [ece35a5](https://github.com/Kongsterrr/archipelago-folio/commit/ece35a51b2edac19f3c3596ccc8d31bbe7aa6eeb) |
 | **V3 — Living Bay** | Ambient traffic, marine life, finishes, full-pier docking, and island details | [07904dd](https://github.com/Kongsterrr/archipelago-folio/commit/07904ddebaf799780b56adeb3f86d7f30103784d) |
 | **V4 — Meet Jack** | A visible captain, nine walkable exhibitions, boarding, benches, and independent walking records | [6dc6b91](https://github.com/Kongsterrr/archipelago-folio/commit/6dc6b914dfc4132f20810198a9795300c409c209) |
-| **V4.1 — Little Captain Jack** | Cute cartoon proportions, recalibrated poses, and stable hands at the helm | [Current V4.1 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V4.1 — Little Captain Jack** | Cute cartoon proportions, recalibrated poses, and stable hands at the helm | [6600e26](https://github.com/Kongsterrr/archipelago-folio/commit/6600e26e523221c67f163ea210e9e0cbc0dd27f2) |
+| **V4.2 — A Livelier Jack** | A fuller chibi silhouette, facial expressions, and continuous motion transitions | [Current V4.2 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -104,6 +105,16 @@ Refined Jack’s appearance and made driving visually stable:
 - Preserved nine-island walking, all sea challenges, boat finishes, verified content, and existing browser records. One shared skeleton and six material batches serve every mode.
 - Moved phone arrival messages clear of the character. The rebuilt GLB is 131,676 bytes with 11,972 triangles; 157 regression checks pass.
 
+### V4.2 — A Livelier Jack
+
+Reworked Jack’s silhouette and animation to make the character feel more expressive:
+
+- Increased the head proportion to approximately **2.2 heads tall**, with a broad round face, low-set highlighted eyes, small button nose, soft smile and cheeks, fuller swept hair, a compact bomber jacket, shorter limbs, and rounded sneakers. Standing height remains 1.30 units.
+- Added five facial joints for blinking eyes, brows, and a responsive smile. Subtle idle glances and nearby-exhibit attention use the paused simulation clock; reduced motion restores the calm authored face.
+- Replaced interrupted animation fades with normalized blends that retain current contributions. Walk/run transitions preserve stride phase and use speed hysteresis; collision stops pause the feet.
+- Made bench exit heading and position ease out of the seated pose. Menus and background pauses now freeze the complete rendered character rather than silently resetting a walk or advancing a stand transition.
+- Preserved the fixed helm hand contacts and neutral steering wheel, one shared avatar, all nine walking islands, existing controls, verified portfolio content, and browser records.
+
 ## Run locally
 
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
@@ -122,7 +133,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V1–V4.1 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and V1–V4.2 regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 

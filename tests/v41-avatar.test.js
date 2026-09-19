@@ -30,9 +30,10 @@ test('new short legs clear the front bench slat at every authored bench facing',
   const seat={x:4,z:8};f.character.seated=true;f.character.seatYaw=yaw;f.character.seatVisual=f.avatar.seatPosition(seat,top,yaw);f.update(.3);
   f.scene.updateMatrixWorld(true);let tested=0;
   f.avatar.model.traverse(mesh=>{
-   if(!mesh.isSkinnedMesh||!mesh.visible)return;mesh.skeleton.update();const indices=mesh.geometry.getAttribute('skinIndex');
+   if(!mesh.isSkinnedMesh||!mesh.visible)return;mesh.skeleton.update();const indices=mesh.geometry.getAttribute('skinIndex'),weights=mesh.geometry.getAttribute('skinWeight');
    for(let i=0;i<indices.count;i++){
-    if(!/^(Left|Right)(Leg|Foot)$/.test(mesh.skeleton.bones[indices.getX(i)].name))continue;
+    let dominant=0;for(let k=1;k<4;k++)if(weights.getComponent(i,k)>weights.getComponent(i,dominant))dominant=k;
+    if(!/^(Left|Right)(Leg|Foot)$/.test(mesh.skeleton.bones[indices.getComponent(i,dominant)].name))continue;
     const p=mesh.getVertexPosition(i,new THREE.Vector3()).applyMatrix4(mesh.matrixWorld);
     if(p.y>top||p.y<top-.12)continue;
     const forward=-(p.x-seat.x)*Math.sin(yaw)-(p.z-seat.z)*Math.cos(yaw);

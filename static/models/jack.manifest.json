@@ -1,23 +1,40 @@
 {
-  "revision": "v41-round-jack",
+  "revision": "v42-soft-toy-jack",
   "file": "jack.glb",
   "height": 1.3,
-  "headHeight": 0.48,
-  "headsTall": 2.7083333333333335,
+  "headHeight": 0.596,
+  "headsTall": 2.1812080536912752,
   "forward": "-Z",
   "helmAuthorAnchor": [
     0.292,
-    0.425,
+    0.515,
     0.005
   ],
   "helmAnchor": [
     0.28324,
-    -0.34775,
+    -0.26045,
     0.00485
   ],
   "helmScale": 0.97,
-  "benchSeatOffset": 0.425,
-  "benchForwardOffset": 0.22,
+  "benchSeatOffset": 0.33,
+  "benchForwardOffset": 0.27,
+  "facial": {
+    "eyeBones": [
+      "LeftEye",
+      "RightEye"
+    ],
+    "browBones": [
+      "LeftBrow",
+      "RightBrow"
+    ],
+    "mouthBone": "Mouth",
+    "blinkAxis": "y",
+    "openScale": 1,
+    "closedScale": 0.08,
+    "headBone": "Head",
+    "gazeYawLimit": 0.16,
+    "gazePitchLimit": 0.08
+  },
   "clips": [
     "idle",
     "walk",
@@ -27,9 +44,9 @@
     "sit",
     "stand"
   ],
-  "bytes": 131676,
-  "rawBytes": 667396,
-  "triangles": 11972,
+  "bytes": 155476,
+  "rawBytes": 768160,
+  "triangles": 15564,
   "materials": 6,
   "drawCalls": 6,
   "joints": [
@@ -38,6 +55,11 @@
     "Chest",
     "Neck",
     "Head",
+    "LeftEye",
+    "RightEye",
+    "LeftBrow",
+    "RightBrow",
+    "Mouth",
     "LeftArm",
     "LeftForeArm",
     "LeftHand",
@@ -54,55 +76,55 @@
   "skins": 1,
   "bounds": {
     "min": [
-      -0.21052904427051544,
-      3.3527611242867295e-10,
-      -0.1903655081987381
+      -0.27799999713897705,
+      -4.3213366218708416e-10,
+      -0.26247552037239075
     ],
     "max": [
-      0.21052904427051544,
-      1.3009015321731567,
-      0.17240506410598755
+      0.27799999713897705,
+      1.2999999523162842,
+      0.24267597496509552
     ]
   },
   "dimensions": [
-    0.4210580885410309,
-    1.3009015318378807,
-    0.36277057230472565
+    0.5559999942779541,
+    1.2999999527484178,
+    0.5051514953374863
   ],
   "animations": [
     {
       "name": "idle",
-      "tracks": 18,
+      "tracks": 23,
       "duration": 2
     },
     {
       "name": "walk",
-      "tracks": 18,
-      "duration": 0.9200000166893005
+      "tracks": 23,
+      "duration": 0.7200000286102295
     },
     {
       "name": "run",
-      "tracks": 18,
-      "duration": 0.6200000047683716
+      "tracks": 23,
+      "duration": 0.47999998927116394
     },
     {
       "name": "helm",
-      "tracks": 18,
+      "tracks": 23,
       "duration": 2
     },
     {
       "name": "interact",
-      "tracks": 18,
+      "tracks": 23,
       "duration": 1.100000023841858
     },
     {
       "name": "sit",
-      "tracks": 18,
+      "tracks": 23,
       "duration": 2
     },
     {
       "name": "stand",
-      "tracks": 18,
+      "tracks": 23,
       "duration": 0.6000000238418579
     }
   ],
@@ -112,22 +134,39 @@
     "originalProceduralAsset": true,
     "characterSpec": {
       "height": 1.3,
-      "headHeight": 0.48,
-      "headsTall": 2.7083333333333335,
+      "headHeight": 0.596,
+      "headsTall": 2.1812080536912752,
       "forward": "-Z",
       "helmAuthorAnchor": [
         0.292,
-        0.425,
+        0.515,
         0.005
       ],
       "helmAnchor": [
         0.28324,
-        -0.34775,
+        -0.26045,
         0.00485
       ],
       "helmScale": 0.97,
-      "benchSeatOffset": 0.425,
-      "benchForwardOffset": 0.22,
+      "benchSeatOffset": 0.33,
+      "benchForwardOffset": 0.27,
+      "facial": {
+        "eyeBones": [
+          "LeftEye",
+          "RightEye"
+        ],
+        "browBones": [
+          "LeftBrow",
+          "RightBrow"
+        ],
+        "mouthBone": "Mouth",
+        "blinkAxis": "y",
+        "openScale": 1,
+        "closedScale": 0.08,
+        "headBone": "Head",
+        "gazeYawLimit": 0.16,
+        "gazePitchLimit": 0.08
+      },
       "clips": [
         "idle",
         "walk",
@@ -139,22 +178,39 @@
       ]
     },
     "height": 1.3,
-    "headHeight": 0.48,
-    "headsTall": 2.7083333333333335,
+    "headHeight": 0.596,
+    "headsTall": 2.1812080536912752,
     "forward": "-Z",
     "helmAuthorAnchor": [
       0.292,
-      0.425,
+      0.515,
       0.005
     ],
     "helmAnchor": [
       0.28324,
-      -0.34775,
+      -0.26045,
       0.00485
     ],
     "helmScale": 0.97,
-    "benchSeatOffset": 0.425,
-    "benchForwardOffset": 0.22,
+    "benchSeatOffset": 0.33,
+    "benchForwardOffset": 0.27,
+    "facial": {
+      "eyeBones": [
+        "LeftEye",
+        "RightEye"
+      ],
+      "browBones": [
+        "LeftBrow",
+        "RightBrow"
+      ],
+      "mouthBone": "Mouth",
+      "blinkAxis": "y",
+      "openScale": 1,
+      "closedScale": 0.08,
+      "headBone": "Head",
+      "gazeYawLimit": 0.16,
+      "gazePitchLimit": 0.08
+    },
     "clips": [
       "idle",
       "walk",
@@ -164,26 +220,118 @@
       "sit",
       "stand"
     ],
-    "rig": "One17-joint skeleton; rounded weighted toy geometry",
+    "rig": "One 22-joint skeleton including independently blinkable eyes; rounded soft toy geometry",
     "benchPlacement": "Root Y = seat surface Y - characterSpec.benchSeatOffset; move root characterSpec.benchForwardOffset toward seated facing. Restore floor position while stand plays .6s.",
     "helm": "Runtime boatVisual anchor/scale are characterSpec.helmAnchor/.helmScale. All helm body and hand keys are constant."
   },
   "groundContact": {
     "walk": {
       "sampledFrames": 481,
-      "minimumLowestSoleY": 0.001082947726240402,
-      "maximumLowestSoleY": 0.002359202668079985
+      "minimumLowestSoleY": 0.0011634063123736604,
+      "maximumLowestSoleY": 0.0021507257445021466
     },
     "run": {
       "sampledFrames": 481,
-      "minimumLowestSoleY": 0.0003302987707862748,
-      "maximumLowestSoleY": 0.019505656080413825
+      "minimumLowestSoleY": 0.0010943999749519762,
+      "maximumLowestSoleY": 0.019478991249093247
+    }
+  },
+  "helmContact": {
+    "sampledFrames": 121,
+    "hands": {
+      "Left": {
+        "position": [
+          -0.09300000119702542,
+          0.43500000483598467,
+          -0.22800000464332543
+        ],
+        "maxTargetError": 6.810292915323519e-9,
+        "maxPositionDrift": 1.1102230246251565e-16,
+        "maxAngleDrift": 0
+      },
+      "Right": {
+        "position": [
+          0.09300000119702542,
+          0.43500000483598467,
+          -0.22800000464332543
+        ],
+        "maxTargetError": 6.810292915323519e-9,
+        "maxPositionDrift": 1.1102230246251565e-16,
+        "maxAngleDrift": 0
+      }
+    }
+  },
+  "facialRig": {
+    "LeftEye": {
+      "vertices": 348,
+      "localPivot": [
+        -0.087,
+        -0.047,
+        -0.22
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "RightEye": {
+      "vertices": 348,
+      "localPivot": [
+        0.087,
+        -0.047,
+        -0.22
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "LeftBrow": {
+      "vertices": 77,
+      "localPivot": [
+        -0.087,
+        0.04,
+        -0.22
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "RightBrow": {
+      "vertices": 77,
+      "localPivot": [
+        0.087,
+        0.04,
+        -0.22
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "Mouth": {
+      "vertices": 90,
+      "localPivot": [
+        0,
+        -0.159,
+        -0.2
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
     }
   },
   "benchFit": {
     "frontEdgeZ": -0.31,
-    "shinRearBelowSeatZ": -0.3192495766125199,
-    "shinClearance": 0.009249576612519905,
-    "hipsBottomAboveSeat": 0.003975525837914995
+    "shinRearBelowSeatZ": -0.33259778754164504,
+    "shinClearance": 0.022597787541645042,
+    "hipsBottomAboveSeat": 0.00004851232395908234
   }
 }

@@ -36,15 +36,15 @@ const dir=new URL('../static/models/',import.meta.url),output=new URL('jack.glb'
 await fs.mkdir(dir,{recursive:true});await io.write(fileURLToPath(output),document);
 const checked=await io.read(fileURLToPath(output)),r=checked.getRoot();
 const primitives=r.listMeshes().flatMap(m=>m.listPrimitives());
-const report={revision:'v41-round-jack',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
+const report={revision:'v42-soft-toy-jack',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
  triangles:primitives.reduce((s,p)=>s+(p.getIndices()?.getCount()||p.getAttribute('POSITION').getCount())/3,0),materials:r.listMaterials().length,drawCalls:primitives.length,
  joints:Object.keys(bones),skins:r.listSkins().length,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),
  animations:r.listAnimations().map(a=>({name:a.getName(),tracks:a.listChannels().length,duration:Math.max(...a.listSamplers().map(s=>Math.max(...s.getInput().getArray())))})),textures:r.listTextures().length,
  compression:'EXT_meshopt_compression',placement:root.userData};
 for(const accessor of r.listAccessors())for(const n of accessor.getArray()||[])if(!Number.isFinite(n))throw Error('Non-finite Jack accessor');
-if(report.triangles>12000||report.materials>6||report.drawCalls>6||report.bytes>350000)throw Error('Jack asset exceeded budget');
+if(report.triangles>16000||report.materials>6||report.drawCalls>6||report.bytes>350000)throw Error('Jack asset exceeded budget');
 if(report.skins!==1||report.animations.length!==JACK_SPEC.clips.length)throw Error('Missing shared skeleton or clips');
-if(Math.abs(report.bounds.min[1])>.002||Math.abs(report.dimensions[1]-1.30)>.025)throw Error('Incorrect Jack height/origin');
+if(Math.abs(report.bounds.min[1])>.002||Math.abs(report.dimensions[1]-1.30)>.002)throw Error('Incorrect Jack height/origin');
 // Validate contact after decoding the compressed file, including between-key
 // interpolation; author-time sole corrections must survive export/quantization.
 const encoded=await fs.readFile(output);
@@ -62,13 +62,42 @@ for(const name of ['walk','run']){
  report.groundContact[name]={sampledFrames:481,minimumLowestSoleY:min,maximumLowestSoleY:max};
  if(min<0||max>(name==='walk'?.003:.020))throw Error(`${name}: exported sole contact is out of range (${min}, ${max})`);
 }
+// Decode-test the actual exported rig: grip position and orientation stay
+// invariant through the full helm loop, including interpolation between keys.
+mixer.stopAllAction();mixer.clipAction(decoded.animations.find(c=>c.name==='helm')).play();
+report.helmContact={sampledFrames:121,hands:{}};
+for(const [side,sign]of [['Left',-1],['Right',1]]){
+ const hand=decoded.scene.getObjectByName(`${side}Hand`),expected=new THREE.Vector3(sign*.093,.435,-.228);
+ let referenceP,referenceQ,maxTargetError=0,maxPositionDrift=0,maxAngleDrift=0;
+ for(let frame=0;frame<=120;frame++){
+  mixer.setTime(2*frame/120);decoded.scene.updateMatrixWorld(true);
+  const position=hand.getWorldPosition(new THREE.Vector3()),q=hand.getWorldQuaternion(new THREE.Quaternion()).normalize();
+  if(!referenceP){referenceP=position.clone();referenceQ=q.clone();}
+  maxTargetError=Math.max(maxTargetError,position.distanceTo(expected));
+  maxPositionDrift=Math.max(maxPositionDrift,position.distanceTo(referenceP));
+  maxAngleDrift=Math.max(maxAngleDrift,q.angleTo(referenceQ));
+ }
+ report.helmContact.hands[side]={position:referenceP.toArray(),maxTargetError,maxPositionDrift,maxAngleDrift};
+ if(maxTargetError>.001||maxPositionDrift>1e-6||maxAngleDrift>1e-6)throw Error(`${side}: exported helm grip changed`);
+}
+// Facial pieces must remain attached to independent pivots. Verify the blink
+// changes only each eye's local height, preserves its center and carries glints.
+report.facialRig={};
+for(const name of ['LeftEye','RightEye','LeftBrow','RightBrow','Mouth']){
+ const b=decoded.scene.getObjectByName(name);if(!b?.isBone)throw Error(`Missing facial bone ${name}`);
+ let vertices=0;for(const mesh of skinned){const ids=mesh.geometry.getAttribute('skinIndex');for(let i=0;i<ids.count;i++)if(mesh.skeleton.bones[ids.getX(i)]===b)vertices++;}
+ if(vertices===0)throw Error(`Unweighted facial bone ${name}`);
+ report.facialRig[name]={vertices,localPivot:b.position.toArray(),scale:b.scale.toArray()};
+ if(b.scale.distanceTo(new THREE.Vector3(1,1,1))>1e-6)throw Error(`Unexpected facial rest scale ${name}`);
+}
 // The current three bench slats reach 0.31m forward of bench center. Validate the
 // authored forward offset against actual skin vertices in the seated pose.
 mixer.stopAllAction();mixer.clipAction(decoded.animations.find(c=>c.name==='sit')).play();mixer.setTime(.25);
 decoded.scene.position.set(0,-JACK_SPEC.benchSeatOffset,-JACK_SPEC.benchForwardOffset);decoded.scene.updateMatrixWorld(true);for(const mesh of skinned)mesh.skeleton.update();
 let shinRear=-Infinity,hipsBottom=Infinity;
 for(const mesh of skinned){const ids=mesh.geometry.getAttribute('skinIndex');for(let n=0;n<ids.count;n++){
- const joint=mesh.skeleton.bones[ids.getX(n)].name;if(!['Hips','LeftLeg','RightLeg'].includes(joint))continue;
+ const weights=mesh.geometry.getAttribute('skinWeight');let dominant=0;for(let k=1;k<4;k++)if(weights.getComponent(n,k)>weights.getComponent(n,dominant))dominant=k;
+ const joint=mesh.skeleton.bones[ids.getComponent(n,dominant)].name;if(!['Hips','LeftLeg','RightLeg'].includes(joint))continue;
  const p=mesh.getVertexPosition(n,new THREE.Vector3()).applyMatrix4(mesh.matrixWorld);
  if(joint==='Hips')hipsBottom=Math.min(hipsBottom,p.y);else if(p.y<0)shinRear=Math.max(shinRear,p.z);
 }}
