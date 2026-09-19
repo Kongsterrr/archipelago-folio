@@ -40,3 +40,6 @@ dialog{border:1px solid #ffffff80;color:var(--ink);background:#fffbf3;padding:0 
 .context-actions .quiet-action{background:#fffaf0e8;color:#254f62;box-shadow:none;font-size:13px}.exhibit-copy{font-size:17px;line-height:1.8;margin:24px 0 28px}.exhibit-copy ul{padding-left:22px}.exhibit-copy li{margin-bottom:12px}.walking .island-labels{display:none}.walking .controls{gap:18px}.no-3d .walking-hud{display:none!important}
 @media(max-width:700px){.walking-hud{left:20px;top:86px;padding:12px 14px;max-width:210px;gap:5px}.walking-hud strong{font-size:17px}.walking-hud button{min-height:36px}.walking-hud .eyebrow{font-size:9px}.context-actions .quiet-action{padding:8px 12px;min-height:36px}.walking .context-actions{max-width:215px}}
 @media(max-height:560px) and (orientation:landscape){.walking-hud{top:70px;left:20px;padding:10px 14px}.walking-hud strong{font-size:16px}.walking-hud .eyebrow{display:none}}
+/* Keep arrival feedback above the larger character, clear of walking controls. */
+@media(max-width:700px) and (orientation:portrait){.walking .toast{top:clamp(204px,26dvh,240px);bottom:auto}}
+@media(max-height:560px) and (orientation:landscape){.walking .toast{top:72px;bottom:auto;max-width:calc(100vw - 440px)}}

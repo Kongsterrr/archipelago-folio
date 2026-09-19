@@ -4,14 +4,14 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V4 — Meet Jack** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V4.1 — Little Captain Jack** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The hosted preview currently requires owner access. You can run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
 - **Nine content islands:** Jack’s Harbor; Amtrak, BeaconFire, and VisionX for experience; Affirmation, Research, and Catering for projects; Learning for education; and Connect for contact details.
-- **Meet Jack:** a shared animated character at the helm and on foot, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
+- **Meet Jack:** a round, 2.7-head-tall cartoon captain with a steady helm pose and shared animations on foot, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
@@ -21,7 +21,7 @@ The hosted preview currently requires owner access. You can run the complete pro
 
 ## Version history
 
-These milestones describe the actual source history. “V2.1” names the boat refinement between V2 and V3; these are documentation milestones, not npm versions or GitHub release tags.
+These milestones describe the actual source history. “V2.1” names the boat refinement between V2 and V3; these are source milestones, with no GitHub release tags. Package versions track releases from V4 onward.
 
 | Version | Focus | Source snapshot |
 | --- | --- | --- |
@@ -29,8 +29,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V2 — Exploration Playground** | Closer sailing, richer waterways, physical toys, and three challenges | [891195f](https://github.com/Kongsterrr/archipelago-folio/commit/891195f3a941d53c889a3d2fd2d32294ffb310c8) |
 | **V2.1 — Premium Boat** | A sculpted runabout and more distinct materials | [ece35a5](https://github.com/Kongsterrr/archipelago-folio/commit/ece35a51b2edac19f3c3596ccc8d31bbe7aa6eeb) |
 | **V3 — Living Bay** | Ambient traffic, marine life, finishes, full-pier docking, and island details | [07904dd](https://github.com/Kongsterrr/archipelago-folio/commit/07904ddebaf799780b56adeb3f86d7f30103784d) |
-
-| **V4 — Meet Jack** | A visible captain, nine walkable exhibitions, boarding, benches, and independent walking records | [Current V4 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V4 — Meet Jack** | A visible captain, nine walkable exhibitions, boarding, benches, and independent walking records | [6dc6b91](https://github.com/Kongsterrr/archipelago-folio/commit/6dc6b914dfc4132f20810198a9795300c409c209) |
+| **V4.1 — Little Captain Jack** | Cute cartoon proportions, recalibrated poses, and stable hands at the helm | [Current V4.1 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -93,6 +93,17 @@ Made the islands places to visit on foot while preserving the sea and all existi
 - Expanded the public WebMCP bridge with bounded `walk_jack`, boarding, and player/parked-boat state; sailing commands explain when Jack must board first.
 - Preserved direct HTML reading, verified résumé facts, the original boat physics, fleet, marine life, and private preview access. Added the confirmed public repository link to Connect Island.
 
+### V4.1 — Little Captain Jack
+
+Refined Jack’s appearance and made driving visually stable:
+
+- Rebuilt the original character with approximately **2.7-head-tall proportions**: a larger rounded face, swept dark hair, expressive eyes, a compact cream jacket, short navy trousers, and rounded sneakers. Standing height remains 1.30 units.
+- Re-authored the seven shared animations for the new skeleton proportions and recalibrated the helm seat, hand contacts, bench sitting, and standing recovery. Placement metadata travels with the GLB so runtime anchors match the asset.
+- Kept **both hands and the steering wheel in a fixed authored driving pose**. Steering still controls the boat and outboard, and instruments still respond to speed. Independent forearm offsets no longer make hands slip or snap during left/right input.
+- Cleared all animation blends and temporary interaction/seat state when switching between the boat and land, preventing a previous walking gesture from leaking into the helm pose.
+- Preserved nine-island walking, all sea challenges, boat finishes, verified content, and existing browser records. One shared skeleton and six material batches serve every mode.
+- Moved phone arrival messages clear of the character. The rebuilt GLB is 131,676 bytes with 11,972 triangles; 157 regression checks pass.
+
 ## Run locally
 
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
@@ -111,7 +122,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V1–V4 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and V1–V4.1 regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 

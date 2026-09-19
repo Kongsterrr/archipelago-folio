@@ -1,3 +1,45 @@
+# V4.1 — Little Captain Jack validation · 2026-09-19
+
+## Automated checks
+
+`node --test tests/*.test.js`: **157 passing checks**, Node 24.19.0 / Three.js 0.183.2 / Rapier 0.17.3. All 148 V4 checks remain; nine new avatar checks cover:
+
+- Hand positions and orientations stay fixed in boat-local space through alternating steering, moving/rocking boat transforms, frozen frames, reduced motion, and 30/60/120 FPS update schedules. The neutral wheel stays still while the engine and instruments respond.
+- Hard boarding resets stop every outgoing animation action, including interrupted walk-to-interact blends. Repeated boarding, canceled seated transitions, and reset from a bench retain one avatar and clear old gestures/standing interpolation.
+- The GLB's authored helm anchor, scale, bench height and forward placement are used at runtime. Actual skinned lower-leg vertices clear the front slat for all nine authored bench orientations.
+- Reduced motion stops idle/resting head motion while necessary walking animation still runs.
+
+Actual deformed-vertex camera checks continue to pass at 1440×900, 1920×1080, 390×844 and 844×390, across four headings. Standard character framing remains within desktop 16–20% / portrait 18–24% of the short viewport edge. Boat framing, fixed-step movement, collision, island routes, challenge states, storage-denial behavior and history migration retain their existing regression coverage.
+
+## Character asset verification
+
+The original character was rebuilt and compressed locally with `node scripts/build-jack.mjs`, then decoded again for geometry and animation checks:
+
+- **131,676 bytes**, **11,972 triangles**, six material primitives, one skin, 17 bones, seven clips and no external textures.
+- Standing height 1.3009 units, width 0.4211; head design 0.48 units, approximately **2.7 heads tall**.
+- Walk and run each sampled at **481 points per cycle** after compression. Lowest shoe surface: walk **1.08–2.36 mm** above ground; run **0.33–19.51 mm**, allowing a small flight phase. No sampled sole penetration.
+- Seated lower legs clear the bench's front edge by **9.25 mm**; the lowest pelvis surface is **3.98 mm** above the seat. New seat placement includes a 0.22-unit forward offset for the shorter thighs.
+- Helm palm samples overlap the neutral wheel rim; seated shoe clearance above the cockpit floor is approximately 5.3 mm. Helm body keys are static.
+- The generator checks numeric geometry, budgets, foot contact and bench clearance on every rebuild. These checks do not replace visual inspection of all intermediate animation blends.
+- Production build passed using Node 24.19.0. Built HTML/CSS/JS plus boat, Harbor, Connect, Jack and walk configuration total **1,565,914 bytes when gzip-compressed locally**; optional fonts and later scene assets are outside this initial estimate. The built Jack GLB matches the checked source asset exactly.
+
+## Browser verification
+
+Same host as V4: Apple M3 Max / Mac15,8 / 64 GB, macOS, Codex in-app browser. Phone dimensions are desktop viewport emulation.
+
+- Reviewed front, three-quarter, side and helm views of the actual GLB; inspected idle, run and seated poses. Corrected hair face winding and elbow/knee seams before final delivery.
+- All nine islands completed map Travel → Go ashore → Board boat. Walked and ran the Connect approach, used its bench, stood up, read content and returned to the boat. Bench placement was moved forward after in-scene inspection exposed the shorter shins behind the front slat.
+- Alternating boosted turns, reverse, reading during sailing, Travel and close leave the boat stopped with Jack aboard. Reading preserves walking X/Z; grounding can settle by submillimeter amounts in Y.
+- Checked the four specified viewport sizes. Portrait/landscape walking arrival messages were moved above the character to keep the larger head clear. Touch controls and Return to boat remain reachable.
+- WebGPU high/low and forced WebGL2 low render the character; the reduced-motion path remains usable. No console errors were observed in the WebGL2 session. The latest desktop sample reported 111 FPS during WebGL2/low walking; this is a short observation, not a sustained guarantee.
+- The complete nine-entry ordinary reading mode and résumé link remain available. Existing local visits, sightings, challenge records and 18-stamp totals are preserved.
+
+## Limits
+
+Physical phones, mobile Safari, a controlled cold connection and prolonged performance/thermal testing were not measured in this update. Earlier V4/V3 test notes below describe their own historical builds. No new mobile FPS or cold-start certification is claimed.
+
+---
+
 # V4 — Meet Jack validation · 2026-09-19
 
 ## Automated checks
