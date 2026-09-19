@@ -4,7 +4,7 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V4.2 — A Livelier Jack** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V4.3 — A Softer Look** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The hosted preview currently requires owner access. You can run the complete project locally using the instructions below.
 
@@ -31,7 +31,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V3 — Living Bay** | Ambient traffic, marine life, finishes, full-pier docking, and island details | [07904dd](https://github.com/Kongsterrr/archipelago-folio/commit/07904ddebaf799780b56adeb3f86d7f30103784d) |
 | **V4 — Meet Jack** | A visible captain, nine walkable exhibitions, boarding, benches, and independent walking records | [6dc6b91](https://github.com/Kongsterrr/archipelago-folio/commit/6dc6b914dfc4132f20810198a9795300c409c209) |
 | **V4.1 — Little Captain Jack** | Cute cartoon proportions, recalibrated poses, and stable hands at the helm | [6600e26](https://github.com/Kongsterrr/archipelago-folio/commit/6600e26e523221c67f163ea210e9e0cbc0dd27f2) |
-| **V4.2 — A Livelier Jack** | A fuller chibi silhouette, facial expressions, and continuous motion transitions | [Current V4.2 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V4.2 — A Livelier Jack** | A fuller chibi silhouette, facial expressions, and continuous motion transitions | [5b6d732](https://github.com/Kongsterrr/archipelago-folio/commit/5b6d732b76fd603f527d164228bb9e301182e6a6) |
+| **V4.3 — A Softer Look** | Sculpted short hair, refined facial details, and gentler expressions | [Current V4.3 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -115,6 +116,15 @@ Reworked Jack’s silhouette and animation to make the character feel more expre
 - Made bench exit heading and position ease out of the seated pose. Menus and background pauses now freeze the complete rendered character rather than silently resetting a walk or advancing a stand transition.
 - Preserved the fixed helm hand contacts and neutral steering wheel, one shared avatar, all nine walking islands, existing controls, verified portfolio content, and browser records.
 
+### V4.3 — A Softer Look
+
+Focused on Jack’s head while preserving V4.2’s proportions and body animation:
+
+- Replaced separate raised hair locks with a connected short haircut: a soft side-swept fringe, shallow sculpted flow, a clean hairline, and a rounded crown/back. Matte chestnut shading keeps the silhouette readable at normal game distance.
+- Refined warm irises, pupils and smaller eye highlights, softened the brows and cheek color, and brought the button nose closer to the face.
+- Smiling now gently softens the eyes and lifts the brows as the mouth changes. Eye layers share their blink pivots; pause and reduced-motion behavior remain consistent.
+- Preserved the single shared character, fixed hands while driving, walking/boarding mechanics, island content, and existing local records.
+
 ## Run locally
 
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
@@ -133,7 +143,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V1–V4.2 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and V1–V4.3 regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 

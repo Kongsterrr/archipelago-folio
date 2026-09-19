@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import {addJackHair} from './jack-hair.mjs';
 import {mergeGeometries, mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
 
-/** Original V4.2 soft toy adventurer. Metres, feet Y=0, facing -Z.
+/** Original V4.3 soft toy adventurer. Metres, feet Y=0, facing -Z.
  * Geometry is authored on one named skeleton. No runtime retargeting or IK is
  * required: the author-time helm solve is baked into constant animation keys. */
 export const JACK_SPEC=Object.freeze({
@@ -17,7 +18,7 @@ export function createJackCharacter(){
  const bone=(name,parent,x=0,y=0,z=0)=>{const b=new THREE.Bone();b.name=name;b.position.set(x,y,z);(parent||root).add(b);bones.push(b);byName[name]=b;return b;};
  const hips=bone('Hips',null,0,.405,0),spine=bone('Spine',hips,0,.10,0),chest=bone('Chest',spine,0,.11,0);
  const neck=bone('Neck',chest,0,.125,0),head=bone('Head',neck,0,.264,0);
- bone('LeftEye',head,-.087,-.047,-.220);bone('RightEye',head,.087,-.047,-.220);
+ bone('LeftEye',head,-.087,-.047,-.211);bone('RightEye',head,.087,-.047,-.211);
  bone('LeftBrow',head,-.087,.040,-.220);bone('RightBrow',head,.087,.040,-.220);bone('Mouth',head,0,-.159,-.200);
  for(const[side,s]of[['Left',-1],['Right',1]]){
   const arm=bone(`${side}Arm`,chest,s*.146,.074,0),elbow=bone(`${side}ForeArm`,arm,0,-.155,0);bone(`${side}Hand`,elbow,0,-.155,0);
@@ -28,11 +29,11 @@ export function createJackCharacter(){
   skin:new THREE.MeshStandardMaterial({name:'Jack_Skin',color:'#ffffff',vertexColors:true,roughness:.72}),
   cream:new THREE.MeshStandardMaterial({name:'Jack_CreamCanvas',color:'#ffffff',vertexColors:true,roughness:.84}),
   navy:new THREE.MeshStandardMaterial({name:'Jack_NavyKnit',color:'#ffffff',vertexColors:true,roughness:.9}),
-  hair:new THREE.MeshStandardMaterial({name:'Jack_SweptHair',color:'#ffffff',vertexColors:true,roughness:.51}),
+  hair:new THREE.MeshStandardMaterial({name:'Jack_SweptHair',color:'#ffffff',vertexColors:true,roughness:.72}),
   ink:new THREE.MeshStandardMaterial({name:'Jack_EyesAndDetails',color:'#ffffff',vertexColors:true,roughness:.18}),
   accent:new THREE.MeshStandardMaterial({name:'Jack_OrangeDetails',color:'#ffffff',vertexColors:true,roughness:.7}),
  };
- const defaults={skin:'#e9b78c',cream:'#fff0d7',navy:'#293e52',hair:'#332720',ink:'#151a1e',accent:'#e18b4d'};
+ const defaults={skin:'#f0bd98',cream:'#fff0d7',navy:'#293e52',hair:'#332720',ink:'#151a1e',accent:'#e18b4d'};
  const bins=new Map(Object.keys(materials).map(k=>[k,[]]));
  const part=(geometry,mat,joint,pos=[0,0,0],scale=[1,1,1],rot=[0,0,0],color=null)=>{
   const g=geometry,b=byName[joint];g.applyMatrix4(b.matrixWorld.clone().multiply(new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),new THREE.Vector3(...scale))));
@@ -50,6 +51,13 @@ export function createJackCharacter(){
  };
  const rod=(mat,joint,a,b,r=.006,color)=>{const av=new THREE.Vector3(...a),bv=new THREE.Vector3(...b),delta=bv.clone().sub(av),g=new THREE.CylinderGeometry(r,r,delta.length(),7);g.applyQuaternion(new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize()));part(g,mat,joint,av.add(bv).multiplyScalar(.5).toArray(),undefined,undefined,color);};
  const curve=(mat,joint,points,r,segments=12,color)=>part(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p))),segments,r,6,false),mat,joint,undefined,undefined,undefined,color);
+ // Taper facial strokes into the skin so brows and smile have soft tips,
+ // rather than the flat ends of a cut tube.
+ const facialCurve=(mat,joint,points,r,segments,color)=>{
+  const path=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p))),g=new THREE.TubeGeometry(path,segments,r,8,false),p=g.getAttribute('position');
+  for(let i=0;i<=segments;i++){const center=path.getPointAt(i/segments),scale=.18+.82*Math.pow(Math.sin(Math.PI*i/segments),.45);for(let j=0;j<=8;j++){const n=i*9+j,v=new THREE.Vector3().fromBufferAttribute(p,n).sub(center).multiplyScalar(scale).add(center);p.setXYZ(n,...v.toArray());}}
+  g.computeVertexNormals();part(g,mat,joint,undefined,undefined,undefined,color);
+ };
  // Continuous rounded cloth with a smooth two-joint weight transition.
  // The cylinder rings retain the same cross-section through the hinge, so bent
  // arms and knees deform as soft clothing rather than stacked rigid beads.
@@ -70,45 +78,29 @@ export function createJackCharacter(){
  };
  for(let n=0;n<fp.count;n++){const x=fp.getX(n),y=fp.getY(n),z=fp.getZ(n),cheek=1+.055*Math.exp(-(((y+.36)/.52)**2));fp.setXYZ(n,x*.246*cheek,y*.28-.015,z*.222*(1-.025*y));}
  face.computeVertexNormals();const faceTints=[];
- for(let n=0;n<fp.count;n++){const x=fp.getX(n),y=fp.getY(n),z=fp.getZ(n),dx=(Math.abs(x)-.157)/.038,dy=(y+.111)/.023,blush=Math.exp(-(dx*dx+dy*dy)*1.5)*.35*Math.max(0,Math.min(1,-z/.12));faceTints.push(...new THREE.Color('#e9b78c').lerp(new THREE.Color('#df947e'),blush).toArray());}
+ for(let n=0;n<fp.count;n++){const x=fp.getX(n),y=fp.getY(n),z=fp.getZ(n),dx=(Math.abs(x)-.156)/.046,dy=(y+.109)/.030,blush=Math.exp(-(dx*dx+dy*dy)*1.5)*.32*Math.max(0,Math.min(1,-z/.12));faceTints.push(...new THREE.Color('#f0bd98').lerp(new THREE.Color('#e48d82'),blush).toArray());}
  part(face,'skin','Head');face.setAttribute('color',new THREE.Float32BufferAttribute(faceTints,3));
  for(const[side,s]of[['Left',-1],['Right',1]]){
   orb('skin','Head',[s*.246,-.058,.009],[.032,.049,.034],14,10);
   orb('skin','Head',[s*.262,-.058,-.012],[.014,.027,.012],10,8,'#dca080');
-  // All eye pieces use the same facial joint: scale local Y for a real blink.
-  orb('ink',`${side}Eye`,[0,0,0],[.033,.044,.016],18,12);
-  orb('cream',`${side}Eye`,[-.010,.015,-.014],[.009,.011,.004],12,8,'#fffdf5');
-  orb('cream',`${side}Eye`,[.010,-.014,-.015],[.004,.005,.0025],10,7,'#f3e8dc');
-  const brow=[facePoint(s*.058,.035,.009),facePoint(s*.087,.044,.010),facePoint(s*.118,.031,.010)];
-  curve('hair',`${side}Brow`,brow.map(p=>[p[0]-s*.087,p[1]-.040,p[2]+.220]),.008,10,'#443026');
+  // Follow the cheek surface rather than projecting a spherical button out of
+  // the face. Iris, pupil and catchlights still share one blink pivot.
+  const eyePart=(mat,pos,scale,segments,rings,color)=>{
+   const g=new THREE.SphereGeometry(1,segments,rings);g.scale(...scale);g.translate(...pos);g.rotateY(-s*.34);part(g,mat,`${side}Eye`,undefined,undefined,undefined,color);
+  };
+  eyePart('ink',[0,0,0],[.034,.044,.009],18,12,'#2e2421');
+  eyePart('ink',[0,-.003,-.008],[.025,.031,.003],16,10,'#72513b');
+  eyePart('ink',[0,.002,-.010],[.019,.025,.002],16,10,'#241d1b');
+  eyePart('cream',[-.010,.015,-.012],[.007,.009,.002],12,8,'#fffdf5');
+  eyePart('cream',[.011,-.014,-.011],[.003,.004,.0015],10,7,'#f3e8dc');
+  const brow=[facePoint(s*.058,.032,.009),facePoint(s*.086,.040,.009),facePoint(s*.116,.031,.008)];
+  facialCurve('hair',`${side}Brow`,brow.map(p=>[p[0]-s*.087,p[1]-.040,p[2]+.220]),.006,10,'#634536');
 
  }
- orb('skin','Head',[0,-.101,-.227],[.024,.021,.022],16,10,'#e3a37b');
- curve('ink','Mouth',[facePoint(-.036,-.151,.006),facePoint(-.017,-.165,.007),facePoint(.010,-.166,.007),facePoint(.037,-.150,.006)].map(p=>[p[0],p[1]+.159,p[2]+.200]),.004,14,'#845238');
- // Sculpted cap and broad swept tufts form one cohesive, rounded hairstyle.
- const hairPositions=[],hairIndices=[],rows=10,columns=28;
- for(let j=0;j<=rows;j++)for(let i=0;i<=columns;i++){
-  const phi=i/columns*Math.PI*2,front=Math.max(0,-Math.sin(phi)),back=Math.max(0,Math.sin(phi));
-  const limit=1.71-.50*front+.32*back,theta=j/rows*limit;
-  hairPositions.push(.254*Math.sin(theta)*Math.cos(phi),.010+.285*Math.cos(theta),.014+.229*Math.sin(theta)*Math.sin(phi));
- }
- for(let j=0;j<rows;j++)for(let i=0;i<columns;i++){const a=j*(columns+1)+i,b=a+columns+1;hairIndices.push(a,a+1,b,a+1,b+1,b);}
- const cap=new THREE.BufferGeometry();cap.setAttribute('position',new THREE.Float32BufferAttribute(hairPositions,3));cap.setIndex(hairIndices);cap.computeVertexNormals();for(let i=0;i<=columns;i++)cap.getAttribute('normal').setXYZ(i,0,1,0);part(cap,'hair','Head');
- const lock=(points,width,color)=>{
-  const path=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p))),vs=[],ix=[],segments=14,sides=8;
-  for(let i=0;i<=segments;i++){const t=i/segments,p=path.getPoint(t),tan=path.getTangent(t).normalize(),u=new THREE.Vector3(0,0,1).cross(tan).normalize(),v=tan.clone().cross(u).normalize();
-   const radius=width*Math.sin(Math.PI*(.04+.94*t))*(1-.58*t);
-   for(let k=0;k<=sides;k++){const a=k/sides*Math.PI*2,q=p.clone().addScaledVector(u,Math.cos(a)*radius).addScaledVector(v,Math.sin(a)*radius*.67);vs.push(...q.toArray());}
-  }
-  for(let i=0;i<segments;i++)for(let k=0;k<sides;k++){const a=i*(sides+1)+k,b=a+sides+1;ix.push(a,a+1,b,a+1,b+1,b);}
-  for(let k=1;k<sides-1;k++){ix.push(0,k+1,k);const end=segments*(sides+1);ix.push(end,end+k,end+k+1);}
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vs,3));g.setIndex(ix);g.computeVertexNormals();part(g,'hair','Head',undefined,undefined,undefined,color);
- };
- lock([[-.224,.043,-.105],[-.218,.137,-.174],[-.135,.217,-.184],[.035,.257,-.117]],.065,'#403027');
- lock([[-.168,.105,-.195],[-.074,.167,-.229],[.085,.242,-.166],[.215,.220,-.056]],.070,'#4b3529');
- lock([[-.119,.237,-.075],[-.022,.280,-.084],[.102,.277,-.027],[.146,.283,.021]],.028,'#51392b');
- lock([[.211,.040,-.116],[.227,.121,-.146],[.177,.205,-.151],[.072,.253,-.080]],.045,'#3b2c24');
- lock([[-.188,.077,.165],[-.233,.170,.080],[-.151,.250,-.018],[.012,.270,.027]],.052,'#403027');
+ orb('skin','Head',[0,-.101,-.217],[.023,.020,.025],16,10,'#eab18e');
+ facialCurve('ink','Mouth',[facePoint(-.033,-.152,.004),facePoint(-.015,-.164,.005),facePoint(.012,-.164,.005),facePoint(.034,-.151,.004)].map(p=>[p[0],p[1]+.159,p[2]+.200]),.0037,14,'#995b48');
+ // One sculpted hair surface with a rolled hairline and no detached locks.
+ addJackHair(THREE,part);
  // A compact puffy bomber with rounded sleeves and a continuous belly.
  orb('skin','Neck',[0,.005,0],[.055,.052,.049],14,10);
  orb('cream','Chest',[0,-.015,.011],[.158,.167,.113],20,14);

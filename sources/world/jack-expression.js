@@ -56,7 +56,6 @@ export class JackExpression {
       const age = phase - start;
       if (age >= 0 && age < .19) this.blink = Math.max(this.blink, Math.sin(age / .19 * Math.PI) ** 2);
     }
-    for (const eye of this.eyes) eye.scale.y *= 1 - .94 * this.blink;
 
     const rest = (1 - Math.cos(this.time * Math.PI / 5.6)) * .5;
     let desired = moving ? 0 : Math.sin(this.time * .53) * .13 * rest;
@@ -66,12 +65,22 @@ export class JackExpression {
     }
     this.gaze = THREE.MathUtils.damp(this.gaze, desired, 5, step);
     const happy = interacting ? .5 - .5 * Math.cos(Math.min(interacting / 1.1, 1) * Math.PI * 2) : 0;
+    // A smile also softens the eyes; a complete blink always reaches the same
+    // closed pose, independently of the active expression.
+    for (const eye of this.eyes) eye.scale.y *= THREE.MathUtils.lerp(1 - happy * .08, .06, this.blink);
     if (this.head) {
       const nod = moving ? 0 : Math.sin(this.time * 1.25) * .017 * rest;
       this.euler.set(nod - happy * .04, this.gaze * (walking ? 1 : .4), moving ? 0 : Math.sin(this.time * .72) * .017 * rest);
       this.head.quaternion.multiply(this.offset.setFromEuler(this.euler));
     }
-    for (const brow of this.brows) brow.position.y += happy * .01;
-    if (this.mouth) this.mouth.scale.x *= 1 + happy * .12;
+    for (const [index, brow] of this.brows.entries()) {
+      brow.position.y += happy * .008;
+      this.euler.set(0, 0, (index === 0 ? -1 : 1) * happy * .035);
+      brow.quaternion.multiply(this.offset.setFromEuler(this.euler));
+    }
+    if (this.mouth) {
+      this.mouth.scale.x *= 1 + happy * .08;
+      this.mouth.scale.y *= 1 + happy * .18;
+    }
   }
 }

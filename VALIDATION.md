@@ -1,3 +1,21 @@
+# V4.3 — A Softer Look validation · 2026-09-19
+
+## Scope and geometry
+
+Head-only visual refinement: continuous sculpted short hair replaces the cap plus separate raised locks; face details use warmer irises, smaller highlights, tapered brows/smile and eye surfaces aligned to the cheeks. The body, 1.30-unit height, approximately 2.18-head proportion, helm contacts, locomotion clips and gameplay configuration remain unchanged.
+
+Final GLB: **176,868 bytes**, **19,528 triangles**, five deduplicated materials and six primitives, one shared 22-joint skeleton, seven clips, no external textures. The higher hair tessellation removes visible corners in close-up; the explicit full-character budget is now 20,000 triangles, with the existing 350 KB and six-primitive limits retained.
+
+A one-off geometric audit of the exact final hair module reports one closed connected mesh (4,416 triangles), consistent outward winding, no degenerate/non-manifold edges, finite unit normals, and clearance above the analytic face for vertices and sampled triangle interiors. The central fringe stays above the brows (Y 0.07476–0.16819 in Head space). The decoded builder again verifies 481 frames per gait, 121 static helm samples and bench clearance (22.66 mm at the shin).
+
+## Validation
+
+**All 168 regression checks pass** (Node 24.19.0); the production Vite build passes and the built Jack GLB matches the validated source exactly. The checks cover deformed camera framing at all four target sizes, blink deformation, paused/reduced expressions, interrupted animation blends, stable hands, nine-island routes and existing maritime gameplay. A transient eyebrow rounding difference during paused frames was fixed by applying its offset directly as a quaternion; expression state no longer accumulates through Euler conversions.
+
+Visual review used the actual exported GLB in WebGL: front, three-quarter, top, back, neutral and smiling face. In-scene WebGPU/high checks covered Connect arrival, walking and returning to the boat at 1440×900 and 390×844. No console errors were observed. Phone dimensions were emulated on the existing Apple M3 Max / macOS / Codex in-app-browser host; physical-phone performance was not measured. This cosmetic release does not claim a new cold-load or sustained FPS measurement.
+
+---
+
 # V4.2 — A Livelier Jack validation · 2026-09-19
 
 ## Automated checks
