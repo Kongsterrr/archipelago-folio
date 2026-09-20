@@ -4,14 +4,14 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V4.3 — A Softer Look** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V4.4 — The Concept Comes Aboard** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The hosted preview currently requires owner access. You can run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
 - **Nine content islands:** Jack’s Harbor; Amtrak, BeaconFire, and VisionX for experience; Affirmation, Research, and Catering for projects; Learning for education; and Connect for contact details.
-- **Meet Jack:** a round, approximately 2.2-head-tall cartoon captain with blinking eyes, gentle expressions, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
+- **Meet Jack:** a round, approximately 2.7-head-tall cartoon captain with layered chestnut hair and an open cream jacket with blinking eyes, gentle expressions, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
@@ -32,7 +32,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V4 — Meet Jack** | A visible captain, nine walkable exhibitions, boarding, benches, and independent walking records | [6dc6b91](https://github.com/Kongsterrr/archipelago-folio/commit/6dc6b914dfc4132f20810198a9795300c409c209) |
 | **V4.1 — Little Captain Jack** | Cute cartoon proportions, recalibrated poses, and stable hands at the helm | [6600e26](https://github.com/Kongsterrr/archipelago-folio/commit/6600e26e523221c67f163ea210e9e0cbc0dd27f2) |
 | **V4.2 — A Livelier Jack** | A fuller chibi silhouette, facial expressions, and continuous motion transitions | [5b6d732](https://github.com/Kongsterrr/archipelago-folio/commit/5b6d732b76fd603f527d164228bb9e301182e6a6) |
-| **V4.3 — A Softer Look** | Sculpted short hair, refined facial details, and gentler expressions | [Current V4.3 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V4.3 — A Softer Look** | Sculpted short hair, refined facial details, and gentler expressions | [9edf376](https://github.com/Kongsterrr/archipelago-folio/commit/9edf376eace0ff0e0eaebc420836c4e163de6832) |
+| **V4.4 — The Concept Comes Aboard** | Reference-led proportions, layered fluffy hair, a refined face and open jacket | [Current V4.4 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -125,6 +126,16 @@ Focused on Jack’s head while preserving V4.2’s proportions and body animatio
 - Smiling now gently softens the eyes and lifts the brows as the mouth changes. Eye layers share their blink pivots; pause and reduced-motion behavior remain consistent.
 - Preserved the single shared character, fixed hands while driving, walking/boarding mechanics, island content, and existing local records.
 
+### V4.4 — The Concept Comes Aboard
+
+Rebuilt Jack around the supplied character concept, rather than continuing the close-fitting V4.3 haircut:
+
+- Sculpted overlapping, voluminous chestnut locks, three swept forelocks, a small crown curl, real flow grooves and a fine procedural strand surface. The hidden scalp is coverage beneath the hairstyle rather than its main visible shape.
+- Returned to approximately **2.67 heads tall** at the same 1.30-unit standing height. A rounded face, simple highlighted black oval eyes, gentle brows, small nose and smile follow the reference’s facial language.
+- Replaced the closed bomber silhouette with an open cream jacket, folded collar, navy tee, zipper teeth and orange pull. Reshaped trousers, cuffs and cream sneakers to match the reference’s outfit.
+- Recalibrated the shared skeleton, gait contact, bench placement and fixed helm pose for the changed proportions. Added a regression against the existing boat-space wheel grips.
+- Preserved blinking/expressions, one shared character, nine-island walking, all sea gameplay and browser records. The reference is translated into an original real-time model; a single concept sheet does not define an identical render from every angle.
+
 ## Run locally
 
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
@@ -143,7 +154,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V1–V4.3 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and V1–V4.4 regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 
@@ -226,7 +237,7 @@ node scripts/export-fauna.mjs
 node scripts/export-details.mjs
 ```
 
-Intermediate files live in ignored `.asset-build/`. Models use geometry and flat-color materials without external texture downloads. Core compressed byte measurements are in `static/models/compression.json`; the core generator’s manifest also contains pre-compression statistics. Collider definitions remain separate from visual meshes.
+Intermediate files live in ignored `.asset-build/`. Models use original geometry and materials without external texture downloads. Jack’s fine hair normal texture is generated locally at runtime; its UVs and broader sculpted grooves are part of the GLB. Core compressed byte measurements are in `static/models/compression.json`; the core generator’s manifest also contains pre-compression statistics. Collider definitions remain separate from visual meshes.
 
 ## Accessibility, storage, and validation
 

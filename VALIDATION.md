@@ -1,3 +1,29 @@
+# V4.4 — The Concept Comes Aboard validation · 2026-09-19
+
+## Reference-led reconstruction
+
+The supplied concept guides a new layered hairstyle, simpler black oval eyes and a smaller nose/smile, an open cream jacket over a navy tee, trousers and cream sneakers. The character is 1.30 units tall and approximately **2.67 heads tall** (actual crown-to-chin span 0.487). This is an original real-time interpretation of a single concept sheet, not an assertion that all camera angles and lighting are pixel-identical to the illustration. The comparison bitmap and temporary review page are excluded from source and deployment.
+
+Hair consists of a hidden scalp and twelve overlapping sculpted locks. Three broad swept forelocks, a crown curl and longer back locks define the volume; shallow carved grooves and a small locally generated normal field add strand detail. Lock UVs follow their longitudinal flow. The same material detail is available in high/low and WebGPU/WebGL2, without a downloaded texture. The normal field uses one shared 128×256 RGBA texture with mipmaps (about 171 KB GPU memory).
+
+## Asset and automated verification
+
+Final GLB: **277,152 bytes**, **42,680 triangles**, six material primitives, one 22-joint skin and seven animation clips. Meshopt filtering keeps the asset below 350 KB. The triangle ceiling is deliberately raised from V4.3's 20,000 to **43,000** to support the requested layered shapes, finer grooves and rounded clothing; no additional character instances or material batches are introduced.
+
+**169 regression checks pass** on Node 24.19.0. They cover deformed-vertex camera framing at 1440×900, 1920×1080, 390×844 and 844×390; paused/reduced expressions, blink deformation, animation transitions, bench fit, boarding, nine-island routes, fixed-step movement and existing maritime gameplay. Walking desktop distance changes from 12.5 to 12.6 to keep the broader final hair within the existing 16–20% height contract; portrait remains 24.
+
+The rebuild decodes the compressed GLB and samples 481 frames per gait. Lowest shoe surface is **1.03–2.01 mm** above ground while walking and **0.26–19.35 mm** while running (intentional small flight phase). Lower-leg geometry clears the bench front by **14.28 mm**, and pelvis-to-seat clearance is **0.95 mm**. Helm samples retain fixed hands; a new independent check anchors their boat-space positions to the preceding wheel contacts with a 0.1 mm compression tolerance. Topology audits checked closed hair pieces, outward winding, overlap and finite coordinates. These checks do not prove every possible blended pose is intersection-free.
+
+Production Vite build passed. The built `dist/models/jack.glb` matches the validated source byte for byte (SHA-256 `c218167ac2988c8eae87cdcd44fe6ce5564c75f534349cd960c1b40d15c98d32`).
+
+## Browser review and limits
+
+Actual exported model reviewed in front, three-quarter, side and rear compositions, followed by in-scene checks on the existing Apple M3 Max / macOS / Codex in-app browser host. Checked Connect walking/running, bench sitting, standing again, Harbor landing, boarding and alternating steering. WebGPU/high and WebGL2 high/low render the new model and strand material. Reduced motion remains usable. Desktop and phone-sized views were inspected; the phone sizes are viewport emulation, not physical-device tests. No console errors were observed in the final WebGL2 checks.
+
+A short WebGL2/low status sample reported 144 FPS on this host. This is not a sustained mobile-performance, cold-start or thermal certification. Physical phones, mobile Safari and controlled network loading were not measured. Existing portfolio content, résumé, external links and local-record schema are unchanged.
+
+---
+
 # V4.3 — A Softer Look validation · 2026-09-19
 
 ## Scope and geometry

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {applyJackHairSurface} from './jack-hair-surface.js';
 import {JackExpression} from './jack-expression.js';
 
 const locomotion = name => name === 'walk' || name === 'run';
@@ -20,6 +21,7 @@ export class JackAvatar {
     if (this.promise) return this.promise;
     this.promise = this.loader.loadAsync('/models/jack.glb').then(gltf => {
       this.model = gltf.scene;
+      applyJackHairSurface(this.model);
       this.root.add(this.model);
       this.spec = {helmAnchor: [.28324, -.4496, .00485], helmScale: .97, benchSeatOffset: .52};
       this.model.traverse(o => { if (o.userData.characterSpec) Object.assign(this.spec, o.userData.characterSpec); });

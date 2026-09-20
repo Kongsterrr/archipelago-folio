@@ -1,23 +1,23 @@
 {
-  "revision": "v43-sculpted-head-jack",
+  "revision": "v44-concept-jack",
   "file": "jack.glb",
   "height": 1.3,
-  "headHeight": 0.596,
-  "headsTall": 2.1812080536912752,
+  "headHeight": 0.487,
+  "headsTall": 2.669404517453799,
   "forward": "-Z",
   "helmAuthorAnchor": [
     0.292,
-    0.515,
+    0.46,
     0.005
   ],
   "helmAnchor": [
     0.28324,
-    -0.26045,
+    -0.3138,
     0.00485
   ],
   "helmScale": 0.97,
-  "benchSeatOffset": 0.33,
-  "benchForwardOffset": 0.27,
+  "benchSeatOffset": 0.385,
+  "benchForwardOffset": 0.244,
   "facial": {
     "eyeBones": [
       "LeftEye",
@@ -44,10 +44,10 @@
     "sit",
     "stand"
   ],
-  "bytes": 176868,
-  "rawBytes": 905336,
-  "triangles": 19528,
-  "materials": 5,
+  "bytes": 277152,
+  "rawBytes": 2064712,
+  "triangles": 42680,
+  "materials": 6,
   "drawCalls": 6,
   "joints": [
     "Hips",
@@ -76,20 +76,20 @@
   "skins": 1,
   "bounds": {
     "min": [
-      -0.27799999713897705,
-      -4.3213366218708416e-10,
-      -0.24199999868869781
+      -0.25600001215934753,
+      -4.4703463153439316e-11,
+      -0.23543967306613922
     ],
     "max": [
-      0.27799999713897705,
+      0.25600001215934753,
       1.2999999523162842,
-      0.2439713031053543
+      0.25631093978881836
     ]
   },
   "dimensions": [
-    0.5559999942779541,
-    1.2999999527484178,
-    0.4859713017940521
+    0.5120000243186951,
+    1.2999999523609875,
+    0.4917506128549576
   ],
   "animations": [
     {
@@ -134,22 +134,22 @@
     "originalProceduralAsset": true,
     "characterSpec": {
       "height": 1.3,
-      "headHeight": 0.596,
-      "headsTall": 2.1812080536912752,
+      "headHeight": 0.487,
+      "headsTall": 2.669404517453799,
       "forward": "-Z",
       "helmAuthorAnchor": [
         0.292,
-        0.515,
+        0.46,
         0.005
       ],
       "helmAnchor": [
         0.28324,
-        -0.26045,
+        -0.3138,
         0.00485
       ],
       "helmScale": 0.97,
-      "benchSeatOffset": 0.33,
-      "benchForwardOffset": 0.27,
+      "benchSeatOffset": 0.385,
+      "benchForwardOffset": 0.244,
       "facial": {
         "eyeBones": [
           "LeftEye",
@@ -178,22 +178,22 @@
       ]
     },
     "height": 1.3,
-    "headHeight": 0.596,
-    "headsTall": 2.1812080536912752,
+    "headHeight": 0.487,
+    "headsTall": 2.669404517453799,
     "forward": "-Z",
     "helmAuthorAnchor": [
       0.292,
-      0.515,
+      0.46,
       0.005
     ],
     "helmAnchor": [
       0.28324,
-      -0.26045,
+      -0.3138,
       0.00485
     ],
     "helmScale": 0.97,
-    "benchSeatOffset": 0.33,
-    "benchForwardOffset": 0.27,
+    "benchSeatOffset": 0.385,
+    "benchForwardOffset": 0.244,
     "facial": {
       "eyeBones": [
         "LeftEye",
@@ -227,13 +227,13 @@
   "groundContact": {
     "walk": {
       "sampledFrames": 481,
-      "minimumLowestSoleY": 0.001167024362766056,
-      "maximumLowestSoleY": 0.0021510952755633417
+      "minimumLowestSoleY": 0.0010338503803658528,
+      "maximumLowestSoleY": 0.0020085444966487787
     },
     "run": {
       "sampledFrames": 481,
-      "minimumLowestSoleY": 0.0010981554871387633,
-      "maximumLowestSoleY": 0.01946773097500154
+      "minimumLowestSoleY": 0.0002561735759355477,
+      "maximumLowestSoleY": 0.019354105815949985
     }
   },
   "helmContact": {
@@ -241,21 +241,21 @@
     "hands": {
       "Left": {
         "position": [
-          -0.09300000119702542,
-          0.43500000483598467,
-          -0.22800000464332543
+          -0.0930090592345153,
+          0.48994151890880067,
+          -0.22798619210726057
         ],
-        "maxTargetError": 6.810292915323519e-9,
+        "maxTargetError": 0.00006076813029681718,
         "maxPositionDrift": 1.1102230246251565e-16,
         "maxAngleDrift": 0
       },
       "Right": {
         "position": [
-          0.09300000119702542,
-          0.43500000483598467,
-          -0.22800000464332543
+          0.0930090592345153,
+          0.48994151890880067,
+          -0.22798619210726057
         ],
-        "maxTargetError": 6.810292915323519e-9,
+        "maxTargetError": 0.00006076813029681718,
         "maxPositionDrift": 1.1102230246251565e-16,
         "maxAngleDrift": 0
       }
@@ -263,11 +263,11 @@
   },
   "facialRig": {
     "LeftEye": {
-      "vertices": 640,
+      "vertices": 448,
       "localPivot": [
-        -0.087,
-        -0.047,
-        -0.211
+        -0.078,
+        -0.036,
+        -0.187
       ],
       "scale": [
         1,
@@ -276,11 +276,11 @@
       ]
     },
     "RightEye": {
-      "vertices": 640,
+      "vertices": 448,
       "localPivot": [
-        0.087,
-        -0.047,
-        -0.211
+        0.078,
+        -0.036,
+        -0.187
       ],
       "scale": [
         1,
@@ -289,11 +289,11 @@
       ]
     },
     "LeftBrow": {
-      "vertices": 99,
+      "vertices": 135,
       "localPivot": [
-        -0.087,
-        0.04,
-        -0.22
+        -0.078,
+        0.03,
+        -0.19
       ],
       "scale": [
         1,
@@ -302,11 +302,11 @@
       ]
     },
     "RightBrow": {
-      "vertices": 99,
+      "vertices": 135,
       "localPivot": [
-        0.087,
-        0.04,
-        -0.22
+        0.078,
+        0.03,
+        -0.19
       ],
       "scale": [
         1,
@@ -315,11 +315,11 @@
       ]
     },
     "Mouth": {
-      "vertices": 135,
+      "vertices": 171,
       "localPivot": [
         0,
-        -0.159,
-        -0.2
+        -0.121,
+        -0.175
       ],
       "scale": [
         1,
@@ -330,8 +330,8 @@
   },
   "benchFit": {
     "frontEdgeZ": -0.31,
-    "shinRearBelowSeatZ": -0.3326624034225044,
-    "shinClearance": 0.022662403422504418,
-    "hipsBottomAboveSeat": 0.00004851232395908234
+    "shinRearBelowSeatZ": -0.3242832333299651,
+    "shinClearance": 0.014283233329965117,
+    "hipsBottomAboveSeat": 0.00094986729692903
   }
 }

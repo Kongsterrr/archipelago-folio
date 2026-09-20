@@ -1,77 +1,93 @@
-/** V4.3 original soft short haircut. One closed mesh; metres, Head-local, -Z front.
- * Integration: replace the old hair cap / lock block with addJackHair(THREE, part).
- * Keep the existing crown normalization to 1.30m. Suggested hair roughness: .72.
- * No separate strands, overlay strips, tubes, texture assets or color bands.
+/** V4.4 concept-reference hairstyle. Metres, Head-local, facing -Z.
+ * Broad overlapping sculpted locks form the silhouette; cap is coverage only.
+ * Call addJackHair(THREE,part). Recommended hair material roughness: .49.
  */
-export function addJackHair(THREE, part) {
- const columns=96,rows=22,positions=[],indices=[],tints=[];
- const gaussian=(v,width)=>Math.exp(-Math.pow(v/width,2));
- const wrap=v=>Math.atan2(Math.sin(v),Math.cos(v));
- const ringIndex=(row,column)=>1+(row-1)*columns+(column+columns)%columns;
- const limitAt=phi=>{
-  const front=Math.max(0,-Math.sin(phi)),back=Math.max(0,Math.sin(phi));
-  const sideburn=.19*(gaussian(wrap(phi+.18),.13)+gaussian(wrap(phi+Math.PI-.18),.13));
-  const sideLimit=1.66-.50*front+.30*back+sideburn;
-  const signed=wrap(phi+Math.PI/2)-Math.PI/2;
-  // Three broad scallops merge into one side-swept fringe. The longest is on
-  // model-left (viewer-right); the opposite side rises into the visible part.
-  const fringeY=.150-.076*gaussian(signed+1.99,.23)-.044*gaussian(signed+1.54,.21)-.021*gaussian(signed+1.14,.16)+.025*gaussian(signed+.94,.14);
-  const frontLimit=Math.acos((Math.max(.067,fringeY)-.006)/.289);
-  return THREE.MathUtils.lerp(sideLimit,frontLimit,THREE.MathUtils.smoothstep(front,.57,.83));
+export function addJackHair(THREE,part){
+ const pieces=[];
+ const colorBase=new THREE.Color('#50372b'),colorLight=new THREE.Color('#86604a'),colorDark=new THREE.Color('#33251f');
+ const tint=(light,dark=0)=>colorBase.clone().lerp(colorLight,light).lerp(colorDark,dark).toArray();
+ const mesh=(name,positions,indices,colors,uvs=null)=>{const g=new THREE.BufferGeometry();g.name=name;g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();pieces.push({geometry:g,colors,uvs});return g;};
+ // A close-fitting, completely covered scalp preserves dark coverage under all
+ // overlapping roots. The front edge stays behind the styled fringe.
+ {
+  const cols=48,rows=12,ps=[0,.204,.008],cs=[...tint(.02,.14)],ix=[];
+  const index=(row,col)=>1+(row-1)*cols+(col+cols)%cols;
+  for(let r=1;r<=rows;r++)for(let c=0;c<cols;c++){
+   const phi=c/cols*Math.PI*2,front=Math.max(0,-Math.sin(phi)),back=Math.max(0,Math.sin(phi)),limit=1.80-1.04*Math.pow(front,.40)+.42*back,theta=limit*r/rows;
+   ps.push(.224*Math.sin(theta)*Math.cos(phi),-.020+.224*Math.cos(theta),.008+.207*Math.sin(theta)*Math.sin(phi));cs.push(...tint(.015,.14));
+  }
+  for(let c=0;c<cols;c++)ix.push(0,index(1,c+1),index(1,c));
+  for(let r=1;r<rows;r++)for(let c=0;c<cols;c++){const a=index(r,c),b=index(r,c+1),d=index(r+1,c),e=index(r+1,c+1);ix.push(a,b,d,b,e,d);}
+  const inside=ps.length/3;for(let c=0;c<cols;c++){const i=index(rows,c)*3;ps.push(ps[i]*.94,(ps[i+1]+.023)*.94-.023,ps[i+2]*.94);cs.push(...tint(0,.18));}
+  for(let c=0;c<cols;c++){const a=index(rows,c),b=index(rows,c+1),d=inside+c,e=inside+(c+1)%cols;ix.push(a,b,d,b,e,d);}
+  const bottom=ps.length/3;ps.push(0,-.02,.008);cs.push(...tint(0,.18));for(let c=0;c<cols;c++)ix.push(inside+c,inside+(c+1)%cols,bottom);
+  mesh('Jack_V44_HiddenScalp',ps,ix,cs);
+ }
+ // The outer surface is a wide flattened tear shape, not a round tube. Each
+ // section has real shallow strand grooves in its outward face. Roots overlap
+ // deeply and tips taper to one vertex, so no open rims or hollow cut ends show.
+ const lock=(name,points,width,depth,{rows=23,sides=24,tip=1.15,phase=0,light=.05}={})=>{
+  const path=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)),false,'centripetal'),ps=[],cs=[],ix=[],uvs=[.5,0];
+  ps.push(...path.getPoint(0).toArray());cs.push(...tint(light,.08));
+  for(let j=1;j<rows;j++){
+   const t=j/rows,C=path.getPoint(t),T=path.getTangent(t).normalize();
+   let N=new THREE.Vector3(C.x/.216**2,(C.y+.023)/.211**2,C.z/.198**2);N.addScaledVector(T,-N.dot(T)).normalize();
+   if(N.lengthSq()<.5)N=new THREE.Vector3(0,1,0).addScaledVector(T,-T.y).normalize();
+   const W=N.clone().cross(T).normalize();
+   const broad=Math.pow(Math.sin(Math.PI*t),.68)*(1+.17*Math.sin(Math.PI*t)),taper=1-(.48*tip)*t*t;
+   let rw=width*broad*taper,rd=depth*Math.pow(Math.sin(Math.PI*t),.57)*(1-.30*t);
+   // The three large fringe locks finish in a soft elliptical cap. Keep their
+   // generous cross-section until the last 15%, then close with a rounded pole
+   // instead of a long triangular point; blend the transition without a seam.
+   if(name.startsWith('Forelock')&&t>.85){
+    const start=.85,q=(t-start)/(1-start),round=Math.sqrt(Math.max(0,1-q*q));
+    const sw=width*Math.pow(Math.sin(Math.PI*start),.68)*(1+.17*Math.sin(Math.PI*start))*(1-(.48*tip)*start*start);
+    const sd=depth*Math.pow(Math.sin(Math.PI*start),.57)*(1-.30*start);
+    const blend=THREE.MathUtils.smoothstep(t,.85,.895);
+    rw=THREE.MathUtils.lerp(rw,sw*round,blend);rd=THREE.MathUtils.lerp(rd,sd*round,blend);
+   }
+   for(let k=0;k<=sides;k++){
+    uvs.push(k/sides,t);
+    const a=k/sides*Math.PI*2,u=Math.cos(a),outer=Math.max(0,Math.sin(a));
+    // Six long grooves flow with each tuft. Relief stays below 2.4mm and fades
+    // toward root/tip; broad convex surfaces remain dominant at game distance.
+    const strand=Math.cos((u+.032*Math.sin(t*Math.PI+phase))*Math.PI*5.1+phase),groove=Math.pow(Math.max(0,strand),8);
+    const relief=-.0024*groove*outer**3*Math.sin(Math.PI*t)**.8;
+    const p=C.clone().addScaledVector(W,u*rw).addScaledVector(N,Math.sin(a)*rd+relief);
+    ps.push(...p.toArray());cs.push(...tint(light+.23*outer+.17*Math.max(0,-strand)*outer,groove*outer*.32+(1-outer)*.055));
+   }
+  }
+  const end=ps.length/3;uvs.push(.5,1);ps.push(...path.getPoint(1).toArray());cs.push(...tint(light,.10));
+  const ring=(j,k)=>1+(j-1)*(sides+1)+k;
+  // Frame W × N follows T, so this winding points away from the centerline.
+  for(let k=0;k<sides;k++)ix.push(0,ring(1,k+1),ring(1,k));
+  for(let j=1;j<rows-1;j++)for(let k=0;k<sides;k++){const a=ring(j,k),b=ring(j,k+1),c=ring(j+1,k),d=ring(j+1,k+1);ix.push(a,b,c,b,d,c);}
+  for(let k=0;k<sides;k++)ix.push(ring(rows-1,k),ring(rows-1,k+1),end);
+  mesh(name,ps,ix,cs,uvs);
  };
- const scalp=(theta,phi)=>{
-  const st=Math.sin(theta),ct=Math.cos(theta),cp=Math.cos(phi),sp=Math.sin(phi);
-  const front=THREE.MathUtils.smoothstep(-sp,.04,.62);
-  const edgeFade=THREE.MathUtils.smoothstep(limitAt(phi)-theta,0,.13);
-  const envelope=front*Math.pow(st,.80)*THREE.MathUtils.smoothstep(ct,-.11,.40)*edgeFade;
-  // Raised broad locks and recessed channels are sculpted into this cap's
-  // surface. Their 6–12mm relief stays continuous all the way through the sweep.
-  const sweep=theta+.37*cp+.065*Math.sin(phi*2);
-  const ridges=.010*gaussian(sweep-.52,.16)+.012*gaussian(sweep-.85,.145)+.010*gaussian(sweep-1.17,.14);
-  const grooves=.007*gaussian(sweep-.68,.072)+.007*gaussian(sweep-1.01,.072);
-  const partAngle=-.94-.34*(1-theta/1.40);
-  const partMask=gaussian(wrap(phi-partAngle),.125)*THREE.MathUtils.smoothstep(theta,.13,.40)*edgeFade;
-  const bulk=.014*gaussian(theta-.72,.48)*gaussian(wrap(phi+1.92),.78);
-  const relief=envelope*(ridges-grooves)-.009*partMask+bulk*Math.pow(st,1.4);
-  const tint=new THREE.Color('#3b2c24').lerp(new THREE.Color('#574035'),Math.min(.40,ridges/.022*envelope*.40));
-  tint.lerp(new THREE.Color('#211a17'),Math.min(.52,partMask*.48+grooves/.014*envelope*.20));
-  tints.push(...tint.toArray());
-  const n=new THREE.Vector3(st*cp/.262,ct/.289,st*sp/.233).normalize();
-  return new THREE.Vector3(.262*st*cp+.006*gaussian(theta,.55),.006+.289*ct,.011+.233*st*sp).addScaledVector(n,relief);
- };
- positions.push(.006,.295,.011);tints.push(...new THREE.Color('#3b2c24').toArray()); // One welded crown vertex: no pole degeneracy.
- for(let row=1;row<=rows;row++)for(let col=0;col<columns;col++){
-  const phi=col/columns*Math.PI*2,theta=limitAt(phi)*Math.pow(row/rows,.82);
-  positions.push(...scalp(theta,phi).toArray());
- }
- // All outer triangles wind outward; the ring wraps without duplicated seams.
- for(let col=0;col<columns;col++)indices.push(0,ringIndex(1,col+1),ringIndex(1,col));
- for(let row=1;row<rows;row++)for(let col=0;col<columns;col++){
-  const a=ringIndex(row,col),b=ringIndex(row,col+1),c=ringIndex(row+1,col),d=ringIndex(row+1,col+1);
-  indices.push(a,b,c,b,d,c);
- }
- // Roll the hairline into the skull with a 5% inset. This produces a softly
- // rounded, solid edge instead of an open cutout or a floating rim.
- const innerStart=positions.length/3;
- for(let col=0;col<columns;col++){
-  const p=new THREE.Vector3().fromArray(positions,ringIndex(rows,col)*3);
-  positions.push(p.x*.95,(p.y+.015)*.95-.015,p.z*.95);tints.push(...new THREE.Color('#35271f').toArray());
- }
- for(let col=0;col<columns;col++){
-  const a=ringIndex(rows,col),b=ringIndex(rows,col+1),c=innerStart+col,d=innerStart+(col+1)%columns;
-  indices.push(a,b,c,b,d,c);
- }
- // Hidden inside the head. This closed underside also makes topology testable.
- const bottom=positions.length/3;positions.push(0,.015,.011);tints.push(...new THREE.Color('#35271f').toArray());
- for(let col=0;col<columns;col++)indices.push(innerStart+col,innerStart+(col+1)%columns,bottom);
- const geometry=new THREE.BufferGeometry();
- geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
- geometry.setIndex(indices);geometry.computeVertexNormals();geometry.computeBoundingBox();
- geometry.name='Jack_V43_ContinuousSweptHair';
- geometry.userData={design:'Continuous rounded short haircut with shallow sculpted sweep',triangles:indices.length/3,recommendedRoughness:.72};
- part(geometry,'hair','Head',undefined,undefined,undefined,'#3b2c24');
- // part() supplies skin weights and replaces colors; restore this continuous
- // restrained color field afterward so the side part reads at game distance.
- geometry.setAttribute('color',new THREE.Float32BufferAttribute(tints,3));
- return geometry;
+ // Back locks are authored first. Broad forms follow the skull and remain under
+ // the upper crown and front fringe, like the concept's swept layered haircut.
+ lock('Back_Left',[[.01,.180,.073],[.111,.135,.166],[.157,.040,.190],[.143,-.056,.192],[.111,-.135,.166],[.065,-.194,.110]],.085,.024,{rows:22,sides:24,phase:.2});
+ lock('Back_Center',[[.052,.190,.031],[.049,.143,.190],[.019,.051,.232],[.006,-.053,.231],[-.004,-.134,.207],[-.010,-.198,.115]],.092,.024,{rows:22,sides:24,phase:.7});
+ lock('Back_Right',[[-.045,.183,.064],[-.126,.129,.170],[-.159,.025,.192],[-.146,-.069,.185],[-.112,-.139,.158],[-.067,-.194,.111]],.086,.025,{rows:22,sides:24,phase:1.1});
+ lock('Crown_BackSweep',[[.101,.136,.118],[.061,.208,.109],[-.035,.220,.056],[-.163,.157,.050]],.079,.026,{rows:22,sides:24,light:.07,phase:.3});
+ // Side panels overlap the cap at their roots and tuck behind the ears. Their
+ // flattened width keeps them plush rather than cylindrical or rope-like.
+ lock('Left_Side_Back',[[.104,.143,.085],[.199,.089,.087],[.226,-.010,.048],[.179,-.126,.070]],.061,.022,{rows:21,sides:20,phase:.5});
+ lock('Right_Side_Back',[[-.110,.155,.082],[-.202,.094,.073],[-.225,-.021,.035],[-.174,-.122,.071]],.063,.022,{rows:21,sides:20,phase:1.0});
+ lock('Left_Temple',[[.132,.145,-.058],[.202,.095,-.077],[.217,.008,-.074],[.192,-.063,-.067]],.055,.022,{rows:24,sides:40,phase:.9,tip:1.45});
+ lock('Right_Temple',[[-.128,.160,-.040],[-.192,.120,-.075],[-.215,.034,-.078],[-.190,-.059,-.069]],.067,.025,{rows:24,sides:40,phase:.2,tip:1.45});
+ // Three signature broad forelocks: lower fringe first, then a wide crown sweep
+ // crossing above it. Curved tapered ends remain embedded in adjacent volumes.
+ lock('Forelock_Lower',[[-.144,.149,-.073],[-.098,.151,-.168],[-.013,.109,-.204],[.069,.060,-.187]],.071,.03335,{rows:30,sides:64,phase:.4,light:.075,tip:1.40});
+ lock('Forelock_Left',[[.051,.166,-.106],[.118,.128,-.150],[.183,.066,-.122],[.215,.032,-.070]],.070,.03105,{rows:30,sides:64,phase:.7,light:.06,tip:1.4});
+ lock('Forelock_Main',[[-.158,.154,-.035],[-.085,.215,-.094],[.019,.189,-.160],[.121,.154,-.169],[.198,.171,-.096]],.084,.03910,{rows:30,sides:64,phase:1.0,light:.09,tip:1.55});
+ // Lift at the crown completes the reference silhouette: a small soft curl,
+ // attached at a broad base and tapering gently upward, never an isolated spike.
+ lock('Crown_Curl',[[-.095,.185,.042],[-.153,.201,.029],[-.161,.236,.007],[-.142,.250,-.012]],.026,.018,{rows:18,sides:20,phase:.4,light:.04,tip:1.55});
+ // Preserve the explicitly requested head-to-hair height independent of the
+ // small curl's section thickness. This only compresses the crown above .15m.
+ let top=-Infinity;for(const {geometry:g}of pieces){const a=g.getAttribute('position');for(let i=0;i<a.count;i++)top=Math.max(top,a.getY(i));}
+ for(const {geometry:g,colors,uvs}of pieces){const a=g.getAttribute('position');for(let i=0;i<a.count;i++)if(a.getY(i)>.15)a.setY(i,.15+(a.getY(i)-.15)*(.253-.15)/(top-.15));g.computeVertexNormals();g.computeBoundingBox();g.userData={style:'V44_reference_sculpted_lock',recommendedRoughness:.49};part(g,'hair','Head',undefined,undefined,undefined,'#50372b');g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));if(uvs)g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));}
+ return pieces.map(p=>p.geometry);
 }

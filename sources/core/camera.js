@@ -78,7 +78,7 @@ export class CameraRig {
       if (this.width >= 900) target.addScaledVector(right, focus.exhibit?460/this.height*distance*Math.tan(THREE.MathUtils.degToRad(FOV/2)):7.4);
       desired = {target, position: target.clone().add(new THREE.Vector3(Math.sin(az)*Math.cos(el), Math.sin(el), Math.cos(az)*Math.cos(el)).multiplyScalar(distance))};
     } else if (locomotion === 'walking') {
-      const base = Math.max(12.5, 24 * (this.height / this.width) / (844 / 390));
+      const base = Math.max(12.6, 24 * (this.height / this.width) / (844 / 390));
       const distance = base * ZOOM_LEVELS[this.settings.walkZoom ?? 1];
       const heading = new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
       this.heading.lerp(heading,snap?1:1-Math.exp(-5*dt)).normalize();

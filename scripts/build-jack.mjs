@@ -31,18 +31,18 @@ for(const n of skinnedNodes.slice(1)){
   const m=n.getMesh();for(const primitive of [...m.listPrimitives()]){m.removePrimitive(primitive);combined.addPrimitive(primitive);}
   n.setMesh(null);n.setSkin(null);m.dispose();n.dispose();
 }
-await document.transform(meshopt({encoder:MeshoptEncoder,level:'medium'}),dedup());
+await document.transform(meshopt({encoder:MeshoptEncoder,level:'high'}),dedup());
 const dir=new URL('../static/models/',import.meta.url),output=new URL('jack.glb',dir);
 await fs.mkdir(dir,{recursive:true});await io.write(fileURLToPath(output),document);
 const checked=await io.read(fileURLToPath(output)),r=checked.getRoot();
 const primitives=r.listMeshes().flatMap(m=>m.listPrimitives());
-const report={revision:'v43-sculpted-head-jack',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
+const report={revision:'v44-concept-jack',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
  triangles:primitives.reduce((s,p)=>s+(p.getIndices()?.getCount()||p.getAttribute('POSITION').getCount())/3,0),materials:r.listMaterials().length,drawCalls:primitives.length,
  joints:Object.keys(bones),skins:r.listSkins().length,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),
  animations:r.listAnimations().map(a=>({name:a.getName(),tracks:a.listChannels().length,duration:Math.max(...a.listSamplers().map(s=>Math.max(...s.getInput().getArray())))})),textures:r.listTextures().length,
  compression:'EXT_meshopt_compression',placement:root.userData};
 for(const accessor of r.listAccessors())for(const n of accessor.getArray()||[])if(!Number.isFinite(n))throw Error('Non-finite Jack accessor');
-if(report.triangles>20000||report.materials>6||report.drawCalls>6||report.bytes>350000)throw Error('Jack asset exceeded budget');
+if(report.triangles>43000||report.materials>6||report.drawCalls>6||report.bytes>350000)throw Error(`Jack asset exceeded budget: ${report.triangles} triangles, ${report.bytes} bytes`);
 if(report.skins!==1||report.animations.length!==JACK_SPEC.clips.length)throw Error('Missing shared skeleton or clips');
 if(Math.abs(report.bounds.min[1])>.002||Math.abs(report.dimensions[1]-1.30)>.002)throw Error('Incorrect Jack height/origin');
 // Validate contact after decoding the compressed file, including between-key
@@ -67,7 +67,7 @@ for(const name of ['walk','run']){
 mixer.stopAllAction();mixer.clipAction(decoded.animations.find(c=>c.name==='helm')).play();
 report.helmContact={sampledFrames:121,hands:{}};
 for(const [side,sign]of [['Left',-1],['Right',1]]){
- const hand=decoded.scene.getObjectByName(`${side}Hand`),expected=new THREE.Vector3(sign*.093,.435,-.228);
+ const hand=decoded.scene.getObjectByName(`${side}Hand`),expected=new THREE.Vector3(sign*.093,.490,-.228);
  let referenceP,referenceQ,maxTargetError=0,maxPositionDrift=0,maxAngleDrift=0;
  for(let frame=0;frame<=120;frame++){
   mixer.setTime(2*frame/120);decoded.scene.updateMatrixWorld(true);
