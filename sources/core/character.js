@@ -3,7 +3,7 @@ import {pointInPolygon,dockLocal} from './dock.js';
 
 export const SEA_GROUP=0x00010001;
 export const WALK_GROUP=0x00020002;
-export const CHARACTER={radius:.22,halfHeight:.4,height:1.24,walk:2.4,run:4,offset:.012};
+export const CHARACTER={radius:.22,halfHeight:.35,height:1.14,walk:2.4,run:4,offset:.012};
 export function localToWorld(island,p){const c=Math.cos(island.rotation),s=Math.sin(island.rotation);return{x:island.x+p.x*c+p.z*s,y:p.y??.85,z:island.z-p.x*s+p.z*c,yaw:(p.yaw||0)+island.rotation};}
 function inRect(p,r,margin=0){const c=Math.cos(r.rotation||0),s=Math.sin(r.rotation||0),dx=p.x-r.x,dz=p.z-r.z;return Math.abs(dx*c-dz*s)<=r.width/2+margin&&Math.abs(dx*s+dz*c)<=r.depth/2+margin;}
 

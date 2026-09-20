@@ -1,20 +1,22 @@
 import * as THREE from 'three';
 import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
+import {createTrousersGeometry,trousersSkinWeights} from './jack-trousers.mjs';
 import {addJackHair} from './jack-hair.mjs';
+import {FACE_PROFILE,profileAt,faceSurface,createFaceGeometry,createSneakerUpper,createFoldedCuff} from './jack-shapes.mjs';
 import {mergeGeometries, mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
 
-/** Original V4.5 reference-led toy adventurer. Metres, feet Y=0, facing -Z.
+/** Original V4.6 sculpted toy adventurer. Metres, feet Y=0, facing -Z.
  * Geometry is authored on one named skeleton. No runtime retargeting or IK is
  * required: the author-time helm solve is baked into constant animation keys. */
-const HEAD_SCALE=.542/.487, HEAD_Y=1.30-.253*HEAD_SCALE;
-const THIGH=.165*.92, SHIN=.189*.92, HIP_Y=.020+THIGH+SHIN+.086;
-const ARM=.158, RELAXED_ARM=THREE.MathUtils.degToRad(22);
-const RELAXED_ELBOW=THREE.MathUtils.degToRad(10), ELBOW_FLEX=THREE.MathUtils.degToRad(12);
+const HEAD_SCALE=.542/.487, HEIGHT=1.20,HEAD_Y=HEIGHT-.253*HEAD_SCALE;
+const THIGH=.115, SHIN=.131, HIP_Y=.020+THIGH+SHIN+.086;
+const ARM=.145, RELAXED_ARM=THREE.MathUtils.degToRad(22);
+const RELAXED_ELBOW=THREE.MathUtils.degToRad(12), ELBOW_FLEX=THREE.MathUtils.degToRad(12);
 const headParts=new Set(['Head','LeftEye','RightEye','LeftBrow','RightBrow','Mouth']);
 export const JACK_SPEC=Object.freeze({
- height:1.30,headHeight:.542,headsTall:1.30/.542,forward:'-Z',
+ height:HEIGHT,headHeight:.542,headsTall:HEIGHT/.542,forward:'-Z',
  helmAuthorAnchor:[.292,HIP_Y,.005],helmAnchor:[.28324,.1324-HIP_Y*.97,.00485],helmScale:.97,
- benchSeatOffset:HIP_Y-.075,benchForwardOffset:.258,
+ benchSeatOffset:HIP_Y-.075,benchForwardOffset:.336,
  facial:{eyeBones:['LeftEye','RightEye'],browBones:['LeftBrow','RightBrow'],mouthBone:'Mouth',blinkAxis:'y',openScale:1,closedScale:.08,headBone:'Head',gazeYawLimit:.16,gazePitchLimit:.08},
  clips:['idle','walk','run','helm','interact','sit','stand'],
 });
@@ -22,13 +24,16 @@ export const JACK_SPEC=Object.freeze({
 export function createJackCharacter(){
  const root=new THREE.Group();root.name='Jack';const bones=[],byName={};
  const bone=(name,parent,x=0,y=0,z=0)=>{const b=new THREE.Bone();b.name=name;b.position.set(x,y,z);(parent||root).add(b);bones.push(b);byName[name]=b;return b;};
- const hips=bone('Hips',null,0,HIP_Y,0),spine=bone('Spine',hips,0,.100,0),chest=bone('Chest',spine,0,.098,0);
- const neck=bone('Neck',chest,0,.132,0),head=bone('Head',neck,0,HEAD_Y-HIP_Y-.100-.098-.132,0);
- bone('LeftEye',head,-.078,-.036,-.187);bone('RightEye',head,.078,-.036,-.187);
- bone('LeftBrow',head,-.078,.030,-.190);bone('RightBrow',head,.078,.030,-.190);bone('Mouth',head,0,-.121,-.175);
+ const hips=bone('Hips',null,0,HIP_Y,0),spine=bone('Spine',hips,0,.087,0),chest=bone('Chest',spine,0,.082,0);
+ const neck=bone('Neck',chest,0,.132,0),head=bone('Head',neck,0,HEAD_Y-HIP_Y-.087-.082-.132,0);
+ for(const[side,sign]of[['Left',-1],['Right',1]]){
+  bone(side+'Eye',head,...faceSurface(sign*.076,-.024,.006));
+  bone(side+'Brow',head,...faceSurface(sign*.076,.039,.008));
+ }
+ bone('Mouth',head,...faceSurface(0,-.127,.004));
  for(const name of headParts)if(name!=='Head')byName[name].position.multiplyScalar(HEAD_SCALE);
  for(const[side,s]of[['Left',-1],['Right',1]]){
-  const arm=bone(`${side}Arm`,chest,s*.161,.068,0),elbow=bone(`${side}ForeArm`,arm,0,-ARM,0);bone(`${side}Hand`,elbow,0,-ARM,0);
+  const arm=bone(`${side}Arm`,chest,s*.165,.068,0),elbow=bone(`${side}ForeArm`,arm,0,-ARM,0);bone(`${side}Hand`,elbow,0,-ARM,0);
   const thigh=bone(`${side}UpLeg`,hips,s*.072,-.02,0),shin=bone(`${side}Leg`,thigh,0,-THIGH,0);bone(`${side}Foot`,shin,0,-SHIN,0);
  }
  root.updateMatrixWorld(true);
@@ -71,47 +76,61 @@ export function createJackCharacter(){
  // arms and knees deform as soft clothing rather than stacked rigid beads.
  const cloth=(mat,upper,lower,profile,hinge,depthScale=1,color)=>{
   const vs=[],ix=[],radial=20;
-  for(const[y,r]of profile)for(let j=0;j<=radial;j++){const a=j/radial*Math.PI*2;vs.push(Math.cos(a)*r,y,Math.sin(a)*r*depthScale);}
+  for(const[y,r]of profile)for(let j=0;j<=radial;j++){const a=j/radial*Math.PI*2,side=upper.startsWith('Left')?-1:1,shoulder=mat==='cream'?-side*.065*THREE.MathUtils.smoothstep(y,-.018,.035):0;vs.push(shoulder+Math.cos(a)*r,y,Math.sin(a)*r*depthScale);}
   for(let i=0;i<profile.length-1;i++)for(let j=0;j<radial;j++){const a=i*(radial+1)+j,b=a+radial+1;ix.push(a,a+1,b,a+1,b+1,b);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vs,3));g.setIndex(ix);g.computeVertexNormals();
   part(g,mat,upper,undefined,undefined,undefined,color);
   const ids=g.getAttribute('skinIndex'),weights=g.getAttribute('skinWeight'),lo=bones.indexOf(byName[lower]),hi=bones.indexOf(byName[upper]);
-  for(let i=0;i<profile.length;i++){const y=profile[i][0],t=THREE.MathUtils.smoothstep(hinge-y,-.04,.04);for(let j=0;j<=radial;j++){const k=i*(radial+1)+j;ids.setXYZW(k,hi,lo,0,0);weights.setXYZW(k,1-t,t,0,0);}}
+  for(let i=0;i<profile.length;i++){const y=profile[i][0],t=THREE.MathUtils.smoothstep(hinge-y,-.04,.04);for(let j=0;j<=radial;j++){const k=i*(radial+1)+j,chest=mat==='cream'?THREE.MathUtils.smoothstep(y,0,.035):0;ids.setXYZW(k,hi,lo,bones.indexOf(byName.Chest),0);weights.setXYZW(k,(1-t)*(1-chest),t,chest*(1-t),0);}}
  };
  // Reference face: broad cheeks and a compact rounded chin below layered hair.
- const face=new THREE.SphereGeometry(1,40,28),fp=face.getAttribute('position');
- const facePoint=(x,y,extra=.002)=>{
-  const sy=(y+.023)/.211,cheek=1+.045*Math.exp(-(((sy+.38)/.48)**2)),sx=x/(.216*cheek);
-  return [x,y,-.198*Math.sqrt(Math.max(.001,1-sx*sx-sy*sy))*(1-.02*sy)-extra];
- };
- for(let n=0;n<fp.count;n++){const x=fp.getX(n),y=fp.getY(n),z=fp.getZ(n),cheek=1+.045*Math.exp(-(((y+.38)/.48)**2));fp.setXYZ(n,x*.216*cheek,y*.211-.023,z*.198*(1-.02*y));}
+ const face=createFaceGeometry(),fp=face.getAttribute('position');
+ const facePoint=faceSurface;
  face.computeVertexNormals();const faceTints=[];
  for(let n=0;n<fp.count;n++){const x=fp.getX(n),y=fp.getY(n),z=fp.getZ(n),dx=(Math.abs(x)-.139)/.044,dy=(y+.079)/.027,blush=Math.exp(-(dx*dx+dy*dy)*1.5)*.26*Math.max(0,Math.min(1,-z/.12));faceTints.push(...new THREE.Color('#ffc49a').lerp(new THREE.Color('#ed9479'),blush).toArray());}
  part(face,'skin','Head');face.setAttribute('color',new THREE.Float32BufferAttribute(faceTints,3));
  for(const[side,s]of[['Left',-1],['Right',1]]){
-  orb('skin','Head',[s*.214,-.073,.012],[.042,.049,.030],18,12);
-  orb('skin','Head',[s*.232,-.074,-.010],[.021,.029,.013],14,10,'#eeb08c');
+  orb('skin','Head',[s*.199,-.067,.008],[.038,.047,.028],18,12);
+  orb('skin','Head',[s*.217,-.068,-.011],[.019,.027,.011],14,10,'#eeb08c');
   const eyePart=(mat,pos,scale,segments,rings,color)=>{
    const g=new THREE.SphereGeometry(1,segments,rings);g.scale(...scale);g.translate(...pos);g.rotateY(-s*.34);part(g,mat,`${side}Eye`,undefined,undefined,undefined,color);
   };
   // The reference uses simple deep-black oval eyes, not outlined iris rings.
-  eyePart('ink',[0,0,0],[.022,.034,.008],22,14,'#151719');
+  eyePart('ink',[0,0,0],[.0235,.034,.008],22,14,'#151719');
   eyePart('cream',[-.005,.013,-.0065],[.0045,.006,.002],12,9,'#fffdf6');
   eyePart('ink',[.007,-.014,-.006],[.003,.004,.001],10,7,'#35383a');
-  const brow=[facePoint(s*.047,.020,.008),facePoint(s*.071,.034,.009),facePoint(s*.096,.030,.008),facePoint(s*.111,.017,.005)];
-  facialCurve('hair',`${side}Brow`,brow.map(p=>[p[0]-s*.078,p[1]-.030,p[2]+.190]),.008,14,'#543629');
+  const brow=[facePoint(s*.044,.036,.009),facePoint(s*.068,.048,.009),facePoint(s*.095,.044,.008),facePoint(s*.112,.031,.005)],pivot=facePoint(s*.076,.039,.008);
+  facialCurve('hair',`${side}Brow`,brow.map(p=>p.map((v,i)=>v-pivot[i])),.008,14,'#543629');
+  const lid=[facePoint(s*.052,-.049,.003),facePoint(s*.075,-.057,.003),facePoint(s*.096,-.048,.002)];
+  facialCurve('skin','Head',lid,.0017,10,'#eab18d');
  }
- orb('skin','Head',[0,-.079,-.194],[.019,.015,.021],18,12,'#f1aa80');
- facialCurve('ink','Mouth',[facePoint(-.039,-.112,.003),facePoint(-.019,-.123,.004),facePoint(.013,-.124,.004),facePoint(.039,-.113,.003)].map(p=>[p[0],p[1]+.121,p[2]+.175]),.0025,18,'#83462f');
- addJackHair(THREE,part);
+ orb('skin','Head',facePoint(0,-.078,.007),[.019,.014,.017],18,12,'#f1aa80');
+ facialCurve('ink','Mouth',[facePoint(-.039,-.112,.003),facePoint(-.019,-.123,.004),facePoint(.013,-.124,.004),facePoint(.039,-.113,.003)].map(p=>p.map((v,i)=>v-facePoint(0,-.127,.004)[i])),.0025,18,'#83462f');
+ addJackHair(THREE,(geometry,...args)=>{
+  const p=geometry.getAttribute('position'),scalp=geometry.userData.coverage,inner=scalp?1+scalp.columns*scalp.rows:0;
+  for(let i=0;i<p.count;i++){
+   const y=p.getY(i),temple=1-.035*Math.exp(-(((y+.02)/.12)**2));let x=p.getX(i)*temple,z=p.getZ(i)*.91;
+   if(scalp&&i<inner&&y<.188&&y>-.22){
+    const[,rx,front,back,center]=profileAt(FACE_PROFILE,y),d=z-center,rz=d<0?front:back;
+    // Refit the coverage shell to the sculpted skull; preserve visible locks.
+    const radius=Math.hypot(x/Math.max(.001,rx),d/Math.max(.001,rz));
+    if(radius>.15&&radius<1.085){const factor=1.085/radius;x*=factor;z=center+d*factor;}
+   }
+   p.setXYZ(i,x,y,z);
+  }
+  if(scalp)for(let c=0;c<scalp.columns;c++){const outer=inner-scalp.columns+c;p.setXYZ(inner+c,p.getX(outer)*.94,(p.getY(outer)+.023)*.94-.023,p.getZ(outer)*.94);}
+  geometry.computeVertexNormals();part(geometry,...args);
+ });
  // Open cream jacket frames a navy tee, with a proper gap down the front.
  orb('skin','Neck',[0,-.008,0],[.050,.059,.045],18,12);
  orb('navy','Chest',[0,-.022,.008],[.130,.157,.087],24,18,'#26394c');
- const coatProfile=[[.120,.063,.045],[.111,.126,.079],[.080,.148,.092],[.030,.152,.101],[-.030,.150,.105],[-.109,.146,.103],[-.157,.139,.098],[-.170,.134,.094]];
+ const coatKeys=[[-.170,.134,.094],[-.151,.143,.101],[-.110,.147,.105],[-.050,.151,.106],[.015,.154,.103],[.065,.150,.095],[.100,.130,.083],[.120,.064,.045]];
+ const coatProfile=Array.from({length:25},(_,n)=>profileAt(coatKeys,.120-n*.290/24));
  const cp=[],ci=[],cols=34,gap=.43;
  for(let layer=0;layer<2;layer++)for(const[y,w,d]of coatProfile)for(let j=0;j<=cols;j++){
   const phi=-Math.PI/2+gap+j/cols*(Math.PI*2-gap*2),inset=layer?.009:0;
-  cp.push(Math.cos(phi)*(w-inset),y,Math.sin(phi)*(d-inset)+.008);
+  const fold=.0025*Math.sin((y+.17)*35+phi*2)*Math.exp(-(((y+.10)/.075)**2));
+  cp.push(Math.cos(phi)*(w-inset+fold),y,Math.sin(phi)*(d-inset+fold)+.008);
  }
  const rings=coatProfile.length,stride=cols+1,layerSize=rings*stride;
  for(let layer=0;layer<2;layer++)for(let i=0;i<rings-1;i++)for(let j=0;j<cols;j++){
@@ -122,7 +141,7 @@ export function createJackCharacter(){
  const jacket=new THREE.BufferGeometry();jacket.setAttribute('position',new THREE.Float32BufferAttribute(cp,3));jacket.setIndex(ci);jacket.computeVertexNormals();part(jacket,'cream','Chest',undefined,undefined,undefined,'#f2e4cf');
  for(const s of[-1,1]){
   // Folded collar flaps with soft bevels, rather than a padded round neck ring.
-  const points=[[s*.045,.128],[s*.112,.129],[s*.127,.077],[s*.061,.082]];if(s<0)points.reverse();const shape=new THREE.Shape(points.map(p=>new THREE.Vector2(...p)));
+  const shape=new THREE.Shape();shape.moveTo(s*.044,.127);shape.quadraticCurveTo(s*.078,.136,s*.111,.128);shape.quadraticCurveTo(s*.126,.111,s*.123,.079);shape.quadraticCurveTo(s*.097,.076,s*.061,.083);shape.quadraticCurveTo(s*.052,.101,s*.044,.127);
   const collar=new THREE.ExtrudeGeometry(shape,{depth:.010,bevelEnabled:true,bevelSize:.006,bevelThickness:.005,bevelSegments:3,steps:1});
   part(collar,'cream','Chest',[0,0,-.084],undefined,undefined,'#f8ecda');
   curve('cream','Chest',[[s*.102,-.028,-.068],[s*.117,-.051,-.059],[s*.112,-.078,-.060]],.0025,14,'#d9cbb8');
@@ -131,27 +150,27 @@ export function createJackCharacter(){
  }
  soft('accent','Chest',[.059,.016,-.094],[.012,.034,.007],[0,0,-.03],.003,'#ea8744');
  curve('cream','Chest',[[.059,.047,-.093],[.059,.039,-.095],[.059,.031,-.094]],.003,8,'#d5c6ad');
- soft('navy','Hips',[0,.001,.005],[.260,.150,.181],[0,0,0],.060,'#293b50');
- capsule('navy','Hips',[0,.040,.005],[.228,.034,.160],'#28394c');
+ const trousers=createTrousersGeometry(THREE),tp=trousers.getAttribute('position');
+ const tw=Array.from({length:tp.count},(_,i)=>trousersSkinWeights(tp.getX(i),tp.getY(i)));
+ part(trousers,'navy','Hips',undefined,undefined,undefined,'#293b50');
+ const ti=trousers.getAttribute('skinIndex'),ts=trousers.getAttribute('skinWeight');
+ tw.forEach((weights,i)=>{const ids=[0,0,0,0],values=[0,0,0,0];weights.forEach(([name,w],j)=>{ids[j]=bones.indexOf(byName[name]);values[j]=w;});ti.setXYZW(i,...ids);ts.setXYZW(i,...values);});
  curve('navy','Hips',[[0,.019,-.087],[.010,-.010,-.089],[.008,-.038,-.082]],.002,12,'#233448');
  for(const[side,s]of[['Left',-1],['Right',1]]){
   cloth('cream',`${side}Arm`,`${side}ForeArm`,[[.040,0],[.033,.029],[.017,.054],[0,.064],[-.04,.066],[-.08,.064],[-.115,.061],[-.140,.060],[-.155,.059],[-.17,.058],[-.195,.057],[-.225,.055],[-.255,.053],[-.279,.049],[-.294,.027],[-.300,0]].map(([y,r])=>[y*ARM/.155,r*1.08]),-ARM,1.05);
-  soft('cream',`${side}ForeArm`,[0,-ARM+.020,0],[.110,.034,.113],[0,0,0],.011,'#e5d3b3');
+  part(createFoldedCuff(.055,.057,.029),'cream',`${side}ForeArm`,[0,-ARM+.017,0],undefined,undefined,'#edddc4');
   orb('skin',`${side}Hand`,[0,-.011,-.004],[.042,.043,.039],16,12);
   orb('skin',`${side}Hand`,[-s*.031,-.007,-.022],[.019,.025,.021],12,9);
-  cloth('navy',`${side}UpLeg`,`${side}Leg`,[[.047,0],[.040,.032],[.026,.053],[.007,.064],[-.025,.066],[-.06,.065],[-.095,.063],[-.120,.061],[-.137,.060],[-.155,.059],[-.18,.059],[-.215,.058],[-.25,.057],[-.277,.054],[-.292,.03],[-.300,0]].map(([y,r])=>[y>=-.137?y*THIGH/.137:-THIGH+(y+.137)*SHIN/.162,r]),-THIGH,1.15,'#293b50');
-  soft('navy',`${side}Leg`,[0,-SHIN+.021,.003],[.132,.0396,.145],[0,0,0],.010,'#34465a');
   // Soft oversized sneaker volumes overlap into one silhouette, with no box joints.
   const soleShape=new THREE.Shape();soleShape.moveTo(-.063,.055);soleShape.quadraticCurveTo(-.077,.015,-.073,-.076);soleShape.quadraticCurveTo(-.068,-.141,0,-.146);soleShape.quadraticCurveTo(.068,-.141,.073,-.076);soleShape.quadraticCurveTo(.077,.015,.063,.055);soleShape.quadraticCurveTo(0,.088,-.063,.055);soleShape.closePath();
   const sole=new THREE.ExtrudeGeometry(soleShape,{depth:.018,curveSegments:10,bevelEnabled:true,bevelThickness:.005,bevelSize:.003,bevelSegments:3,steps:1});sole.rotateX(Math.PI/2);part(sole,'cream',`${side}Foot`,[0,-.063,0],undefined,undefined,'#e7d7bc');
-  orb('cream',`${side}Foot`,[0,-.023,-.032],[.074,.043,.112],24,14,'#fff2dd');
-  orb('cream',`${side}Foot`,[0,.006,.038],[.056,.044,.060],16,10,'#f3e5ce');
+  part(createSneakerUpper(),'cream',`${side}Foot`,undefined,undefined,undefined,'#fff0d7');
   for(const z of[-.060,-.033])curve('cream',`${side}Foot`,[[-.030,.018,z],[0,.025,z-.002],[.030,.018,z]],.004,7,'#ddccae');
  }
  // Keep the original swept crown contour after scaling the whole head, face
  // pivots included. Shoes retain their original thickness and Y=0 datum.
  let crown=-Infinity;for(const g of bins.get('hair')){const pos=g.getAttribute('position');for(let i=0;i<pos.count;i++)crown=Math.max(crown,pos.getY(i));}
- for(const g of bins.get('hair')){const pos=g.getAttribute('position');for(let i=0;i<pos.count;i++){const y=pos.getY(i);const crownBase=HEAD_Y+.103*HEAD_SCALE;if(y>crownBase)pos.setY(i,crownBase+(y-crownBase)*(1.30-crownBase)/(crown-crownBase));}g.computeVertexNormals();}
+ for(const g of bins.get('hair')){const pos=g.getAttribute('position');for(let i=0;i<pos.count;i++){const y=pos.getY(i);const crownBase=HEAD_Y+.103*HEAD_SCALE;if(y>crownBase)pos.setY(i,crownBase+(y-crownBase)*(HEIGHT-crownBase)/(crown-crownBase));}g.computeVertexNormals();}
  const skeleton=new THREE.Skeleton(bones);skeleton.calculateInverses();
  for(const[key,gs]of bins){const geometry=mergeVertices(mergeGeometries(gs,false),1e-6);geometry.normalizeNormals();const mesh=new THREE.SkinnedMesh(geometry,materials[key]);mesh.name=materials[key].name;mesh.bind(skeleton);mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;root.add(mesh);}
  const bind=Object.fromEntries(bones.map(b=>[b.name,{p:b.position.toArray(),q:b.quaternion.toArray()}]));

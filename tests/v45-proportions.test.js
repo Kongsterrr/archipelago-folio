@@ -23,10 +23,10 @@ function between(value, lower, upper, label) {
   assert.ok(value >= lower && value <= upper, `${label}: ${value}, expected ${lower}–${upper}`);
 }
 
-test('V4.5 decoded skin has the shorter 2.4-head silhouette, independently of metadata', async () => {
+test('Decoded skin has the shorter 2.2-head silhouette, independently of metadata', async () => {
   const character = await fixture('idle'), m = character.at(0);
-  between(m.height, 1.295, 1.305, 'actual standing height');
-  between(m.headsTall, 2.35, 2.45, 'crown-to-chin head proportion');
+  between(m.height, 1.195, 1.205, 'actual standing height');
+  between(m.headsTall, 2.15, 2.25, 'crown-to-chin head proportion');
   between(m.headHeight, .532, .554, 'actual crown-to-chin height');
   between(m.footY, -.001, .003, 'standing sole datum');
   for (const [region, count] of Object.entries(m.triangleCounts)) assert.ok(count > 100, `${region} sampled its real geometry`);

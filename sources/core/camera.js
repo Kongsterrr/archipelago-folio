@@ -82,7 +82,7 @@ export class CameraRig {
       const distance = base * ZOOM_LEVELS[this.settings.walkZoom ?? 1];
       const heading = new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
       this.heading.lerp(heading,snap?1:1-Math.exp(-5*dt)).normalize();
-      const target=new THREE.Vector3(position.x,position.y+.65,position.z);
+      const target=new THREE.Vector3(position.x,position.y+.60,position.z);
       target.addScaledVector(this.flatForward,distance*Math.tan(THREE.MathUtils.degToRad(FOV/2))*.16/Math.sin(ELEVATION));
       if(!this.settings.reduced)target.addScaledVector(this.heading,Math.min(1.2,speed*.3));
       this.distance=distance;desired={target,position:target.clone().addScaledVector(this.direction,distance)};

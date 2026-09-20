@@ -1,4 +1,4 @@
-/** V4.4 concept-reference hairstyle. Metres, Head-local, facing -Z.
+/** V4.6 fitted concept-reference hairstyle. Metres, Head-local, facing -Z.
  * Broad overlapping sculpted locks form the silhouette; cap is coverage only.
  * Call addJackHair(THREE,part). Recommended hair material roughness: .49.
  */
@@ -21,7 +21,7 @@ export function addJackHair(THREE,part){
   const inside=ps.length/3;for(let c=0;c<cols;c++){const i=index(rows,c)*3;ps.push(ps[i]*.94,(ps[i+1]+.023)*.94-.023,ps[i+2]*.94);cs.push(...tint(0,.18));}
   for(let c=0;c<cols;c++){const a=index(rows,c),b=index(rows,c+1),d=inside+c,e=inside+(c+1)%cols;ix.push(a,b,d,b,e,d);}
   const bottom=ps.length/3;ps.push(0,-.02,.008);cs.push(...tint(0,.18));for(let c=0;c<cols;c++)ix.push(inside+c,inside+(c+1)%cols,bottom);
-  mesh('Jack_V44_HiddenScalp',ps,ix,cs);
+  mesh('Jack_V44_HiddenScalp',ps,ix,cs).userData.coverage={columns:cols,rows};
  }
  // The outer surface is a wide flattened tear shape, not a round tube. Each
  // section has real shallow strand grooves in its outward face. Roots overlap
@@ -67,27 +67,27 @@ export function addJackHair(THREE,part){
  };
  // Back locks are authored first. Broad forms follow the skull and remain under
  // the upper crown and front fringe, like the concept's swept layered haircut.
- lock('Back_Left',[[.01,.180,.073],[.111,.135,.166],[.157,.040,.190],[.143,-.056,.192],[.111,-.135,.166],[.065,-.194,.110]],.085,.024,{rows:22,sides:24,phase:.2});
- lock('Back_Center',[[.052,.190,.031],[.049,.143,.190],[.019,.051,.232],[.006,-.053,.231],[-.004,-.134,.207],[-.010,-.198,.115]],.092,.024,{rows:22,sides:24,phase:.7});
- lock('Back_Right',[[-.045,.183,.064],[-.126,.129,.170],[-.159,.025,.192],[-.146,-.069,.185],[-.112,-.139,.158],[-.067,-.194,.111]],.086,.025,{rows:22,sides:24,phase:1.1});
- lock('Crown_BackSweep',[[.101,.136,.118],[.061,.208,.109],[-.035,.220,.056],[-.163,.157,.050]],.079,.026,{rows:22,sides:24,light:.07,phase:.3});
+ lock('Back_Left',[[.01,.180,.073],[.111,.135,.166],[.157,.040,.190],[.143,-.056,.192],[.111,-.135,.166],[.065,-.194,.110]],.085,.024,{rows:20,sides:20,phase:.2});
+ lock('Back_Center',[[.052,.190,.031],[.049,.143,.190],[.019,.051,.232],[.006,-.053,.231],[-.004,-.134,.207],[-.010,-.198,.115]],.092,.024,{rows:20,sides:20,phase:.7});
+ lock('Back_Right',[[-.045,.183,.064],[-.126,.129,.170],[-.159,.025,.192],[-.146,-.069,.185],[-.112,-.139,.158],[-.067,-.194,.111]],.086,.025,{rows:20,sides:20,phase:1.1});
+ lock('Crown_BackSweep',[[.101,.136,.118],[.061,.208,.109],[-.035,.220,.056],[-.163,.157,.050]],.079,.026,{rows:20,sides:20,light:.07,phase:.3});
  // Side panels overlap the cap at their roots and tuck behind the ears. Their
  // flattened width keeps them plush rather than cylindrical or rope-like.
  lock('Left_Side_Back',[[.104,.143,.085],[.199,.089,.087],[.226,-.010,.048],[.179,-.126,.070]],.061,.022,{rows:21,sides:20,phase:.5});
  lock('Right_Side_Back',[[-.110,.155,.082],[-.202,.094,.073],[-.225,-.021,.035],[-.174,-.122,.071]],.063,.022,{rows:21,sides:20,phase:1.0});
- lock('Left_Temple',[[.132,.145,-.058],[.202,.095,-.077],[.217,.008,-.074],[.192,-.063,-.067]],.055,.022,{rows:24,sides:40,phase:.9,tip:1.45});
- lock('Right_Temple',[[-.128,.160,-.040],[-.192,.120,-.075],[-.215,.034,-.078],[-.190,-.059,-.069]],.067,.025,{rows:24,sides:40,phase:.2,tip:1.45});
+ lock('Left_Temple',[[.132,.145,-.058],[.202,.095,-.077],[.217,.008,-.074],[.192,-.063,-.067]],.055,.022,{rows:22,sides:28,phase:.9,tip:1.45});
+ lock('Right_Temple',[[-.128,.160,-.040],[-.192,.120,-.075],[-.215,.034,-.078],[-.190,-.059,-.069]],.067,.025,{rows:22,sides:28,phase:.2,tip:1.45});
  // Three signature broad forelocks: lower fringe first, then a wide crown sweep
  // crossing above it. Curved tapered ends remain embedded in adjacent volumes.
- lock('Forelock_Lower',[[-.144,.149,-.073],[-.098,.151,-.168],[-.013,.109,-.204],[.069,.060,-.187]],.071,.03335,{rows:30,sides:64,phase:.4,light:.075,tip:1.40});
- lock('Forelock_Left',[[.051,.166,-.106],[.118,.128,-.150],[.183,.066,-.122],[.215,.032,-.070]],.070,.03105,{rows:30,sides:64,phase:.7,light:.06,tip:1.4});
- lock('Forelock_Main',[[-.158,.154,-.035],[-.085,.215,-.094],[.019,.189,-.160],[.121,.154,-.169],[.198,.171,-.096]],.084,.03910,{rows:30,sides:64,phase:1.0,light:.09,tip:1.55});
+ lock('Forelock_Lower',[[-.144,.149,-.073],[-.098,.151,-.168],[-.013,.109,-.204],[.069,.060,-.187]],.071,.03335,{rows:26,sides:40,phase:.4,light:.075,tip:1.40});
+ lock('Forelock_Left',[[.051,.166,-.106],[.118,.128,-.150],[.183,.066,-.122],[.215,.032,-.070]],.070,.03105,{rows:26,sides:40,phase:.7,light:.06,tip:1.4});
+ lock('Forelock_Main',[[-.158,.154,-.035],[-.085,.215,-.094],[.019,.189,-.160],[.121,.154,-.169],[.198,.171,-.096]],.084,.03910,{rows:26,sides:40,phase:1.0,light:.09,tip:1.55});
  // Lift at the crown completes the reference silhouette: a small soft curl,
  // attached at a broad base and tapering gently upward, never an isolated spike.
  lock('Crown_Curl',[[-.095,.185,.042],[-.153,.201,.029],[-.161,.236,.007],[-.142,.250,-.012]],.026,.018,{rows:18,sides:20,phase:.4,light:.04,tip:1.55});
  // Preserve the explicitly requested head-to-hair height independent of the
  // small curl's section thickness. This only compresses the crown above .15m.
  let top=-Infinity;for(const {geometry:g}of pieces){const a=g.getAttribute('position');for(let i=0;i<a.count;i++)top=Math.max(top,a.getY(i));}
- for(const {geometry:g,colors,uvs}of pieces){const a=g.getAttribute('position');for(let i=0;i<a.count;i++)if(a.getY(i)>.15)a.setY(i,.15+(a.getY(i)-.15)*(.253-.15)/(top-.15));g.computeVertexNormals();g.computeBoundingBox();g.userData={style:'V44_reference_sculpted_lock',recommendedRoughness:.49};part(g,'hair','Head',undefined,undefined,undefined,'#50372b');g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));if(uvs)g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));}
+ for(const {geometry:g,colors,uvs}of pieces){const a=g.getAttribute('position');for(let i=0;i<a.count;i++)if(a.getY(i)>.15)a.setY(i,.15+(a.getY(i)-.15)*(.253-.15)/(top-.15));g.computeVertexNormals();g.computeBoundingBox();g.userData={...g.userData,style:'V44_reference_sculpted_lock',recommendedRoughness:.49};part(g,'hair','Head',undefined,undefined,undefined,'#50372b');g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));if(uvs)g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));}
  return pieces.map(p=>p.geometry);
 }

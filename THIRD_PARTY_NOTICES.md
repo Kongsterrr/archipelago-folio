@@ -15,8 +15,10 @@ Dependency-specific license files remain available with their installed packages
 
 - **V3 fleet, marine fauna and island detail overlays** — original procedural assets authored for Jack’s Archipelago. Sources: `scripts/fleet-vessels.mjs`, `scripts/animals.mjs`, `scripts/island-details.mjs`. Small applied labels use original stroke geometry; no external model or animal imagery is embedded.
 
-- **V4/V4.1/V4.2/V4.3/V4.4/V4.5 Jack character and V4 walkable islands** — original procedural geometry, rig and animation authored for this portfolio, reproduced by `scripts/jack-character.mjs`, `scripts/jack-hair.mjs`, `scripts/build-jack.mjs`, and `scripts/build-walk-islands.mjs`. No third-party character scan, photograph or motion-capture clip is included. V4 replaces the original island GLBs while retaining their maritime shorelines and uses the same licensed Helvetiker typeface for plaques.
+- **V4/V4.1/V4.2/V4.3/V4.4/V4.5/V4.6 Jack character and V4 walkable islands** — original procedural geometry, rig and animation authored for this portfolio, reproduced by `scripts/jack-character.mjs`, `scripts/jack-hair.mjs`, `scripts/build-jack.mjs`, and `scripts/build-walk-islands.mjs`. No third-party character scan, photograph or motion-capture clip is included. V4 replaces the original island GLBs while retaining their maritime shorelines and uses the same licensed Helvetiker typeface for plaques.
 
 - **V4.4 reference-led redesign** — modeled from Jack’s supplied generated character concept. The reference bitmap is not embedded in the website or repository. Hair strands use an original procedural normal field; no purchased model, stock texture or outside character asset is included.
 
 - **V4.5 proportion and pose refinement** — original shortened-body geometry and animations, based on the same supplied concept. No additional third-party character, texture or animation asset is introduced.
+
+- **V4.6 sculpted character surfaces** — original authored cross-sections, garment field, rig weights and animations in `scripts/jack-shapes.mjs` and `scripts/jack-trousers.mjs`. The marching-cubes topology table in the latter is copied from Three.js (MIT; copyright © 2010–2026 Three.js authors). Its complete license is preserved in `static/licenses/three.txt`. Concept reference bitmaps and temporary review assets are not shipped.

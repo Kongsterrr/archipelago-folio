@@ -1,3 +1,33 @@
+# V4.6 — Soft Shapes & Shorter Legs validation · 2026-09-20
+
+## Actual sculpt and proportions
+
+The selected A soft-oval concept informed an actual geometry rebuild, not only a scale change. The decoded idle model measures **1.19977 units tall**, **0.54182 units crown to chin**, and **2.214 heads tall**. Jacket hem to sole is **30.16%** of height (V4.5: 36.22%). The head retains its preceding size while the thigh/shin and torso become shorter.
+
+The face is a closed loft with independently authored temple, cheek, jaw and chin sections. Its actual facial width/height is **0.957**, with the lower-jaw slice **76.6%** of the cheek width. The hair coverage shell is fitted to that new surface; inner rim construction retains outward normals. The shoulder cap blends into the chest, sleeve cuffs use oval folded contours, and shoes have continuous uppers. The trousers have one connected surface spanning Hips, both UpLegs and both Legs, replacing the disconnected rounded waist and leg primitives.
+
+Neutral waist-side sleeve clearance is **15.8 mm**; hand-to-trouser clearance is **64.1 mm**. Original wheel grip positions and stationary hand rotations remain unchanged. The walking capsule is shortened to **1.14 units** (radius .22, half-height .35); camera aim drops from .65 to .60 above the feet. Existing boarding locations and boat dimensions remain valid.
+
+## Regression and asset verification
+
+**179 tests pass** on Node 24.19.0: all 173 preceding checks, with the intentionally changed height/ratio contracts updated, plus six checks for actual hem fraction, facial cross-sections, connected trousers, face/shoe surface closure and complete seated trouser clearance. The new bench regression samples **61 times × five headings**, including mixed Hips/UpLeg vertices that the previous shin-only check missed. The .336 forward seat offset keeps the full pants surface outside the wooden slats; pelvis support is about **3.0 mm** above the seat.
+
+The build decodes the compressed GLB and checks 481 samples per gait. Lowest sole clearance is **1.02–1.71 mm walking**, **0.58–19.45 mm running**, including the deliberate short flight phase. The 121-sample helm loop retains zero hand drift. Existing tests continue to cover fixed-step movement at 30/60/120 FPS, animation interruptions, boarding, all nine routes, sea gameplay and persistent records.
+
+Final GLB: **279,760 bytes**, **40,892 triangles**, **six material primitives**, one 22-joint skin and seven clips. It remains below the existing 350 KB / 43,000-triangle budget. No new network texture or runtime dependency is added. The marching-cubes table provenance and Three.js license are included.
+
+Production Vite build passes under Node 24.19.0. `dist/models/jack.glb` equals the tested source byte for byte: SHA-256 `0cd0ffab3826e094ae529e8931db3df0f8f80317baa83b5801aa5610f011d33b`. Temporary review pages, prior-version comparison models and concept bitmaps are excluded from source and deployment.
+
+## Visual review and limits
+
+Reviewed the decoded GLB in front, side and three-quarter views, first in neutral clay and then with runtime materials. Compared the selected A concept at a similar full-body angle, and saved actual rendered model sheets. These are real model renders; lighting and illustrative detail are not claimed to be pixel-identical to the concept.
+
+On the existing Apple M3 Max / macOS / Codex in-app browser, checked Connect landing, a seven-segment running route, bench sitting, standing, boarding, alternating steering and Harbor landing. Checked 1440×900, 1920×1080, 390×844 and 844×390 layouts. Portrait-to-landscape resizing preserved the exact character position. Actual-vertex camera tests continue to meet desktop 16–20% and portrait 18–24% height targets at all main headings.
+
+WebGPU/high and WebGL2/low with reduced motion rendered the new model without observed console errors. A short WebGPU voyage sample reported **144 FPS**; this is not a sustained performance certification. Phone-sized views are desktop emulation. Physical phones, mobile Safari, controlled cold starts, prolonged thermal behavior and network-failure injection were not remeasured. Existing fallback tests, content, résumé, island assets, gameplay and record schema remain intact.
+
+---
+
 # V4.5 — A Little More Jack validation · 2026-09-20
 
 ## Proportions and relaxed arms
