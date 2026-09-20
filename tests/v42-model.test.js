@@ -6,7 +6,7 @@ import {createJackCharacter,JACK_SPEC} from '../scripts/jack-character.mjs';
 test('head proportions, clips and single shared skin remain an explicit contract',()=>{
  const ch=createJackCharacter(),bounds=new THREE.Box3().setFromObject(ch.root),meshes=[];ch.root.traverse(o=>{if(o.isSkinnedMesh)meshes.push(o);});
  assert.ok(Math.abs(bounds.max.y-1.30)<1e-6);assert.ok(Math.abs(bounds.min.y)<1e-6);
- assert.ok(JACK_SPEC.headsTall>=2.6&&JACK_SPEC.headsTall<=2.75);
+ assert.ok(JACK_SPEC.headsTall>=2.35&&JACK_SPEC.headsTall<=2.45);
  assert.deepEqual(ch.animations.map(c=>c.name),['idle','walk','run','helm','interact','sit','stand']);
  assert.equal(new Set(meshes.map(m=>m.skeleton)).size,1);
 });

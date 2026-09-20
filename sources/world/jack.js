@@ -25,6 +25,8 @@ export class JackAvatar {
       this.root.add(this.model);
       this.spec = {helmAnchor: [.28324, -.4496, .00485], helmScale: .97, benchSeatOffset: .52};
       this.model.traverse(o => { if (o.userData.characterSpec) Object.assign(this.spec, o.userData.characterSpec); });
+      this.poseBones = [];
+      this.model.traverse(o => { if (o.isBone) this.poseBones.push(o); });
       this.mixer = new THREE.AnimationMixer(this.model);
       this.actions = new Map(gltf.animations.map(c => [c.name, this.mixer.clipAction(c)]));
       this.outlines = [];
@@ -106,6 +108,13 @@ export class JackAvatar {
     this.forceFrame = true;
     this.setPose(name, 0);
     this.mixer.update(0);
+    this.normalizePose();
+  }
+
+  normalizePose() {
+    // Compressed clip quaternions can be slightly non-unit. Keep articulated
+    // transforms orthogonal before waves/boat rotation and facial expression.
+    for (const bone of this.poseBones) bone.quaternion.normalize();
   }
 
   seatPosition(seat, seatSurfaceY, yaw = 0) {
@@ -177,6 +186,7 @@ export class JackAvatar {
     this.interactTime = Math.max(0, this.interactTime - step);
     this.advanceBlend(step);
     this.mixer.update(step);
+    this.normalizePose();
     this.expression?.update(step, {reduced, frozen, walking: land, moving: land && character.speed > .1, yaw: this.root.rotation.y, position: character.position, lookTarget: land ? lookTarget : null, interacting: this.interactTime});
   }
 

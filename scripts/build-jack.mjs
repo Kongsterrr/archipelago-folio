@@ -10,6 +10,7 @@ import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
 import {meshopt,dedup} from '@gltf-transform/functions';
 import {MeshoptEncoder,MeshoptDecoder} from 'meshoptimizer';
 import {createJackCharacter,JACK_SPEC} from './jack-character.mjs';
+import {measureJackProportions} from './jack-proportion-metrics.mjs';
 
 globalThis.FileReader=class{
   async readAsArrayBuffer(blob){this.result=await blob.arrayBuffer();this.onloadend?.({target:this});}
@@ -36,7 +37,7 @@ const dir=new URL('../static/models/',import.meta.url),output=new URL('jack.glb'
 await fs.mkdir(dir,{recursive:true});await io.write(fileURLToPath(output),document);
 const checked=await io.read(fileURLToPath(output)),r=checked.getRoot();
 const primitives=r.listMeshes().flatMap(m=>m.listPrimitives());
-const report={revision:'v44-concept-jack',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
+const report={revision:'v45-relaxed-chibi-jack',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
  triangles:primitives.reduce((s,p)=>s+(p.getIndices()?.getCount()||p.getAttribute('POSITION').getCount())/3,0),materials:r.listMaterials().length,drawCalls:primitives.length,
  joints:Object.keys(bones),skins:r.listSkins().length,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),
  animations:r.listAnimations().map(a=>({name:a.getName(),tracks:a.listChannels().length,duration:Math.max(...a.listSamplers().map(s=>Math.max(...s.getInput().getArray())))})),textures:r.listTextures().length,
@@ -51,6 +52,13 @@ const encoded=await fs.readFile(output);
 const decoded=await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(encoded.buffer.slice(encoded.byteOffset,encoded.byteOffset+encoded.byteLength),'');
 const mixer=new THREE.AnimationMixer(decoded.scene),skinned=[],feet=[];
 decoded.scene.traverse(mesh=>{if(!mesh.isSkinnedMesh)return;skinned.push(mesh);const index=mesh.geometry.getAttribute('skinIndex');for(let n=0;n<index.count;n++)if(['LeftFoot','RightFoot'].includes(mesh.skeleton.bones[index.getX(n)].name))feet.push({mesh,index:n});});
+mixer.clipAction(decoded.animations.find(c=>c.name==='idle')).play();mixer.setTime(0);
+report.proportions=measureJackProportions(decoded.scene);
+if(report.proportions.headsTall<2.35||report.proportions.headsTall>2.45)throw Error('Decoded character missed the 2.4-head silhouette');
+for(const [side,m]of Object.entries(report.proportions.sides)){
+ const waist=m.waist.find(s=>s.offset===.05).gap,hand=m.hand.gap;
+ if(!Number.isFinite(waist)||waist<.015||waist>.030||!Number.isFinite(hand)||hand<.040||hand>.070)throw Error(`${side}: decoded neutral arm clearance is out of range`);
+}
 report.groundContact={};
 for(const name of ['walk','run']){
  const clip=decoded.animations.find(c=>c.name===name);mixer.stopAllAction();mixer.clipAction(clip).play();let min=Infinity,max=-Infinity;
@@ -67,7 +75,7 @@ for(const name of ['walk','run']){
 mixer.stopAllAction();mixer.clipAction(decoded.animations.find(c=>c.name==='helm')).play();
 report.helmContact={sampledFrames:121,hands:{}};
 for(const [side,sign]of [['Left',-1],['Right',1]]){
- const hand=decoded.scene.getObjectByName(`${side}Hand`),expected=new THREE.Vector3(sign*.093,.490,-.228);
+ const hand=decoded.scene.getObjectByName(`${side}Hand`),expected=new THREE.Vector3(sign*.093,(.1615-JACK_SPEC.helmAnchor[1])/JACK_SPEC.helmScale,-.228);
  let referenceP,referenceQ,maxTargetError=0,maxPositionDrift=0,maxAngleDrift=0;
  for(let frame=0;frame<=120;frame++){
   mixer.setTime(2*frame/120);decoded.scene.updateMatrixWorld(true);

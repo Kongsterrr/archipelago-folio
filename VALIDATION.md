@@ -1,3 +1,29 @@
+# V4.5 — A Little More Jack validation · 2026-09-20
+
+## Proportions and relaxed arms
+
+Jack retains the 1.30-unit standing height with a shorter torso and limbs. The final decoded idle skin measures **1.29976 units high**, a **0.54176-unit crown-to-chin span**, and **2.399 heads tall**. The complete head, facial pivots and V4.4 hairstyle scale together. Thighs and shins are 8% shorter; each arm segment is 0.158 units. Clothing is refitted, the trouser seat is rounder, and shoe sole thickness is preserved.
+
+The old upper-arm rotation signs pointed inward. V4.5 uses a shared outward stance across land clips: 22° upper-arm abduction, 10° forearm inward angle and 12° neutral elbow flex. The 20° design starting point was adjusted after measuring the real sleeve surface. At the neutral waist slice (coat hem + 0.05), actual sleeve-to-jacket clearance is **18.74 mm per side**; palm/thumb-to-trouser clearance is **65.09 mm**. These measurements intersect deformed triangles with horizontal planes; they are not bone distances or empty bounding-box corners. Other cross-sections are recorded in `jack.manifest.json`.
+
+## Automated and build verification
+
+**173 regression checks pass** on Node 24.19.0, including four new compressed-skin proportion/clearance checks. The existing tests cover fixed wheel contact across steering, waves and 30/60/120 FPS; animation transitions and pauses; benches at all nine island orientations; actual-vertex camera framing at 1440×900, 1920×1080, 390×844 and 844×390; and existing walking/sea gameplay. Runtime bone quaternions are normalized after animation sampling, eliminating compression-induced non-orthogonal transforms without changing the fixed hand pose.
+
+The final GLB is **278,940 bytes**, **42,680 triangles**, six material primitives, one shared 22-joint skeleton and seven clips. No additional character material, downloaded texture or gameplay dependency is introduced. It stays within the agreed 43,000-triangle / six-batch / 350 KB budget.
+
+After decoding, 481 samples per gait place the lowest shoe surface at **1.03–1.71 mm** while walking and **0.43–19.52 mm** while running. The small run flight phase is intentional. The shortened legs clear the bench front by **15.83 mm**, and pelvis-to-seat clearance is **0.94 mm**. The 121-sample helm loop has zero position/orientation drift; independent runtime tests retain the original boat-space grips within 0.1 mm. These checks do not establish intersection-free geometry in every conceivable blended pose.
+
+Production Vite build passed. The built character matches the validated source byte for byte: SHA-256 `3747aac546fecc818efbc48e461247c29ed03860cc0839489e2173cc2393d5ef`. Temporary comparison models, reference bitmap and review page are excluded from deployment and source.
+
+## Visual review and limits
+
+Reviewed the actual GLB against V4.4 and the supplied concept in front, three-quarter and side views. In-scene checks on the existing Apple M3 Max / macOS / Codex in-app browser covered Connect landing, a seven-segment walking/running route, sitting, standing, boarding, left/right steering and four target viewport sizes. Desktop and phone-sized displays keep Jack and the controls visible. Phone views are viewport emulation, not physical-device testing.
+
+WebGPU/high, WebGPU/low with reduced motion, and WebGL2/low with reduced motion rendered the new character. A short status sample reported 144 FPS and no console errors were observed in the final WebGL2 check. This is not a sustained performance, physical-phone or controlled-network certification. Mobile Safari, physical phones and cold-load timing were not remeasured for this cosmetic update. Existing content, résumé, physics dimensions, local-record schema and preview access remain unchanged.
+
+---
+
 # V4.4 — The Concept Comes Aboard validation · 2026-09-19
 
 ## Reference-led reconstruction

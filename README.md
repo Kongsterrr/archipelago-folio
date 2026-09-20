@@ -4,14 +4,14 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V4.4 — The Concept Comes Aboard** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V4.5 — A Little More Jack** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The hosted preview currently requires owner access. You can run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
 - **Nine content islands:** Jack’s Harbor; Amtrak, BeaconFire, and VisionX for experience; Affirmation, Research, and Catering for projects; Learning for education; and Connect for contact details.
-- **Meet Jack:** a round, approximately 2.7-head-tall cartoon captain with layered chestnut hair and an open cream jacket with blinking eyes, gentle expressions, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
+- **Meet Jack:** a round, approximately 2.4-head-tall cartoon captain with layered chestnut hair and an open cream jacket with blinking eyes, gentle expressions, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
@@ -33,7 +33,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V4.1 — Little Captain Jack** | Cute cartoon proportions, recalibrated poses, and stable hands at the helm | [6600e26](https://github.com/Kongsterrr/archipelago-folio/commit/6600e26e523221c67f163ea210e9e0cbc0dd27f2) |
 | **V4.2 — A Livelier Jack** | A fuller chibi silhouette, facial expressions, and continuous motion transitions | [5b6d732](https://github.com/Kongsterrr/archipelago-folio/commit/5b6d732b76fd603f527d164228bb9e301182e6a6) |
 | **V4.3 — A Softer Look** | Sculpted short hair, refined facial details, and gentler expressions | [9edf376](https://github.com/Kongsterrr/archipelago-folio/commit/9edf376eace0ff0e0eaebc420836c4e163de6832) |
-| **V4.4 — The Concept Comes Aboard** | Reference-led proportions, layered fluffy hair, a refined face and open jacket | [Current V4.4 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V4.4 — The Concept Comes Aboard** | Reference-led proportions, layered fluffy hair, a refined face and open jacket | [41787b1](https://github.com/Kongsterrr/archipelago-folio/commit/41787b1acf361db16bb4b8eaff275034992cc6b0) |
+| **V4.5 — A Little More Jack** | Shorter chibi proportions, relaxed arm clearance, refitted gait and seating | [Current V4.5 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -136,6 +137,16 @@ Rebuilt Jack around the supplied character concept, rather than continuing the c
 - Recalibrated the shared skeleton, gait contact, bench placement and fixed helm pose for the changed proportions. Added a regression against the existing boat-space wheel grips.
 - Preserved blinking/expressions, one shared character, nine-island walking, all sea gameplay and browser records. The reference is translated into an original real-time model; a single concept sheet does not define an identical render from every angle.
 
+### V4.5 — A Little More Jack
+
+Refined the body to match the concept’s relaxed, cute stance:
+
+- Shortened the torso and limbs while keeping the same **1.30-unit height**. The decoded model measures **2.40 heads tall**; the entire face, facial pivots and layered hairstyle scale together.
+- Moved the shoulders slightly outward, corrected the inward arm-rotation direction, and shared a relaxed outward stance across idle, walk, run, interaction and standing. Neutral waist-side clearance is about **19 mm**, with **65 mm** between each hand and the trousers.
+- Refitted the jacket, cuffs and rounded trouser seat to the shorter skeleton. Rebaked sole contact and bench placement; the original fixed boat-space wheel grips remain unchanged.
+- Normalized compressed animation quaternions before expressions to keep articulated transforms stable through boat rotations. Steering still does not move the hands.
+- Added checks against the actual deformed, compressed model for head/body ratio and arm clearance. Retained the same 22-joint skin, seven clips, six material batches, island interactions and saved records.
+
 ## Run locally
 
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
@@ -154,7 +165,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V1–V4.4 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and V1–V4.5 regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 

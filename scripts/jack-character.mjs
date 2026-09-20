@@ -3,13 +3,18 @@ import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js'
 import {addJackHair} from './jack-hair.mjs';
 import {mergeGeometries, mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
 
-/** Original V4.4 reference-led toy adventurer. Metres, feet Y=0, facing -Z.
+/** Original V4.5 reference-led toy adventurer. Metres, feet Y=0, facing -Z.
  * Geometry is authored on one named skeleton. No runtime retargeting or IK is
  * required: the author-time helm solve is baked into constant animation keys. */
+const HEAD_SCALE=.542/.487, HEAD_Y=1.30-.253*HEAD_SCALE;
+const THIGH=.165*.92, SHIN=.189*.92, HIP_Y=.020+THIGH+SHIN+.086;
+const ARM=.158, RELAXED_ARM=THREE.MathUtils.degToRad(22);
+const RELAXED_ELBOW=THREE.MathUtils.degToRad(10), ELBOW_FLEX=THREE.MathUtils.degToRad(12);
+const headParts=new Set(['Head','LeftEye','RightEye','LeftBrow','RightBrow','Mouth']);
 export const JACK_SPEC=Object.freeze({
- height:1.30,headHeight:.487,headsTall:1.30/.487,forward:'-Z',
- helmAuthorAnchor:[.292,.460,.005],helmAnchor:[.28324,-.3138,.00485],helmScale:.97,
- benchSeatOffset:.385,benchForwardOffset:.244,
+ height:1.30,headHeight:.542,headsTall:1.30/.542,forward:'-Z',
+ helmAuthorAnchor:[.292,HIP_Y,.005],helmAnchor:[.28324,.1324-HIP_Y*.97,.00485],helmScale:.97,
+ benchSeatOffset:HIP_Y-.075,benchForwardOffset:.258,
  facial:{eyeBones:['LeftEye','RightEye'],browBones:['LeftBrow','RightBrow'],mouthBone:'Mouth',blinkAxis:'y',openScale:1,closedScale:.08,headBone:'Head',gazeYawLimit:.16,gazePitchLimit:.08},
  clips:['idle','walk','run','helm','interact','sit','stand'],
 });
@@ -17,13 +22,14 @@ export const JACK_SPEC=Object.freeze({
 export function createJackCharacter(){
  const root=new THREE.Group();root.name='Jack';const bones=[],byName={};
  const bone=(name,parent,x=0,y=0,z=0)=>{const b=new THREE.Bone();b.name=name;b.position.set(x,y,z);(parent||root).add(b);bones.push(b);byName[name]=b;return b;};
- const hips=bone('Hips',null,0,.460,0),spine=bone('Spine',hips,0,.113,0),chest=bone('Chest',spine,0,.105,0);
- const neck=bone('Neck',chest,0,.140,0),head=bone('Head',neck,0,.229,0);
+ const hips=bone('Hips',null,0,HIP_Y,0),spine=bone('Spine',hips,0,.100,0),chest=bone('Chest',spine,0,.098,0);
+ const neck=bone('Neck',chest,0,.132,0),head=bone('Head',neck,0,HEAD_Y-HIP_Y-.100-.098-.132,0);
  bone('LeftEye',head,-.078,-.036,-.187);bone('RightEye',head,.078,-.036,-.187);
  bone('LeftBrow',head,-.078,.030,-.190);bone('RightBrow',head,.078,.030,-.190);bone('Mouth',head,0,-.121,-.175);
+ for(const name of headParts)if(name!=='Head')byName[name].position.multiplyScalar(HEAD_SCALE);
  for(const[side,s]of[['Left',-1],['Right',1]]){
-  const arm=bone(`${side}Arm`,chest,s*.149,.074,0),elbow=bone(`${side}ForeArm`,arm,0,-.170,0);bone(`${side}Hand`,elbow,0,-.170,0);
-  const thigh=bone(`${side}UpLeg`,hips,s*.072,-.02,0),shin=bone(`${side}Leg`,thigh,0,-.165,0);bone(`${side}Foot`,shin,0,-.189,0);
+  const arm=bone(`${side}Arm`,chest,s*.161,.068,0),elbow=bone(`${side}ForeArm`,arm,0,-ARM,0);bone(`${side}Hand`,elbow,0,-ARM,0);
+  const thigh=bone(`${side}UpLeg`,hips,s*.072,-.02,0),shin=bone(`${side}Leg`,thigh,0,-THIGH,0);bone(`${side}Foot`,shin,0,-SHIN,0);
  }
  root.updateMatrixWorld(true);
  const materials={
@@ -37,7 +43,7 @@ export function createJackCharacter(){
  const defaults={skin:'#ffc49a',cream:'#fff0d7',navy:'#293e52',hair:'#332720',ink:'#151a1e',accent:'#e18b4d'};
  const bins=new Map(Object.keys(materials).map(k=>[k,[]]));
  const part=(geometry,mat,joint,pos=[0,0,0],scale=[1,1,1],rot=[0,0,0],color=null)=>{
-  const g=geometry,b=byName[joint];g.applyMatrix4(b.matrixWorld.clone().multiply(new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),new THREE.Vector3(...scale))));
+  const g=geometry,b=byName[joint],shapeScale=headParts.has(joint)?new THREE.Matrix4().makeScale(HEAD_SCALE,HEAD_SCALE,HEAD_SCALE):joint==='Chest'?new THREE.Matrix4().makeScale(1,.93,1):new THREE.Matrix4();g.applyMatrix4(b.matrixWorld.clone().multiply(shapeScale).multiply(new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),new THREE.Vector3(...scale))));
   for(const name of Object.keys(g.attributes))if(!['position','normal'].includes(name))g.deleteAttribute(name);
   if(mat==='hair')g.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2),2));
   g.clearGroups();if(!g.index)g.setIndex(Array.from({length:g.attributes.position.count},(_,i)=>i));
@@ -125,16 +131,16 @@ export function createJackCharacter(){
  }
  soft('accent','Chest',[.059,.016,-.094],[.012,.034,.007],[0,0,-.03],.003,'#ea8744');
  curve('cream','Chest',[[.059,.047,-.093],[.059,.039,-.095],[.059,.031,-.094]],.003,8,'#d5c6ad');
- soft('navy','Hips',[0,.001,.005],[.260,.150,.181],[0,0,0],.029,'#293b50');
+ soft('navy','Hips',[0,.001,.005],[.260,.150,.181],[0,0,0],.060,'#293b50');
  capsule('navy','Hips',[0,.040,.005],[.228,.034,.160],'#28394c');
  curve('navy','Hips',[[0,.019,-.087],[.010,-.010,-.089],[.008,-.038,-.082]],.002,12,'#233448');
  for(const[side,s]of[['Left',-1],['Right',1]]){
-  cloth('cream',`${side}Arm`,`${side}ForeArm`,[[.040,0],[.033,.029],[.017,.054],[0,.064],[-.04,.066],[-.08,.064],[-.115,.061],[-.140,.060],[-.155,.059],[-.17,.058],[-.195,.057],[-.225,.055],[-.255,.053],[-.279,.049],[-.294,.027],[-.300,0]].map(([y,r])=>[y*.170/.155,r*1.08]),-.170,1.05);
-  soft('cream',`${side}ForeArm`,[0,-.150,0],[.110,.037,.113],[0,0,0],.011,'#e5d3b3');
+  cloth('cream',`${side}Arm`,`${side}ForeArm`,[[.040,0],[.033,.029],[.017,.054],[0,.064],[-.04,.066],[-.08,.064],[-.115,.061],[-.140,.060],[-.155,.059],[-.17,.058],[-.195,.057],[-.225,.055],[-.255,.053],[-.279,.049],[-.294,.027],[-.300,0]].map(([y,r])=>[y*ARM/.155,r*1.08]),-ARM,1.05);
+  soft('cream',`${side}ForeArm`,[0,-ARM+.020,0],[.110,.034,.113],[0,0,0],.011,'#e5d3b3');
   orb('skin',`${side}Hand`,[0,-.011,-.004],[.042,.043,.039],16,12);
   orb('skin',`${side}Hand`,[-s*.031,-.007,-.022],[.019,.025,.021],12,9);
-  cloth('navy',`${side}UpLeg`,`${side}Leg`,[[.047,0],[.040,.032],[.026,.053],[.007,.064],[-.025,.066],[-.06,.065],[-.095,.063],[-.120,.061],[-.137,.060],[-.155,.059],[-.18,.059],[-.215,.058],[-.25,.057],[-.277,.054],[-.292,.03],[-.300,0]].map(([y,r])=>[y>=-.137?y*.165/.137:-.165+(y+.137)*.189/.162,r]),-.165,1.15,'#293b50');
-  soft('navy',`${side}Leg`,[0,-.168,.003],[.132,.043,.145],[0,0,0],.010,'#34465a');
+  cloth('navy',`${side}UpLeg`,`${side}Leg`,[[.047,0],[.040,.032],[.026,.053],[.007,.064],[-.025,.066],[-.06,.065],[-.095,.063],[-.120,.061],[-.137,.060],[-.155,.059],[-.18,.059],[-.215,.058],[-.25,.057],[-.277,.054],[-.292,.03],[-.300,0]].map(([y,r])=>[y>=-.137?y*THIGH/.137:-THIGH+(y+.137)*SHIN/.162,r]),-THIGH,1.15,'#293b50');
+  soft('navy',`${side}Leg`,[0,-SHIN+.021,.003],[.132,.0396,.145],[0,0,0],.010,'#34465a');
   // Soft oversized sneaker volumes overlap into one silhouette, with no box joints.
   const soleShape=new THREE.Shape();soleShape.moveTo(-.063,.055);soleShape.quadraticCurveTo(-.077,.015,-.073,-.076);soleShape.quadraticCurveTo(-.068,-.141,0,-.146);soleShape.quadraticCurveTo(.068,-.141,.073,-.076);soleShape.quadraticCurveTo(.077,.015,.063,.055);soleShape.quadraticCurveTo(0,.088,-.063,.055);soleShape.closePath();
   const sole=new THREE.ExtrudeGeometry(soleShape,{depth:.018,curveSegments:10,bevelEnabled:true,bevelThickness:.005,bevelSize:.003,bevelSegments:3,steps:1});sole.rotateX(Math.PI/2);part(sole,'cream',`${side}Foot`,[0,-.063,0],undefined,undefined,'#e7d7bc');
@@ -142,10 +148,10 @@ export function createJackCharacter(){
   orb('cream',`${side}Foot`,[0,.006,.038],[.056,.044,.060],16,10,'#f3e5ce');
   for(const z of[-.060,-.033])curve('cream',`${side}Foot`,[[-.030,.018,z],[0,.025,z-.002],[.030,.018,z]],.004,7,'#ddccae');
  }
- // Normalize only the hair's crown to exactly 1.30m; face and body proportions
- // stay authored in metres and all footwear shares the Y=0 contact datum.
+ // Keep the original swept crown contour after scaling the whole head, face
+ // pivots included. Shoes retain their original thickness and Y=0 datum.
  let crown=-Infinity;for(const g of bins.get('hair')){const pos=g.getAttribute('position');for(let i=0;i<pos.count;i++)crown=Math.max(crown,pos.getY(i));}
- for(const g of bins.get('hair')){const pos=g.getAttribute('position');for(let i=0;i<pos.count;i++){const y=pos.getY(i);if(y>1.15)pos.setY(i,1.15+(y-1.15)*(1.30-1.15)/(crown-1.15));}g.computeVertexNormals();}
+ for(const g of bins.get('hair')){const pos=g.getAttribute('position');for(let i=0;i<pos.count;i++){const y=pos.getY(i);const crownBase=HEAD_Y+.103*HEAD_SCALE;if(y>crownBase)pos.setY(i,crownBase+(y-crownBase)*(1.30-crownBase)/(crown-crownBase));}g.computeVertexNormals();}
  const skeleton=new THREE.Skeleton(bones);skeleton.calculateInverses();
  for(const[key,gs]of bins){const geometry=mergeVertices(mergeGeometries(gs,false),1e-6);geometry.normalizeNormals();const mesh=new THREE.SkinnedMesh(geometry,materials[key]);mesh.name=materials[key].name;mesh.bind(skeleton);mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;root.add(mesh);}
  const bind=Object.fromEntries(bones.map(b=>[b.name,{p:b.position.toArray(),q:b.quaternion.toArray()}]));
@@ -156,7 +162,8 @@ export function createJackCharacter(){
   const r=emptyPose();r.Spine.r=[-.26,0,0];r.Chest.r=[-.07,0,0];r.Neck.r=[.21,0,0];
   for(const b of bones){b.position.fromArray(r[b.name].p);b.rotation.set(...r[b.name].r);}root.updateMatrixWorld(true);
   for(const[side,s]of[['Left',-1],['Right',1]]){
-   const arm=byName[`${side}Arm`],S=arm.getWorldPosition(new THREE.Vector3()),T=new THREE.Vector3(s*.093,.490,-.228),D=T.clone().sub(S),d=D.length(),u=D.normalize(),a=(.170**2-.170**2+d*d)/(2*d),h=Math.sqrt(Math.max(0,.170**2-a*a));
+   const arm=byName[`${side}Arm`],S=arm.getWorldPosition(new THREE.Vector3()),T=new THREE.Vector3(s*.093,(.1615-JACK_SPEC.helmAnchor[1])/JACK_SPEC.helmScale,-.228),D=T.clone().sub(S),d=D.length(),u=D.normalize(),a=d/2,h=Math.sqrt(Math.max(0,ARM**2-a*a));
+   if(d>ARM*2)throw Error(`${side} helm grip is outside arm reach`);
    const pole=new THREE.Vector3(s*.25,-.05,.8);pole.addScaledVector(u,-pole.dot(u)).normalize();const E=S.clone().addScaledVector(u,a).addScaledVector(pole,h);
    const upperQ=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,-1,0),E.clone().sub(S).normalize()),lowerQ=new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0,-1,0),T.clone().sub(E).normalize());
    r[`${side}Arm`].r=new THREE.Euler().setFromQuaternion(arm.parent.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(upperQ)).toArray().slice(0,3);
@@ -168,21 +175,24 @@ export function createJackCharacter(){
  const helmPose=solveHelm();
  const pose=(state,t)=>{
   const r=emptyPose(),p=(name,x=0,y=0,z=0)=>{r[name].r=[x,y,z];};
+  // Arms point down (-Y): Z must have the same sign as shoulder X to abduct.
+  // All land clips share this relaxed base; gait adds swing without closing it.
+  for(const[side,s]of[['Left',-1],['Right',1]]){p(`${side}Arm`,.055,0,s*RELAXED_ARM);p(`${side}ForeArm`,ELBOW_FLEX,0,-s*RELAXED_ELBOW);}
   if(state==='helm'||state==='sit'){
    for(const side of['Left','Right']){p(`${side}UpLeg`,state==='helm'?1.45:1.235);p(`${side}Leg`,state==='helm'?-1.40:-1.235);if(state==='helm')p(`${side}Foot`,-.05);}
    p('Spine',-.12);p('Chest',.025);
    if(state==='helm'){p('Spine',-.26);p('Chest',-.07);p('Neck',.21);for(const side of['Left','Right'])for(const segment of['Arm','ForeArm','Hand'])r[side+segment].r=[...helmPose[side+segment].r];}
-   else{for(const[side,s]of[['Left',-1],['Right',1]]){p(`${side}Arm`,.36,0,-s*.13);p(`${side}ForeArm`,1.05);}p('Head',-.035,Math.sin(t*Math.PI)*.025);}
+   else{for(const[side,s]of[['Left',-1],['Right',1]]){p(`${side}Arm`,.36,0,s*RELAXED_ARM);p(`${side}ForeArm`,1.05,0,-s*RELAXED_ELBOW);}p('Head',-.035,Math.sin(t*Math.PI)*.025);}
   }else if(state==='walk'||state==='run'){
    const running=state==='run',cycle=t*Math.PI*2/(running?.48:.72),amp=running?.75:.48;
    r.Hips.p[1]+=(running?.010:.005)*Math.sin(cycle*2);
    p('Spine',running?-.10:-.02,Math.sin(cycle)*.025,Math.sin(cycle)*.025);p('Head',running?.06:.015,0,-Math.sin(cycle)*.02);
-   for(const[side,s]of[['Left',1],['Right',-1]]){const swing=Math.sin(cycle)*s;p(`${side}UpLeg`,swing*amp);p(`${side}Leg`,-Math.max(0,-swing)*(running?.9:.48));p(`${side}Foot`,Math.max(0,swing)*.12);p(`${side}Arm`,-swing*(running?.50:.32),0,side==='Left'?.06:-.06);p(`${side}ForeArm`,running?.78:.26);}
+   for(const[side,s]of[['Left',1],['Right',-1]]){const swing=Math.sin(cycle)*s;p(`${side}UpLeg`,swing*amp);p(`${side}Leg`,-Math.max(0,-swing)*(running?.9:.48));p(`${side}Foot`,Math.max(0,swing)*.12);p(`${side}Arm`,.055-swing*(running?.50:.32),0,(side==='Left'?-1:1)*RELAXED_ARM);p(`${side}ForeArm`,running?.78:ELBOW_FLEX,0,(side==='Left'?1:-1)*RELAXED_ELBOW);}
   }else if(state==='stand'){
-   const u=Math.min(1,t/.6),s=1-u*u*(3-2*u);for(const side of['Left','Right']){p(`${side}UpLeg`,1.235*s);p(`${side}Leg`,-1.235*s);p(`${side}Arm`,.36*s,0,side==='Left'?.06+.07*s:-.06-.07*s);p(`${side}ForeArm`,1.05*s);}p('Spine',-.12*s);p('Chest',.025*s);
+   const u=Math.min(1,t/.6),s=1-u*u*(3-2*u);for(const side of['Left','Right']){p(`${side}UpLeg`,1.235*s);p(`${side}Leg`,-1.235*s);p(`${side}Arm`,.055+(.36-.055)*s,0,(side==='Left'?-1:1)*RELAXED_ARM);p(`${side}ForeArm`,ELBOW_FLEX+(1.05-ELBOW_FLEX)*s,0,(side==='Left'?1:-1)*RELAXED_ELBOW);}p('Spine',-.12*s);p('Chest',.025*s);
   }else if(state==='interact'){
-   const e=Math.sin(Math.PI*Math.min(1,t/1.1));p('RightArm',e*1.12,0,-.10);p('RightForeArm',e*.30);p('RightHand',0,0,Math.sin(t*7)*e*.07);p('Head',e*.055,-e*.07);p('LeftArm',0,0,.06);
-  }else{p('LeftArm',.055,0,.11);p('RightArm',.055,0,-.11);p('LeftForeArm',.28);p('RightForeArm',.28);p('Chest',Math.sin(t*Math.PI)*.011,0,Math.sin(t*Math.PI)*.012);p('Head',-.01+Math.cos(t*Math.PI)*.007,Math.sin(t*Math.PI)*.024,-Math.sin(t*Math.PI)*.012);}
+   const e=Math.sin(Math.PI*Math.min(1,t/1.1));p('RightArm',.055+e*1.12,0,RELAXED_ARM);p('RightForeArm',ELBOW_FLEX+e*.30,0,-RELAXED_ELBOW);p('RightHand',0,0,Math.sin(t*7)*e*.07);p('Head',e*.055,-e*.07);
+  }else{p('Chest',Math.sin(t*Math.PI)*.011,0,Math.sin(t*Math.PI)*.012);p('Head',-.01+Math.cos(t*Math.PI)*.007,Math.sin(t*Math.PI)*.024,-Math.sin(t*Math.PI)*.012);}
   return r;
  };
  const animations=[];
