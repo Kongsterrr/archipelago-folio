@@ -4,7 +4,7 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V4.6 — Soft Shapes & Shorter Legs** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V5 — Sculpted Bay** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The hosted preview currently requires owner access. You can run the complete project locally using the instructions below.
 
@@ -16,6 +16,7 @@ The hosted preview currently requires owner access. You can run the complete pro
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
 - **Boat Studio:** three selectable finishes on one detailed runabout model.
+- **Sculpted Bay:** refined Jack, main boat and Harbor geometry; original fabric, wood, upholstery, stone, sand and rope surfaces; daylight reflections, contact shading and shoreline-based shallow water.
 - **Exploration records:** 18 island/discovery/challenge stamps plus separate Sea Life and nine-island Island Walks journals.
 - **Direct access:** navigation, map shortcuts, dock panels, résumé download, and complete 2D reading mode.
 
@@ -35,7 +36,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V4.3 — A Softer Look** | Sculpted short hair, refined facial details, and gentler expressions | [9edf376](https://github.com/Kongsterrr/archipelago-folio/commit/9edf376eace0ff0e0eaebc420836c4e163de6832) |
 | **V4.4 — The Concept Comes Aboard** | Reference-led proportions, layered fluffy hair, a refined face and open jacket | [41787b1](https://github.com/Kongsterrr/archipelago-folio/commit/41787b1acf361db16bb4b8eaff275034992cc6b0) |
 | **V4.5 — A Little More Jack** | Shorter chibi proportions, relaxed arm clearance, refitted gait and seating | [9c35f4f](https://github.com/Kongsterrr/archipelago-folio/commit/9c35f4f5f49060de6d77d484315f738e34821027) |
-| **V4.6 — Soft Shapes & Shorter Legs** | Sculpted oval face, shorter legs, continuous clothing surfaces and recalibrated seating | [Current V4.6 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V4.6 — Soft Shapes & Shorter Legs** | Sculpted oval face, shorter legs, continuous clothing surfaces and recalibrated seating | [c9dc7ee](https://github.com/Kongsterrr/archipelago-folio/commit/c9dc7ee9c88938ec822f6a9a6f806f0886565ccd) |
+| **V5 — Sculpted Bay** | Refined character, runabout and Harbor assets, PBR surfaces, daylight/contact shading and shallow-water detail | [Current V5 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -82,7 +84,7 @@ Added activity on the water and a new layer of island detail:
 - Added an independent **Sea Life** journal while preserving V2 stamps, preferences, and valid challenge records.
 - Added themed overlays for all nine islands: harbor tools, station equipment, workshop machinery, greenhouse props, garden details, research instruments, food service props, campus objects, and a seaside post office.
 - Coordinated simulation pausing so traffic and animals freeze with menus and challenges; travel clears temporary companion and horn-reply state.
-- Added 38 compressed fleet/fauna/detail GLBs totaling 705,992 bytes. The current main boat is 139,100 bytes, 11,129 triangles, and 16 material batches.
+- Added 38 compressed fleet/fauna/detail GLBs totaling 705,992 bytes. The V3 main boat was 139,100 bytes, 11,129 triangles, and 16 material batches.
 
 ### V4 — Meet Jack
 
@@ -158,6 +160,21 @@ Rebuilt the main character surfaces around the selected soft oval-face concept:
 - Preserved the relaxed arm gap and original fixed boat-space wheel grips. Rebaked gait contact, refitted bench placement, lowered the character collision capsule and adjusted walking-camera aim for the shorter body.
 - Added decoded-model measurements for visible leg length, face silhouette and connected trousers, closed-surface checks for the face and shoes, and a seated-cloth regression covering the full trouser surface. One 22-joint skin, seven clips, six material batches and the existing asset budget remain.
 
+### V5 — Sculpted Bay
+
+Refined the original real-time world around the supplied warm, detailed character-and-dock concept:
+
+- Refined Jack’s cheeks, eyelids, layered hair, garment transitions and footwear while preserving the **1.20-unit / approximately 2.2-head** short silhouette, relaxed arms and fixed driving hands. The shared GLB retains **22 joints, seven clips and six material batches**, at **346,044 bytes / 37,212 triangles**.
+- Added a real Blender high-to-runtime hair normal bake on a unique secondary UV atlas. Reusable original fabric and upholstery maps provide subtler surface detail. Editable character sources and the bake report live in [`assets/source/jack`](assets/source/jack/README.md).
+- Refined the runabout’s continuous hull, padded seating and clean seams; retained three finishes and the existing helm/engine pivots. Refined Harbor’s pier boards, nails, curved ropes and knots, fenders, palms and coastal planting. Boat and Harbor source parts are available in [`art/v5`](art/v5/boat-harbor.md).
+- Preserved UVs through export and compression. Added shared, versioned **high/low KTX2** surface packs for wood, canvas, upholstery, stone, sand and rope, plus the character hair bake. Assets load after the initial playable scene; failed surface requests retain usable base materials, and quality changes release replaced maps.
+- Added a procedural daylight environment, warm directional sunlight, actor-following shadows, high-quality **half-resolution GTAO and FXAA**, and retained **1024-pixel shadows in low quality**. The rendering path falls back to daylight-only shading if post-processing is unavailable.
+- Rebuilt water shading around a depth/shore-distance field derived from the actual island coastlines: shallow turquoise gradients, sand/stone patterns, slow caustics, foam and glints. The final water material stays opaque; it does not make the whole sea transparent.
+- Kept the other **eight islands’ high/low GLBs byte-identical** and retained the walking layout, verified portfolio content, controls, challenges and local records. They share the new scene lighting; their geometry has not been fully resculpted in this version.
+- Added a development-only actual-asset review page and documented reproducible model/surface builds. The concept guides the style; the real-time result is not claimed to be pixel-identical to the illustration.
+
+The optional high texture pack is **2,885,401 bytes**, plus **584,862 bytes** for the shared Basis transcoder; the low pack is **887,306 bytes** plus the same decoder. These are file sizes, not measured cold-network timings. See [`VALIDATION.md`](VALIDATION.md) for the tested devices, browser paths and remaining performance limits.
+
 ## Run locally
 
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
@@ -176,7 +193,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V1–V4.6 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and V1–V5 regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 
@@ -205,7 +222,7 @@ Opening a menu or switching away pauses simulation; an active challenge resumes 
 
 ## Technology and structure
 
-Built with **vanilla JavaScript, Vite, Three.js / TSL, and Rapier**. HTML panels provide keyboard-accessible portfolio content over the 3D world. Original procedural GLBs use Meshopt compression, shared materials, and high/low variants. Visual boat motion is separate from collision physics.
+Built with **vanilla JavaScript, Vite, Three.js / TSL, and Rapier**. HTML panels provide keyboard-accessible portfolio content over the 3D world. Original GLBs use Meshopt compression, preserved UVs, shared PBR materials, and high/low variants. KTX2 textures are transcoded to formats supported by the active renderer. Visual boat motion is separate from collision physics.
 
 ```text
 sources/
@@ -213,17 +230,21 @@ sources/
   config.js              Islands, docks, safe points, and course configuration
   main.js                HTML interface and application coordination
   game.js                Renderer, world loading, and simulation loop
+  review.html / review.js Development-only actual-model inspection
   core/                  Boat, camera, input, challenges, discovery, and docking
   world/                 Islands, props, fleet, marine life, water, and feedback
-scripts/                 Model builders and compression tools
+scripts/                 Model builders, original surface generator, compression tools
+art/v5/                  Editable boat/Harbor Blender snapshots and notes
+assets/source/jack/      Editable character source, hair bake and reports
 static/
   models/                Compressed GLBs and asset manifests
+  textures/v5/           High/low KTX2 surfaces, manifest and Basis transcoder
   resume.pdf             Original supplied résumé
   licenses/              Asset/font notices
 tests/                   Automated regression checks
 ```
 
-`PlayerController` separates locomotion from pause reasons; `BoardingController` commits one actor transition at the fade midpoint; `CharacterController` handles the kinematic capsule; `IslandWalkWorld` consumes `walk-layout.json` for shared high/low terrain and obstacles. `JackAvatar` reparents one skin between the boat and world. `CameraRig` manages framing; `ChallengeManager` owns challenge state and timing; `DiscoveryStore` persists local progress. `AmbientFleet`, `MarineLife`, `DockInteraction`, `BoatAppearance`, provide the sea systems. V4 island details are integrated into the walkable models; legacy `IslandDetails` overlays are disabled to keep paths clear. Contact feedback uses a shared dispatch path.
+`PlayerController` separates locomotion from pause reasons; `BoardingController` commits one actor transition at the fade midpoint; `CharacterController` handles the kinematic capsule; `IslandWalkWorld` consumes `walk-layout.json` for shared high/low terrain and obstacles. `JackAvatar` reparents one skin between the boat and world. `CameraRig` manages framing; `ChallengeManager` owns challenge state and timing; `DiscoveryStore` persists local progress. `AmbientFleet`, `MarineLife`, `DockInteraction` and `BoatAppearance` provide the sea systems. `SurfaceLibrary` manages shared texture bindings and quality changes; `BayLighting` manages daylight and contact shading. V4 island details are integrated into the walkable models; legacy `IslandDetails` overlays are disabled to keep paths clear. Contact feedback uses a shared dispatch path.
 
 ## Customize the content
 
@@ -236,14 +257,14 @@ Career facts and project claims come from the supplied résumé. Island devices 
 
 ## Rebuild the original assets
 
-Generated assets are checked in. Regenerate the current V4 character and islands with:
+Generated assets are checked in. Regenerate the current character and islands with:
 
 ```sh
 node scripts/build-jack.mjs
 node scripts/build-walk-islands.mjs
 ```
 
-The island builder exports both quality variants plus `walk-layout.json`, preserving the existing boat. The earlier `build-assets`, compression, and low-asset scripts are retained for the V1/V2 source history; running them would replace the V4 island design. Use the V4 builder for current islands.
+The island builder exports both quality variants plus `walk-layout.json`, preserving the existing boat. The earlier `build-assets`, compression, and low-asset scripts are retained for the V1/V2 source history; running them would replace the V4 island design. Use `build-walk-islands.mjs` for the current walking islands. To rebuild only V5 Harbor, set `ARCHIPELAGO_ISLANDS=harbor`; this preserves the other eight GLBs.
 
 To rebuild only the main boat:
 
@@ -259,14 +280,28 @@ node scripts/export-fauna.mjs
 node scripts/export-details.mjs
 ```
 
-Intermediate files live in ignored `.asset-build/`. Models use original geometry and materials without external texture downloads. Jack’s fine hair normal texture is generated locally at runtime; its UVs and broader sculpted grooves are part of the GLB. Core compressed byte measurements are in `static/models/compression.json`; the core generator’s manifest also contains pre-compression statistics. Collider definitions remain separate from visual meshes.
+To regenerate original V5 surface packs, install Python with NumPy and Pillow, and the free Khronos `toktx` tool (tested with KTX-Software 4.4.2):
+
+```sh
+python3 scripts/build-v5-surfaces.py --toktx /path/to/toktx
+```
+
+The checked-in Jack hair bake is used by default. Rebuilding that bake additionally requires Blender 4.5; follow [`assets/source/jack/README.md`](assets/source/jack/README.md). The other surface maps are procedural tiles, not photographs or high-to-low sculpt bakes. [`art/v5/boat-harbor.md`](art/v5/boat-harbor.md) describes optional unmerged GLB export and editable boat/Harbor source snapshots. Build-only tools are not needed to run the site.
+
+Intermediate files live in ignored `.asset-build/`. Core compressed geometry sizes are recorded in the model manifests and `static/models/compression.json`; texture sizes, encodings and hashes are recorded in `static/textures/v5/manifest.json`. Visual detail remains separate from gameplay collisions.
+
+### Inspect actual assets locally
+
+With the development server running, open `/review.html?model=jack`, `/review.html?model=boat`, or `/review.html?model=harbor`. Add `&clay` for neutral materials or `&webgl` for WebGL2. The viewer loads the same GLBs and surface library as the game and shows front, three-quarter and side views. It is not an image-generation mockup.
+
+The review entry is excluded from Vite’s production build. Its **Save render** button expects an optional local screenshot receiver at `127.0.0.1:5174`; model inspection itself does not require that receiver.
 
 ## Accessibility, storage, and validation
 
 - **Rendering fallback:** WebGPU normally falls back to WebGL2, then to HTML reading mode if 3D fails. Use `?webgl` to request WebGL2 or `?no3d` for reading mode.
 - **Accessibility:** keyboard navigation, visible focus, panel focus restoration, reduced motion, optional sound, and direct access to all portfolio entries.
 - **Local storage only:** preferences, boat finish, exploration records, Sea Life observations, Island Walks, separate camera zoom preferences, and versioned challenge bests. Transient world positions are never saved; every refresh starts Jack aboard at the harbor. Blocked storage falls back to an in-memory session. There are no accounts, remote leaderboards, or application database.
-- **Recorded V4 verification:** 148 automated checks passed, with desktop WebGPU/WebGL2 and portrait/landscape viewport checks. See [`VALIDATION.md`](VALIDATION.md) for conditions, measurements, and remaining limits.
+- **Recorded V5 verification:** 192 automated checks passed, and the production build passed. Browser samples cover desktop-hosted WebGL2 high/low with phone-sized viewports; these are not physical-phone results. See [`VALIDATION.md`](VALIDATION.md) for conditions, measurements, and remaining limits.
 
 Physical iPhone/Android performance, sustained mobile 30 FPS, controlled 20 Mbps cold-start timing, and long-duration thermal behavior have not yet been measured. Desktop viewport emulation does not establish those results.
 

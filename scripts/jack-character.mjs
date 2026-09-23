@@ -5,7 +5,7 @@ import {addJackHair} from './jack-hair.mjs';
 import {FACE_PROFILE,profileAt,faceSurface,createFaceGeometry,createSneakerUpper,createFoldedCuff} from './jack-shapes.mjs';
 import {mergeGeometries, mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
 
-/** Original V4.6 sculpted toy adventurer. Metres, feet Y=0, facing -Z.
+/** Original V5 sculpted toy adventurer. Metres, feet Y=0, facing -Z.
  * Geometry is authored on one named skeleton. No runtime retargeting or IK is
  * required: the author-time helm solve is baked into constant animation keys. */
 const HEAD_SCALE=.542/.487, HEIGHT=1.20,HEAD_Y=HEIGHT-.253*HEAD_SCALE;
@@ -38,7 +38,7 @@ export function createJackCharacter(){
  }
  root.updateMatrixWorld(true);
  const materials={
-  skin:new THREE.MeshStandardMaterial({name:'Jack_Skin',color:'#ffffff',vertexColors:true,roughness:.72}),
+  skin:new THREE.MeshStandardMaterial({name:'Jack_Skin',color:'#ffffff',vertexColors:true,roughness:.66}),
   cream:new THREE.MeshStandardMaterial({name:'Jack_CreamCanvas',color:'#ffffff',vertexColors:true,roughness:.84}),
   navy:new THREE.MeshStandardMaterial({name:'Jack_NavyKnit',color:'#ffffff',vertexColors:true,roughness:.9}),
   hair:new THREE.MeshStandardMaterial({name:'Jack_SweptHair',color:'#ffffff',vertexColors:true,roughness:.48}),
@@ -48,9 +48,21 @@ export function createJackCharacter(){
  const defaults={skin:'#ffc49a',cream:'#fff0d7',navy:'#293e52',hair:'#332720',ink:'#151a1e',accent:'#e18b4d'};
  const bins=new Map(Object.keys(materials).map(k=>[k,[]]));
  const part=(geometry,mat,joint,pos=[0,0,0],scale=[1,1,1],rot=[0,0,0],color=null)=>{
-  const g=geometry,b=byName[joint],shapeScale=headParts.has(joint)?new THREE.Matrix4().makeScale(HEAD_SCALE,HEAD_SCALE,HEAD_SCALE):joint==='Chest'?new THREE.Matrix4().makeScale(1,.93,1):new THREE.Matrix4();g.applyMatrix4(b.matrixWorld.clone().multiply(shapeScale).multiply(new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),new THREE.Vector3(...scale))));
-  for(const name of Object.keys(g.attributes))if(!['position','normal'].includes(name))g.deleteAttribute(name);
-  if(mat==='hair')g.setAttribute('uv',new THREE.Float32BufferAttribute(new Float32Array(g.attributes.position.count*2),2));
+  const g=geometry,b=byName[joint];
+  // Preserve author UVs. Handmade lofts receive a cylindrical chart in local
+  // coordinates before skin placement; the rear seam is hidden from the face.
+  if(!g.hasAttribute('uv')){
+   g.computeBoundingBox();const bounds=g.boundingBox,p=g.getAttribute('position'),uv=new Float32Array(p.count*2),h=Math.max(.001,bounds.max.y-bounds.min.y);
+   for(let i=0;i<p.count;i++){uv[i*2]=.5+Math.atan2(p.getX(i),p.getZ(i))/(Math.PI*2);uv[i*2+1]=(p.getY(i)-bounds.min.y)/h;}
+   g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+  }
+  // Extruded trims use metric UVs; fit their chart before meshopt quantization.
+  const uv=g.getAttribute('uv');let u0=Infinity,u1=-Infinity,v0=Infinity,v1=-Infinity;
+  for(let i=0;i<uv.count;i++){u0=Math.min(u0,uv.getX(i));u1=Math.max(u1,uv.getX(i));v0=Math.min(v0,uv.getY(i));v1=Math.max(v1,uv.getY(i));}
+  if(u0<0||u1>1||v0<0||v1>1)for(let i=0;i<uv.count;i++)uv.setXY(i,(uv.getX(i)-u0)/Math.max(1e-6,u1-u0),(uv.getY(i)-v0)/Math.max(1e-6,v1-v0));
+  const shapeScale=headParts.has(joint)?new THREE.Matrix4().makeScale(HEAD_SCALE,HEAD_SCALE,HEAD_SCALE):joint==='Chest'?new THREE.Matrix4().makeScale(1,.93,1):new THREE.Matrix4();g.applyMatrix4(b.matrixWorld.clone().multiply(shapeScale).multiply(new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),new THREE.Vector3(...scale))));
+  for(const name of Object.keys(g.attributes))if(!['position','normal','uv'].includes(name))g.deleteAttribute(name);
+  if(mat==='hair')g.setAttribute('uv1',new THREE.Float32BufferAttribute(Array.from({length:g.attributes.position.count},()=>[.04,.04]).flat(),2));
   g.clearGroups();if(!g.index)g.setIndex(Array.from({length:g.attributes.position.count},(_,i)=>i));
   const n=g.attributes.position.count,ids=new Uint16Array(n*4),weights=new Float32Array(n*4),colors=new Float32Array(n*3),tint=new THREE.Color(color||defaults[mat]);
   for(let i=0;i<n;i++){ids[i*4]=bones.indexOf(b);weights[i*4]=1;colors.set(tint.toArray(),i*3);}
@@ -76,7 +88,8 @@ export function createJackCharacter(){
  // arms and knees deform as soft clothing rather than stacked rigid beads.
  const cloth=(mat,upper,lower,profile,hinge,depthScale=1,color)=>{
   const vs=[],ix=[],radial=20;
-  for(const[y,r]of profile)for(let j=0;j<=radial;j++){const a=j/radial*Math.PI*2,side=upper.startsWith('Left')?-1:1,shoulder=mat==='cream'?-side*.065*THREE.MathUtils.smoothstep(y,-.018,.035):0;vs.push(shoulder+Math.cos(a)*r,y,Math.sin(a)*r*depthScale);}
+  for(const[y,r]of profile)for(let j=0;j<=radial;j++){const a=j/radial*Math.PI*2,side=upper.startsWith('Left')?-1:1,shoulder=mat==='cream'?-side*.065*THREE.MathUtils.smoothstep(y,-.018,.035):0;const outer=Math.max(0,Math.cos(a)*side),crease=.0018*Math.exp(-(((y+.120)/.025)**2))*Math.sin(a*3+y*72)+.0012*Math.exp(-(((y+.222)/.029)**2))*Math.sin(a*2-y*66);
+   vs.push(shoulder+Math.cos(a)*(r+crease*.4),y,Math.sin(a)*(r+crease)*depthScale);}
   for(let i=0;i<profile.length-1;i++)for(let j=0;j<radial;j++){const a=i*(radial+1)+j,b=a+radial+1;ix.push(a,a+1,b,a+1,b+1,b);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vs,3));g.setIndex(ix);g.computeVertexNormals();
   part(g,mat,upper,undefined,undefined,undefined,color);
@@ -87,7 +100,14 @@ export function createJackCharacter(){
  const face=createFaceGeometry(),fp=face.getAttribute('position');
  const facePoint=faceSurface;
  face.computeVertexNormals();const faceTints=[];
- for(let n=0;n<fp.count;n++){const x=fp.getX(n),y=fp.getY(n),z=fp.getZ(n),dx=(Math.abs(x)-.139)/.044,dy=(y+.079)/.027,blush=Math.exp(-(dx*dx+dy*dy)*1.5)*.26*Math.max(0,Math.min(1,-z/.12));faceTints.push(...new THREE.Color('#ffc49a').lerp(new THREE.Color('#ed9479'),blush).toArray());}
+ for(let n=0;n<fp.count;n++){
+  const x=fp.getX(n),y=fp.getY(n),z=fp.getZ(n),front=Math.max(0,Math.min(1,-z/.12));
+  const dx=(Math.abs(x)-.132)/.060,dy=(y+.080)/.042;
+  const blush=Math.exp(-(dx*dx+dy*dy)*1.35)*.40*front;
+  const lipWarmth=Math.exp(-((x/.043)**2)-(((y+.128)/.015)**2))*.11*front;
+  const color=new THREE.Color('#ffc49a').lerp(new THREE.Color('#ee9283'),blush).lerp(new THREE.Color('#ce907c'),lipWarmth);
+  faceTints.push(...color.toArray());
+ }
  part(face,'skin','Head');face.setAttribute('color',new THREE.Float32BufferAttribute(faceTints,3));
  for(const[side,s]of[['Left',-1],['Right',1]]){
   orb('skin','Head',[s*.199,-.067,.008],[.038,.047,.028],18,12);
@@ -129,7 +149,9 @@ export function createJackCharacter(){
  const cp=[],ci=[],cols=34,gap=.43;
  for(let layer=0;layer<2;layer++)for(const[y,w,d]of coatProfile)for(let j=0;j<=cols;j++){
   const phi=-Math.PI/2+gap+j/cols*(Math.PI*2-gap*2),inset=layer?.009:0;
-  const fold=.0025*Math.sin((y+.17)*35+phi*2)*Math.exp(-(((y+.10)/.075)**2));
+  const sideFold=.0028*Math.sin((y+.17)*35+phi*2)*Math.exp(-(((y+.10)/.075)**2));
+  const pocketDip=-.0027*Math.exp(-(((Math.abs(Math.cos(phi))-.70)/.17)**2)-(((y+.058)/.040)**2))*Math.max(0,-Math.sin(phi));
+  const fold=sideFold+pocketDip;
   cp.push(Math.cos(phi)*(w-inset+fold),y,Math.sin(phi)*(d-inset+fold)+.008);
  }
  const rings=coatProfile.length,stride=cols+1,layerSize=rings*stride;
@@ -165,6 +187,7 @@ export function createJackCharacter(){
   const soleShape=new THREE.Shape();soleShape.moveTo(-.063,.055);soleShape.quadraticCurveTo(-.077,.015,-.073,-.076);soleShape.quadraticCurveTo(-.068,-.141,0,-.146);soleShape.quadraticCurveTo(.068,-.141,.073,-.076);soleShape.quadraticCurveTo(.077,.015,.063,.055);soleShape.quadraticCurveTo(0,.088,-.063,.055);soleShape.closePath();
   const sole=new THREE.ExtrudeGeometry(soleShape,{depth:.018,curveSegments:10,bevelEnabled:true,bevelThickness:.005,bevelSize:.003,bevelSegments:3,steps:1});sole.rotateX(Math.PI/2);part(sole,'cream',`${side}Foot`,[0,-.063,0],undefined,undefined,'#e7d7bc');
   part(createSneakerUpper(),'cream',`${side}Foot`,undefined,undefined,undefined,'#fff0d7');
+  curve('cream',`${side}Foot`,[[-.058,-.010,-.043],[-.058,-.012,-.090],[0,-.015,-.124],[.058,-.012,-.090],[.058,-.010,-.043]],.0017,14,'#e3d0ae');
   for(const z of[-.060,-.033])curve('cream',`${side}Foot`,[[-.030,.018,z],[0,.025,z-.002],[.030,.018,z]],.004,7,'#ddccae');
  }
  // Keep the original swept crown contour after scaling the whole head, face
@@ -230,6 +253,6 @@ export function createJackCharacter(){
   tracks.push(new THREE.VectorKeyframeTrack('Hips.position',times,poses.flatMap(pp=>pp.Hips.p)));animations.push(new THREE.AnimationClip(state,duration,tracks));
  }
  for(const b of bones){b.position.fromArray(bind[b.name].p);b.quaternion.fromArray(bind[b.name].q);}root.updateMatrixWorld(true);skeleton.update();
- root.animations=animations;root.userData={originalProceduralAsset:true,characterSpec:JACK_SPEC,...JACK_SPEC,rig:'One 22-joint skeleton including independently blinkable eyes; rounded soft toy geometry',benchPlacement:'Root Y = seat surface Y - characterSpec.benchSeatOffset; move root characterSpec.benchForwardOffset toward seated facing. Restore floor position while stand plays .6s.',helm:'Runtime boatVisual anchor/scale are characterSpec.helmAnchor/.helmScale. All helm body and hand keys are constant.'};root.updateMatrixWorld(true);
+ root.animations=animations;root.userData={originalProceduralAsset:true,assetRevision:'v5-sculpt-and-surface',surfaceContract:{uv:'TEXCOORD_0',tangent:'Derived from UV in material shader',color:'multiply tile basecolor by COLOR_0'},characterSpec:JACK_SPEC,...JACK_SPEC,rig:'One 22-joint skeleton including independently blinkable eyes; rounded soft toy geometry',benchPlacement:'Root Y = seat surface Y - characterSpec.benchSeatOffset; move root characterSpec.benchForwardOffset toward seated facing. Restore floor position while stand plays .6s.',helm:'Runtime boatVisual anchor/scale are characterSpec.helmAnchor/.helmScale. All helm body and hand keys are constant.'};root.updateMatrixWorld(true);
  return{root,bones:byName,skeleton,animations,materials};
 }

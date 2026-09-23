@@ -1,0 +1,435 @@
+{
+  "version": 5,
+  "generator": "scripts/build-v5-surfaces.py",
+  "license": "MIT; original procedural material artwork and original sculpted hair bake",
+  "uvConvention": "U across grain, V along grain; tile 0\u20131 per feature. Hair uses unique UV1 atlas.",
+  "qualities": {
+    "high": {
+      "bytes": 2885401,
+      "worstCaseRGBABytes": 55924047,
+      "surfaces": {
+        "wood": {
+          "color": {
+            "url": "/textures/v5/high/wood-color.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 31895,
+            "sha256": "eb774e25b85da386d920c044fe11b5c7aef6665a7ee51bf095c53773d704c7b0",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          },
+          "normal": {
+            "url": "/textures/v5/high/wood-normal.ktx2",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 628801,
+            "sha256": "f166e8e11e64a99c7e6e9b57080a913a38c3191cb4071014f600f144cf24d1e2",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 11
+          },
+          "orm": {
+            "url": "/textures/v5/high/wood-orm.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 18484,
+            "sha256": "e88f3b3014ccfacbac27a47db0ad24b8021d35f43a04eb79cb96df3bbf7063da",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          }
+        },
+        "canvas": {
+          "color": {
+            "url": "/textures/v5/high/canvas-color.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 26388,
+            "sha256": "4c9402ff9be765887bf6734d519122db72985e455964ddd7969e8f26dd008b62",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          },
+          "normal": {
+            "url": "/textures/v5/high/canvas-normal.ktx2",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 59365,
+            "sha256": "2589749bfe4a2ba099736863ebf1bc3c4ca9e54020865a7b6819bf9dcb1ad6e1",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 11
+          },
+          "orm": {
+            "url": "/textures/v5/high/canvas-orm.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 13029,
+            "sha256": "cd0d6e9c76117680dfff717c5fb2e666fdfb160e55883f220c5ab392b1a6963a",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          }
+        },
+        "leather": {
+          "color": {
+            "url": "/textures/v5/high/leather-color.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 5019,
+            "sha256": "c5b1d5e367c4a69b75c955b9353d5da2200c7dee92baa997986cdb86680c5b21",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          },
+          "normal": {
+            "url": "/textures/v5/high/leather-normal.ktx2",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 487582,
+            "sha256": "67c435b26efdd22b43871468bde741b46ae9862c0a3099601a1c4b22f6d14850",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 11
+          },
+          "orm": {
+            "url": "/textures/v5/high/leather-orm.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 4282,
+            "sha256": "353e45469d4a02f25d032e61f7b04635d2ddc21e440347146e462eb3282405c4",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          }
+        },
+        "stone": {
+          "color": {
+            "url": "/textures/v5/high/stone-color.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 39224,
+            "sha256": "09bc95ba1f4cfb2c9a163805d8ecb740426e572fd241db9ae06e03d7f08d6dd3",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          },
+          "normal": {
+            "url": "/textures/v5/high/stone-normal.ktx2",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 512297,
+            "sha256": "0639a06fb4deb349b63b564e5d50fe563eb3b00f5f35dfb38a5fe4cba5f77d0f",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 11
+          },
+          "orm": {
+            "url": "/textures/v5/high/stone-orm.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 8460,
+            "sha256": "0822d543b7953fc20d7bc71aef0cfd03eaeb2ac0f7bd09e6ce38184b7f93f3cc",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          }
+        },
+        "sand": {
+          "color": {
+            "url": "/textures/v5/high/sand-color.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 9801,
+            "sha256": "dcbb7fbc2a4267fc304e9f198f57c103dc4a8ec501bbaa5633979938d01a63fe",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          },
+          "normal": {
+            "url": "/textures/v5/high/sand-normal.ktx2",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 443895,
+            "sha256": "0db30917e1590ebd05892911cc984fd6b5d397047280a5417ed57ca7eae6fc4b",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 11
+          },
+          "orm": {
+            "url": "/textures/v5/high/sand-orm.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 1084,
+            "sha256": "c91c2d69029922cc67d2dcf891d6a4cfd58c4d5f6f97ad55be0fe2181aa84c47",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          }
+        },
+        "rope": {
+          "color": {
+            "url": "/textures/v5/high/rope-color.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 22179,
+            "sha256": "bb25cf0218114fad20daecd264ea9939b0fdcf25971033f37f6b2c5234126f79",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          },
+          "normal": {
+            "url": "/textures/v5/high/rope-normal.ktx2",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 7828,
+            "sha256": "c0b69ea5997331a47d7fbe31dbea29e96b50606dbadabd01e21e17061b88736f",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 11
+          },
+          "orm": {
+            "url": "/textures/v5/high/rope-orm.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 19081,
+            "sha256": "5a5479423f563c6fef4fa7f1071fc255984f57ebe26118eeaefb748914110dc3",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 10
+          }
+        },
+        "hair": {
+          "normal": {
+            "url": "/textures/v5/high/hair-normal.ktx2",
+            "width": 1024,
+            "height": 1024,
+            "bytes": 546707,
+            "sha256": "332e66126121e63556f0fe12f095dbca4848ca503021505bce9ee52173029774",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 11,
+            "channel": 1,
+            "wrap": "clamp",
+            "source": "Blender high-to-runtime tangent normal bake"
+          }
+        }
+      }
+    },
+    "low": {
+      "bytes": 887306,
+      "worstCaseRGBABytes": 13981007,
+      "surfaces": {
+        "wood": {
+          "color": {
+            "url": "/textures/v5/low/wood-color.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 10433,
+            "sha256": "ca3602c2f4443e76427fb6b35a67c528cbcce5e1a1c17d3c6ca5b4051a1ac317",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          },
+          "normal": {
+            "url": "/textures/v5/low/wood-normal.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 194728,
+            "sha256": "b9c37d3623c2deb7d729d98da23fca3cb94d35e4950a979593b26582b4d179f5",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 10
+          },
+          "orm": {
+            "url": "/textures/v5/low/wood-orm.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 7825,
+            "sha256": "de1f86ce81c3398c315fcaf47d63fc42a23357cc80d6ab92e040dbfcd37a4202",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          }
+        },
+        "canvas": {
+          "color": {
+            "url": "/textures/v5/low/canvas-color.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 5530,
+            "sha256": "00ca2ec1417b792574c71533c8d0d4d17b1fc6675221a4c3d1ca4b4f27509e6e",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          },
+          "normal": {
+            "url": "/textures/v5/low/canvas-normal.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 18284,
+            "sha256": "f2b3722a2b33378390487d165e71594df92b79048fcf27022a682a47ce36175e",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 10
+          },
+          "orm": {
+            "url": "/textures/v5/low/canvas-orm.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 2655,
+            "sha256": "525c6b310dabcf9264f4bdcb7a6385875532be604e8ea4e8defc5577ee1d50b6",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          }
+        },
+        "leather": {
+          "color": {
+            "url": "/textures/v5/low/leather-color.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 2294,
+            "sha256": "b86fa6cbf82f88d6f3a49fe88cfd50366f200eefcfa15403f4d9398ed7ee0145",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          },
+          "normal": {
+            "url": "/textures/v5/low/leather-normal.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 139554,
+            "sha256": "0932302eb3370d521539ce16f932300146d149dd602bbccf5cc235f8202676d5",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 10
+          },
+          "orm": {
+            "url": "/textures/v5/low/leather-orm.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 1244,
+            "sha256": "9944ccd0ba18cf1e4e08a442801035f8577ef23da7bc055bd1ef13caa31c1a3d",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          }
+        },
+        "stone": {
+          "color": {
+            "url": "/textures/v5/low/stone-color.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 9107,
+            "sha256": "a9604762d57e4bd57ac7ec28039cbc0ddee78958166620e6f7e79c19da963ae5",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          },
+          "normal": {
+            "url": "/textures/v5/low/stone-normal.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 167427,
+            "sha256": "9a547ddc000e1261ba317fbea2572308b2fe47edb4be0c0cc255968dac79e751",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 10
+          },
+          "orm": {
+            "url": "/textures/v5/low/stone-orm.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 4002,
+            "sha256": "fec1602e651a4c97cc82538385cb67a78f2fb60deef8666d4f620654544d6f3b",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          }
+        },
+        "sand": {
+          "color": {
+            "url": "/textures/v5/low/sand-color.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 3672,
+            "sha256": "541a88c36ecb7ae2f309f4a11394958a47a364df885c9e217b14753ccccb9380",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          },
+          "normal": {
+            "url": "/textures/v5/low/sand-normal.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 150482,
+            "sha256": "681d0a9c09e89b03839d1759637ca8b2705ecf22bd0f87ed98b2074be549d0c7",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 10
+          },
+          "orm": {
+            "url": "/textures/v5/low/sand-orm.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 878,
+            "sha256": "74d20b197db068aec5af251b81d2cce47e42c56c818ea07a50a41438ceaa06cb",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          }
+        },
+        "rope": {
+          "color": {
+            "url": "/textures/v5/low/rope-color.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 6250,
+            "sha256": "d126b8c44fd6b162bcb26fe2de53d4f8ad12978292a8b0f13331409d26add019",
+            "colorSpace": "srgb",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          },
+          "normal": {
+            "url": "/textures/v5/low/rope-normal.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 5756,
+            "sha256": "a63fd17d394469decde8a778c7453709e36139df7028a79ed146b0f603b50f91",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 10
+          },
+          "orm": {
+            "url": "/textures/v5/low/rope-orm.ktx2",
+            "width": 256,
+            "height": 256,
+            "bytes": 4882,
+            "sha256": "60d2c70e05ea3ed9b423a9330ff1e00122f579c43568f053b218a3c8a8be2834",
+            "colorSpace": "linear",
+            "encoding": "ETC1S",
+            "mipLevels": 9
+          }
+        },
+        "hair": {
+          "normal": {
+            "url": "/textures/v5/low/hair-normal.ktx2",
+            "width": 512,
+            "height": 512,
+            "bytes": 152303,
+            "sha256": "dbe974a113a721b64f745dcf577a70f0884c67c30fc0745c2bc6e38abb91e5d2",
+            "colorSpace": "linear",
+            "encoding": "UASTC/Zstd",
+            "mipLevels": 10,
+            "channel": 1,
+            "wrap": "clamp",
+            "source": "Blender high-to-runtime tangent normal bake"
+          }
+        }
+      }
+    }
+  },
+  "transcoderBytes": 584862
+}

@@ -3,9 +3,9 @@
     {
       "id": "harbor",
       "quality": "high",
-      "bytes": 259252,
-      "triangles": 19264,
-      "drawCalls": 43,
+      "bytes": 618176,
+      "triangles": 48104,
+      "drawCalls": 52,
       "routeSeconds": 31
     },
     {
@@ -75,9 +75,9 @@
     {
       "id": "harbor",
       "quality": "low",
-      "bytes": 175952,
-      "triangles": 13696,
-      "drawCalls": 41,
+      "bytes": 314936,
+      "triangles": 22064,
+      "drawCalls": 47,
       "routeSeconds": 31
     },
     {
@@ -145,5 +145,5 @@
       "routeSeconds": 29.6
     }
   ],
-  "totalBytes": 4194240
+  "totalBytes": 4692148
 }

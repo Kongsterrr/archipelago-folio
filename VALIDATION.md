@@ -1,3 +1,56 @@
+# V5 — Sculpted Bay validation · 2026-09-22
+
+This section records V5. Earlier sections retain the measurements and limitations of their own historical builds.
+
+## Scope and actual assets
+
+The supplied dock/character illustration guided shape, color, material response and lighting. Validation uses decoded GLBs and actual rendered scenes; it does not establish pixel-identical agreement with the generated concept.
+
+Jack retains the approximately 1.20-unit, 2.2-head short silhouette and stable helm contacts. The shared model is **346,044 bytes**, **37,212 triangles**, **six material primitives**, one **22-joint** skin and **seven animation clips**. Refined surfaces include the face, layered hairstyle, garment transitions and footwear. The real Cycles high-to-runtime hair normal bake uses a unique secondary UV atlas; the remaining material tiles are original procedural height/color/roughness fields. Editable source, cage/sculpt collections and bake metadata live in `assets/source/jack/`.
+
+The runabout is **259,708 bytes / 18,031 triangles / 16 batches**. Harbor is **618,176 bytes / 48,104 triangles / 52 batches** in high quality, and **314,936 bytes / 22,064 triangles / 47 batches** in low quality. Both retain decoded UV attributes. Hull and cushion curves, pier bevels and fasteners, ropes and knots, fenders, palms and shore planting were refined. Single-surface Harbor paths remove coplanar dark joins; palm backface construction no longer cancels normals. Editable boat/Harbor snapshots are in `art/v5/`; the reproducible geometry authority remains the JavaScript generators.
+
+All **16 non-Harbor island GLBs** (eight islands × two quality levels), and `walk-layout.json`, were compared with V4.6 and remain byte-identical. Existing shorelines, walking routes, obstacles, berths, exhibit IDs, résumé content and gameplay records are preserved.
+
+## Rendering, resources and automated checks
+
+The new lighting path adds a procedural daytime environment, warm sunlight and actor-following shadow coverage. High quality uses half-resolution Three.js GTAO with restrained contact strength, followed by FXAA. Low quality omits the post-processing chain and retains a **1024 × 1024** shadow map. Post-processing failures fall back to daylight rendering. Ocean shading uses an actual-shoreline depth/distance field, shallow/deep color transitions, procedural sand/stone patterns, caustics, foam and glints; the final water surface remains opaque.
+
+The post-processing graph is created only when high quality is first used and then retained for the scene lifetime. Switching to low bypasses it; returning to high reuses it. This avoids stale Three.js r183 GPU bindings on graph recreation. A low-only session does not allocate those targets. After high has been used, a low session retains one fixed set of targets; repeated toggles do not keep allocating graphs. The regression checks final release of the scene target, FXAA intermediate target/material and GTAO noise texture.
+
+Optional surface packs load after the initial playable scene. A single library shares KTX2 maps, preserves livery colors, invalidates stale quality requests and releases replaced maps. Partial or failed texture requests retain usable base materials.
+
+| Optional resource | High quality | Low quality |
+| --- | ---: | ---: |
+| Texture pack | 2,885,401 B | 887,306 B |
+| Shared Basis JS/WASM transcoder | 584,862 B | 584,862 B |
+| Combined one-quality total | **3,470,263 B** | **1,472,168 B** |
+
+The initial HTML/CSS/JavaScript bundle plus boat, Jack, Harbor, Connect and walk-layout assets totals **5,208,246 B raw** or **1,851,583 B estimated with gzip**, excluding external fonts and optional post-ready assets. This file-based budget check is not an observed cold-network transfer or load-time measurement. The tested Jack GLB matches the production copy byte for byte.
+
+These are shipped file bytes, excluding the small manifest/license files and transport compression. The decoder is shared rather than fetched independently per material. Texture dimensions, mip counts, encodings, hashes and worst-case RGBA memory estimates are recorded in `static/textures/v5/manifest.json`; they do not represent a device-level VRAM measurement.
+
+**192 automated checks pass**, and the production Vite build passes. Existing character proportions, fixed helm contacts, gait/bench behavior, four-view camera framing, walking routes and sea-gameplay tests remain covered. V5 checks cover shipped KTX2 structure/budgets, material bindings, quality replacement and release, failed texture fallback, and shoreline/light behavior. A separate decoded-asset audit confirmed finite UV coordinates and nonzero normals for all boat and high/low Harbor primitives. The scoped livery/fleet/island traversal run passed **29 checks**.
+
+The local `/review.html` page loads actual runtime GLBs and the shared materials, with front, three-quarter and side views plus optional clay mode. It is excluded from the production build. Blender model-review images are offline asset inspections, distinct from game captures.
+
+## Browser measurements and remaining limits
+
+Host: **Apple M3 Max / macOS / Codex in-app browser**. The following measurements use desktop viewport emulation, not physical phones:
+
+| Renderer / quality | Viewport | Observed frame sample |
+| --- | --- | --- |
+| WebGL2 / high | 390 × 844 | Approximately 144 FPS; p50 **6.9 ms**, p95 **7.7 ms** |
+| WebGL2 / low | 844 × 390 | p50 **6.9 ms**, p95 **8.2 ms** |
+
+These short local samples include the V5 surface/lighting path and do not certify sustained mobile performance or thermal behavior. WebGPU high was also checked at 1440 × 900 and 1920 × 1080. A warm local 1440-wide sample reported 144 FPS with p50 6.9 ms and p95 7.7 ms. No new rendering errors remained after the final shader fixes.
+
+Browser regression covered all nine Travel → Go ashore transitions, walking, boarding, steering, reading → travel → close with zero restored velocity, and starting all three challenges. After the quality-switch fix, repeated low/high transitions retained the scene and the renderer texture count stayed at 40 in the same four-island warm scene, with 19 shared material maps. Maps and content stayed available at all four target viewport sizes. The explicit `?no3d` path displayed all nine readable entries and the résumé link.
+
+No physical iPhone/Android, mobile Safari, controlled **20 Mbps cold-start** measurement or prolonged thermal/VRAM soak has been completed for V5. The **5-second initial-drive**, **60 FPS desktop** and **30 FPS mobile** goals remain performance targets where not directly measured. Desktop viewport checks do not substitute for physical-device results. Repository visibility and preview access are not changed by these rendering updates.
+
+---
+
 # V4.6 — Soft Shapes & Shorter Legs validation · 2026-09-20
 
 ## Actual sculpt and proportions

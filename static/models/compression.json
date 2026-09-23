@@ -1,8 +1,8 @@
 [
   {
     "name": "harbor.glb",
-    "before": 1008408,
-    "after": 299140
+    "before": 1988896,
+    "after": 618176
   },
   {
     "name": "amtrak.glb",
@@ -46,7 +46,7 @@
   },
   {
     "name": "boat.glb",
-    "before": 452728,
-    "after": 139100
+    "before": 783408,
+    "after": 259708
   }
 ]

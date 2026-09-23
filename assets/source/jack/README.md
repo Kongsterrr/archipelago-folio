@@ -1,0 +1,43 @@
+# Jack V5 source assets
+
+Original 1.20 m, 2.2-head toy character with a shared 22-joint rig and seven clips.
+The runtime silhouette is authored by the repository's curve/implicit-surface
+JavaScript generators. `jack-v5.blend` is the editable Blender 4.5 source: the
+runtime cage and rig, a hidden subdivision sculpt collection, and review lights.
+It is not a separately hand-sculpted replacement character.
+
+## Rebuild
+
+From the repository root, with Node 24 and Blender 4.5 available:
+
+```sh
+JACK_SOURCE_GLB=/tmp/jack-source.glb node scripts/build-jack.mjs
+blender --background --python assets/source/jack/author.py -- --input /tmp/jack-source.glb
+blender --background assets/source/jack/jack-v5.blend --python assets/source/jack/bake-hair.py
+python3 scripts/build-v5-surfaces.py --hair-normal assets/source/jack/jack-hair-normal.png
+```
+
+The first command exports and validates the runtime GLB and an uncompressed
+editable interchange file. `author.py --render-dir /tmp/jack-review` also renders
+three actual geometry views. These are offline review renders, not game captures.
+
+## What is baked
+
+`jack-hair-normal.png` is a real Cycles selected-to-active tangent-normal bake
+from the high-tessellation sculpt with flow-aligned geometric strand relief.
+`bake-report.json` records the cage, map size, and OpenGL normal convention.
+The bake uses a unique per-patch secondary UV atlas (`TEXCOORD_1`); brows use a
+neutral reserved cell. Very oblique rays that hit another overlapping lock are
+rejected using the documented normal-angle bound. This map is converted into
+high/low KTX2 packs; the PNG and Blender scene are source assets only.
+
+Primary `TEXCOORD_0` UVs support reusable tiled fabric maps and the legacy hair
+fallback. Fabric/wood/other tile maps are procedural material textures, not
+high-to-low geometry bakes. Tangents are derived by the renderer from UVs to
+keep the six-material character GLB below 350 KB.
+
+After editing Blender sculpt layers, transfer the approved silhouette to the
+runtime cage/generator and rerun the model, posture, and contact tests before
+export. Do not export the hidden sculpt collection or review stage into the
+browser asset. Camera, collider, hand-grip and animation interfaces remain owned
+by the runtime configuration.

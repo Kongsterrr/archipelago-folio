@@ -1,5 +1,5 @@
 {
-  "revision": "v46-soft-sculpted-jack",
+  "revision": "v5-sculpt-and-surface",
   "file": "jack.glb",
   "height": 1.2,
   "headHeight": 0.542,
@@ -44,9 +44,9 @@
     "sit",
     "stand"
   ],
-  "bytes": 279760,
-  "rawBytes": 2116768,
-  "triangles": 40892,
+  "bytes": 346044,
+  "rawBytes": 2247768,
+  "triangles": 37212,
   "materials": 6,
   "drawCalls": 6,
   "joints": [
@@ -76,20 +76,20 @@
   "skins": 1,
   "bounds": {
     "min": [
-      -0.2651918828487396,
+      -0.26399311423301697,
       -4.470351866459055e-11,
-      -0.23830194771289825
+      -0.23835760354995728
     ],
     "max": [
-      0.26576733589172363,
+      0.2637659013271332,
       1.2000000476837158,
-      0.2595105767250061
+      0.22150559723377228
     ]
   },
   "dimensions": [
-    0.5309592187404633,
+    0.5277590155601501,
     1.2000000477284194,
-    0.49781252443790436
+    0.45986320078372955
   ],
   "animations": [
     {
@@ -129,9 +129,21 @@
     }
   ],
   "textures": 0,
+  "surface": {
+    "uvPrimitives": 6,
+    "tangentPrimitives": 0,
+    "bakeUVPrimitives": 1,
+    "mode": "External tiled PBR maps; COLOR_0 retained"
+  },
   "compression": "EXT_meshopt_compression",
   "placement": {
     "originalProceduralAsset": true,
+    "assetRevision": "v5-sculpt-and-surface",
+    "surfaceContract": {
+      "uv": "TEXCOORD_0",
+      "tangent": "Derived from UV in material shader",
+      "color": "multiply tile basecolor by COLOR_0"
+    },
     "characterSpec": {
       "height": 1.2,
       "headHeight": 0.542,
@@ -225,14 +237,14 @@
     "helm": "Runtime boatVisual anchor/scale are characterSpec.helmAnchor/.helmScale. All helm body and hand keys are constant."
   },
   "proportions": {
-    "height": 1.1997669949635843,
-    "headHeight": 0.5418160526193455,
-    "headsTall": 2.2143437595904603,
+    "height": 1.1997882833569142,
+    "headHeight": 0.5418373014353066,
+    "headsTall": 2.2142962106498025,
     "footY": 0.000050755977630601024,
-    "crownY": 1.199817750941215,
-    "chinY": 0.6580016983218694,
+    "crownY": 1.1998390393345448,
+    "chinY": 0.6580017378992382,
     "triangleCounts": {
-      "head": 21596,
+      "head": 17580,
       "coat": 7160,
       "sleeves": 1600,
       "hands": 1088,
@@ -244,38 +256,38 @@
           {
             "offset": 0.03,
             "y": 0.39191483853142495,
-            "gap": 0.023050299403801183,
-            "innerEdge": 0.16918214098217652,
-            "outerEdge": 0.14613184157837533,
-            "innerIntersections": 84,
-            "outerIntersections": 170
-          },
-          {
-            "offset": 0.05,
-            "y": 0.4119148385314249,
-            "gap": 0.01582986104950837,
-            "innerEdge": 0.16434343110431446,
-            "outerEdge": 0.1485135700548061,
+            "gap": 0.02258568965241592,
+            "innerEdge": 0.168941539682289,
+            "outerEdge": 0.14635585002987309,
             "innerIntersections": 84,
             "outerIntersections": 166
           },
           {
+            "offset": 0.05,
+            "y": 0.4119148385314249,
+            "gap": 0.01559628937512425,
+            "innerEdge": 0.16436470355305852,
+            "outerEdge": 0.14876841417793427,
+            "innerIntersections": 84,
+            "outerIntersections": 162
+          },
+          {
             "offset": 0.07,
             "y": 0.4319148385314249,
-            "gap": 0.011033820065246724,
-            "innerEdge": 0.16014489884272937,
-            "outerEdge": 0.14911107877748264,
+            "gap": 0.010787072018474314,
+            "innerEdge": 0.1599965945513443,
+            "outerEdge": 0.14920952253286998,
             "innerIntersections": 88,
-            "outerIntersections": 190
+            "outerIntersections": 186
           }
         ],
         "hand": {
           "y": 0.30572354817227654,
-          "gap": 0.06410448895926094,
-          "innerEdge": 0.19406031899680948,
-          "outerEdge": 0.12995583003754854,
+          "gap": 0.06403115857867245,
+          "innerEdge": 0.19402209946239057,
+          "outerEdge": 0.12999094088371813,
           "innerIntersections": 124,
-          "outerIntersections": 118
+          "outerIntersections": 114
         },
         "elbowOutward": 0.054319404381850345,
         "handOutward": 0.07834185367620014
@@ -285,38 +297,38 @@
           {
             "offset": 0.03,
             "y": 0.39191483853142495,
-            "gap": 0.023080826482122008,
-            "innerEdge": 0.169171330026628,
-            "outerEdge": 0.14609050354450598,
+            "gap": 0.022689573059483686,
+            "innerEdge": 0.16893386336314825,
+            "outerEdge": 0.14624429030366456,
             "innerIntersections": 84,
-            "outerIntersections": 166
+            "outerIntersections": 170
           },
           {
             "offset": 0.05,
             "y": 0.4119148385314249,
-            "gap": 0.015777394501425235,
-            "innerEdge": 0.16433278246444996,
-            "outerEdge": 0.14855538796302473,
+            "gap": 0.015573343078641388,
+            "innerEdge": 0.164386597898108,
+            "outerEdge": 0.1488132548194666,
             "innerIntersections": 84,
-            "outerIntersections": 162
+            "outerIntersections": 166
           },
           {
             "offset": 0.07,
             "y": 0.4319148385314249,
-            "gap": 0.01081364319635808,
-            "innerEdge": 0.16013395288856042,
-            "outerEdge": 0.14932030969220234,
+            "gap": 0.010800433532233089,
+            "innerEdge": 0.16028554262235423,
+            "outerEdge": 0.14948510909012114,
             "innerIntersections": 88,
-            "outerIntersections": 186
+            "outerIntersections": 190
           }
         ],
         "hand": {
           "y": 0.30572354817227654,
-          "gap": 0.06403109314658237,
-          "innerEdge": 0.19404966524754486,
-          "outerEdge": 0.1300185721009625,
+          "gap": 0.06403105076304486,
+          "innerEdge": 0.19401451201783776,
+          "outerEdge": 0.1299834612547929,
           "innerIntersections": 124,
-          "outerIntersections": 114
+          "outerIntersections": 118
         },
         "elbowOutward": 0.054319404381850345,
         "handOutward": 0.07834185367620014
@@ -324,14 +336,14 @@
     }
   },
   "sculpt": {
-    "height": 1.1997669949635843,
+    "height": 1.1997882833569142,
     "hemY": 0.3619148385314249,
     "hemToFloor": 0.3618640825537943,
-    "hemToFloorFraction": 0.30161196638417087,
+    "hemToFloorFraction": 0.3016066147448338,
     "face": {
-      "mainTriangles": 2160,
+      "mainTriangles": 3432,
       "components": [
-        2160,
+        3432,
         396,
         396,
         396,
@@ -340,52 +352,52 @@
         160,
         160
       ],
-      "width": 0.4494644180188069,
-      "height": 0.46962494617975803,
-      "depth": 0.38010194692554355,
-      "widthHeight": 0.9570710024564276,
+      "width": 0.44968415129576544,
+      "height": 0.46962494617975814,
+      "depth": 0.3795159915203207,
+      "widthHeight": 0.9575388934378286,
       "slices": [
         {
           "t": 0.15,
-          "y": -0.18997375883243192,
-          "width": 0.2981652810379356,
-          "frontZ": -0.1462431287305781
+          "y": -0.189973758832432,
+          "width": 0.3051798972946811,
+          "frontZ": -0.14051303413647065
         },
         {
           "t": 0.2,
-          "y": -0.16649251152344402,
-          "width": 0.34367199073220434,
-          "frontZ": -0.1582792684116605
+          "y": -0.16649251152344413,
+          "width": 0.34486144516554607,
+          "frontZ": -0.1542610100436932
         },
         {
           "t": 0.3,
-          "y": -0.11953001690546822,
-          "width": 0.4119946328528163,
-          "frontZ": -0.1743496548263277
+          "y": -0.11953001690546827,
+          "width": 0.40156293146318456,
+          "frontZ": -0.17298491098224633
         },
         {
           "t": 0.45,
-          "y": -0.04908627497850451,
-          "width": 0.4487584888840539,
-          "frontZ": -0.18793205087960096
+          "y": -0.049086274978504596,
+          "width": 0.4449107095337723,
+          "frontZ": -0.18641407215152106
         },
         {
           "t": 0.6,
-          "y": 0.02135746694845919,
-          "width": 0.4400421783401054,
-          "frontZ": -0.19051525511476752
+          "y": 0.021357466948459136,
+          "width": 0.4402277028717081,
+          "frontZ": -0.184038857484232
         },
         {
           "t": 0.75,
-          "y": 0.0918012088754229,
-          "width": 0.4166777422966361,
-          "frontZ": -0.18052137675994961
+          "y": 0.09180120887542287,
+          "width": 0.3890358525122498,
+          "frontZ": -0.16213653519269688
         },
         {
           "t": 0.85,
-          "y": 0.1387637034933987,
-          "width": 0.37363412866974344,
-          "frontZ": -0.15984982525339286
+          "y": 0.13876370349339867,
+          "width": 0.3209405559468882,
+          "frontZ": -0.13296148936345564
         }
       ]
     },
@@ -410,18 +422,18 @@
         }
       ]
     },
-    "triangles": 40892
+    "triangles": 37212
   },
   "groundContact": {
     "walk": {
       "sampledFrames": 481,
-      "minimumLowestSoleY": 0.0010157184510618533,
-      "maximumLowestSoleY": 0.001706730972863224
+      "minimumLowestSoleY": 0.001020430881209733,
+      "maximumLowestSoleY": 0.0017321870950117169
     },
     "run": {
       "sampledFrames": 481,
-      "minimumLowestSoleY": 0.0005759377167559032,
-      "maximumLowestSoleY": 0.019452028621203488
+      "minimumLowestSoleY": 0.0005786547831476696,
+      "maximumLowestSoleY": 0.019441955176438375
     }
   },
   "helmContact": {
@@ -451,11 +463,11 @@
   },
   "facialRig": {
     "LeftEye": {
-      "vertices": 448,
+      "vertices": 557,
       "localPivot": [
         -0.08458316221765914,
         -0.026710472279260784,
-        -0.1854830590705998
+        -0.18357604104393788
       ],
       "scale": [
         1,
@@ -464,11 +476,11 @@
       ]
     },
     "RightEye": {
-      "vertices": 448,
+      "vertices": 557,
       "localPivot": [
         0.08458316221765914,
         -0.026710472279260784,
-        -0.1854830590705998
+        -0.18357604104393788
       ],
       "scale": [
         1,
@@ -481,7 +493,7 @@
       "localPivot": [
         -0.08458316221765914,
         0.04340451745379877,
-        -0.18534478367925517
+        -0.17596308852202167
       ],
       "scale": [
         1,
@@ -494,7 +506,7 @@
       "localPivot": [
         0.08458316221765914,
         0.04340451745379877,
-        -0.18534478367925517
+        -0.17596308852202167
       ],
       "scale": [
         1,
@@ -507,7 +519,7 @@
       "localPivot": [
         0,
         -0.14134291581108832,
-        -0.1726211638142549
+        -0.17005891414502083
       ],
       "scale": [
         1,
@@ -518,9 +530,9 @@
   },
   "benchFit": {
     "frontEdgeZ": -0.31,
-    "shinRearBelowSeatZ": -0.3135392327477472,
-    "shinClearance": 0.0035392327477472008,
-    "hipsBottomAboveSeat": 0.0029637504840823725,
+    "shinRearBelowSeatZ": -0.3135309752472824,
+    "shinClearance": 0.0035309752472824085,
+    "hipsBottomAboveSeat": 0.002957870979790278,
     "pantsSlatIntersections": 0
   }
 }

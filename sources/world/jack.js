@@ -19,7 +19,7 @@ export class JackAvatar {
 
   async load() {
     if (this.promise) return this.promise;
-    this.promise = this.loader.loadAsync('/models/jack.glb').then(gltf => {
+    this.promise = this.loader.loadAsync('/models/jack.glb?v=5').then(gltf => {
       this.model = gltf.scene;
       applyJackHairSurface(this.model);
       this.root.add(this.model);

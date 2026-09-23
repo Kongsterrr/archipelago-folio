@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-/** Original, texture-free luxury sport runabout. Metres, Y-up, bow at -Z, sea level Y=0.
+/** Original UV-authored luxury sport runabout. Metres, Y-up, bow at -Z, sea level Y=0.
  * Geometry stays inside the original playable boat's collision/attachment envelope.
  * The cockpit is physically open: the gunwale/deck has a hole and a separate lower sole.
  */
@@ -28,8 +28,17 @@ export function createPremiumBoat() {
   });
   materials.displayLight.emissive.set('#80d8c5');
   materials.displayLight.emissiveIntensity = .22;
+  // UVs survive material merging. Grain runs along local Z; all other patches use
+  // their dominant face so wrapped trim and upholstery do not inherit extrusion UVs.
+  const surfaceUV = geometry => {
+    const g=geometry.index?geometry.toNonIndexed():geometry, p=g.attributes.position,n=g.attributes.normal;
+    g.computeBoundingBox();const b=g.boundingBox,size=b.getSize(new THREE.Vector3()),uv=[];
+    for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),nx=Math.abs(n.getX(i)),ny=Math.abs(n.getY(i)),nz=Math.abs(n.getZ(i));
+      const pair=ny>=nx&&ny>=nz?[(x-b.min.x)/Math.max(size.x,.001),(z-b.min.z)/Math.max(size.z,.001)]:nx>nz?[(z-b.min.z)/Math.max(size.z,.001),(y-b.min.y)/Math.max(size.y,.001)]:[(x-b.min.x)/Math.max(size.x,.001),(y-b.min.y)/Math.max(size.y,.001)];uv.push(...pair);}
+    g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));return g;
+  };
   const add = (geometry, mat, pos = [0, 0, 0], rot = [0, 0, 0], parent = root) => {
-    const m = new THREE.Mesh(geometry, materials[mat]);
+    const m = new THREE.Mesh(surfaceUV(geometry), materials[mat]);
     m.position.set(...pos); m.rotation.set(...rot); m.castShadow = mat !== 'windshield'; m.receiveShadow = true;
     parent.add(m); return m;
   };
@@ -42,8 +51,14 @@ export function createPremiumBoat() {
     r = Math.min(r, w / 3, h / 3, d / 3);
     const a = w / 2 - r, b = h / 2 - r, s = new THREE.Shape();
     s.moveTo(-a, -b); s.lineTo(a, -b); s.lineTo(a, b); s.lineTo(-a, b); s.closePath();
-    const g = new THREE.ExtrudeGeometry(s, { depth: d - 2 * r, bevelEnabled: true, bevelThickness: r, bevelSize: r, bevelSegments: 2, steps: 1 });
+    const g = new THREE.ExtrudeGeometry(s, { depth: d - 2 * r, bevelEnabled: true, bevelThickness: r, bevelSize: r, bevelSegments: 3, steps: 1 });
     g.translate(0, 0, -d / 2 + r); return add(g, mat, [x, y, z], rot, parent);
+  };
+  const cushion = (w,h,d,x,y,z,mat,rot,parent) => {
+    const g=new THREE.SphereGeometry(1,20,12),p=g.attributes.position;
+    const soft=v=>Math.sign(v)*Math.pow(Math.abs(v),.45);
+    for(let i=0;i<p.count;i++)p.setXYZ(i,soft(p.getX(i))*w/2,soft(p.getY(i))*h/2,soft(p.getZ(i))*d/2);
+    g.computeVertexNormals();return add(g,mat,[x,y,z],rot,parent);
   };
   const rod = (a, b, r, mat, parent = root, n = 6) => {
     const av = new THREE.Vector3(...a), bv = new THREE.Vector3(...b), delta = bv.clone().sub(av);
@@ -66,12 +81,14 @@ export function createPremiumBoat() {
     g.rotateX(-Math.PI / 2); g.translate(0, y0, 0); return add(g, mat);
   };
   // Smooth, tapered planform with a fine bow and a broad transom, without a top cap.
-  const outline = [
+  const controlOutline = [
     [0, -2.00], [.12, -1.89], [.27, -1.72], [.43, -1.48], [.57, -1.19], [.67, -.86],
     [.735, -.50], [.755, -.12], [.750, .33], [.725, .81], [.68, 1.18], [.61, 1.38],
     [.48, 1.42], [-.48, 1.42], [-.61, 1.38], [-.68, 1.18], [-.725, .81], [-.750, .33],
     [-.755, -.12], [-.735, -.50], [-.67, -.86], [-.57, -1.19], [-.43, -1.48], [-.27, -1.72], [-.12, -1.89],
   ];
+  const hullCurve=new THREE.CatmullRomCurve3(controlOutline.map(([x,z])=>new THREE.Vector3(x,0,z)),true,'centripetal');
+  const outline=Array.from({length:72},(_,i)=>{const p=hullCurve.getPoint(i/72);return[Math.max(-.755,Math.min(.755,p.x)),Math.max(-2,Math.min(1.42,p.z))];});
   const sheer = z => .035 * Math.max(0, -z - .4);
   const ring = (scale, height, zScale = 1) => outline.map(([x, z]) => [x * scale, height + sheer(z), (z - .18) * zScale + .18]);
   const loft = (rings, mat, inward = false) => {
@@ -82,7 +99,7 @@ export function createPremiumBoat() {
     return custom(vs, ix, mat);
   };
   loft([ring(.53, .115, .88), ring(.79, .285, .963)], 'navy');
-  loft([ring(.79, .285, .963), ring(.925, .47, .990), ring(.990, .715)], 'hullOrange');
+  loft([ring(.79, .285, .963), ring(.87, .38, .98), ring(.925, .47, .990), ring(.972,.61,.998), ring(.990, .715)], 'hullOrange');
   loft([ring(.990, .715), ring(1.002, .760)], 'navy');
   loft([ring(1.002, .760), ring(1, .805)], 'hullIvory');
   // Underbody closure is below the cockpit, so it never creates a false deck.
@@ -124,13 +141,13 @@ export function createPremiumBoat() {
     const seat = group(x < 0 ? 'port_captain_seat' : 'starboard_helm_seat', [x, 0, .06]);
     cylinder(.067, .10, .13, 0, .602, .03, 'satinMetal', 10, undefined, seat);
     rounded(.44, .10, .42, 0, .710, .01, 'navy', .027, undefined, seat);
-    rounded(.403, .126, .377, 0, .782, -.013, 'upholstery', .038, undefined, seat);
+    cushion(.403, .126, .377, 0, .782, -.013, 'upholstery', undefined, seat);
     rounded(.44, .372, .105, 0, .955, .193, 'hullOrange', .029, [-.10, 0, 0], seat);
-    rounded(.322, .306, .086, 0, .965, .132, 'upholstery', .025, [-.10, 0, 0], seat);
+    cushion(.322, .306, .086, 0, .965, .132, 'upholstery', [-.10, 0, 0], seat);
     // Aft-facing upholstery and a grab rail stay visible from the normal chase camera.
     const aftPanel = new THREE.Group(); aftPanel.name = 'aft_upholstery';
     aftPanel.position.set(0, .980, .253); aftPanel.rotation.x = -.10; seat.add(aftPanel);
-    rounded(.314, .203, .025, 0, 0, 0, 'upholstery', .008, undefined, aftPanel);
+    cushion(.314, .203, .035, 0, 0, 0, 'upholstery', undefined, aftPanel);
     roundedLoop(.287, .175, 0, .016, 'cognac', aftPanel);
     for (const sx of [-.067, .067]) box(.004, .139, .003, sx, 0, .018, 'cognac', undefined, aftPanel);
     path([[-.12, .839, .252], [-.12, .839, .287], [.12, .839, .287], [.12, .839, .252]], .008, 'satinMetal', seat);
@@ -142,11 +159,8 @@ export function createPremiumBoat() {
     const quilt = new THREE.Group(); quilt.name = 'front_diamond_stitching';
     quilt.position.set(0, .965, .084); quilt.rotation.x = -.10; seat.add(quilt);
     roundedLoop(.30, .266, .003, 0, 'cognac', quilt);
-    // Diamond stitching is actual narrow geometry, offset just in front of the upholstered face.
-    for (const cx of [-.10, 0, .10]) for (const cy of [.884, .984, 1.084]) {
-      const hw = .046, hh = .043;
-      path([[cx, cy - .965 - hh, -.002], [cx + hw, cy - .965, -.002], [cx, cy - .965 + hh, -.002], [cx - hw, cy - .965, -.002], [cx, cy - .965 - hh, -.002]], .0023, 'cognac', quilt, 4);
-    }
+    // Long inset seams divide softly inflated seat channels; curved ends follow the pad.
+    for(const cx of[-.082,0,.082])path([[cx,-.12,-.001],[cx,-.085,-.006],[cx,.08,-.006],[cx,.123,-.001]],.0016,'cognac',quilt,4);
     path([[-.155, .837, -.168], [.155, .837, -.168]], .006, 'cognac', seat, 5);
     for (const sx of [-.095, .095]) box(.004, .004, .245, sx, .847, -.014, 'cognac', undefined, seat);
     rounded(.155, .016, .026, 0, 1.105, .075, 'navy', .004, undefined, seat);
@@ -155,8 +169,8 @@ export function createPremiumBoat() {
   rounded(1.065, .15, .385, 0, .667, .919, 'navy', .028);
   rounded(1.11, .355, .14, 0, .903, 1.16, 'hullOrange', .034, [-.06, 0, 0]);
   for (const x of [-.346, 0, .346]) {
-    rounded(.329, .133, .339, x, .786, .912, 'upholstery', .030);
-    rounded(.325, .255, .089, x, .926, 1.075, 'upholstery', .024, [-.06, 0, 0]);
+    cushion(.329, .133, .339, x, .786, .912, 'upholstery');
+    cushion(.325, .255, .089, x, .926, 1.075, 'upholstery', [-.06, 0, 0]);
     path([[x - .135, .843, .770], [x + .135, .843, .770]], .006, 'cognac', root, 5);
     for (const dx of [-.078, 0, .078]) rod([x + dx, .824, 1.024], [x + dx, 1.020, 1.016], .003, 'cognac', root, 4);
   }
@@ -268,7 +282,7 @@ export function createPremiumBoat() {
   for(const side of [-1,1]){const plate=group('jack_01_nameplate',[side*.708,.66,.69],[0,side*Math.PI/2,0]);rounded(.44,.106,.012,0,0,0,'navy',.014,undefined,plate);[...'JACK 01'].forEach((letter,i)=>{for(const stroke of alphabet[letter])path(stroke.map(([x,y])=>[-.195+i*.056+x*.034,-.033+y*.065,.010]),.0028,'hullIvory',plate,4);});}
   root.userData = {
     originalProceduralAsset: true, author: 'Jack portfolio original premium boat builder',
-    forward: '-Z', seaLevel: 0, design: 'Jack 01 open-cockpit luxury sport runabout, three signature finishes',
+    forward: '-Z', seaLevel: 0, design: 'V5 sculpted runabout: continuous hull highlights, puffed upholstery, UV-authored teak and metal',
     materialNames: Object.keys(materials),
   };
   // Keep the detailed silhouette inside the established portrait camera framing.

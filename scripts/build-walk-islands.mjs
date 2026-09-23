@@ -1,6 +1,6 @@
 // Original procedural models for Archipelago-folio V4 walking islands.
 // Run: node scripts/build-walk-islands.mjs (preserves the existing boat asset)
-// Geometry only; no external textures, networks, copied assets, or build services.
+// Original geometry; V5 harbor UVs bind to the shared surface library at runtime.
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import * as THREE from 'three';
@@ -34,12 +34,30 @@ const mats = Object.fromEntries(Object.entries(colors).map(([name,color]) => [na
   new THREE.MeshStandardMaterial({name, color, roughness:name==='glass'||name==='glassBlue'?0.3:0.76, metalness:name==='metal'?0.25:0})]));
 // Palette aliases keep the entire toy world within a practical material budget.
 for (const [alias,key] of Object.entries({grassDark:'grass', leafLight:'leaf', trunk:'darkWood', woodLight:'wood', glassBlue:'glass', stoneLight:'stone', cream:'ivory', white:'ivory', red:'terracotta'})) mats[alias]=mats[key];
-let root, seed, layout, low=false;
+const harborMaterialNames={wood:'v5_dock_wood',darkWood:'v5_dock_darkwood',stone:'v5_stone',sand:'v5_sand',sandEdge:'v5_wetsand',leaf:'v5_foliage'};
+mats.rope=new THREE.MeshStandardMaterial({name:'v5_rope',color:'#e9ddbd',roughness:.91});
+const harborMaterials=new Map();
+let root, seed, layout, low=false,currentIsland='';
+function authoredUV(geometry,material){
+ if(material==='rope'&&geometry.attributes.uv){const g=geometry.clone();if(g.type==='TubeGeometry'){const uv=g.attributes.uv;for(let i=0;i<uv.count;i++){const u=uv.getX(i),v=uv.getY(i);uv.setXY(i,v,u);}}return g;}
+ const g=geometry.index?geometry.toNonIndexed():geometry,p=g.attributes.position,n=g.attributes.normal;
+ g.computeBoundingBox();const b=g.boundingBox,s=b.getSize(new THREE.Vector3()),uv=[];
+ for(let i=0;i<p.count;i++){const x=(p.getX(i)-b.min.x)/Math.max(s.x,.001),y=(p.getY(i)-b.min.y)/Math.max(s.y,.001),z=(p.getZ(i)-b.min.z)/Math.max(s.z,.001),nx=Math.abs(n.getX(i)),ny=Math.abs(n.getY(i)),nz=Math.abs(n.getZ(i));
+  let pair=ny>=nx&&ny>=nz?[x,z]:nx>nz?[z,y]:[x,y];
+  if((material==='wood'||material==='darkWood')&&s.x>s.z&&ny>nz)pair=[z,x];
+  uv.push(...pair);}
+ g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));return g;
+}
 const SHORELINES = {};
 const TRACK={center:[0,1.05,-1.4],radiusX:8.8,radiusZ:5.8,clockwise:false,initialAngle:0,speed:0.22};
 function random() { seed = (seed*1664525+1013904223)>>>0; return seed/4294967296; }
 function mesh(geom, material='ivory', pos=[0,0,0], rot=[0,0,0], parent=root) {
-  const m = new THREE.Mesh(geom,mats[material]); m.position.set(...pos); m.rotation.set(...rot); parent.add(m); return m;
+  let mtl=mats[material];
+  if(currentIsland==='harbor'){
+   geom=authoredUV(geom,material);const name=harborMaterialNames[mtl.name]||mtl.name;
+   if(!harborMaterials.has(name)){const c=mtl.clone();c.name=name;if(['v5_foliage','orange'].includes(name))c.side=THREE.DoubleSide;harborMaterials.set(name,c);}mtl=harborMaterials.get(name);
+  }
+  const m = new THREE.Mesh(geom,mtl); m.position.set(...pos); m.rotation.set(...rot); parent.add(m); return m;
 }
 function group(pos=[0,0,0], rot=[0,0,0], parent=root) { const g=new THREE.Group(); g.position.set(...pos);g.rotation.set(...rot);parent.add(g);return g; }
 function box(w,h,d,x,y,z,mat='ivory',rot=[0,0,0],parent=root) { return mesh(new THREE.BoxGeometry(w,h,d),mat,[x,y,z],rot,parent); }
@@ -57,7 +75,9 @@ function rod(a,b,r,mat='wood',parent=root,segments=7) {
   const av=new THREE.Vector3(...a),bv=new THREE.Vector3(...b),delta=bv.clone().sub(av);const m=cyl(r,r,delta.length(),...av.clone().add(bv).multiplyScalar(.5).toArray(),mat,segments,[0,0,0],parent);m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());return m;
 }
 function custom(vertices,indices,mat='ivory',parent=root) {
-  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vertices.flat(),3));g.setIndex(indices);g.computeVertexNormals();return mesh(g,mat,[0,0,0],[0,0,0],parent);
+  let g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vertices.flat(),3));
+  if(currentIsland==='harbor'){const seen=new Set(),front=[];for(let i=0;i<indices.length;i+=3){const tri=indices.slice(i,i+3),key=[...tri].sort((a,b)=>a-b).join(',');if(!seen.has(key)){seen.add(key);front.push(...tri);}}indices=front;}
+  g.setIndex(indices);if(currentIsland==='harbor'&&mat!=='leaf'&&g.index)g=g.toNonIndexed();g.computeVertexNormals();return mesh(g,mat,[0,0,0],[0,0,0],parent);
 }
 function ringShape(points,levels,mat='sand',parent=root) {
   const v=[], ix=[],n=points.length;
@@ -65,7 +85,7 @@ function ringShape(points,levels,mat='sand',parent=root) {
   for(let j=0;j<levels.length-1;j++)for(let i=0;i<n;i++){const a=j*n+i,b=j*n+(i+1)%n,c=(j+1)*n+i,d=(j+1)*n+(i+1)%n;ix.push(a,c,b,b,c,d);}
   const triangles=THREE.ShapeUtils.triangulateShape(points.map(([x,z])=>new THREE.Vector2(x,z)),[]);
   // Coast is a ring only; the separate walk plateau supplies its top surface.
-  const m=custom(v,ix,mat,parent);m.geometry=m.geometry.toNonIndexed();m.geometry.computeVertexNormals();return m;
+  const m=custom(v,ix,mat,parent);if(m.geometry.index)m.geometry=m.geometry.toNonIndexed();m.geometry.computeVertexNormals();return m;
 }
 function shapePrism(points,y0,y1,mat,parent=root) {
   const shape=new THREE.Shape(points.map(([x,z])=>new THREE.Vector2(x,-z)));
@@ -74,7 +94,20 @@ function shapePrism(points,y0,y1,mat,parent=root) {
 function pathStone(x,z,r=.48,mat='stoneLight') {return cyl(r*.95,r,.10,x,.89,z,mat,7,[0,random(),0]);}
 function shrub(x,z,s=1,mat='leafLight') { sphere(.53*s,x,1.12*s,z,mat);sphere(.44*s,x+.4*s,1.1*s,z+.12*s,mat);sphere(.38*s,x-.3*s,1.05*s,z+.24*s,'grassDark'); }
 function rocks(x,z,s=1) {for(let i=0;i<3;i++){const m=sphere((.29+random()*.25)*s,x+i*.38*s,.89+(.13+random()*.1)*s,z+random()*.35,'stone');m.scale.set(1.25,.7,1);}}
+function sculptedPalm(x,z,h,angle,parent){
+ const g=group([x,.78,z],[0,angle,0],parent),p=[new THREE.Vector3(0,0,0),new THREE.Vector3(.08,h*.3,0),new THREE.Vector3(.3,h*.7,-.03),new THREE.Vector3(.68,h,-.11)];
+ const curve=new THREE.CatmullRomCurve3(p),tg=new THREE.TubeGeometry(curve,low?8:14,.14,low?7:10,false);mesh(tg,'trunk',[0,0,0],[0,0,0],g);
+ for(let j=1;j<9;j++){const at=curve.getPoint(j/9);torus(.145,.018,...at.toArray(),'wood',[Math.PI/2,0,-.14],5,low?9:14,g);}
+ for(let i=0;i<8;i++){const a=i*Math.PI/4,cs=Math.cos(a),sn=Math.sin(a),length=1.55+(i%3)*.16,points=[],ix=[],steps=low?5:9;
+  for(let j=0;j<=steps;j++){const t=j/steps,r=t*length,w=Math.sin(Math.PI*t)*.30,py=h+.42*Math.sin(Math.PI*t)-.5*t*t;
+   for(const u of[-1,0,1])points.push([.68+cs*r-sn*w*u,py+(u===0?.07*Math.sin(Math.PI*t):0),-.11+sn*r+cs*w*u]);}
+  for(let j=0;j<steps;j++)for(let k=0;k<2;k++){const q=j*3+k;ix.push(q,q+3,q+1,q+1,q+3,q+4,q+1,q+3,q,q+4,q+3,q+1);}
+  custom(points,ix,'leaf',g);if(!low){const mid=points.filter((_,j)=>j%3===1);rope(mid,.011,'grass',g);}
+ }
+ for(const[dx,dz]of[[.1,.06],[-.09,.13],[0,-.14]]){const m=mesh(new THREE.SphereGeometry(.15,low?8:12,6),'trunk',[.68+dx,h-.13,-.11+dz],[0,0,0],g);m.scale.y=1.16;}
+}
 function palm(x,z,h=4.2,angle=.3,parent=root) {
+  if(currentIsland==='harbor')return sculptedPalm(x,z,h,angle,parent);
   const g=group([x,.78,z],[0,angle,0],parent); const p0=[0,0,0],p1=[.15,h*.36,0],p2=[.44,h*.7,-.06],p3=[.68,h,-.11];
   rod(p0,p1,.18,'trunk',g,7);rod(p1,p2,.155,'trunk',g,7);rod(p2,p3,.125,'trunk',g,7);
   for(let i=0;i<7;i++){const a=i*Math.PI*2/7,cs=Math.cos(a),sn=Math.sin(a),len=1.55+(i%3)*.17; const q=(r,y,w=0)=>[p3[0]+cs*r-sn*w,h+y,p3[2]+sn*r+cs*w];
@@ -160,12 +193,57 @@ const THEMES={harbor:['HARBOR','#254d64'],amtrak:['AMTRAK','#254d64'],beaconfire
 function solid(x,z,w,d,h=1,y=Y,rotation=0,name='obstacle'){layout.obstacles.push({name,x,z,width:w,depth:d,height:h,y,rotation});}
 function occluder(name,fn){const owner=root,g=group();g.name='occluder_'+name;root=g;fn();root=owner;return g;}
 function cubeSolid(w,h,d,x,y,z,mat='ivory',rotation=0,name='building'){bevel(w,h,d,x,y,z,mat,.06,[0,rotation,0]);solid(x,z,w,d,h,y-h/2,rotation,name);}
+// A single union surface avoids coplanar dark joins where the scenic route doubles back.
+function harborPath(points,width,y){
+ const step=.12,r=width/2,loX=Math.floor((Math.min(...points.map(p=>p[0]))-r)/step)-1,hiX=Math.ceil((Math.max(...points.map(p=>p[0]))+r)/step)+1,loZ=Math.floor((Math.min(...points.map(p=>p[1]))-r)/step)-1,hiZ=Math.ceil((Math.max(...points.map(p=>p[1]))+r)/step)+1;
+ const filled=new Set(),key=(x,z)=>x+','+z;
+ for(let x=loX;x<=hiX;x++)for(let z=loZ;z<=hiZ;z++)if(points.slice(1).some((b,i)=>distanceToSegment((x+.5)*step,(z+.5)*step,points[i],b)<=r))filled.add(key(x,z));
+ const edges=new Map(),add=(a,b)=>edges.set(key(...a),b);
+ for(const k of filled){const[x,z]=k.split(',').map(Number);if(!filled.has(key(x,z-1)))add([x,z],[x+1,z]);if(!filled.has(key(x+1,z)))add([x+1,z],[x+1,z+1]);if(!filled.has(key(x,z+1)))add([x+1,z+1],[x,z+1]);if(!filled.has(key(x-1,z)))add([x,z+1],[x,z]);}
+ const loops=[];
+ while(edges.size){let at=edges.keys().next().value;const start=at,loop=[];do{const next=edges.get(at);if(!next)break;loop.push(at.split(',').map(v=>Number(v)*step));edges.delete(at);at=key(...next);}while(at!==start);if(loop.length>3)loops.push(loop.filter((p,i)=>{const a=loop[(i+loop.length-1)%loop.length],b=loop[(i+1)%loop.length];return Math.abs((p[0]-a[0])*(b[1]-p[1])-(p[1]-a[1])*(b[0]-p[0]))>1e-7;}));}
+ function simplify(points,tolerance=.075){if(points.length<4)return points;let best=0,index=0;for(let i=1;i<points.length-1;i++){const d=distanceToSegment(...points[i],points[0],points.at(-1));if(d>best){best=d;index=i;}}if(best<=tolerance)return[points[0],points.at(-1)];return[...simplify(points.slice(0,index+1),tolerance).slice(0,-1),...simplify(points.slice(index),tolerance)];}
+ for(let i=0;i<loops.length;i++){const p=loops[i],middle=Math.floor(p.length/2);loops[i]=[...simplify(p.slice(0,middle+1)).slice(0,-1),...simplify([...p.slice(middle),p[0]]).slice(0,-1)];}
+ const area=p=>p.reduce((s,a,i)=>{const b=p[(i+1)%p.length];return s+a[0]*b[1]-b[0]*a[1];},0);
+ for(const outer of loops.filter(p=>area(p)>0)){
+  const shape=new THREE.Shape(outer.map(([x,z])=>new THREE.Vector2(x,-z)));
+  for(const hole of loops.filter(p=>area(p)<0&&inside(outer,...p[0])))shape.holes.push(new THREE.Path(hole.map(([x,z])=>new THREE.Vector2(x,-z))));
+  const g=new THREE.ShapeGeometry(shape);g.rotateX(-Math.PI/2);mesh(g,'sand',[0,y+.009,0]);
+ }
+}
 function pathStrip(points,width=2.2,y=Y+.009){
+ if(currentIsland==='harbor')return harborPath(points,width,y);
  for(let i=1;i<points.length;i++){const [ax,az]=points[i-1],[bx,bz]=points[i],dx=bx-ax,dz=bz-az,len=Math.hypot(dx,dz);box(width,.018,len,(ax+bx)/2,y,(az+bz)/2,'sand',[0,Math.atan2(dx,dz),0]);}
  for(const[x,z]of points)cyl(width/2,width/2,.018,x,y,z,'sand',12);
 }
 function rail(points,y=Y,mat='teal'){for(let i=0;i<points.length;i++){const[x,z]=points[i];rod([x,y,z],[x,y+.73,z],.035,mat);if(i)rod([points[i-1][0],y+.7,points[i-1][1]],[x,y+.7,z],.031,mat);}}
+function harborPier(){
+ for(let i=0;i<19;i++){const z=8.1+i*.415;bevel(3,.20,.40,0,.75,z,'wood',.035);
+  for(const x of[-1.05,1.05]){cyl(.026,.026,.008,x,.854,z,'metal',low?6:10);if(!low)box(.028,.002,.004,x,.859,z,'darkWood',[0,.4,0]);}
+  if(!low&&i%4===1){const mark=mesh(new THREE.RingGeometry(.027,.033,12),'darkWood',[.5*Math.sin(i*2),.853,z],[ -Math.PI/2,0,0]);mark.scale.set(1,.6,1);}
+ }
+ for(const x of[-1.19,1.19]){
+  bevel(.17,.23,7.9,x,.56,11.85,'darkWood',.025);
+  for(const z of[8.3,10.8,13.3,15.55]){
+   const post=mesh(new THREE.CylinderGeometry(.14,.18,1.6,low?10:16,3),'wood',[x,.19,z]);
+   bevel(.32,.10,.32,x,1.01,z,'wood',.025);
+   for(const y of[.94,.985])torus(.162,.024,x,y,z,'rope',[Math.PI/2,0,0],low?4:6,low?12:20);
+   if(!low){const knot=[new THREE.Vector3(x+.12,1.005,z),new THREE.Vector3(x+.23,.97,z+.04),new THREE.Vector3(x+.20,.85,z+.09),new THREE.Vector3(x+.12,.91,z+.02)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(knot),10,.024,5,false),'rope');}
+   solid(x,z,.33,.33,.28,.85,0,'pier piling');
+  }
+  for(const z of[11.15,13.8]){
+   const f=mesh(new THREE.CapsuleGeometry(.17,.49,low?3:5,low?8:12),'navy',[x*1.31,.44,z]);f.rotation.z=x<0?.10:-.10;
+   torus(.065,.018,x*1.31,.855,z,'rope',[0,0,0],5,12);
+   const curve=new THREE.CatmullRomCurve3([new THREE.Vector3(x,.95,z-.1),new THREE.Vector3(x*1.13,.96,z-.02),new THREE.Vector3(x*1.31,.82,z)]);mesh(new THREE.TubeGeometry(curve,8,.022,5,false),'rope');
+   if(!low){for(const side of[-1,1])rod([x*1.31+side*.085,.2,z+.135],[x*1.31+side*.085,.66,z+.135],.009,'black');}
+  }
+  for(const z of[8.3,10.8]){const curve=new THREE.CatmullRomCurve3([new THREE.Vector3(x,1.03,z),new THREE.Vector3(x,.855,z+1.25),new THREE.Vector3(x,1.03,z+2.5)]);mesh(new THREE.TubeGeometry(curve,low?8:20,.035,low?5:7,false),'rope');}
+ }
+ layout.surfaces.push({x:0,z:11.85,width:3,depth:7.9,y:Y});
+ box(3,.16,1.8,0,.77,7.3,'wood');layout.surfaces.push({x:0,z:7.3,width:3,depth:1.8,y:Y});
+}
 function woodenPier(){
+ if(currentIsland==='harbor')return harborPier();
  for(let i=0;i<19;i++){const z=8.1+i*.415;bevel(3,.20,.40,0,.75,z,'wood',.025);if(!low)for(const x of[-1.05,1.05])cyl(.035,.035,.012,x,.858,z,'darkWood',6);}
  for(const x of[-1.19,1.19]){
   box(.17,.23,7.9,x,.56,11.85,'darkWood');
@@ -197,7 +275,7 @@ function detailPlant(x,z,s=1){pottedPlant(x,z,s);if(s>.65)solid(x,z,.65*s,.65*s,
 function nameSign(name,x,y,z,size=.3){text3D(name,size,x,y,z,'navy',.025);}
 function barrel(x,z){cyl(.31,.32,.68,x,Y+.34,z,'wood',12);for(const yy of[Y+.12,Y+.52])torus(.314,.025,x,yy,z,'navy',[Math.PI/2,0,0]);solid(x,z,.64,.64,.7,Y,0,'barrel');}
 function terrain(name,index){
- root=new THREE.Group();root.name=name;seed=12731+index*891;
+ currentIsland=name;root=new THREE.Group();root.name=name;seed=12731+index*891;
  const points=outlines[name];if(points.reduce((s,p,i)=>{const q=points[(i+1)%points.length];return s+p[0]*q[1]-q[0]*p[1]},0)<0)points.reverse();SHORELINES[name]=points;
  ringShape(points,[[.92,-.62],[1,.04],[.986,.28]],'sandEdge');ringShape(points,[[.986,.27],[.968,.58],[.94,Y]],'sand');
  // Flat, level island plateaus are the authoritative walking surface.
@@ -206,6 +284,12 @@ function terrain(name,index){
  woodenPier();
  for(const x of[-2.15,2.15]){lamp(x,6,'teal',2.0);solid(x,6,.36,.36,3,Y,0,'path light');}
 }
+function coastalPlant(x,z,s=1){
+ for(let k=0;k<(low?4:7);k++){const a=k*2.399,cs=Math.cos(a),sn=Math.sin(a),len=s*(.57+(k%3)*.12),v=[],ix=[],steps=low?3:5;
+  for(let j=0;j<=steps;j++){const t=j/steps,r=t*len,w=Math.sin(Math.PI*t)*s*.17,py=Y+.04+.55*s*Math.sin(t*Math.PI*.84);for(const side of[-1,0,1])v.push([x+cs*r-sn*w*side,py+(side===0?.045:0),z+sn*r+cs*w*side]);}
+  for(let j=0;j<steps;j++)for(let n=0;n<2;n++){const q=j*3+n;ix.push(q,q+3,q+1,q+1,q+3,q+4);}custom(v,ix,'leaf');
+ }
+}
 function coastDetails(name){
  const points=SHORELINES[name];for(let i=0;i<points.length;i++){
   const[x,z]=points[i];if(Math.abs(x)<4&&z>4)continue;
@@ -213,11 +297,16 @@ function coastDetails(name){
   if(i%4===0){const px=x*.86,pz=z*.86;occluder(name+'_tree_'+i,()=>{if(name==='learning'||name==='research')conifer(px,pz,3.3);else palm(px,pz,3.2+random()*.6,.4);});solid(px+.15,pz,.48,.48,3,Y,0,'tree trunk');}
   else if(!low&&i%3===0)flowers(x*.875,z*.875,.55);
   if(!low){rocks(x*.966,z*.966,.45);for(let j=0;j<3;j++){const s=sphere(.055,x*.96+(j-1)*.17,.65,z*.96,'ivory');s.scale.set(1.3,.45,1);}}
+  if(name==='harbor'){
+   coastalPlant(x*.89,z*.89,.7+(i%3)*.14);
+   if(!low)coastalPlant(x*.87+.47,z*.87-.25,.56);
+   if(i%2===0){const rock=mesh(new THREE.SphereGeometry(.36,low?8:12,low?5:8),'stone',[x*.94,.69,z*.94]);rock.scale.set(1.4,.54,.95);rock.rotation.y=i*.7;}
+  }
  }
 }
 function harbor(){
- const x=-1.7,z=-1.8;cyl(1.4,1.5,.18,x,.94,z,'stone',12);solid(x,z,2.9,2.9,8.5,Y,0,'lighthouse');
- for(let i=0;i<5;i++)cyl(1.05-i*.09,1.14-i*.09,1.30,x,1.59+i*1.3,z,i%2?'terracotta':'ivory',12);
+ const x=-1.7,z=-1.8;cyl(1.4,1.5,.18,x,.94,z,'stone',low?12:24);solid(x,z,2.9,2.9,8.5,Y,0,'lighthouse');
+ for(let i=0;i<5;i++)cyl(1.05-i*.09,1.14-i*.09,1.30,x,1.59+i*1.3,z,i%2?'terracotta':'ivory',low?12:24);
  occluder('harbor_lantern',()=>{cyl(1.07,1.07,.14,x,7.88,z,'navy',12);cyl(.7,.72,1.1,x,8.50,z,'glass',10);cone(1.05,.7,x,9.40,z,'terracotta',12);for(let i=0;i<8;i++){let a=i*Math.PI/4;rod([x+Math.cos(a)*.66,7.95,z+Math.sin(a)*.66],[x+Math.cos(a)*.66,9.07,z+Math.sin(a)*.66],.038,'ivory');}});
  bevel(.67,1.25,.12,x,Y+.64,z+1.18,'teal',.12);text3D('01',.24,x,Y+2,z+1.10,'navy',.025);
  cubeSolid(3.3,2.2,2.45,3.1,Y+1.1,-2.6,'ivory',0,'harbor office');occluder('harbor_roof',()=>pitchedRoof(3.65,2.75,Y+2.2,3.1,-2.6,'terracotta',root,.65));windowFront(3.75,2.17,-1.34,.55,.7);bevel(.7,1.45,.10,2.4,Y+.74,-1.34,'teal');sphere(.048,2.6,1.6,-1.265,'yellow');nameSign('HARBOR',3.1,2.75,-1.31,.22);
@@ -226,6 +315,15 @@ function harbor(){
  table(5.1,-5.15,1.8,.7);for(let j=0;j<3;j++)box(.34,.03,.32,4.65+j*.44,Y+.9,-5.15,['navy','orange','black'][j]);rod([4.52,Y+.94,-5.07],[4.9,Y+.94,-5.3],.027,'metal');
  for(const zz of[1.5,2.5]){torus(.4,.09,3.5,1.8,zz,'orange',[0,Math.PI/2,0]);}
  nameSign('JACK',3.1,3.56,-1.31,.42);nameSign('WELCOME ABOARD',3.1,3.36,-1.31,.11);
+ // Small joinery and hardware reward the walking camera without adding collision clutter.
+ for(const side of[-1,1]){box(.035,1.12,.04,2.4+side*.29,1.65,-1.271,'ivory');}
+ for(const y of[1.35,1.80])bevel(.12,.04,.04,2.69,y,-1.265,'metal',.008);
+ for(const x of[4.45,5.75]){cyl(.10,.10,.025,x,1.80,-5.07,'navy',12);torus(.14,.015,x,1.805,-5.05,'rope',[Math.PI/2,0,0],5,16);}
+ for(let j=0;j<5;j++){bevel(.13,.04,.25,4.45+j*.28,1.85,-5.26,j%2?'metal':'navy',.015,[0,.16*j,0]);}
+ for(const[x,z]of[[-10,-6],[10,-6],[-11,3],[10,5]]){
+  const pl=mesh(new THREE.SphereGeometry(.75,low?8:14,low?5:8),'stone',[x,1.03,z]);pl.scale.set(1.1,.44,.8);pl.rotation.y=x*.13;
+  if(!low)for(let j=0;j<3;j++){const shell=mesh(new THREE.SphereGeometry(.10,10,5,0,Math.PI*2,0,Math.PI/2),'ivory',[x+.7+j*.14,.86,z+.45]);shell.scale.set(1.3,.3,1);}
+ }
  layout.stations=[{id:'welcome',type:'read',label:'Meet Jack',x:2.8,z:3.5,y:Y,contentSection:'summary'},{id:'bell',type:'action',label:'Harbor bell',x:-4.7,z:3.7,y:Y,action:'harbor'},{id:'studio',type:'studio',label:'Boat Studio',x:5.2,z:-3.6,y:Y}];putBench(-6.0,-4.2,.25);
 }
 function amtrak(){
@@ -360,7 +458,7 @@ async function exportIsland(name){
  root.updateMatrixWorld(true);const kept=[];root.traverse(o=>{if(/^(anim_|occluder_|station_)/.test(o.name))kept.push(o);});
  const batches=new Map([[root,new Map()]]);for(const n of kept)batches.set(n,new Map());let sourceMeshes=0;
  root.traverse(o=>{if(!o.isMesh)return;sourceMeshes++;let owner=o.parent;while(owner!==root&&!batches.has(owner))owner=owner.parent;
-  const geom=o.geometry.clone();for(const a of Object.keys(geom.attributes))if(!['position','normal','color'].includes(a))geom.deleteAttribute(a);geom.clearGroups();geom.applyMatrix4(new THREE.Matrix4().copy(owner.matrixWorld).invert().multiply(o.matrixWorld));
+  const geom=o.geometry.clone();for(const a of Object.keys(geom.attributes))if(!(name==='harbor'?['position','normal','color','uv']:['position','normal','color']).includes(a))geom.deleteAttribute(a);geom.clearGroups();geom.applyMatrix4(new THREE.Matrix4().copy(owner.matrixWorld).invert().multiply(o.matrixWorld));
   if(!geom.index)geom.setIndex(Array.from({length:geom.attributes.position.count},(_,i)=>i));const bins=batches.get(owner),mat=o.material;if(!bins.has(mat))bins.set(mat,[]);bins.get(mat).push(geom);
  });
  const output=new THREE.Group();output.name=name;let triangles=0,vertices=0,drawCalls=0;const animationNodes=[];
@@ -368,8 +466,8 @@ async function exportIsland(name){
   for(const[mat,geometries]of bins){const geo=mergeVertices(mergeGeometries(geometries,false),1e-6);geo.normalizeNormals();const m=new THREE.Mesh(geo,mat);m.name=(owner===root?'static':owner.name)+'_'+mat.name;m.castShadow=true;m.receiveShadow=true;group.add(m);triangles+=geo.index.count/3;vertices+=geo.attributes.position.count;drawCalls++;}
  }
  output.userData={originalProceduralAsset:true,version:4,author:'Archipelago-folio original walkable island builder',walkable:true,seaLevel:0,animationNodes:animationNodes.map(n=>n.name)};
- const bounds=new THREE.Box3().setFromObject(output);const raw=await new GLTFExporter().parseAsync(output,{binary:true,onlyVisible:true,trs:true});const doc=await io.readBinary(new Uint8Array(raw));await doc.transform(dedup(),prune(),meshopt({encoder:MeshoptEncoder,level:'medium'}));const file=path.join(OUT,low?'low':'',name+'.glb');await io.write(file,doc);const bytes=(await fs.stat(file)).size;
- const data={id:name,name,file:name+'.glb',bytes,sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{width:3,deckY:Y,startZ:7.9,endZ:15.8},clearApproach:{min:[-6,0,18],max:[6,0,32],spawn:[0,0,24]},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
+ const bounds=new THREE.Box3().setFromObject(output);const raw=await new GLTFExporter().parseAsync(output,{binary:true,onlyVisible:true,trs:true});if(name==='harbor'&&!low&&process.env.ARCHIPELAGO_SOURCE_OUT){await fs.mkdir(process.env.ARCHIPELAGO_SOURCE_OUT,{recursive:true});root.traverse(o=>{if(o.isMesh&&!o.name)o.name='part_'+o.material.name+'_'+o.id;});const source=await new GLTFExporter().parseAsync(root,{binary:true,onlyVisible:true,trs:true});await fs.writeFile(path.join(process.env.ARCHIPELAGO_SOURCE_OUT,'harbor.glb'),Buffer.from(source));}const doc=await io.readBinary(new Uint8Array(raw));await doc.transform(dedup(),prune({keepAttributes:name==='harbor'}),meshopt({encoder:MeshoptEncoder,level:'medium'}));const file=path.join(OUT,low?'low':'',name+'.glb');await io.write(file,doc);const bytes=(await fs.stat(file)).size;
+ const data={id:name,name,file:name+'.glb',bytes,...(name==='harbor'?{rawBytes:raw.byteLength,revision:'v5-sculpted-harbor'}:{}),sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{width:3,deckY:Y,startZ:7.9,endZ:15.8},clearApproach:{min:[-6,0,18],max:[6,0,32],spawn:[0,0,24]},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
  if(name==='amtrak'){data.animation={train:{trackCentre:[0,0,-1.4],trackRadii:[8.8,5.8],initialAngle:0,rootY:0,forward:'-Z',duration:10}};data.trainTrack={...TRACK,points:Array.from({length:64},(_,i)=>{const a=i*Math.PI*2/64;return[TRACK.radiusX*Math.cos(a),0,TRACK.center[2]+TRACK.radiusZ*Math.sin(a)];}),trainForward:'-Z',rootY:0,railY:Y+.07};}
  return data;
 }
@@ -377,18 +475,28 @@ await Promise.all([MeshoptEncoder.ready,MeshoptDecoder.ready]);
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.encoder':MeshoptEncoder,'meshopt.decoder':MeshoptDecoder});
 await fs.mkdir(path.join(OUT,'low'),{recursive:true});
 const prior=JSON.parse(await fs.readFile(path.join(OUT,'manifest.json'),'utf8').catch(()=>'{"models":[]}'));
+const requested=process.env.ARCHIPELAGO_ISLANDS?.split(',');
+const existingLayouts=JSON.parse(await fs.readFile(path.join(OUT,'walk-layout.json'),'utf8').catch(()=>'{"islands":[]}'));
+const oldReports=JSON.parse(await fs.readFile(path.join(OUT,'walk-assets-report.json'),'utf8').catch(()=>'{"assets":[]}'));
 const layouts=[];const reports=[];const builders={harbor,amtrak,beaconfire,visionx,affirmation,research,catering,learning,connect};
 for(const quality of['high','low']){
- low=quality==='low';const models=[];
+ low=quality==='low';const models=[];const previousQuality=JSON.parse(await fs.readFile(path.join(OUT,low?'low':'','manifest.json'),'utf8').catch(()=>JSON.stringify(prior)));
  for(const[i,[name,build]]of Object.entries(builders).entries()){
+  if(requested&&!requested.includes(name)){models.push(previousQuality.models.find(m=>m.id===name));if(!low)layouts.push(existingLayouts.islands.find(l=>l.id===name));reports.push(oldReports.assets.find(r=>r.id===name&&r.quality===quality));continue;}
   terrain(name,i);build();coastDetails(name);buildPaths();
   const asset=await exportIsland(name);models.push(asset);if(!low)layouts.push(structuredClone(layout));
   else{const hi=layouts.find(l=>l.id===name);if(JSON.stringify(layout)!==JSON.stringify(hi))throw Error('High/low walk collision metadata differs: '+name);}
   reports.push({id:name,quality,bytes:asset.bytes,triangles:asset.triangles,drawCalls:asset.drawCalls,routeSeconds:layout.estimatedWalkingSeconds});
  }
- const boat=prior.models.find(m=>m.id==='boat');if(boat)models.push(boat);
+ const boat=previousQuality.models.find(m=>m.id==='boat');if(boat)models.push(boat);
  const manifest={...prior,generator:'build-walk-islands.mjs',version:4,quality,walkLayout:'walk-layout.json',models,totalBytes:models.reduce((s,m)=>s+m.bytes,0),totalTriangles:models.reduce((s,m)=>s+m.triangles,0)};
  await fs.writeFile(path.join(OUT,low?'low':'','manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 }
 await fs.writeFile(path.join(OUT,'walk-layout.json'),JSON.stringify({version:4,units:'meters',coordinates:'island-local; Y up; rotation around Y in radians',surfaceHeight:'y is top/center height; ramp y at center, y += slope * localZ',obstacleHeight:'y is bottom; height extends upward',islands:layouts},null,2)+'\n');
 await fs.writeFile(path.join(OUT,'walk-assets-report.json'),JSON.stringify({assets:reports,totalBytes:reports.reduce((s,r)=>s+r.bytes,0)},null,2)+'\n');console.log(JSON.stringify(reports,null,2));
+
+// Refresh existing comparison reports from the actual exported assets, including selective builds.
+const highReport=JSON.parse(await fs.readFile(path.join(OUT,'manifest.json'),'utf8')),lowReport=JSON.parse(await fs.readFile(path.join(OUT,'low/manifest.json'),'utf8'));
+const comparisonPath=path.join(OUT,'low/comparison.json'),compressionPath=path.join(OUT,'compression.json');
+try{const c=JSON.parse(await fs.readFile(comparisonPath,'utf8'));c.models=c.models.map(m=>{const hi=highReport.models.find(x=>x.id===m.id),lo=lowReport.models.find(x=>x.id===m.id);if(!hi||!lo)return m;return {...m,highTriangles:hi.triangles,lowTriangles:lo.triangles,triangleReductionPercent:+(100*(1-lo.triangles/hi.triangles)).toFixed(1),highCompressedBytes:hi.bytes,lowCompressedBytes:lo.bytes,byteReductionPercent:+(100*(1-lo.bytes/hi.bytes)).toFixed(1),drawCalls:hi.drawCalls};});Object.assign(c,{highTotalTriangles:highReport.totalTriangles,lowTotalTriangles:lowReport.totalTriangles,highTotalBytes:highReport.totalBytes,lowTotalBytes:lowReport.totalBytes,totalTriangleReductionPercent:+(100*(1-lowReport.totalTriangles/highReport.totalTriangles)).toFixed(1),totalByteReductionPercent:+(100*(1-lowReport.totalBytes/highReport.totalBytes)).toFixed(1)});await fs.writeFile(comparisonPath,JSON.stringify(c,null,2)+'\n');}catch(error){if(error.code!=='ENOENT')throw error;}
+try{const c=JSON.parse(await fs.readFile(compressionPath,'utf8')),h=highReport.models.find(m=>m.id==='harbor');await fs.writeFile(compressionPath,JSON.stringify(c.map(m=>m.name==='harbor.glb'?{name:m.name,before:h.rawBytes,after:h.bytes}:m),null,2)+'\n');}catch(error){if(error.code!=='ENOENT')throw error;}

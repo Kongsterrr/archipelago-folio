@@ -1,0 +1,15 @@
+{
+  "method": "Cycles selected-to-active NORMAL",
+  "source": "Hidden editable high subdivision + UV-flow geometric strand relief",
+  "width": 1024,
+  "height": 1024,
+  "channel": 1,
+  "normalConvention": "OpenGL +X +Y +Z",
+  "cageExtrusion": 0.0018,
+  "maxRayDistance": 0.0035,
+  "marginPixels": 5,
+  "material": "Jack_SweptHair",
+  "runtimeUV": "TEXCOORD_1",
+  "png": "jack-hair-normal.png",
+  "rejectedObliqueCageSamples": 10240
+}

@@ -29,12 +29,14 @@
       "id": "harbor",
       "name": "harbor",
       "file": "harbor.glb",
-      "bytes": 175952,
-      "sourceMeshes": 248,
-      "drawCalls": 41,
-      "staticDrawCalls": 15,
-      "vertices": 18595,
-      "triangles": 13696,
+      "bytes": 314936,
+      "rawBytes": 957920,
+      "revision": "v5-sculpted-harbor",
+      "sourceMeshes": 369,
+      "drawCalls": 47,
+      "staticDrawCalls": 17,
+      "vertices": 24213,
+      "triangles": 22064,
       "bounds": {
         "min": [
           -15,
@@ -42,13 +44,13 @@
           -12.800000190734863
         ],
         "max": [
-          14.134903907775879,
+          14.208054542541504,
           9.75,
           15.800000190734863
         ]
       },
       "dimensions": [
-        29.13490390777588,
+        29.208054542541504,
         10.370000004768372,
         28.600000381469727
       ],
@@ -4096,31 +4098,31 @@
     {
       "id": "boat",
       "name": "boat",
-      "file": "boat.glb",
-      "revision": "v3-marina-runabout",
-      "bytes": 139100,
-      "rawBytes": 452728,
-      "sourceMeshes": 436,
+      "file": "../boat.glb",
+      "revision": "v5-sculpted-marina-runabout",
+      "bytes": 259708,
+      "rawBytes": 783408,
+      "sourceMeshes": 429,
       "drawCalls": 16,
       "staticDrawCalls": 12,
-      "vertices": 14570,
-      "triangles": 11129,
+      "vertices": 19765,
+      "triangles": 18031,
       "bounds": {
         "min": [
-          -0.7449045181274414,
+          -0.7446513175964355,
           -0.6562100052833557,
-          -1.9482219219207764
+          -1.9493457078933716
         ],
         "max": [
-          0.7449073791503906,
+          0.7446513175964355,
           0.7148849964141846,
           1.8672499375581741
         ]
       },
       "dimensions": [
-        1.489811897277832,
+        1.489302635192871,
         1.3710950016975403,
-        3.8154718594789507
+        3.816595645451546
       ],
       "animationNodes": [
         {
@@ -4269,11 +4271,15 @@
             0.97
           ]
         }
-      ]
+      ],
+      "quality": "original",
+      "highQualityTriangles": 18031,
+      "highQualityBytes": 259708,
+      "triangleReductionPercent": 0
     }
   ],
-  "totalBytes": 1879272,
-  "totalTriangles": 143735,
+  "totalBytes": 2138864,
+  "totalTriangles": 159005,
   "quality": "low",
   "walkLayout": "walk-layout.json"
 }

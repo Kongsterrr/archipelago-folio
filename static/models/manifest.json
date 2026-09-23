@@ -29,12 +29,14 @@
       "id": "harbor",
       "name": "harbor",
       "file": "harbor.glb",
-      "bytes": 259252,
-      "sourceMeshes": 442,
-      "drawCalls": 43,
-      "staticDrawCalls": 17,
-      "vertices": 28631,
-      "triangles": 19264,
+      "bytes": 618176,
+      "rawBytes": 1988896,
+      "revision": "v5-sculpted-harbor",
+      "sourceMeshes": 1036,
+      "drawCalls": 52,
+      "staticDrawCalls": 18,
+      "vertices": 51373,
+      "triangles": 48104,
       "bounds": {
         "min": [
           -15,
@@ -42,13 +44,13 @@
           -12.800000190734863
         ],
         "max": [
-          14.139172554016113,
+          14.216891288757324,
           9.75,
           15.800000190734863
         ]
       },
       "dimensions": [
-        29.139172554016113,
+        29.216891288757324,
         10.370000004768372,
         28.600000381469727
       ],
@@ -4097,30 +4099,30 @@
       "id": "boat",
       "name": "boat",
       "file": "boat.glb",
-      "revision": "v3-marina-runabout",
-      "bytes": 139100,
-      "rawBytes": 452728,
-      "sourceMeshes": 436,
+      "revision": "v5-sculpted-marina-runabout",
+      "bytes": 259708,
+      "rawBytes": 783408,
+      "sourceMeshes": 429,
       "drawCalls": 16,
       "staticDrawCalls": 12,
-      "vertices": 14570,
-      "triangles": 11129,
+      "vertices": 19765,
+      "triangles": 18031,
       "bounds": {
         "min": [
-          -0.7449045181274414,
+          -0.7446513175964355,
           -0.6562100052833557,
-          -1.9482219219207764
+          -1.9493457078933716
         ],
         "max": [
-          0.7449073791503906,
+          0.7446513175964355,
           0.7148849964141846,
           1.8672499375581741
         ]
       },
       "dimensions": [
-        1.489811897277832,
+        1.489302635192871,
         1.3710950016975403,
-        3.8154718594789507
+        3.816595645451546
       ],
       "animationNodes": [
         {
@@ -4272,8 +4274,8 @@
       ]
     }
   ],
-  "totalBytes": 2593168,
-  "totalTriangles": 192587,
+  "totalBytes": 3072700,
+  "totalTriangles": 228329,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }

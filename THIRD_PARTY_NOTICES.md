@@ -8,7 +8,7 @@
 - **Vite** — https://github.com/vitejs/vite — MIT. Development and static production build.
 - **Manrope** — Mikhail Sharanda and contributors, SIL Open Font License 1.1. **DM Sans** — Colophon Foundry and contributors, SIL Open Font License 1.1. Served with display=swap through Google Fonts; system sans-serif fallback remains available.
 - **Helvetiker Bold** — bundled Three.js typeface, used for original 3D island lettering; Copyright © 2004 Magenta Ltd. The font permission notice is included in `static/licenses/helvetiker.txt`.
-- **Boat, nine islands, duck, bottle, ocean material and interface** — original work made for this portfolio. Procedural geometry is reproducible from `scripts/build-assets.mjs`; no third-party model, photographic project screenshot, texture, music recording, or illustration is presented as Jack's work.
+- **Boat, nine islands, duck, bottle, ocean material and interface** — original work made for this portfolio. V1 geometry is reproducible from `scripts/build-assets.mjs`; current generators and V5 material provenance are listed below; no third-party model, photographic project screenshot, texture, music recording, or illustration is presented as Jack's work.
 - **Résumé PDF and career/project content** — supplied by Jack. The original attachment is copied as `static/resume.pdf`. Project illustrations are conceptual island dioramas, not screenshots of the underlying applications.
 
 Dependency-specific license files remain available with their installed packages.
@@ -22,3 +22,17 @@ Dependency-specific license files remain available with their installed packages
 - **V4.5 proportion and pose refinement** — original shortened-body geometry and animations, based on the same supplied concept. No additional third-party character, texture or animation asset is introduced.
 
 - **V4.6 sculpted character surfaces** — original authored cross-sections, garment field, rig weights and animations in `scripts/jack-shapes.mjs` and `scripts/jack-trousers.mjs`. The marching-cubes topology table in the latter is copied from Three.js (MIT; copyright © 2010–2026 Three.js authors). Its complete license is preserved in `static/licenses/three.txt`. Concept reference bitmaps and temporary review assets are not shipped.
+
+## V5 runtime components and original art
+
+- **Basis Universal transcoder** — Binomial LLC and contributors, [Apache License 2.0](https://github.com/BinomialLLC/basis_universal/blob/master/LICENSE). `static/textures/v5/basis/basis_transcoder.js` and `basis_transcoder.wasm` are copied from the installed Three.js distribution’s Basis loader support files. Their complete license is retained at `static/textures/v5/basis/LICENSE`, alongside the upstream README. The runtime uses them to transcode the original KTX2 surface packs.
+- **Three.js V5 rendering modules** — Three.js authors, MIT. The daylight environment, TSL-based water, GTAO and FXAA integrations use Three.js APIs/addons; the upstream license remains in `static/licenses/three.txt` and installed packages.
+- **V5 character, boat, Harbor, material tiles and hair bake** — original portfolio assets under the repository’s MIT license. Character construction remains based on the original curve/implicit-surface generators and shared rig. `assets/source/jack/` includes an editable Blender scene and a real sculpt-to-runtime hair normal bake. `art/v5/` contains editable boat/Harbor source-part snapshots. `scripts/build-v5-surfaces.py` generates the remaining surface tiles mathematically, without stock photography or downloaded artwork. Reference concept bitmaps are not embedded in the site or repository. No new third-party character, boat, texture art or animation clip is included.
+
+## Optional asset-building tools
+
+These programs are used to author or compress assets and are **not distributed in the website** or required to run it:
+
+- **Blender 4.5.3 LTS / Cycles** — Blender Foundation and contributors, GNU GPL. Used for editable source scenes, offline inspection and tangent-normal baking. Source, binary downloads and licensing are available from [Blender](https://www.blender.org/download/lts/4-5/) and its [license documentation](https://www.blender.org/about/license/). The generated original artwork remains covered by this repository’s asset license; Blender executable code is not included.
+- **Khronos KTX-Software 4.4.2 (`toktx`)** — Khronos Group and contributors. Repository-specific code is generally Apache-2.0; bundled components retain their own licenses. Used to encode original maps to ETC1S or UASTC/Zstd KTX2. See the [upstream license inventory](https://github.com/KhronosGroup/KTX-Software/blob/main/LICENSE.md) and [4.4.2 source/release](https://github.com/KhronosGroup/KTX-Software/releases/tag/v4.4.2).
+- **NumPy and Pillow** — optional Python build dependencies for procedural material generation; respectively BSD-3-Clause and HPND/Pillow licensing. Installed packages carry their notices. Neither package is included in the browser bundle.

@@ -21,6 +21,7 @@ const {root,animations,bones}=createJackCharacter();
 root.updateMatrixWorld(true);
 const bounds=new THREE.Box3().setFromObject(root);
 const raw=await new GLTFExporter().parseAsync(root,{binary:true,trs:true,onlyVisible:true,animations});
+if(process.env.JACK_SOURCE_GLB)await fs.writeFile(process.env.JACK_SOURCE_GLB,new Uint8Array(raw));
 await Promise.all([MeshoptEncoder.ready,MeshoptDecoder.ready]);
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.encoder':MeshoptEncoder,'meshopt.decoder':MeshoptDecoder});
 const document=await io.readBinary(new Uint8Array(raw));
@@ -38,11 +39,12 @@ const dir=new URL('../static/models/',import.meta.url),output=new URL('jack.glb'
 await fs.mkdir(dir,{recursive:true});await io.write(fileURLToPath(output),document);
 const checked=await io.read(fileURLToPath(output)),r=checked.getRoot();
 const primitives=r.listMeshes().flatMap(m=>m.listPrimitives());
-const report={revision:'v46-soft-sculpted-jack',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
+const report={revision:'v5-sculpt-and-surface',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
  triangles:primitives.reduce((s,p)=>s+(p.getIndices()?.getCount()||p.getAttribute('POSITION').getCount())/3,0),materials:r.listMaterials().length,drawCalls:primitives.length,
  joints:Object.keys(bones),skins:r.listSkins().length,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),
  animations:r.listAnimations().map(a=>({name:a.getName(),tracks:a.listChannels().length,duration:Math.max(...a.listSamplers().map(s=>Math.max(...s.getInput().getArray())))})),textures:r.listTextures().length,
- compression:'EXT_meshopt_compression',placement:root.userData};
+ surface:{uvPrimitives:primitives.filter(p=>p.getAttribute('TEXCOORD_0')).length,tangentPrimitives:primitives.filter(p=>p.getAttribute('TANGENT')).length,bakeUVPrimitives:primitives.filter(p=>p.getAttribute('TEXCOORD_1')).length,mode:'External tiled PBR maps; COLOR_0 retained'},compression:'EXT_meshopt_compression',placement:root.userData};
+if(report.surface.uvPrimitives!==6||report.surface.bakeUVPrimitives!==1)throw Error('Missing V5 material UV or dedicated hair bake atlas');
 for(const accessor of r.listAccessors())for(const n of accessor.getArray()||[])if(!Number.isFinite(n))throw Error('Non-finite Jack accessor');
 if(report.triangles>43000||report.materials>6||report.drawCalls>6||report.bytes>350000)throw Error(`Jack asset exceeded budget: ${report.triangles} triangles, ${report.bytes} bytes`);
 if(report.skins!==1||report.animations.length!==JACK_SPEC.clips.length)throw Error('Missing shared skeleton or clips');
