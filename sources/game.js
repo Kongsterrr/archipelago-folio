@@ -23,6 +23,8 @@ import {oceanHeight} from './world/water-space.js';
 import { Environment } from './world/environment.js';
 import {BayLighting} from './world/bay-lighting.js';
 import {BayWater} from './world/bay-water.js';
+import {SUNSET} from './world/sunset-theme.js';
+import {applySunsetMaterials,releaseSunsetMaterials} from './world/sunset-materials.js';
 import {SurfaceLibrary} from './world/surface-library.js';
 import { mesh, box, cylinder, label, material } from './world/geometry.js';
 import { islands, gates, boatSpawn, WORLD_RADIUS, nearestIsland, inDockZone, cargoBerths, lamps, challenges, secretPlaces, islandActions, reefGroups } from './config.js';
@@ -60,7 +62,7 @@ export class Game {
   this.toys=this.props.items;this.createInteractables();this.createWake();this.resetCamera();this.bindPointer();
   this.world.step(this.queue);this.queue.clear();
   await Promise.all([this.loadModel('boat'),this.loadModel('harbor'),this.loadModel('connect'),this.jack.load(),this.loadWalkLayouts()]);
-  if(this.jack.model)this.surfaces.bind(this.jack.model,'jack');
+  if(this.jack.model){applySunsetMaterials(this.jack.model,'jack');this.surfaces.bind(this.jack.model,'jack');}
   this.mode='exploring';this.last=performance.now();this.inputs.setEnabled(true);this.setQuality(this.settings.quality);
   window.addEventListener('resize',()=>{this.cameraRig.resize(innerWidth,innerHeight);this.renderer.setSize(innerWidth,innerHeight);});
   this.renderer.setAnimationLoop(()=>this.safeFrame());
@@ -78,7 +80,7 @@ export class Game {
    const geo=new THREE.ExtrudeGeometry(shape,{depth:1,bevelEnabled:false}).rotateX(-Math.PI/2);mesh(group,geo,'sand',[0,-.1,0]);box(group,[3,.35,7.9],'woodLight',[0,.55,11.85]);
    const controller=new IslandController(i,group);this.controllers.set(i.id,controller);this.loaded.set(i.id,{group,model:null,requested:false,island:i});createIslandColliders(RAPIER,this.world,i);
    for(let j=0;j<3;j++){
-    const shore=mesh(group,new THREE.ShapeGeometry(shape).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:['#73cfc0','#9cdbc2','#e2edc5'][j],transparent:true,opacity:.2+j*.025,depthWrite:false}),[0,-.055+j*.018,0]);shore.scale.setScalar(1.17-j*.045);shore.castShadow=false;shore.userData.shore=true;
+    const shore=mesh(group,new THREE.ShapeGeometry(shape).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:['#447d84','#739993','#d9b68d'][j],transparent:true,opacity:.2+j*.025,depthWrite:false}),[0,-.055+j*.018,0]);shore.scale.setScalar(1.17-j*.045);shore.castShadow=false;shore.userData.shore=true;
    }
   }
  }
@@ -90,7 +92,7 @@ export class Game {
  async loadModelNow(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v=5');if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v=6');if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
     const materials=Array.isArray(o.material)?o.material:[o.material];
     const glazing=id==='boat'&&materials.some(m=>m.transparent);
     // The clear windscreen should reveal the helm, including in the shadow pass.
@@ -98,10 +100,10 @@ export class Game {
     if(glazing){for(const material of materials)material.depthWrite=false;o.renderOrder=1;}
    }});
    if(id==='boat'){
-    this.boatVisual.clear();this.boatVisual.add(gltf.scene);this.boatModel=gltf.scene;prepareBoatMaterials(gltf.scene);this.surfaces.bind(gltf.scene,'boat');this.appearance.bind(gltf.scene);
+    this.boatVisual.clear();this.boatVisual.add(gltf.scene);this.boatModel=gltf.scene;prepareBoatMaterials(gltf.scene);applySunsetMaterials(gltf.scene,'boat');this.surfaces.bind(gltf.scene,'boat');this.appearance.bind(gltf.scene);
     this.boatOutline=gltf.scene.clone(true);this.boatOutline.traverse(o=>{if(o.isMesh){o.material=new THREE.MeshBasicMaterial({color:'#fff8da',depthTest:false,transparent:true,opacity:.35});o.castShadow=false;o.renderOrder=9;}});this.boatOutline.scale.setScalar(1.025);this.boatOutline.visible=false;this.boatVisual.add(this.boatOutline);
    }else{
-    const shore=item.group.children.filter(o=>o.userData.shore);if(item.model)this.surfaces.release(item.model);if(item.model)item.model.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});item.group.clear();item.quality=quality;item.group.add(...shore,gltf.scene);item.model=gltf.scene;this.controllers.get(id).bind(gltf.scene);this.surfaces.bind(gltf.scene,id);
+    const shore=item.group.children.filter(o=>o.userData.shore);if(item.model){this.surfaces.release(item.model);releaseSunsetMaterials(item.model);}if(item.model)item.model.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});item.group.clear();item.quality=quality;item.group.add(...shore,gltf.scene);item.model=gltf.scene;applySunsetMaterials(gltf.scene,id);this.controllers.get(id).bind(gltf.scene);this.surfaces.bind(gltf.scene,id);gltf.scene.traverse(o=>{if(o.isMesh&&(Array.isArray(o.material)?o.material:[o.material]).some(m=>m.userData.sunsetMaterial?.role==='glass'))o.castShadow=false;});
    }
    this.loadedCount++;this.events.trigger('asset',[{id,count:this.loadedCount}]);return true;
   }catch(error){if(item){item.lastFailure=performance.now();item.requested=false;}console.warn('Model unavailable: '+id,error.message);this.events.trigger('asseterror',[id]);}
@@ -133,7 +135,7 @@ export class Game {
   });
   this.canvas.addEventListener('wheel',e=>{if(this.mode!=='exploring')return;e.preventDefault();if(!this.wheelTime||performance.now()-this.wheelTime>180){this.wheelTime=performance.now();this.setZoom(this.zoom+(e.deltaY>0?1:-1));}},{passive:false});
  }
- createWake(){this.wakeDummy=new THREE.Object3D();this.wakeMesh=new THREE.InstancedMesh(new THREE.CircleGeometry(1,10),new THREE.MeshBasicMaterial({color:'#d7f6e8',transparent:true,opacity:.44,depthWrite:false}),100);this.wakeMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);this.wakeMesh.frustumCulled=false;this.scene.add(this.wakeMesh);this.lastWake=0;this.clearWake();}
+ createWake(){this.wakeDummy=new THREE.Object3D();this.wakeMesh=new THREE.InstancedMesh(new THREE.CircleGeometry(1,10),new THREE.MeshBasicMaterial({color:SUNSET.foam,transparent:true,opacity:.44,depthWrite:false}),100);this.wakeMesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);this.wakeMesh.frustumCulled=false;this.scene.add(this.wakeMesh);this.lastWake=0;this.clearWake();}
  clearWake(){this.wakes=[];if(this.wakeMesh){this.wakeDummy.scale.setScalar(0);this.wakeDummy.updateMatrix();for(let i=0;i<100;i++)this.wakeMesh.setMatrixAt(i,this.wakeDummy.matrix);this.wakeMesh.instanceMatrix.needsUpdate=true;}}
  updateWake(frozen){
   const p=this.visualPosition,speed=this.boat.speed;
@@ -169,7 +171,8 @@ export class Game {
   this.appearance?.update(dt,input,this.boat.speed,this.settings.reduced,frozen);this.jack.update(dt,{player:this.player,boatVisual:this.boatVisual,character:this.character,alpha,input,reduced:this.settings.reduced,frozen,lookTarget:this.nearStation?.position});
   this.fleet?.update(alpha,p,this.settings.reduced?0:this.simTime);this.marine?.update(alpha,p,this.camera,this.settings.reduced?0:this.simTime,[...this.loaded.values()].map(i=>i.group).concat(this.fleet?.items.map(i=>i.group)||[]));this.details?.update(frozen?0:dt,p,this.simTime,this.settings.reduced?0:this.simTime,this.controllers);
   this.environment.update(this.challenges,this.simTime,p);this.updateWake(frozen);this.feedback.update(frozen?0:dt);this.updateCamera(dt);this.updateNearby(dt,now,frozen);this.updateOcclusion(now);
-  this.lighting.update(p,this.player.onLand,this.cameraRig.distance);
+  const lightTarget=this.focus?.boatStudio?this.boat.position:this.focus||p;
+  this.lighting.update(lightTarget,!this.focus&&this.player.onLand,this.cameraRig.distance);
   this.events.trigger('frame',[{position:p,yaw:this.activeActor.yaw,speed:this.activeActor.speed,dt,now,frozen}]);this.renderer.info.reset();this.lighting.render();
   if(!frozen&&this.challenges.kind==='cargo'&&this.challenges.state==='running'){const lost=this.props.outOfBounds();if(lost){this.pause('recovery');if(this.props.recoverCargo(lost,boat)){this.snapshot.props=this.props.snapshot();this.resume();this.events.trigger('message',['Cargo recovered. Resuming your run…']);}else{this.recovery=lost;this.events.trigger('message',['No clear recovery berth. Use Reset cargo for a fresh start.']);}}}
   if(this.recovery&&this.mode==='recovery'&&this.props.recoverCargo(this.recovery,boat)){this.recovery=null;this.snapshot.props=this.props.snapshot();this.resume();}
@@ -199,8 +202,8 @@ export class Game {
  updateOcclusion(now){
   if(this.lastOcclusion&&now-this.lastOcclusion<100)return;this.lastOcclusion=now;const p=this.activeActor.position,candidates=[...this.environment.occluders];for(const c of this.controllers.values())if(Math.hypot(c.island.x-p.x,c.island.z-p.z)<50)candidates.push(...c.occluders);
   const target=vec(p.x,p.y+(this.player.walking?.7:1),p.z),direction=target.clone().sub(this.camera.position),distance=direction.length();const ray=new THREE.Raycaster(this.camera.position,direction.normalize(),0,distance-.3);this.scene.updateMatrixWorld();const hit=new Set(this.focus?[]:ray.intersectObjects(candidates,false).map(h=>h.object));
-  for(const object of this.occluded||[])if(!hit.has(object))for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=1;
-  for(const object of hit)for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=.2;
+  for(const object of this.occluded||[])if(!hit.has(object))for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=m.userData.occlusionBaseOpacity??1;
+  for(const object of hit)for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=.2*(m.userData.occlusionBaseOpacity??1);
   this.occluded=hit;if(this.boatOutline)this.boatOutline.visible=hit.size>0&&!this.focus&&!this.player.walking;this.jack.outline(hit.size>0&&!this.focus&&this.player.walking);
  }
  activateIsland(id){

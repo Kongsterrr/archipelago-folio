@@ -4,7 +4,7 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V5 — Sculpted Bay** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V6 — Sunset Bay** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The hosted preview currently requires owner access. You can run the complete project locally using the instructions below.
 
@@ -16,7 +16,8 @@ The hosted preview currently requires owner access. You can run the complete pro
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
 - **Boat Studio:** three selectable finishes on one detailed runabout model.
-- **Sculpted Bay:** refined Jack, main boat and Harbor geometry; original fabric, wood, upholstery, stone, sand and rope surfaces; daylight reflections, contact shading and shoreline-based shallow water.
+- **Sculpted Bay:** refined Jack, main boat and Harbor geometry; original fabric, wood, upholstery, stone, sand and rope surfaces; shared surface detail, contact shading and shoreline-based shallow water.
+- **Sunset Bay:** a fixed orange-and-violet evening, broken golden reflections, warm landmark lights and individual island palettes.
 - **Exploration records:** 18 island/discovery/challenge stamps plus separate Sea Life and nine-island Island Walks journals.
 - **Direct access:** navigation, map shortcuts, dock panels, résumé download, and complete 2D reading mode.
 
@@ -37,7 +38,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V4.4 — The Concept Comes Aboard** | Reference-led proportions, layered fluffy hair, a refined face and open jacket | [41787b1](https://github.com/Kongsterrr/archipelago-folio/commit/41787b1acf361db16bb4b8eaff275034992cc6b0) |
 | **V4.5 — A Little More Jack** | Shorter chibi proportions, relaxed arm clearance, refitted gait and seating | [9c35f4f](https://github.com/Kongsterrr/archipelago-folio/commit/9c35f4f5f49060de6d77d484315f738e34821027) |
 | **V4.6 — Soft Shapes & Shorter Legs** | Sculpted oval face, shorter legs, continuous clothing surfaces and recalibrated seating | [c9dc7ee](https://github.com/Kongsterrr/archipelago-folio/commit/c9dc7ee9c88938ec822f6a9a6f806f0886565ccd) |
-| **V5 — Sculpted Bay** | Refined character, runabout and Harbor assets, PBR surfaces, daylight/contact shading and shallow-water detail | [Current V5 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V5 — Sculpted Bay** | Refined character, runabout and Harbor assets, PBR surfaces, daylight/contact shading and shallow-water detail | [1d3b9e9](https://github.com/Kongsterrr/archipelago-folio/commit/1d3b9e9898ba9bd737290697005bd42b5292d418) |
+| **V6 — Sunset Bay** | Fixed low sunset, violet shadows, golden water, nine-island material and landmark detail | [Current V6 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -175,6 +177,19 @@ Refined the original real-time world around the supplied warm, detailed characte
 
 The optional high texture pack is **2,885,401 bytes**, plus **584,862 bytes** for the shared Basis transcoder; the low pack is **887,306 bytes** plus the same decoder. These are file sizes, not measured cold-network timings. See [`VALIDATION.md`](VALIDATION.md) for the tested devices, browser paths and remaining performance limits.
 
+### V6 — Sunset Bay
+
+Recast the complete bay as a fixed, cinematic orange-and-violet evening:
+
+- Unified the low sun, procedural HDR sky, environment reflections and ocean glitter around one world-space direction. Warm light, violet shade and a gentle camera-side sky fill preserve faces, clothing and hull detail. Shadows now follow the viewed island or exhibit during direct reading as well as the active player during exploration.
+- Reworked the opaque sea with indigo depths, muted teal shallows, organic seabed variation, warm foam and broken orange-gold reflections. A bounded water specular response avoids washing the sea into a solid white sheet. Reduced motion freezes surface movement; low quality retains the sunset palette and shadows.
+- Gave all nine islands individual material palettes and original small landmark details: lanterns and bell fittings, station clock trim and rail fasteners, pipe collars, greenhouse framing and plant markers, wind-chime rims, instrument scales, canopy seams and meal packaging, book spines, and postal/antenna details.
+- Preserved UVs in all 18 high/low island GLBs so wood, stone and sand can share the existing KTX2 surface library. Warm lamps use modest emissive materials rather than many new point lights. Glass keeps its authored transparency after occlusion fading.
+- Refined the three boat finishes and material roughness without changing the boat or Jack geometry. Jack keeps the same short proportions, vertex-colored expressions, seven clips and stationary driving hands. Walk layouts, collision routes, résumé content, challenge logic and record formats are unchanged.
+- Updated the interface to warm ivory and deep violet, including a readable welcome card over bright sea reflections. There is no day/night cycle or additional theme setting.
+
+The 18 compressed island GLBs total **6,776,208 bytes** (high: **4,060,164**, low: **2,716,044**); they load by distance and quality rather than all at startup. Existing surface packs are reused. **198 automated checks pass**; actual WebGPU/WebGL2 and four viewport checks are documented in [`VALIDATION.md`](VALIDATION.md).
+
 ## Run locally
 
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
@@ -193,7 +208,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V1–V5 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and V1–V6 regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 

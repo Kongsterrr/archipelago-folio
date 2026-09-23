@@ -13,6 +13,7 @@ export const SURFACE_PROFILES = Object.freeze({
 });
 const MATERIAL_SURFACES = Object.freeze({
   teak: 'wood', cognac: 'leather', upholstery: 'leather',
+  wood: 'wood', darkWood: 'wood', stone: 'stone', sand: 'sand', sandEdge: 'sand',
   Jack_CreamCanvas: 'canvas', Jack_NavyKnit: 'canvas',
   Jack_SweptHair: 'hair',
   v5_dock_wood: 'wood', v5_rope: 'rope', v5_stone: 'stone', v5_sand: 'sand',

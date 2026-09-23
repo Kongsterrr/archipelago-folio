@@ -13,7 +13,7 @@ export class FeedbackSystem {
   const count=this.settings.quality==='low'?(celebrate?18:6):(celebrate?40:12);
   for(let i=0;i<count;i++){
    const angle=Math.random()*Math.PI*2,speed=(celebrate?2.5:1.4)*Math.min(2,strength),life=celebrate?1.5:.65;
-   this.items.push({x:p.x,y:(p.y||.2)+.2,z:p.z,vx:Math.cos(angle)*speed*(.3+Math.random()),vz:Math.sin(angle)*speed*(.3+Math.random()),vy:(celebrate?5:2)*(1+Math.random()*.5),age:0,life,color:celebrate?['#f9c65d','#ef8758','#e5fbf1','#72c7c2'][i%4]:'#e4fff4'});
+   this.items.push({x:p.x,y:(p.y||.2)+.2,z:p.z,vx:Math.cos(angle)*speed*(.3+Math.random()),vz:Math.sin(angle)*speed*(.3+Math.random()),vy:(celebrate?5:2)*(1+Math.random()*.5),age:0,life,color:celebrate?['#f9c65d','#ef8758','#e5fbf1','#72c7c2'][i%4]:'#f4d4b5'});
   }
   this.items=this.items.slice(-180);
  }

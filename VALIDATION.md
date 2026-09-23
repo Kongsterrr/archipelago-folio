@@ -1,3 +1,52 @@
+# V6 — Sunset Bay validation · 2026-09-23
+
+V6 is a fixed orange-and-violet sunset treatment. This section records the actual shipped implementation; earlier sections describe their own historical versions.
+
+## Lighting, materials and geometry
+
+The procedural HDR sky, directional light and ocean glitter use one normalized world-space sun direction, approximately **22° above the horizon**. Golden light and a modest cool sky fill keep backlit faces and hulls readable. High quality retains the existing half-resolution GTAO/FXAA graph; low retains 1024-pixel shadows. Shadow coverage follows the current island/exhibit during reading, the boat in Boat Studio, and the controlled actor while exploring. No day/night clock or new theme toggle was introduced.
+
+The opaque water uses organic noise for the seabed, indigo/teal depth color, warm foam and broken orange-gold reflections. Water's physical specular intensity is bounded so reflected light does not cover the whole sea. Reduced motion freezes the water time. This is an authored real-time reflection treatment, not a claim of fully simulated optical water or global illumination.
+
+All nine landmarks gained small original geometry details and separate color treatment. High and low island GLBs retain UV0 and share the existing wood, stone, sand and rope maps. Warm lantern/window materials are emissive without adding a field of point lights. Transparent greenhouse/lighthouse surfaces preserve their original alpha when the occlusion system fades and restores them. Puzzle signal colors and animated device materials retain their semantic identity.
+
+| Actual compressed asset set | Bytes | Triangles | Material primitives |
+| --- | ---: | ---: | ---: |
+| Nine high-quality islands | 4,060,164 | 231,386 | 428 |
+| Nine low-quality islands | 2,716,044 | 151,550 | 404 |
+| Both island variants | **6,776,208** | — | — |
+
+All 18 island GLBs decode successfully with finite UV coordinates and triangle counts matching their manifests. Catering canopy seams and Research instrument collars were aligned to their underlying surfaces. The island generator remains the geometry authority; V5 Blender snapshots describe their historical V5 assets.
+
+Compared with V5 commit `1d3b9e9898ba9bd737290697005bd42b5292d418`, Jack and boat GLBs, walking layout, shoreline and dock configurations, résumé/content data, character proportions, movement/collision logic, challenges and record schema remain unchanged. Jack remains **346,044 B / 37,212 triangles / six material batches**, and the boat **259,708 B / 18,031 triangles / 16 batches**. Runtime material changes preserve Jack's authored vertex colors and all three boat finishes.
+
+## Automated and browser checks
+
+**198 automated checks pass** and the Vite production build passes. New checks exercise actual Jack/boat material binding, livery rebinds, per-model isolation, preserved vertex colors, source material release, transparent occluders and alignment of the HDR sun with the world light. Existing movement at 30/60/120 FPS, character framing, fixed driving hands, nine-island routes and challenge-state checks remain in the suite.
+
+Host: **Apple M3 Max / macOS / Codex in-app browser**. Checked desktop **1440×900 / 1920×1080** and emulated phone **390×844 / 844×390**. Actual visual checks covered the sunset sea, Harbor/Connect piers and Jack, Amtrak and VisionX reading views, boat finishes and mobile HUD/panels. All nine islands completed Travel → Go ashore with the expected island and no retained pause reason.
+
+| Local short sample | Viewport | p50 frame interval | p95 frame interval |
+| --- | --- | ---: | ---: |
+| WebGPU / high, Harbor walking | 1440×900 | 6.9 ms | 8.4 ms |
+| WebGPU / low, reduced motion | 390×844 | 6.9 ms | 8.6 ms |
+| WebGL2 / high, Harbor walking | 390×844 | 6.9 ms | 8.3 ms |
+| WebGL2 / low, nine islands loaded | 844×390 | 6.9 ms | 8.4 ms |
+
+These are recent frame-interval samples on the desktop host, not GPU timings or sustained phone benchmarks. Loading and shader compilation produced transient lower frame samples. The material library reported 19 shared maps and no surface failures. No render errors appeared in the checked WebGPU/WebGL2 sessions; the existing Rapier initialization deprecation warning remains.
+
+Browser regression also covered three livery choices, high/low/high switching, reduced motion, all three challenge starts, and boost → reading → travel → close (zero speed, no active challenge or stale pause). The explicit `?no3d` page retained all nine portfolio entries; the résumé download remains the unchanged PDF. Local records were retained through renderer/quality reloads. No new storage format was needed.
+
+## Resources and limits
+
+The exact production HTML/CSS/JS plus first boat, Jack, Harbor, Connect and walking-layout assets totals **5,367,437 B raw / 1,898,703 B estimated gzip**. This excludes external fonts and optional post-ready content. It is a file budget calculation, not a 20 Mbps cold-network test. All tested model copies match production output.
+
+The original V5 optional high/low KTX2 packs are reused without extra texture downloads: high **2,885,401 B**, low **887,306 B**, plus one shared **584,862 B** Basis transcoder. The full island set is distance/quality loaded, not part of the first playable download. The expanded UV coordinates account for much of the island byte increase.
+
+Physical iPhone/Android and mobile Safari, controlled 20 Mbps cold starts, sustained thermal performance and device-level VRAM usage remain unmeasured. The 60 FPS desktop / 30 FPS phone and 5-second cold-start values remain targets where not measured. No new production access permissions are introduced; the source stays public and the existing hosted preview stays owner-private.
+
+---
+
 # V5 — Sculpted Bay validation · 2026-09-22
 
 This section records V5. Earlier sections retain the measurements and limitations of their own historical builds.

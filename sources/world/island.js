@@ -11,7 +11,7 @@ export class IslandController {
     const list=Array.isArray(o.material)?o.material:[o.material];
     let branch=o,occludes=false;while(branch&&branch!==model){if(branch.name.startsWith('occluder_')||branch.name.startsWith('station_')||branch.userData.occluder)occludes=true;branch=branch.parent;}if(occludes){
      o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();
-     const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.transparent=true;m.opacity=1;}
+     const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.userData.occlusionBaseOpacity=m.opacity;m.transparent=true;}
      this.occluders.push(o);
     }
     for(const m of Array.isArray(o.material)?o.material:[o.material])if(m.emissive&&['glass','glassBlue','yellow','orange'].includes(m.name))this.glowing.push(m);

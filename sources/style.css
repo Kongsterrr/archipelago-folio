@@ -43,3 +43,20 @@ dialog{border:1px solid #ffffff80;color:var(--ink);background:#fffbf3;padding:0 
 /* Keep arrival feedback above the larger character, clear of walking controls. */
 @media(max-width:700px) and (orientation:portrait){.walking .toast{top:clamp(204px,26dvh,240px);bottom:auto}}
 @media(max-height:560px) and (orientation:landscape){.walking .toast{top:72px;bottom:auto;max-width:calc(100vw - 440px)}}
+
+/* V6: warm paper controls over a cinematic sea; text stays legible in glare. */
+:root{--ink:#283249;--paper:#fff7e8;--orange:#f4a260;--muted:#766978;--line:#e0d3ce;background:#3b3857;color:var(--ink)}
+.sea-vignette{background:linear-gradient(90deg,#211d3815,transparent 32%),linear-gradient(0deg,#201e3c26,transparent 22%)}
+.brand{color:#fff2db;text-shadow:0 1px 8px #191b3fb3}.brand-icon{text-shadow:none;background:#d77842;box-shadow:0 4px 18px #27193430}
+.intro{color:#fff4e2;text-shadow:0 1px 10px #161a38,0 2px 3px #161a3870;padding:22px 24px;margin-left:-24px;margin-top:-22px;border-radius:20px;background:linear-gradient(105deg,#27263be8,#352b449c);backdrop-filter:blur(10px)}
+.intro .invitation,.intro-hint{color:#e4ccca}.intro .text-link{color:#fff0dc;border-color:#edd0b9}.intro .primary-button{text-shadow:none;color:#29263c;background:#f4ad70}.intro-actions{text-shadow:none}
+#boarding-fade{background:#a97877}
+.no-3d .brand{color:var(--ink);text-shadow:none}.no-3d .intro{color:var(--ink);text-shadow:none;background:none;backdrop-filter:none}.no-3d .intro .invitation{color:#766978}
+@media(max-width:700px){.intro{padding:16px;margin-left:-16px;margin-top:-16px}}
+
+.intro{width:350px;max-width:350px}.intro-actions .primary-button,.intro-actions .text-link{white-space:nowrap}
+@media(max-width:700px){.intro{width:288px;max-width:calc(100vw - 48px)}}
+@media(max-height:560px) and (orientation:landscape){.intro{width:310px;max-width:310px;padding:14px 18px}}
+
+.no-3d .intro{width:auto}.no-3d .intro .text-link{color:var(--ink);border-color:var(--ink)}
+@media(max-width:700px) and (orientation:portrait){body:has(.intro:not(.compact)) .utility-buttons{top:auto;bottom:302px}}

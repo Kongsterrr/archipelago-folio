@@ -9,7 +9,7 @@ export class Environment {
   const rockGeometry=new THREE.IcosahedronGeometry(1,1),rock=new THREE.InstancedMesh(rockGeometry,material('#92a79c'),reefGroups.length*4),dummy=new THREE.Object3D();let index=0;rock.castShadow=true;rock.receiveShadow=true;
   for(const reef of reefGroups){
    const sand=cylinder(this.scene,reef.r,.6,'sand',[reef.x,0,reef.z],18);sand.castShadow=false;
-   const shallow=mesh(this.scene,new THREE.CircleGeometry(reef.r+2,24),new THREE.MeshBasicMaterial({color:'#80d8c4',transparent:true,opacity:.24,depthWrite:false}),[reef.x,-.065,reef.z]);shallow.rotation.x=-Math.PI/2;shallow.castShadow=false;
+   const shallow=mesh(this.scene,new THREE.CircleGeometry(reef.r+2,24),new THREE.MeshBasicMaterial({color:'#6b9991',transparent:true,opacity:.24,depthWrite:false}),[reef.x,-.065,reef.z]);shallow.rotation.x=-Math.PI/2;shallow.castShadow=false;
    for(let j=0;j<4;j++){const a=j*2.4;dummy.position.set(reef.x+Math.cos(a)*reef.r*.4,.5+j%2*.6,reef.z+Math.sin(a)*reef.r*.4);dummy.scale.set(reef.r*.45,1+j%2*.8,reef.r*.5);dummy.rotation.set(j*.2,a,j*.1);dummy.updateMatrix();rock.setMatrixAt(index++,dummy.matrix);}
    this.world.createCollider(this.R.ColliderDesc.cylinder(2,reef.r*.96).setTranslation(reef.x,0,reef.z).setFriction(.12));
   }this.scene.add(rock);

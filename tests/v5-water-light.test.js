@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import {shoreDistance,coastlineData} from '../sources/world/bay-water.js';
 import {daylightEnvironment,BayLighting} from '../sources/world/bay-lighting.js';
 import {prepareBoatMaterials,BoatAppearance} from '../sources/world/boat-appearance.js';
+import {SUN_DIRECTION} from '../sources/world/sunset-theme.js';
 
 test('shallow-water depth follows rotated real shoreline and reef margins',()=>{
  const coasts=coastlineData([{x:10,z:-3,rotation:Math.PI/2,shore:[[-2,-1],[2,-1],[2,1],[-2,1]]}]);
@@ -12,11 +13,15 @@ test('shallow-water depth follows rotated real shoreline and reef margins',()=>{
  assert.equal(shoreDistance(50,50,coasts),40);
  assert.equal(shoreDistance(22,0,coasts,[{x:22,z:0,r:3}]),0);
 });
-test('daylight environment has finite radiance and brighter sky than ground',()=>{
- const t=daylightEnvironment(32,16),data=t.image.data;
- assert.ok([...data].every(Number.isFinite));assert.equal(data.length,32*16*4);
- const mean=y=>Array.from({length:32},(_,x)=>data[(y*32+x)*4]).reduce((a,b)=>a+b)/32;
- assert.ok(mean(12)>mean(0));assert.equal(t.mapping,THREE.EquirectangularReflectionMapping);t.dispose();
+test('sunset environment has finite radiance and its brightest source aligns with the world sun',()=>{
+ const width=256,height=128,t=daylightEnvironment(width,height),data=t.image.data;
+ assert.ok([...data].every(Number.isFinite));assert.equal(data.length,width*height*4);
+ let peak=0;for(let i=4;i<data.length;i+=4)if(data[i]>data[peak])peak=i;
+ const x=peak/4%width,y=Math.floor(peak/4/width),latitude=(y/(height-1)-.5)*Math.PI,longitude=(x/width-.5)*Math.PI*2;
+ const direction=new THREE.Vector3(Math.cos(latitude)*Math.cos(longitude),Math.sin(latitude),Math.cos(latitude)*Math.sin(longitude));
+ assert.ok(direction.dot(new THREE.Vector3(...SUN_DIRECTION).normalize())>.999);
+ assert.ok(data[peak]>5,'sun remains HDR');assert.ok(data[peak]>data[peak+2],'sun is warm');
+ assert.equal(t.mapping,THREE.EquirectangularReflectionMapping);t.dispose();
 });
 test('low quality retains grounding shadows and lets ShadowNode resize its existing target',()=>{
  const scene=new THREE.Scene(),renderer={shadowMap:{}},camera=new THREE.PerspectiveCamera();
