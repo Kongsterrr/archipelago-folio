@@ -1,3 +1,44 @@
+# V7 — Textured Crop & Compact Silhouette validation · 2026-09-24
+
+V7 edits the existing shared-skeleton Jack. Face geometry, head scale, clothing design/colors, legs, collision configuration, gameplay and portfolio content are retained. The short crop uses a fitted cap, three forward crown groups and three short lifted fringe groups. It retains six material batches and the existing UV1 atlas; its material selects the reusable UV0 strand-flow normal instead of projecting the old V5 side-swept-hair bake onto different geometry. High/low swaps preserve this normal and the original material color.
+
+## Actual geometry and visual review
+
+The shipped GLB is **330,144 bytes / 34,764 triangles / six materials / six draw calls**, versus V6's 346,044 bytes / 37,212 triangles. It retains one 22-joint rig and all seven clips. Asset revision: `v7-spiky-crop-and-body`; runtime cache key: `jack.glb?v=7`.
+
+Measurements below come from decoded, posed production geometry, in local character units. They do not use declared mesh dimensions as substitutes for geometry.
+
+| Measurement | V6 | V7 | Change |
+| --- | ---: | ---: | --- |
+| Shoe width | 0.153740 | 0.126859 | −17.5% |
+| Shoe length | 0.223469 | 0.184429 | −17.5% |
+| Shoe height | 0.147002 | 0.147002 | retained |
+| Upper coat width | 0.307927 | 0.325641 | +5.75% at sampled chest band |
+| Waist width | 0.295358 | 0.295256 | retained within compression tolerance |
+| Upper sleeve width | 0.141099 | 0.130332 | −7.6% |
+| Upper sleeve depth | 0.148160 | 0.136807 | −7.7% |
+
+Palm/thumb dimensions are approximately 7% smaller. Facial width, depth and seven cross-sections stay within 0.3 mm of the V6 decoded model. Full height remains 1.20 with the existing approximately 2.2-head silhouette. The neutral sleeve/waist gap is now approximately **14 mm**, deliberately closer than V4.5's 15 mm minimum; the updated neutral lower bound is 10 mm, and moving-sleeve penetration tolerance remains 1 mm. Shoulder checks include Chest/Arm blended triangles, sample 25 frames in each of seven clips and measure projected overlap at three shoulder bands from front, side and three-quarter views. These checks detect detached roots; they do not replace artistic review of surface shading.
+
+Actual runtime renders: [materials](art/v7/jack-materials.png), [neutral clay](art/v7/jack-clay.png), [helm](art/v7/jack-helm.png), [walk](art/v7/jack-walk.png), [sit](art/v7/jack-sit.png). All show the final exported GLB, not generated concepts. Hair refinement corrected floating roots and excessive vertical spikes before these captures. The development reviewer also accepts a valid `pose` and finite `time`; invalid values fall back safely.
+
+## Automated and browser verification
+
+**220 automated checks pass.** New coverage verifies actual shoe/hand reductions, preserved face/body height, shoulder connection across all clips, short forward hair flow/root coverage, and retention of the new normal map across high/low texture swaps. The character exporter samples **481 frames each** for walk/run floor contact and **121 helm frames** for fixed hands. Maximum decoded helm target error is **0.054 mm**, with zero position/orientation drift. Walking sole height stays 1.16–1.77 mm above ground; running stays 0.58–19.43 mm, including its authored flight phase. The seated asset passes bench clearance with no trouser/slat intersections.
+
+Browser host: **Apple M3 Max / macOS / headless Chrome 154.0.8037.57**, using the real local Vite game and renderer, with the existing WebMCP action handlers exposed to the test harness. WebGL2/high was visually checked at **1440×900, 1920×1080, 390×844 and 844×390**. Additional sessions checked WebGPU/high at desktop size, WebGL2/low at portrait size, and WebGPU/low at landscape size. Low sessions enabled reduced motion. Every session completed Travel → Go ashore → walk/run → read/close → Board → steer, ending in sailing mode without retained pause reasons. No page/console errors or surface failures occurred.
+
+| Final short frame sample | p50 | p95 |
+| --- | ---: | ---: |
+| WebGL2 / high | 16.8 ms | 17.3 ms |
+| WebGPU / high | 16.7 ms | 17.6 ms |
+| WebGL2 / low / reduced motion | 16.8 ms | 17.3 ms |
+| WebGPU / low / reduced motion | 16.7 ms | 17.5 ms |
+
+These are short desktop headless-browser frame intervals, not GPU timings, sustained performance guarantees or physical phone benchmarks. Physical iOS/Android/Safari and controlled network tests remain unmeasured. V7 introduces no new asset downloads beyond the smaller replacement GLB, and no storage migration. Public access at **kongsterrr.com** and existing domain settings are preserved.
+
+---
+
 # V6 — Sunset Bay validation · 2026-09-23
 
 V6 is a fixed orange-and-violet sunset treatment. This section records the actual shipped implementation; earlier sections describe their own historical versions.

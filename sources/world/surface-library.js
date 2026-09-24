@@ -89,9 +89,9 @@ export class SurfaceLibrary {
     material.aoMapIntensity = record.ao;
     if (maps) {
       if (maps.color) material.map = maps.color;
-      if (maps.normal) material.normalMap = maps.normal;
+      if (maps.normal && !(profile === 'hair' && material.userData.normalSource === 'strand-flow')) material.normalMap = maps.normal;
       if (maps.orm) material.aoMap = material.roughnessMap = material.metalnessMap = maps.orm;
-      material.normalScale.setScalar(SURFACE_PROFILES[profile].normalScale);
+      if (!(profile === 'hair' && material.userData.normalSource === 'strand-flow')) material.normalScale.setScalar(SURFACE_PROFILES[profile].normalScale);
       material.aoMapIntensity = SURFACE_PROFILES[profile].ao;
     }
     material.needsUpdate = true;

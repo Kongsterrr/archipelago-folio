@@ -5,12 +5,13 @@ import {addJackHair} from './jack-hair.mjs';
 import {FACE_PROFILE,profileAt,faceSurface,createFaceGeometry,createSneakerUpper,createFoldedCuff} from './jack-shapes.mjs';
 import {mergeGeometries, mergeVertices} from 'three/addons/utils/BufferGeometryUtils.js';
 
-/** Original V5 sculpted toy adventurer. Metres, feet Y=0, facing -Z.
+/** Original V7 sculpted toy adventurer. Metres, feet Y=0, facing -Z.
  * Geometry is authored on one named skeleton. No runtime retargeting or IK is
  * required: the author-time helm solve is baked into constant animation keys. */
 const HEAD_SCALE=.542/.487, HEIGHT=1.20,HEAD_Y=HEIGHT-.253*HEAD_SCALE;
 const THIGH=.115, SHIN=.131, HIP_Y=.020+THIGH+SHIN+.086;
 const ARM=.145, RELAXED_ARM=THREE.MathUtils.degToRad(22);
+const SHOE_PLANAR_SCALE=.825, HAND_SCALE=.93;
 const RELAXED_ELBOW=THREE.MathUtils.degToRad(12), ELBOW_FLEX=THREE.MathUtils.degToRad(12);
 const headParts=new Set(['Head','LeftEye','RightEye','LeftBrow','RightBrow','Mouth']);
 export const JACK_SPEC=Object.freeze({
@@ -33,7 +34,7 @@ export function createJackCharacter(){
  bone('Mouth',head,...faceSurface(0,-.127,.004));
  for(const name of headParts)if(name!=='Head')byName[name].position.multiplyScalar(HEAD_SCALE);
  for(const[side,s]of[['Left',-1],['Right',1]]){
-  const arm=bone(`${side}Arm`,chest,s*.165,.068,0),elbow=bone(`${side}ForeArm`,arm,0,-ARM,0);bone(`${side}Hand`,elbow,0,-ARM,0);
+  const arm=bone(`${side}Arm`,chest,s*.160,.068,0),elbow=bone(`${side}ForeArm`,arm,0,-ARM,0);bone(`${side}Hand`,elbow,0,-ARM,0);
   const thigh=bone(`${side}UpLeg`,hips,s*.072,-.02,0),shin=bone(`${side}Leg`,thigh,0,-THIGH,0);bone(`${side}Foot`,shin,0,-SHIN,0);
  }
  root.updateMatrixWorld(true);
@@ -45,6 +46,9 @@ export function createJackCharacter(){
   ink:new THREE.MeshStandardMaterial({name:'Jack_EyesAndDetails',color:'#ffffff',vertexColors:true,roughness:.26}),
   accent:new THREE.MeshStandardMaterial({name:'Jack_OrangeDetails',color:'#ffffff',vertexColors:true,roughness:.7}),
  };
+ // The V5 bake belongs to the former swept geometry. Keep the reusable flow
+ // normal on this crop at both qualities instead of applying an old scalp bake.
+ materials.hair.userData.normalSource='strand-flow';
  const defaults={skin:'#ffc49a',cream:'#fff0d7',navy:'#293e52',hair:'#332720',ink:'#151a1e',accent:'#e18b4d'};
  const bins=new Map(Object.keys(materials).map(k=>[k,[]]));
  const part=(geometry,mat,joint,pos=[0,0,0],scale=[1,1,1],rot=[0,0,0],color=null)=>{
@@ -60,7 +64,7 @@ export function createJackCharacter(){
   const uv=g.getAttribute('uv');let u0=Infinity,u1=-Infinity,v0=Infinity,v1=-Infinity;
   for(let i=0;i<uv.count;i++){u0=Math.min(u0,uv.getX(i));u1=Math.max(u1,uv.getX(i));v0=Math.min(v0,uv.getY(i));v1=Math.max(v1,uv.getY(i));}
   if(u0<0||u1>1||v0<0||v1>1)for(let i=0;i<uv.count;i++)uv.setXY(i,(uv.getX(i)-u0)/Math.max(1e-6,u1-u0),(uv.getY(i)-v0)/Math.max(1e-6,v1-v0));
-  const shapeScale=headParts.has(joint)?new THREE.Matrix4().makeScale(HEAD_SCALE,HEAD_SCALE,HEAD_SCALE):joint==='Chest'?new THREE.Matrix4().makeScale(1,.93,1):new THREE.Matrix4();g.applyMatrix4(b.matrixWorld.clone().multiply(shapeScale).multiply(new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),new THREE.Vector3(...scale))));
+  const shapeScale=headParts.has(joint)?new THREE.Matrix4().makeScale(HEAD_SCALE,HEAD_SCALE,HEAD_SCALE):joint==='Chest'?new THREE.Matrix4().makeScale(1,.93,1):joint.endsWith('Foot')?new THREE.Matrix4().makeScale(SHOE_PLANAR_SCALE,1,SHOE_PLANAR_SCALE):joint.endsWith('Hand')?new THREE.Matrix4().makeScale(HAND_SCALE,HAND_SCALE,HAND_SCALE):new THREE.Matrix4();g.applyMatrix4(b.matrixWorld.clone().multiply(shapeScale).multiply(new THREE.Matrix4().compose(new THREE.Vector3(...pos),new THREE.Quaternion().setFromEuler(new THREE.Euler(...rot)),new THREE.Vector3(...scale))));
   for(const name of Object.keys(g.attributes))if(!['position','normal','uv'].includes(name))g.deleteAttribute(name);
   if(mat==='hair')g.setAttribute('uv1',new THREE.Float32BufferAttribute(Array.from({length:g.attributes.position.count},()=>[.04,.04]).flat(),2));
   g.clearGroups();if(!g.index)g.setIndex(Array.from({length:g.attributes.position.count},(_,i)=>i));
@@ -88,7 +92,7 @@ export function createJackCharacter(){
  // arms and knees deform as soft clothing rather than stacked rigid beads.
  const cloth=(mat,upper,lower,profile,hinge,depthScale=1,color)=>{
   const vs=[],ix=[],radial=20;
-  for(const[y,r]of profile)for(let j=0;j<=radial;j++){const a=j/radial*Math.PI*2,side=upper.startsWith('Left')?-1:1,shoulder=mat==='cream'?-side*.065*THREE.MathUtils.smoothstep(y,-.018,.035):0;const outer=Math.max(0,Math.cos(a)*side),crease=.0018*Math.exp(-(((y+.120)/.025)**2))*Math.sin(a*3+y*72)+.0012*Math.exp(-(((y+.222)/.029)**2))*Math.sin(a*2-y*66);
+  for(const[y,r]of profile)for(let j=0;j<=radial;j++){const a=j/radial*Math.PI*2,side=upper.startsWith('Left')?-1:1,shoulder=mat==='cream'?-side*.056*THREE.MathUtils.smoothstep(y,-.035,.040):0;const outer=Math.max(0,Math.cos(a)*side),crease=.0018*Math.exp(-(((y+.120)/.025)**2))*Math.sin(a*3+y*72)+.0012*Math.exp(-(((y+.222)/.029)**2))*Math.sin(a*2-y*66);
    vs.push(shoulder+Math.cos(a)*(r+crease*.4),y,Math.sin(a)*(r+crease)*depthScale);}
   for(let i=0;i<profile.length-1;i++)for(let j=0;j<radial;j++){const a=i*(radial+1)+j,b=a+radial+1;ix.push(a,a+1,b,a+1,b+1,b);}
   const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(vs,3));g.setIndex(ix);g.computeVertexNormals();
@@ -134,7 +138,8 @@ export function createJackCharacter(){
     const[,rx,front,back,center]=profileAt(FACE_PROFILE,y),d=z-center,rz=d<0?front:back;
     // Refit the coverage shell to the sculpted skull; preserve visible locks.
     const radius=Math.hypot(x/Math.max(.001,rx),d/Math.max(.001,rz));
-    if(radius>.15&&radius<1.085){const factor=1.085/radius;x*=factor;z=center+d*factor;}
+    const clearance=scalp.tapered?THREE.MathUtils.lerp(1.035,1.075,THREE.MathUtils.smoothstep(y,.06,.16)):1.085;
+    if(radius>.15&&radius<clearance){const factor=clearance/radius;x*=factor;z=center+d*factor;}
    }
    p.setXYZ(i,x,y,z);
   }
@@ -143,8 +148,12 @@ export function createJackCharacter(){
  });
  // Open cream jacket frames a navy tee, with a proper gap down the front.
  orb('skin','Neck',[0,-.008,0],[.050,.059,.045],18,12);
- orb('navy','Chest',[0,-.022,.008],[.130,.157,.087],24,18,'#26394c');
- const coatKeys=[[-.170,.134,.094],[-.151,.143,.101],[-.110,.147,.105],[-.050,.151,.106],[.015,.154,.103],[.065,.150,.095],[.100,.130,.083],[.120,.064,.045]];
+ // Widen only the upper chest; keep the existing compact waist and tee neckline.
+ const tee=new THREE.SphereGeometry(1,24,18);tee.scale(.130,.157,.087);const teeP=tee.getAttribute('position');
+ for(let i=0;i<teeP.count;i++)teeP.setX(i,teeP.getX(i)*(1+.065*THREE.MathUtils.smoothstep(teeP.getY(i),-.045,.065)));
+ tee.computeVertexNormals();part(tee,'navy','Chest',[0,-.022,.008],undefined,undefined,'#26394c');
+ // Upper jacket rings form the shoulder slope, blending into the sleeve root.
+ const coatKeys=[[-.170,.134,.094],[-.151,.143,.101],[-.110,.147,.105],[-.050,.152,.106],[.015,.163,.105],[.065,.161,.098],[.100,.140,.085],[.120,.064,.045]];
  const coatProfile=Array.from({length:25},(_,n)=>profileAt(coatKeys,.120-n*.290/24));
  const cp=[],ci=[],cols=34,gap=.43;
  for(let layer=0;layer<2;layer++)for(const[y,w,d]of coatProfile)for(let j=0;j<=cols;j++){
@@ -179,18 +188,18 @@ export function createJackCharacter(){
  tw.forEach((weights,i)=>{const ids=[0,0,0,0],values=[0,0,0,0];weights.forEach(([name,w],j)=>{ids[j]=bones.indexOf(byName[name]);values[j]=w;});ti.setXYZW(i,...ids);ts.setXYZW(i,...values);});
  curve('navy','Hips',[[0,.019,-.087],[.010,-.010,-.089],[.008,-.038,-.082]],.002,12,'#233448');
  for(const[side,s]of[['Left',-1],['Right',1]]){
-  cloth('cream',`${side}Arm`,`${side}ForeArm`,[[.040,0],[.033,.029],[.017,.054],[0,.064],[-.04,.066],[-.08,.064],[-.115,.061],[-.140,.060],[-.155,.059],[-.17,.058],[-.195,.057],[-.225,.055],[-.255,.053],[-.279,.049],[-.294,.027],[-.300,0]].map(([y,r])=>[y*ARM/.155,r*1.08]),-ARM,1.05);
-  part(createFoldedCuff(.055,.057,.029),'cream',`${side}ForeArm`,[0,-ARM+.017,0],undefined,undefined,'#edddc4');
+  cloth('cream',`${side}Arm`,`${side}ForeArm`,[[.044,0],[.037,.031],[.024,.052],[.008,.060],[0,.061],[-.04,.061],[-.08,.059],[-.115,.057],[-.140,.057],[-.155,.056],[-.17,.055],[-.195,.054],[-.225,.052],[-.255,.051],[-.279,.047],[-.294,.026],[-.300,0]].map(([y,r])=>[y*ARM/.155,r*1.08]),-ARM,1.05);
+  part(createFoldedCuff(.052,.054,.029),'cream',`${side}ForeArm`,[0,-ARM+.017,0],undefined,undefined,'#edddc4');
   orb('skin',`${side}Hand`,[0,-.011,-.004],[.042,.043,.039],16,12);
   orb('skin',`${side}Hand`,[-s*.031,-.007,-.022],[.019,.025,.021],12,9);
-  // Soft oversized sneaker volumes overlap into one silhouette, with no box joints.
+  // Compact sneaker volumes overlap into one silhouette, with no box joints.
   const soleShape=new THREE.Shape();soleShape.moveTo(-.063,.055);soleShape.quadraticCurveTo(-.077,.015,-.073,-.076);soleShape.quadraticCurveTo(-.068,-.141,0,-.146);soleShape.quadraticCurveTo(.068,-.141,.073,-.076);soleShape.quadraticCurveTo(.077,.015,.063,.055);soleShape.quadraticCurveTo(0,.088,-.063,.055);soleShape.closePath();
   const sole=new THREE.ExtrudeGeometry(soleShape,{depth:.018,curveSegments:10,bevelEnabled:true,bevelThickness:.005,bevelSize:.003,bevelSegments:3,steps:1});sole.rotateX(Math.PI/2);part(sole,'cream',`${side}Foot`,[0,-.063,0],undefined,undefined,'#e7d7bc');
   part(createSneakerUpper(),'cream',`${side}Foot`,undefined,undefined,undefined,'#fff0d7');
   curve('cream',`${side}Foot`,[[-.058,-.010,-.043],[-.058,-.012,-.090],[0,-.015,-.124],[.058,-.012,-.090],[.058,-.010,-.043]],.0017,14,'#e3d0ae');
   for(const z of[-.060,-.033])curve('cream',`${side}Foot`,[[-.030,.018,z],[0,.025,z-.002],[.030,.018,z]],.004,7,'#ddccae');
  }
- // Keep the original swept crown contour after scaling the whole head, face
+ // Keep the original head-to-crown height after scaling the whole head, face
  // pivots included. Shoes retain their original thickness and Y=0 datum.
  let crown=-Infinity;for(const g of bins.get('hair')){const pos=g.getAttribute('position');for(let i=0;i<pos.count;i++)crown=Math.max(crown,pos.getY(i));}
  for(const g of bins.get('hair')){const pos=g.getAttribute('position');for(let i=0;i<pos.count;i++){const y=pos.getY(i);const crownBase=HEAD_Y+.103*HEAD_SCALE;if(y>crownBase)pos.setY(i,crownBase+(y-crownBase)*(HEIGHT-crownBase)/(crown-crownBase));}g.computeVertexNormals();}
@@ -253,6 +262,6 @@ export function createJackCharacter(){
   tracks.push(new THREE.VectorKeyframeTrack('Hips.position',times,poses.flatMap(pp=>pp.Hips.p)));animations.push(new THREE.AnimationClip(state,duration,tracks));
  }
  for(const b of bones){b.position.fromArray(bind[b.name].p);b.quaternion.fromArray(bind[b.name].q);}root.updateMatrixWorld(true);skeleton.update();
- root.animations=animations;root.userData={originalProceduralAsset:true,assetRevision:'v5-sculpt-and-surface',surfaceContract:{uv:'TEXCOORD_0',tangent:'Derived from UV in material shader',color:'multiply tile basecolor by COLOR_0'},characterSpec:JACK_SPEC,...JACK_SPEC,rig:'One 22-joint skeleton including independently blinkable eyes; rounded soft toy geometry',benchPlacement:'Root Y = seat surface Y - characterSpec.benchSeatOffset; move root characterSpec.benchForwardOffset toward seated facing. Restore floor position while stand plays .6s.',helm:'Runtime boatVisual anchor/scale are characterSpec.helmAnchor/.helmScale. All helm body and hand keys are constant.'};root.updateMatrixWorld(true);
+ root.animations=animations;root.userData={originalProceduralAsset:true,assetRevision:'v7-spiky-crop-and-body',surfaceContract:{uv:'TEXCOORD_0',tangent:'Derived from UV in material shader',color:'multiply tile basecolor by COLOR_0'},characterSpec:JACK_SPEC,...JACK_SPEC,rig:'One 22-joint skeleton including independently blinkable eyes; rounded soft toy geometry',benchPlacement:'Root Y = seat surface Y - characterSpec.benchSeatOffset; move root characterSpec.benchForwardOffset toward seated facing. Restore floor position while stand plays .6s.',helm:'Runtime boatVisual anchor/scale are characterSpec.helmAnchor/.helmScale. All helm body and hand keys are constant.'};root.updateMatrixWorld(true);
  return{root,bones:byName,skeleton,animations,materials};
 }

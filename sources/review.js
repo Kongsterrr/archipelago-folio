@@ -10,11 +10,11 @@ import {prepareBoatMaterials,BoatAppearance} from './world/boat-appearance.js';
 const params=new URLSearchParams(location.search),kind=['boat','harbor'].includes(params.get('model'))?params.get('model'):'jack',clay=params.has('clay');
 const canvas=document.querySelector('canvas'),renderer=new THREE.WebGPURenderer({canvas,antialias:true,forceWebGL:params.has('webgl')});await renderer.init();
 renderer.setPixelRatio(1.5);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
-const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),gltf=await loader.loadAsync(`/models/${kind}.glb?v=5`),surfaces=new SurfaceLibrary({renderer});
+const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),gltf=await loader.loadAsync(`/models/${kind}.glb?v=7`),surfaces=new SurfaceLibrary({renderer});
 const environment=daylightEnvironment();const views=[];
 for(let index=0;index<3;index++){
  const scene=new THREE.Scene();scene.background=new THREE.Color('#eee9df');scene.environment=environment;scene.environmentIntensity=.7;
- const model=clone(gltf.scene);if(kind==='jack'){applyJackHairSurface(model);const mixer=new THREE.AnimationMixer(model);mixer.clipAction(gltf.animations.find(a=>a.name==='idle')).play();mixer.setTime(0);model.traverse(o=>{if(o.isBone)o.quaternion.normalize();});}
+ const model=clone(gltf.scene);if(kind==='jack'){applyJackHairSurface(model);const mixer=new THREE.AnimationMixer(model),clip=gltf.animations.find(a=>a.name===params.get('pose'))||gltf.animations.find(a=>a.name==='idle'),time=Number(params.get('time')||0);mixer.clipAction(clip).play();mixer.setTime(Number.isFinite(time)?THREE.MathUtils.clamp(time,0,clip.duration):0);model.traverse(o=>{if(o.isBone)o.quaternion.normalize();});}
  if(kind==='boat')prepareBoatMaterials(model);
  if(clay)model.traverse(o=>{if(o.isMesh)o.material=new THREE.MeshStandardMaterial({color:'#bcb7ad',roughness:.85});});else surfaces.bind(model,kind);
  if(kind==='boat'&&!clay)new BoatAppearance({livery:'marina'}).bind(model);
@@ -27,5 +27,5 @@ for(let index=0;index<3;index++){
 }
 if(!clay)await surfaces.loadQuality('high');
 function render(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);renderer.setScissorTest(true);views.forEach((v,n)=>{v.camera.aspect=(w/3)/h;v.camera.updateProjectionMatrix();const distance=(kind==='jack'?Math.max(v.size.y,v.size.x*1.15):v.size.length())*.62/Math.tan(THREE.MathUtils.degToRad(14))/Math.min(1,v.camera.aspect);v.camera.position.copy(v.center).addScaledVector(v.direction,distance);v.camera.lookAt(v.center);renderer.setViewport(n*w/3,0,w/3,h);renderer.setScissor(n*w/3,0,w/3,h);renderer.render(v.scene,v.camera);});renderer.setScissorTest(false);}
-renderer.setAnimationLoop(render);document.querySelector('h1').textContent=`V5 · ${kind.toUpperCase()} / ${clay?'CLAY':'ACTUAL MATERIALS'}`;document.querySelector('#state').textContent=`Actual runtime GLB · ${clay?'Neutral clay':surfaces.stats().status+' · shared game surfaces'} · Web${renderer.backend.isWebGPUBackend?'GPU':'GL2'}`;
+renderer.setAnimationLoop(render);document.querySelector('h1').textContent=`V7 · ${kind.toUpperCase()} / ${clay?'CLAY':'ACTUAL MATERIALS'}`;document.querySelector('#state').textContent=`Actual runtime GLB · ${clay?'Neutral clay':surfaces.stats().status+' · shared game surfaces'} · Web${renderer.backend.isWebGPUBackend?'GPU':'GL2'}`;
 document.querySelector('#capture').onclick=async()=>{render();const blob=await new Promise(resolve=>canvas.toBlob(resolve));const response=await fetch(`http://127.0.0.1:5174/capture/${kind}-${clay?'clay':'materials'}.png`,{method:'POST',body:blob});document.querySelector('#state').textContent=response.ok?'Actual render saved.':'Capture server unavailable.';};

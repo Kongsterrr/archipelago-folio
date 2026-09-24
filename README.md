@@ -4,14 +4,14 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V6 — Sunset Bay** · [Private preview](https://jack-archipelago.jackkong125413.chatgpt.site/) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V7 — Textured Crop & Compact Silhouette** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
-The hosted preview currently requires owner access. You can run the complete project locally using the instructions below.
+The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
 - **Nine content islands:** Jack’s Harbor; Amtrak, BeaconFire, and VisionX for experience; Affirmation, Research, and Catering for projects; Learning for education; and Connect for contact details.
-- **Meet Jack:** a soft oval-faced, approximately 2.2-head-tall cartoon captain with layered chestnut hair and an open cream jacket with blinking eyes, gentle expressions, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
+- **Meet Jack:** a soft oval-faced, approximately 2.2-head-tall cartoon captain with a forward textured chestnut crop and an open cream jacket with blinking eyes, gentle expressions, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
@@ -39,7 +39,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V4.5 — A Little More Jack** | Shorter chibi proportions, relaxed arm clearance, refitted gait and seating | [9c35f4f](https://github.com/Kongsterrr/archipelago-folio/commit/9c35f4f5f49060de6d77d484315f738e34821027) |
 | **V4.6 — Soft Shapes & Shorter Legs** | Sculpted oval face, shorter legs, continuous clothing surfaces and recalibrated seating | [c9dc7ee](https://github.com/Kongsterrr/archipelago-folio/commit/c9dc7ee9c88938ec822f6a9a6f806f0886565ccd) |
 | **V5 — Sculpted Bay** | Refined character, runabout and Harbor assets, PBR surfaces, daylight/contact shading and shallow-water detail | [1d3b9e9](https://github.com/Kongsterrr/archipelago-folio/commit/1d3b9e9898ba9bd737290697005bd42b5292d418) |
-| **V6 — Sunset Bay** | Fixed low sunset, violet shadows, golden water, nine-island material and landmark detail | [Current V6 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V6 — Sunset Bay** | Fixed low sunset, violet shadows, golden water, nine-island material and landmark detail | [9abe9cd](https://github.com/Kongsterrr/archipelago-folio/commit/9abe9cd7efee08c088ee68d6fbd8667abae2307d) |
+| **V7 — Textured Crop & Compact Silhouette** | Forward spiky crop, integrated shoulder and sleeve shaping, slimmer upper arms, smaller shoes and hands | [Current V7 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -190,6 +191,18 @@ Recast the complete bay as a fixed, cinematic orange-and-violet evening:
 
 The 18 compressed island GLBs total **6,776,208 bytes** (high: **4,060,164**, low: **2,716,044**); they load by distance and quality rather than all at startup. Existing surface packs are reused. **198 automated checks pass**; actual WebGPU/WebGL2 and four viewport checks are documented in [`VALIDATION.md`](VALIDATION.md).
 
+
+### V7 — Textured Crop & Compact Silhouette
+
+- Replaced the side-swept hair with a short tapered cap, three forward crown groups and three lifted front tufts. Real shallow grooves and the shared hair surfaces retain the original chestnut palette.
+- Reshaped the upper jacket and tee without enlarging the waist, slimmed the sleeve profile, and moved each shoulder root inward by 5 mm. The shoulder cap still blends Chest and Arm weights so it follows the existing animations.
+- Reduced shoe length and width by **17.5%**, including the soles, uppers, seams and laces; retained shoe height and the floor datum. Reduced palm/thumb geometry by **7%** around the existing hand pivots.
+- Preserved the face, head scale, approximately **2.2-head / 1.20-unit** height, outfit design, materials, seven clips and fixed helm grip targets. Refitted the exported gait contact against the smaller soles.
+- Added actual decoded-geometry regressions and front/three-quarter/side asset review with selectable poses. Validation measurements and remaining device limits are recorded in [`VALIDATION.md`](VALIDATION.md).
+
+The shipped Jack is **330,144 bytes / 34,764 triangles / six material batches**. **220 automated checks pass**. [Actual model views](art/v7/jack-materials.png) show the runtime GLB, with [neutral clay](art/v7/jack-clay.png), [helm](art/v7/jack-helm.png), [walking](art/v7/jack-walk.png) and [seated](art/v7/jack-sit.png) captures. These are rendered assets, not concept images.
+
+
 ## Run locally
 
 Use **Node.js 22.12 or newer** and npm. Generated models and the résumé are checked in; rebuilding assets is optional.
@@ -208,7 +221,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V1–V6 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and V1–V7 regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 
@@ -322,7 +335,7 @@ Physical iPhone/Android performance, sustained mobile 30 FPS, controlled 20 Mbps
 
 ## Hosting
 
-`npm run build` produces a static site in `dist/`. The existing private preview is hosted with Sites; [`.openai/hosting.json`](.openai/hosting.json) identifies that deployment and its build directory. This repository contains no deployment credentials. GitHub source visibility and the private preview’s access settings are independent.
+`npm run build` produces a static site in `dist/`. The public portfolio at **https://kongsterrr.com** is hosted with Sites; [`.openai/hosting.json`](.openai/hosting.json) identifies that deployment and its build directory. This repository contains no deployment credentials. The repository contains source history; the live deployment uses the saved, built version of that source. Domain and access settings are managed separately from source visibility.
 
 ## Inspiration and licensing
 

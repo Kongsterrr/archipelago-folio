@@ -32,11 +32,11 @@ test('Decoded skin has the shorter 2.2-head silhouette, independently of metadat
   for (const [region, count] of Object.entries(m.triangleCounts)) assert.ok(count > 100, `${region} sampled its real geometry`);
 });
 
-test('V4.5 neutral sleeves and hands leave the reference gaps on both sides', async () => {
+test('V7 closer neutral sleeves retain clear waist and hand separation on both sides', async () => {
   const character = await fixture('idle'), m = character.at(0);
   for (const [side, metrics] of Object.entries(m.sides)) {
     const waist = metrics.waist.find(section => section.offset === .05);
-    between(waist.gap, .015, .030, `${side} sleeve-to-waist gap`);
+    between(waist.gap, .010, .030, `${side} sleeve-to-waist gap`);
     between(metrics.hand.gap, .040, .070, `${side} palm/thumb-to-pants gap`);
     assert.ok(waist.innerIntersections > 8 && waist.outerIntersections > 8, `${side} full waist cross-sections`);
     assert.ok(metrics.hand.innerIntersections > 8 && metrics.hand.outerIntersections > 8, `${side} full palm/pants cross-sections`);

@@ -1,5 +1,5 @@
 {
-  "revision": "v5-sculpt-and-surface",
+  "revision": "v7-spiky-crop-and-body",
   "file": "jack.glb",
   "height": 1.2,
   "headHeight": 0.542,
@@ -44,9 +44,9 @@
     "sit",
     "stand"
   ],
-  "bytes": 346044,
-  "rawBytes": 2247768,
-  "triangles": 37212,
+  "bytes": 330144,
+  "rawBytes": 2137808,
+  "triangles": 34764,
   "materials": 6,
   "drawCalls": 6,
   "joints": [
@@ -76,20 +76,20 @@
   "skins": 1,
   "bounds": {
     "min": [
-      -0.26399311423301697,
+      -0.2637659013271332,
       -4.470351866459055e-11,
-      -0.23835760354995728
+      -0.20756256580352783
     ],
     "max": [
       0.2637659013271332,
       1.2000000476837158,
-      0.22150559723377228
+      0.2058117836713791
     ]
   },
   "dimensions": [
-    0.5277590155601501,
+    0.5275318026542664,
     1.2000000477284194,
-    0.45986320078372955
+    0.4133743494749069
   ],
   "animations": [
     {
@@ -138,7 +138,7 @@
   "compression": "EXT_meshopt_compression",
   "placement": {
     "originalProceduralAsset": true,
-    "assetRevision": "v5-sculpt-and-surface",
+    "assetRevision": "v7-spiky-crop-and-body",
     "surfaceContract": {
       "uv": "TEXCOORD_0",
       "tangent": "Derived from UV in material shader",
@@ -237,15 +237,15 @@
     "helm": "Runtime boatVisual anchor/scale are characterSpec.helmAnchor/.helmScale. All helm body and hand keys are constant."
   },
   "proportions": {
-    "height": 1.1997882833569142,
-    "headHeight": 0.5418373014353066,
-    "headsTall": 2.2142962106498025,
+    "height": 1.199529318970722,
+    "headHeight": 0.5415785368594901,
+    "headsTall": 2.2148760287410245,
     "footY": 0.000050755977630601024,
-    "crownY": 1.1998390393345448,
-    "chinY": 0.6580017378992382,
+    "crownY": 1.1995800749483525,
+    "chinY": 0.6580015380888624,
     "triangleCounts": {
-      "head": 17580,
-      "coat": 7160,
+      "head": 15052,
+      "coat": 7240,
       "sleeves": 1600,
       "hands": 1088,
       "pants": 3640
@@ -256,36 +256,36 @@
           {
             "offset": 0.03,
             "y": 0.39191483853142495,
-            "gap": 0.02258568965241592,
-            "innerEdge": 0.168941539682289,
-            "outerEdge": 0.14635585002987309,
+            "gap": 0.02093965479929044,
+            "innerEdge": 0.16725514280187448,
+            "outerEdge": 0.14631548800258404,
             "innerIntersections": 84,
-            "outerIntersections": 166
+            "outerIntersections": 170
           },
           {
             "offset": 0.05,
             "y": 0.4119148385314249,
-            "gap": 0.01559628937512425,
-            "innerEdge": 0.16436470355305852,
-            "outerEdge": 0.14876841417793427,
+            "gap": 0.013981364029020255,
+            "innerEdge": 0.16268849202447017,
+            "outerEdge": 0.1487071279954499,
             "innerIntersections": 84,
-            "outerIntersections": 162
+            "outerIntersections": 166
           },
           {
             "offset": 0.07,
             "y": 0.4319148385314249,
-            "gap": 0.010787072018474314,
-            "innerEdge": 0.1599965945513443,
-            "outerEdge": 0.14920952253286998,
+            "gap": 0.009195890544194979,
+            "innerEdge": 0.1584283839589937,
+            "outerEdge": 0.14923249341479872,
             "innerIntersections": 88,
-            "outerIntersections": 186
+            "outerIntersections": 190
           }
         ],
         "hand": {
           "y": 0.30572354817227654,
-          "gap": 0.06403115857867245,
-          "innerEdge": 0.19402209946239057,
-          "outerEdge": 0.12999094088371813,
+          "gap": 0.06261250431647289,
+          "innerEdge": 0.19262136084213421,
+          "outerEdge": 0.13000885652566133,
           "innerIntersections": 124,
           "outerIntersections": 114
         },
@@ -297,36 +297,36 @@
           {
             "offset": 0.03,
             "y": 0.39191483853142495,
-            "gap": 0.022689573059483686,
-            "innerEdge": 0.16893386336314825,
-            "outerEdge": 0.14624429030366456,
+            "gap": 0.021012899224943288,
+            "innerEdge": 0.16725514280187448,
+            "outerEdge": 0.1462422435769312,
             "innerIntersections": 84,
             "outerIntersections": 170
           },
           {
             "offset": 0.05,
             "y": 0.4119148385314249,
-            "gap": 0.015573343078641388,
-            "innerEdge": 0.164386597898108,
-            "outerEdge": 0.1488132548194666,
+            "gap": 0.013894333234781509,
+            "innerEdge": 0.16270086579111304,
+            "outerEdge": 0.14880653255633153,
             "innerIntersections": 84,
             "outerIntersections": 166
           },
           {
             "offset": 0.07,
             "y": 0.4319148385314249,
-            "gap": 0.010800433532233089,
-            "innerEdge": 0.16028554262235423,
-            "outerEdge": 0.14948510909012114,
+            "gap": 0.009200998601153948,
+            "innerEdge": 0.15865322529291126,
+            "outerEdge": 0.1494522266917573,
             "innerIntersections": 88,
             "outerIntersections": 190
           }
         ],
         "hand": {
           "y": 0.30572354817227654,
-          "gap": 0.06403105076304486,
-          "innerEdge": 0.19401451201783776,
-          "outerEdge": 0.1299834612547929,
+          "gap": 0.06261250431647289,
+          "innerEdge": 0.19262136084213421,
+          "outerEdge": 0.13000885652566133,
           "innerIntersections": 124,
           "outerIntersections": 118
         },
@@ -336,10 +336,10 @@
     }
   },
   "sculpt": {
-    "height": 1.1997882833569142,
+    "height": 1.199529318970722,
     "hemY": 0.3619148385314249,
     "hemToFloor": 0.3618640825537943,
-    "hemToFloorFraction": 0.3016066147448338,
+    "hemToFloorFraction": 0.30167172809439824,
     "face": {
       "mainTriangles": 3432,
       "components": [
@@ -352,52 +352,52 @@
         160,
         160
       ],
-      "width": 0.44968415129576544,
-      "height": 0.46962494617975814,
+      "width": 0.44961090687011257,
+      "height": 0.4696249461797578,
       "depth": 0.3795159915203207,
-      "widthHeight": 0.9575388934378286,
+      "widthHeight": 0.9573829297773622,
       "slices": [
         {
           "t": 0.15,
-          "y": -0.189973758832432,
-          "width": 0.3051798972946811,
-          "frontZ": -0.14051303413647065
+          "y": -0.18997375883243195,
+          "width": 0.30523511765288586,
+          "frontZ": -0.14050825234699293
         },
         {
           "t": 0.2,
-          "y": -0.16649251152344413,
-          "width": 0.34486144516554607,
-          "frontZ": -0.1542610100436932
+          "y": -0.16649251152344408,
+          "width": 0.3449058002816131,
+          "frontZ": -0.15427091785655334
         },
         {
           "t": 0.3,
-          "y": -0.11953001690546827,
-          "width": 0.40156293146318456,
-          "frontZ": -0.17298491098224633
+          "y": -0.11953001690546829,
+          "width": 0.4014896870375316,
+          "frontZ": -0.1729799769740228
         },
         {
           "t": 0.45,
-          "y": -0.049086274978504596,
-          "width": 0.4449107095337723,
-          "frontZ": -0.18641407215152106
+          "y": -0.04908627497850461,
+          "width": 0.44498395395942514,
+          "frontZ": -0.18640922698553997
         },
         {
           "t": 0.6,
-          "y": 0.021357466948459136,
-          "width": 0.4402277028717081,
-          "frontZ": -0.184038857484232
+          "y": 0.021357466948459053,
+          "width": 0.4401544584460553,
+          "frontZ": -0.18403412338213898
         },
         {
           "t": 0.75,
-          "y": 0.09180120887542287,
-          "width": 0.3890358525122498,
-          "frontZ": -0.16213653519269688
+          "y": 0.09180120887542273,
+          "width": 0.38910909693790297,
+          "frontZ": -0.1621317959567805
         },
         {
           "t": 0.85,
-          "y": 0.13876370349339867,
-          "width": 0.3209405559468882,
-          "frontZ": -0.13296148936345564
+          "y": 0.1387637034933985,
+          "width": 0.32088540895666495,
+          "frontZ": -0.13295675576214228
         }
       ]
     },
@@ -422,18 +422,236 @@
         }
       ]
     },
-    "triangles": 37212
+    "triangles": 34764
+  },
+  "refinement": {
+    "parts": {
+      "LeftFoot": {
+        "dimensions": [
+          0.12685934523076237,
+          0.1470015622853003,
+          0.18435621936826152
+        ],
+        "min": [
+          -0.06342894613158913,
+          -0.08600002527236938,
+          -0.12290060420374767
+        ],
+        "max": [
+          0.06343039909917325,
+          0.06100153701293093,
+          0.06145561516451385
+        ],
+        "vertices": 2729
+      },
+      "RightFoot": {
+        "dimensions": [
+          0.12685934523076237,
+          0.1470015622853003,
+          0.18435621936826152
+        ],
+        "min": [
+          -0.06343039909917325,
+          -0.08600002527236938,
+          -0.12290060420374767
+        ],
+        "max": [
+          0.06342894613158913,
+          0.06100153701293093,
+          0.06145561516451385
+        ],
+        "vertices": 2729
+      },
+      "LeftHand": {
+        "dimensions": [
+          0.08534806699200115,
+          0.08000122391934208,
+          0.0725119813963365
+        ],
+        "min": [
+          -0.03909666360717928,
+          -0.050243614369666706,
+          -0.03998791436470435
+        ],
+        "max": [
+          0.046251403384821865,
+          0.02975760954967538,
+          0.032524067031632145
+        ],
+        "vertices": 347
+      },
+      "RightHand": {
+        "dimensions": [
+          0.08534806699200115,
+          0.08000122391934208,
+          0.0725119813963365
+        ],
+        "min": [
+          -0.046251403384821865,
+          -0.050243614369666706,
+          -0.03998791436470435
+        ],
+        "max": [
+          0.03909666360717928,
+          0.02975760954967538,
+          0.032524067031632145
+        ],
+        "vertices": 347
+      }
+    },
+    "shoulders": {
+      "Left": {
+        "sleeveTriangles": 920,
+        "blendedTriangles": 120,
+        "upperArmWidth": 0.13033191575539205,
+        "upperArmDepth": 0.1367831003252864,
+        "slices": [
+          {
+            "offset": -0.02,
+            "y": 0.047999999999999945,
+            "sleeveIntersections": 92,
+            "coatIntersections": 166,
+            "projections": [
+              {
+                "view": "front",
+                "gap": -0.0987182537344153
+              },
+              {
+                "view": "three-quarter",
+                "gap": -0.11468777111933082
+              },
+              {
+                "view": "side",
+                "gap": -0.13849519462076465
+              }
+            ]
+          },
+          {
+            "offset": -0.005,
+            "y": 0.06299999999999994,
+            "sleeveIntersections": 88,
+            "coatIntersections": 166,
+            "projections": [
+              {
+                "view": "front",
+                "gap": -0.10024826542402354
+              },
+              {
+                "view": "three-quarter",
+                "gap": -0.11431473501442208
+              },
+              {
+                "view": "side",
+                "gap": -0.13616370265211242
+              }
+            ]
+          },
+          {
+            "offset": 0.01,
+            "y": 0.07799999999999994,
+            "sleeveIntersections": 88,
+            "coatIntersections": 286,
+            "projections": [
+              {
+                "view": "front",
+                "gap": -0.09892303987618774
+              },
+              {
+                "view": "three-quarter",
+                "gap": -0.11107012291129209
+              },
+              {
+                "view": "side",
+                "gap": -0.12386611879945662
+              }
+            ]
+          }
+        ]
+      },
+      "Right": {
+        "sleeveTriangles": 920,
+        "blendedTriangles": 120,
+        "upperArmWidth": 0.13030728665199334,
+        "upperArmDepth": 0.1367831003252864,
+        "slices": [
+          {
+            "offset": -0.02,
+            "y": 0.047999999999999945,
+            "sleeveIntersections": 92,
+            "coatIntersections": 166,
+            "projections": [
+              {
+                "view": "front",
+                "gap": -0.0987182537344153
+              },
+              {
+                "view": "three-quarter",
+                "gap": -0.11472204172481457
+              },
+              {
+                "view": "side",
+                "gap": -0.13849519462076465
+              }
+            ]
+          },
+          {
+            "offset": -0.005,
+            "y": 0.06299999999999994,
+            "sleeveIntersections": 88,
+            "coatIntersections": 166,
+            "projections": [
+              {
+                "view": "front",
+                "gap": -0.10024826542402354
+              },
+              {
+                "view": "three-quarter",
+                "gap": -0.11427968142567188
+              },
+              {
+                "view": "side",
+                "gap": -0.13616370265211242
+              }
+            ]
+          },
+          {
+            "offset": 0.01,
+            "y": 0.07799999999999994,
+            "sleeveIntersections": 88,
+            "coatIntersections": 286,
+            "projections": [
+              {
+                "view": "front",
+                "gap": -0.09892303987618774
+              },
+              {
+                "view": "three-quarter",
+                "gap": -0.11107012291129209
+              },
+              {
+                "view": "side",
+                "gap": -0.12386611879945662
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "coat": {
+      "upperWidth": 0.32564060126761324,
+      "waistWidth": 0.2952556569289112
+    }
   },
   "groundContact": {
     "walk": {
       "sampledFrames": 481,
-      "minimumLowestSoleY": 0.001020430881209733,
-      "maximumLowestSoleY": 0.0017321870950117169
+      "minimumLowestSoleY": 0.0011566591430426376,
+      "maximumLowestSoleY": 0.0017660074265158365
     },
     "run": {
       "sampledFrames": 481,
-      "minimumLowestSoleY": 0.0005786547831476696,
-      "maximumLowestSoleY": 0.019441955176438375
+      "minimumLowestSoleY": 0.0005837605578744576,
+      "maximumLowestSoleY": 0.019428786424028677
     }
   },
   "helmContact": {
@@ -441,21 +659,21 @@
     "hands": {
       "Left": {
         "position": [
-          -0.09298862645858935,
-          0.3820327088199953,
-          -0.22798350676239393
+          -0.09300431827064964,
+          0.3820524286253248,
+          -0.2280112926805179
         ],
-        "maxTargetError": 0.000038356892945523706,
+        "maxTargetError": 0.00005380458017798654,
         "maxPositionDrift": 0,
         "maxAngleDrift": 0
       },
       "Right": {
         "position": [
-          0.09298862645858935,
-          0.3820327088199953,
-          -0.22798350676239393
+          0.09300431827064964,
+          0.3820524286253248,
+          -0.2280112926805179
         ],
-        "maxTargetError": 0.000038356892945523706,
+        "maxTargetError": 0.00005380458017798654,
         "maxPositionDrift": 0,
         "maxAngleDrift": 0
       }
@@ -530,9 +748,9 @@
   },
   "benchFit": {
     "frontEdgeZ": -0.31,
-    "shinRearBelowSeatZ": -0.3135309752472824,
-    "shinClearance": 0.0035309752472824085,
-    "hipsBottomAboveSeat": 0.002957870979790278,
+    "shinRearBelowSeatZ": -0.3135269589763683,
+    "shinClearance": 0.0035269589763682885,
+    "hipsBottomAboveSeat": 0.0029550113151521895,
     "pantsSlatIntersections": 0
   }
 }

@@ -12,6 +12,7 @@ import {MeshoptEncoder,MeshoptDecoder} from 'meshoptimizer';
 import {createJackCharacter,JACK_SPEC} from './jack-character.mjs';
 import {measureV46Geometry} from './jack-geometry-metrics.mjs';
 import {measureJackProportions} from './jack-proportion-metrics.mjs';
+import {createV7BodySampler} from './jack-v7-metrics.mjs';
 
 globalThis.FileReader=class{
   async readAsArrayBuffer(blob){this.result=await blob.arrayBuffer();this.onloadend?.({target:this});}
@@ -39,7 +40,7 @@ const dir=new URL('../static/models/',import.meta.url),output=new URL('jack.glb'
 await fs.mkdir(dir,{recursive:true});await io.write(fileURLToPath(output),document);
 const checked=await io.read(fileURLToPath(output)),r=checked.getRoot();
 const primitives=r.listMeshes().flatMap(m=>m.listPrimitives());
-const report={revision:'v5-sculpt-and-surface',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
+const report={revision:'v7-spiky-crop-and-body',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
  triangles:primitives.reduce((s,p)=>s+(p.getIndices()?.getCount()||p.getAttribute('POSITION').getCount())/3,0),materials:r.listMaterials().length,drawCalls:primitives.length,
  joints:Object.keys(bones),skins:r.listSkins().length,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),
  animations:r.listAnimations().map(a=>({name:a.getName(),tracks:a.listChannels().length,duration:Math.max(...a.listSamplers().map(s=>Math.max(...s.getInput().getArray())))})),textures:r.listTextures().length,
@@ -58,13 +59,14 @@ decoded.scene.traverse(mesh=>{if(!mesh.isSkinnedMesh)return;skinned.push(mesh);c
 mixer.clipAction(decoded.animations.find(c=>c.name==='idle')).play();mixer.setTime(0);
 report.proportions=measureJackProportions(decoded.scene);
 report.sculpt=measureV46Geometry(decoded.scene);
+report.refinement=createV7BodySampler(decoded.scene)();
 const jaw=report.sculpt.face.slices.find(s=>s.t===.2).width/ report.sculpt.face.slices.find(s=>s.t===.45).width;
 if(report.sculpt.hemToFloorFraction<.29||report.sculpt.hemToFloorFraction>.32||report.sculpt.face.widthHeight>=.99||jaw>=.79)throw Error('Decoded sculpt missed the short-leg / oval-face contract');
 if(!['Hips','LeftUpLeg','RightUpLeg','LeftLeg','RightLeg'].every(name=>report.sculpt.pants.components[0].joints.includes(name)))throw Error('Trousers must have a continuous pelvis / leg surface');
 if(report.proportions.headsTall<2.15||report.proportions.headsTall>2.25)throw Error('Decoded character missed the 2.2-head silhouette');
 for(const [side,m]of Object.entries(report.proportions.sides)){
  const waist=m.waist.find(s=>s.offset===.05).gap,hand=m.hand.gap;
- if(!Number.isFinite(waist)||waist<.015||waist>.030||!Number.isFinite(hand)||hand<.040||hand>.070)throw Error(`${side}: decoded neutral arm clearance is out of range`);
+ if(!Number.isFinite(waist)||waist<.010||waist>.030||!Number.isFinite(hand)||hand<.040||hand>.070)throw Error(`${side}: decoded neutral arm clearance is out of range`);
 }
 report.groundContact={};
 for(const name of ['walk','run']){

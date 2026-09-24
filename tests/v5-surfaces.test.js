@@ -169,3 +169,19 @@ test('V5 baked hair uses unique UV1 without replacing the authored hair color or
   assert.equal(mesh.material.normalMap, fallback);
   library.dispose();
 });
+
+test('V7 crop retains its strand-flow normal through high/low surface swaps', async () => {
+  const library = makeLibrary(makeLoader()), root = model('Jack_SweptHair'), mesh = root.children[0];
+  mesh.geometry.setAttribute('uv1', mesh.geometry.getAttribute('uv').clone());
+  const source = mesh.material, normal = new THREE.Texture();
+  source.userData.normalSource = 'strand-flow'; source.normalMap = normal; source.normalScale.set(.4, .4);
+  const color = source.color.clone();
+  library.bind(root, 'jack');
+  for (const quality of ['high', 'low', 'high']) {
+    await library.loadQuality(quality);
+    assert.equal(mesh.material.normalMap, normal, 'a historical scalp bake must not replace the new crop flow');
+    assert.deepEqual(mesh.material.normalScale.toArray(), [.4, .4]);
+    assert.ok(mesh.material.color.equals(color));
+  }
+  library.release(root); assert.equal(mesh.material, source); library.dispose();
+});
