@@ -249,7 +249,7 @@ No API keys, backend, account setup, or environment variables are required to ru
 | Throttle | W / ↑ |
 | Brake, then reverse | S / ↓ |
 | Steer | A / D or ← / → |
-| Boost | Hold Shift |
+| Boost / run | Hold Shift for 2× movement speed |
 | Quick brake | Space |
 | Go ashore / read a nearby exhibit / board | E / Enter |
 | Walk on land | WASD / arrows, relative to the screen |
@@ -261,7 +261,7 @@ No API keys, backend, account setup, or environment variables are required to ru
 | Close a panel | Escape |
 | Camera zoom | Mouse wheel or + / − controls |
 
-Touch devices have a camera-relative joystick and on-screen driving, horn, reading, and action buttons. Boat Studio is available from Jack’s Harbor and Settings. On land, the joystick moves Jack and Boost becomes Run. Move to stand up from a bench; use Return to boat from anywhere on the current island.
+Touch devices have a camera-relative joystick and on-screen driving, horn, reading, and action buttons. Boat Studio is available from Jack’s Harbor and Settings. On land, the joystick moves Jack and Boost becomes Run; both Shift and the on-screen speed button double movement speed. Move to stand up from a bench; use Return to boat from anywhere on the current island.
 
 Opening a menu or switching away pauses simulation; an active challenge resumes after a short countdown. Going ashore, resetting, and traveling cancel an unfinished challenge. On land, the parked boat stays locked while sea life and traffic continue. Reading pauses the whole simulation. Sound starts off, and visual cues remain available while muted.
 

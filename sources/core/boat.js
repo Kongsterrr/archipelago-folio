@@ -1,20 +1,23 @@
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+export const BOAT_SPEED={cruise:12,boost:24,reverse:4,boostReverse:8};
 export function integrateHelm(state,input,dt){
  const forward={x:-Math.sin(state.yaw),z:-Math.cos(state.yaw)};
  let f=state.vx*forward.x+state.vz*forward.z;
+ const previousForwardSpeed=f;
  const side={x:-forward.z,z:forward.x};let lateral=state.vx*side.x+state.vz*side.z;
  let throttle=input.throttle||0;
- const accel=throttle<0&&f>.3?15:8;
+ const accel=throttle<0&&f>.3?15:input.boost?16:8;
  f+=throttle*accel*dt;
  f*=Math.exp(-(input.brake?8:throttle?0.15:0.9)*dt);
- // Let boost momentum decay instead of instantly clamping 18 down to 12.
+ // Let boost momentum decay instead of instantly clamping the boat to cruise speed.
  const previousSpeed=Math.hypot(state.vx,state.vz);
- const ceiling=input.boost?18:Math.max(12,previousSpeed-9*dt);
- f=clamp(f,-4,ceiling);lateral*=Math.exp(-3.2*dt);
+ const ceiling=input.boost?BOAT_SPEED.boost:Math.max(BOAT_SPEED.cruise,previousSpeed-9*dt);
+ const reverseLimit=input.boost?BOAT_SPEED.boostReverse:Math.max(BOAT_SPEED.reverse,previousForwardSpeed<0?Math.abs(previousForwardSpeed)-9*dt:BOAT_SPEED.reverse);
+ f=clamp(f,-reverseLimit,ceiling);lateral*=Math.exp(-3.2*dt);
  const turn=(input.steer||0)*(1.65-Math.min(Math.abs(f)/18,1)*.8);
  state.yaw+=turn*dt;
  state.vx=forward.x*f+side.x*lateral;state.vz=forward.z*f+side.z*lateral;
- const speed=Math.hypot(state.vx,state.vz),limit=f<0?4:ceiling;
+ const speed=Math.hypot(state.vx,state.vz),limit=f<0?reverseLimit:ceiling;
  if(speed>limit){state.vx*=limit/speed;state.vz*=limit/speed;}
  return state;
 }

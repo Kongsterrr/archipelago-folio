@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {CHARACTER} from '../core/character.js';
 import {applyJackHairSurface} from './jack-hair-surface.js';
 import {JackExpression} from './jack-expression.js';
 import {JACK_ASSET_URL, JACK_CLIPS} from './jack-asset.js';
@@ -173,7 +174,7 @@ export class JackAvatar {
       // Use one cycle rate for both strides during a blend. A collision that
       // stops the capsule also stops the feet.
       const stride = this.actions.get(this.pose === 'run' ? 'run' : 'walk');
-      const cycleRate = character.speed / ((this.pose === 'run' ? 4 : 2.4) * stride.getClip().duration);
+      const cycleRate = character.speed / ((this.pose === 'run' ? CHARACTER.run : CHARACTER.walk) * stride.getClip().duration);
       for (const [name, action] of this.actions) {
         if (locomotion(name)) action.setEffectiveTimeScale(cycleRate * action.getClip().duration);
         else if (name === 'idle' || name === 'sit') action.setEffectiveTimeScale(reduced ? 0 : 1);

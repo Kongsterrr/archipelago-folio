@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {BOAT_SPEED} from './boat.js';
 
 const FOV = 28;
 const AZIMUTH = Math.PI / 4;
@@ -96,7 +97,7 @@ export class CameraRig {
       if (this.settings.reduced) wantedDistance = this.baseDistance * (this.portrait ? 2.35 : 2.6);
       else if (boosting || speed > 6) {
         this.cooldown = .8;
-        const need = Math.max(speed, boosting ? 18 : 0) + 2;
+        const need = Math.max(speed, boosting ? BOAT_SPEED.boost : 0) + 2;
         let lo = wantedDistance, hi = this.baseDistance * (this.portrait ? 2 : 64/30);
         // Unusually narrow viewports can need more room than the reference devices.
         while (!this.fits(hi, position, this.heading, ahead, need) && hi < this.baseDistance * 4) hi *= 1.15;
