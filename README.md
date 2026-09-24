@@ -4,14 +4,14 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V7 — Textured Crop & Compact Silhouette** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V8 — Reference-Inspired Chibi Captain** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
 - **Nine content islands:** Jack’s Harbor; Amtrak, BeaconFire, and VisionX for experience; Affirmation, Research, and Catering for projects; Learning for education; and Connect for contact details.
-- **Meet Jack:** a soft oval-faced, approximately 2.2-head-tall cartoon captain with a forward textured chestnut crop and an open cream jacket with blinking eyes, gentle expressions, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
+- **Meet Jack:** a soft oval-faced, approximately 2.2-head-tall cartoon captain with voluminous textured chestnut fringe, larger expressive eyes, a graphite-and-sea-glass outfit, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
@@ -41,6 +41,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V5 — Sculpted Bay** | Refined character, runabout and Harbor assets, PBR surfaces, daylight/contact shading and shallow-water detail | [1d3b9e9](https://github.com/Kongsterrr/archipelago-folio/commit/1d3b9e9898ba9bd737290697005bd42b5292d418) |
 | **V6 — Sunset Bay** | Fixed low sunset, violet shadows, golden water, nine-island material and landmark detail | [9abe9cd](https://github.com/Kongsterrr/archipelago-folio/commit/9abe9cd7efee08c088ee68d6fbd8667abae2307d) |
 | **V7 — Textured Crop & Compact Silhouette** | Forward spiky crop, integrated shoulder and sleeve shaping, slimmer upper arms, smaller shoes and hands | [Current V7 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V8 — Reference-Inspired Chibi Captain** | Layered chestnut fringe, brighter chibi eyes, and a graphite/sea-glass outfit while retaining the animated production rig | [Current V8 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
 ### V1 — First Voyage
 
@@ -201,6 +202,15 @@ The 18 compressed island GLBs total **6,776,208 bytes** (high: **4,060,164**, lo
 - Added actual decoded-geometry regressions and front/three-quarter/side asset review with selectable poses. Validation measurements and remaining device limits are recorded in [`VALIDATION.md`](VALIDATION.md).
 
 The shipped Jack is **330,144 bytes / 34,764 triangles / six material batches**. **220 automated checks pass**. [Actual model views](art/v7/jack-materials.png) show the runtime GLB, with [neutral clay](art/v7/jack-clay.png), [helm](art/v7/jack-helm.png), [walking](art/v7/jack-walk.png) and [seated](art/v7/jack-sit.png) captures. These are rendered assets, not concept images.
+
+### V8 — Reference-Inspired Chibi Captain
+
+- Reworked Jack's hair into fuller, unevenly layered forward locks with visible sculpted strand grooves, and enlarged the glossy eyes while retaining the existing facial rig and blink behavior.
+- Changed the outfit to a graphite jacket and shoes, deep teal shirt, dark trousers, and small sea-glass piping inspired by the supplied chibi's sporty palette.
+- Kept the existing 1.20-unit silhouette, 22-joint shared skeleton, seven clips, helm hand targets, six material batches, and island/boat interactions.
+- Used the downloaded Sketchfab model only as an appearance reference. Its static geometry and textures are not included in the site.
+
+The generated runtime model and decoded-geometry checks are recorded in [`VALIDATION.md`](VALIDATION.md).
 
 
 ## Run locally

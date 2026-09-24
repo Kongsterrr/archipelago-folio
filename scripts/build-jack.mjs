@@ -40,7 +40,7 @@ const dir=new URL('../static/models/',import.meta.url),output=new URL('jack.glb'
 await fs.mkdir(dir,{recursive:true});await io.write(fileURLToPath(output),document);
 const checked=await io.read(fileURLToPath(output)),r=checked.getRoot();
 const primitives=r.listMeshes().flatMap(m=>m.listPrimitives());
-const report={revision:'v7-spiky-crop-and-body',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
+const report={revision:'v8-reference-inspired-chibi',file:'jack.glb',...JACK_SPEC,bytes:(await fs.stat(output)).size,rawBytes:raw.byteLength,
  triangles:primitives.reduce((s,p)=>s+(p.getIndices()?.getCount()||p.getAttribute('POSITION').getCount())/3,0),materials:r.listMaterials().length,drawCalls:primitives.length,
  joints:Object.keys(bones),skins:r.listSkins().length,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),
  animations:r.listAnimations().map(a=>({name:a.getName(),tracks:a.listChannels().length,duration:Math.max(...a.listSamplers().map(s=>Math.max(...s.getInput().getArray())))})),textures:r.listTextures().length,

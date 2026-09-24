@@ -1,3 +1,19 @@
+# V8 — Reference-Inspired Chibi Captain validation · 2026-09-24
+
+V8 uses the downloaded chibi as a visual reference for fuller layered hair, a more expressive face, and a darker sporty palette. The supplied GLB was not bundled or used as the runtime character: it is a static, high-density mesh without the shared rig and seven authored animations required for driving and walking. Jack remains the site’s original optimized procedural character.
+
+## Shipped character
+
+The production asset is **332,828 bytes / 35,180 triangles / six material batches and six draw calls**, with one **22-joint** skin and the existing seven clips (`idle`, `walk`, `run`, `helm`, `interact`, `sit`, `stand`). Standing height remains **1.20 units**, the head remains **0.542 units** (2.214 heads tall), and the boat-space helm hand target error stays below **0.054 mm** with zero authored position or angle drift. Walk/run ground contact, fixed helm hands, sitting, and bench clearance continue to be measured from the generated production geometry.
+
+Hair now has three overlapping crown locks and three forward fringe locks with shallow strand grooves and a tapered cap. The larger glossy eyes retain independent blink pivots; the authored white catchlights and their vertical placement were adjusted so the blink closes around the visual eye center without shifting the face. The outfit uses a graphite jacket and shoes, deep teal shirt, dark trousers, and restrained sea-glass piping. It keeps the existing six material batches, model size budget, surface binding, and all island/boat interactions.
+
+## Verification and limits
+
+The real V8 GLB was regenerated and inspected in the local model reviewer from front, three-quarter, and side views, then loaded in the actual sunset game preview aboard the runabout. Automated coverage checks the layered asymmetrical hair, open forehead, scalp embed, finite/non-degenerate geometry, retained joints/clips, camera framing, and existing gameplay. The full suite passes **220/220 automated checks**, and the Vite production build passes. Browser review was on the local preview; no new physical-phone or sustained performance test was run for V8.
+
+The model cache key is `jack.glb?v=8`. No site routes, content facts, local records, or browser storage schema changed.
+
 # V7 — Textured Crop & Compact Silhouette validation · 2026-09-24
 
 V7 edits the existing shared-skeleton Jack. Face geometry, head scale, clothing design/colors, legs, collision configuration, gameplay and portfolio content are retained. The short crop uses a fitted cap, three forward crown groups and three short lifted fringe groups. It retains six material batches and the existing UV1 atlas; its material selects the reusable UV0 strand-flow normal instead of projecting the old V5 side-swept-hair bake onto different geometry. High/low swaps preserve this normal and the original material color.

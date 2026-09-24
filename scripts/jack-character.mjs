@@ -49,7 +49,9 @@ export function createJackCharacter(){
  // The V5 bake belongs to the former swept geometry. Keep the reusable flow
  // normal on this crop at both qualities instead of applying an old scalp bake.
  materials.hair.userData.normalSource='strand-flow';
- const defaults={skin:'#ffc49a',cream:'#fff0d7',navy:'#293e52',hair:'#332720',ink:'#151a1e',accent:'#e18b4d'};
+ // V8 borrows the reference model's dark, sporty outfit and sea-glass accents
+ // while keeping Jack's existing six-material, sunset-compatible surface rig.
+ const defaults={skin:'#ffc49a',cream:'#303843',navy:'#176d77',hair:'#33251f',ink:'#10151a',accent:'#45b9b9'};
  const bins=new Map(Object.keys(materials).map(k=>[k,[]]));
  const part=(geometry,mat,joint,pos=[0,0,0],scale=[1,1,1],rot=[0,0,0],color=null)=>{
   const g=geometry,b=byName[joint];
@@ -107,7 +109,7 @@ export function createJackCharacter(){
  for(let n=0;n<fp.count;n++){
   const x=fp.getX(n),y=fp.getY(n),z=fp.getZ(n),front=Math.max(0,Math.min(1,-z/.12));
   const dx=(Math.abs(x)-.132)/.060,dy=(y+.080)/.042;
-  const blush=Math.exp(-(dx*dx+dy*dy)*1.35)*.40*front;
+  const blush=Math.exp(-(dx*dx+dy*dy)*1.35)*.48*front;
   const lipWarmth=Math.exp(-((x/.043)**2)-(((y+.128)/.015)**2))*.11*front;
   const color=new THREE.Color('#ffc49a').lerp(new THREE.Color('#ee9283'),blush).lerp(new THREE.Color('#ce907c'),lipWarmth);
   faceTints.push(...color.toArray());
@@ -117,14 +119,14 @@ export function createJackCharacter(){
   orb('skin','Head',[s*.199,-.067,.008],[.038,.047,.028],18,12);
   orb('skin','Head',[s*.217,-.068,-.011],[.019,.027,.011],14,10,'#eeb08c');
   const eyePart=(mat,pos,scale,segments,rings,color)=>{
-   const g=new THREE.SphereGeometry(1,segments,rings);g.scale(...scale);g.translate(...pos);g.rotateY(-s*.34);part(g,mat,`${side}Eye`,undefined,undefined,undefined,color);
+   const g=new THREE.SphereGeometry(1,segments,rings);g.scale(...scale);g.translate(pos[0],pos[1]+.0013,pos[2]);g.rotateY(-s*.34);part(g,mat,`${side}Eye`,undefined,undefined,undefined,color);
   };
   // The reference uses simple deep-black oval eyes, not outlined iris rings.
-  eyePart('ink',[0,0,0],[.0235,.034,.008],22,14,'#151719');
-  eyePart('cream',[-.005,.013,-.0065],[.0045,.006,.002],12,9,'#fffdf6');
-  eyePart('ink',[.007,-.014,-.006],[.003,.004,.001],10,7,'#35383a');
+  eyePart('ink',[0,-.001,0],[.028,.040,.009],24,16,'#101317');
+  eyePart('cream',[-.006,.013,-.007],[.0052,.0075,.002],14,10,'#fffdf6');
+  eyePart('ink',[.009,-.012,-.007],[.0035,.0045,.001],10,7,'#35383a');
   const brow=[facePoint(s*.044,.036,.009),facePoint(s*.068,.048,.009),facePoint(s*.095,.044,.008),facePoint(s*.112,.031,.005)],pivot=facePoint(s*.076,.039,.008);
-  facialCurve('hair',`${side}Brow`,brow.map(p=>p.map((v,i)=>v-pivot[i])),.008,14,'#543629');
+  facialCurve('hair',`${side}Brow`,brow.map(p=>p.map((v,i)=>v-pivot[i])),.009,14,'#543629');
   const lid=[facePoint(s*.052,-.049,.003),facePoint(s*.075,-.057,.003),facePoint(s*.096,-.048,.002)];
   facialCurve('skin','Head',lid,.0017,10,'#eab18d');
  }
@@ -151,7 +153,7 @@ export function createJackCharacter(){
  // Widen only the upper chest; keep the existing compact waist and tee neckline.
  const tee=new THREE.SphereGeometry(1,24,18);tee.scale(.130,.157,.087);const teeP=tee.getAttribute('position');
  for(let i=0;i<teeP.count;i++)teeP.setX(i,teeP.getX(i)*(1+.065*THREE.MathUtils.smoothstep(teeP.getY(i),-.045,.065)));
- tee.computeVertexNormals();part(tee,'navy','Chest',[0,-.022,.008],undefined,undefined,'#26394c');
+ tee.computeVertexNormals();part(tee,'navy','Chest',[0,-.022,.008],undefined,undefined,'#176d77');
  // Upper jacket rings form the shoulder slope, blending into the sleeve root.
  const coatKeys=[[-.170,.134,.094],[-.151,.143,.101],[-.110,.147,.105],[-.050,.152,.106],[.015,.163,.105],[.065,.161,.098],[.100,.140,.085],[.120,.064,.045]];
  const coatProfile=Array.from({length:25},(_,n)=>profileAt(coatKeys,.120-n*.290/24));
@@ -169,35 +171,35 @@ export function createJackCharacter(){
  }
  for(let i=0;i<rings-1;i++)for(const j of[0,cols]){const a=i*stride+j,b=a+stride,c=a+layerSize,d=b+layerSize;if(j===0)ci.push(a,b,c,b,d,c);else ci.push(a,c,b,b,c,d);}
  for(const i of[0,rings-1])for(let j=0;j<cols;j++){const a=i*stride+j,b=a+1,c=a+layerSize,d=b+layerSize;if(i===0)ci.push(a,c,b,b,c,d);else ci.push(a,b,c,b,d,c);}
- const jacket=new THREE.BufferGeometry();jacket.setAttribute('position',new THREE.Float32BufferAttribute(cp,3));jacket.setIndex(ci);jacket.computeVertexNormals();part(jacket,'cream','Chest',undefined,undefined,undefined,'#f2e4cf');
+ const jacket=new THREE.BufferGeometry();jacket.setAttribute('position',new THREE.Float32BufferAttribute(cp,3));jacket.setIndex(ci);jacket.computeVertexNormals();part(jacket,'cream','Chest',undefined,undefined,undefined,'#303843');
  for(const s of[-1,1]){
   // Folded collar flaps with soft bevels, rather than a padded round neck ring.
   const shape=new THREE.Shape();shape.moveTo(s*.044,.127);shape.quadraticCurveTo(s*.078,.136,s*.111,.128);shape.quadraticCurveTo(s*.126,.111,s*.123,.079);shape.quadraticCurveTo(s*.097,.076,s*.061,.083);shape.quadraticCurveTo(s*.052,.101,s*.044,.127);
   const collar=new THREE.ExtrudeGeometry(shape,{depth:.010,bevelEnabled:true,bevelSize:.006,bevelThickness:.005,bevelSegments:3,steps:1});
-  part(collar,'cream','Chest',[0,0,-.084],undefined,undefined,'#f8ecda');
-  curve('cream','Chest',[[s*.102,-.028,-.068],[s*.117,-.051,-.059],[s*.112,-.078,-.060]],.0025,14,'#d9cbb8');
-  curve('cream','Chest',coatProfile.map(([y,w,d])=>[s*w*Math.sin(gap),y,-d*Math.cos(gap)+.006]),.0031,20,'#dfd2bf');
-  for(let k=0;k<17;k++){const y=.085-k*.012,point=coatProfile.reduce((best,p)=>Math.abs(p[0]-y)<Math.abs(best[0]-y)?p:best);orb('cream','Chest',[s*(point[1]*Math.sin(gap)-.002),y,-point[2]*Math.cos(gap)+.003],[.0028,.002,.0025],6,4,'#cabdaa');}
+  part(collar,'cream','Chest',[0,0,-.084],undefined,undefined,'#59636d');
+  curve('cream','Chest',[[s*.102,-.028,-.068],[s*.117,-.051,-.059],[s*.112,-.078,-.060]],.0025,14,'#65727d');
+  curve('cream','Chest',coatProfile.map(([y,w,d])=>[s*w*Math.sin(gap),y,-d*Math.cos(gap)+.006]),.0031,20,'#65727d');
+  for(let k=0;k<17;k++){const y=.085-k*.012,point=coatProfile.reduce((best,p)=>Math.abs(p[0]-y)<Math.abs(best[0]-y)?p:best);orb('accent','Chest',[s*(point[1]*Math.sin(gap)-.002),y,-point[2]*Math.cos(gap)+.003],[.0024,.0018,.0022],6,4,'#9de1dc');}
  }
- soft('accent','Chest',[.059,.016,-.094],[.012,.034,.007],[0,0,-.03],.003,'#ea8744');
- curve('cream','Chest',[[.059,.047,-.093],[.059,.039,-.095],[.059,.031,-.094]],.003,8,'#d5c6ad');
+ soft('accent','Chest',[.059,.016,-.094],[.012,.034,.007],[0,0,-.03],.003,'#45b9b9');
+ curve('accent','Chest',[[.059,.047,-.093],[.059,.039,-.095],[.059,.031,-.094]],.0028,8,'#8ee1d9');
  const trousers=createTrousersGeometry(THREE),tp=trousers.getAttribute('position');
  const tw=Array.from({length:tp.count},(_,i)=>trousersSkinWeights(tp.getX(i),tp.getY(i)));
- part(trousers,'navy','Hips',undefined,undefined,undefined,'#293b50');
+ part(trousers,'navy','Hips',undefined,undefined,undefined,'#20252e');
  const ti=trousers.getAttribute('skinIndex'),ts=trousers.getAttribute('skinWeight');
  tw.forEach((weights,i)=>{const ids=[0,0,0,0],values=[0,0,0,0];weights.forEach(([name,w],j)=>{ids[j]=bones.indexOf(byName[name]);values[j]=w;});ti.setXYZW(i,...ids);ts.setXYZW(i,...values);});
- curve('navy','Hips',[[0,.019,-.087],[.010,-.010,-.089],[.008,-.038,-.082]],.002,12,'#233448');
+ curve('navy','Hips',[[0,.019,-.087],[.010,-.010,-.089],[.008,-.038,-.082]],.002,12,'#171c23');
  for(const[side,s]of[['Left',-1],['Right',1]]){
   cloth('cream',`${side}Arm`,`${side}ForeArm`,[[.044,0],[.037,.031],[.024,.052],[.008,.060],[0,.061],[-.04,.061],[-.08,.059],[-.115,.057],[-.140,.057],[-.155,.056],[-.17,.055],[-.195,.054],[-.225,.052],[-.255,.051],[-.279,.047],[-.294,.026],[-.300,0]].map(([y,r])=>[y*ARM/.155,r*1.08]),-ARM,1.05);
-  part(createFoldedCuff(.052,.054,.029),'cream',`${side}ForeArm`,[0,-ARM+.017,0],undefined,undefined,'#edddc4');
+  part(createFoldedCuff(.052,.054,.029),'cream',`${side}ForeArm`,[0,-ARM+.017,0],undefined,undefined,'#424d57');
   orb('skin',`${side}Hand`,[0,-.011,-.004],[.042,.043,.039],16,12);
   orb('skin',`${side}Hand`,[-s*.031,-.007,-.022],[.019,.025,.021],12,9);
   // Compact sneaker volumes overlap into one silhouette, with no box joints.
   const soleShape=new THREE.Shape();soleShape.moveTo(-.063,.055);soleShape.quadraticCurveTo(-.077,.015,-.073,-.076);soleShape.quadraticCurveTo(-.068,-.141,0,-.146);soleShape.quadraticCurveTo(.068,-.141,.073,-.076);soleShape.quadraticCurveTo(.077,.015,.063,.055);soleShape.quadraticCurveTo(0,.088,-.063,.055);soleShape.closePath();
-  const sole=new THREE.ExtrudeGeometry(soleShape,{depth:.018,curveSegments:10,bevelEnabled:true,bevelThickness:.005,bevelSize:.003,bevelSegments:3,steps:1});sole.rotateX(Math.PI/2);part(sole,'cream',`${side}Foot`,[0,-.063,0],undefined,undefined,'#e7d7bc');
-  part(createSneakerUpper(),'cream',`${side}Foot`,undefined,undefined,undefined,'#fff0d7');
-  curve('cream',`${side}Foot`,[[-.058,-.010,-.043],[-.058,-.012,-.090],[0,-.015,-.124],[.058,-.012,-.090],[.058,-.010,-.043]],.0017,14,'#e3d0ae');
-  for(const z of[-.060,-.033])curve('cream',`${side}Foot`,[[-.030,.018,z],[0,.025,z-.002],[.030,.018,z]],.004,7,'#ddccae');
+  const sole=new THREE.ExtrudeGeometry(soleShape,{depth:.018,curveSegments:10,bevelEnabled:true,bevelThickness:.005,bevelSize:.003,bevelSegments:3,steps:1});sole.rotateX(Math.PI/2);part(sole,'ink',`${side}Foot`,[0,-.063,0],undefined,undefined,'#10151a');
+  part(createSneakerUpper(),'cream',`${side}Foot`,undefined,undefined,undefined,'#303843');
+  curve('accent',`${side}Foot`,[[-.058,-.010,-.043],[-.058,-.012,-.090],[0,-.015,-.124],[.058,-.012,-.090],[.058,-.010,-.043]],.0017,14,'#53c6c2');
+  for(const z of[-.060,-.033])curve('accent',`${side}Foot`,[[-.030,.018,z],[0,.025,z-.002],[.030,.018,z]],.0032,7,'#61c9c5');
  }
  // Keep the original head-to-crown height after scaling the whole head, face
  // pivots included. Shoes retain their original thickness and Y=0 datum.
@@ -262,6 +264,6 @@ export function createJackCharacter(){
   tracks.push(new THREE.VectorKeyframeTrack('Hips.position',times,poses.flatMap(pp=>pp.Hips.p)));animations.push(new THREE.AnimationClip(state,duration,tracks));
  }
  for(const b of bones){b.position.fromArray(bind[b.name].p);b.quaternion.fromArray(bind[b.name].q);}root.updateMatrixWorld(true);skeleton.update();
- root.animations=animations;root.userData={originalProceduralAsset:true,assetRevision:'v7-spiky-crop-and-body',surfaceContract:{uv:'TEXCOORD_0',tangent:'Derived from UV in material shader',color:'multiply tile basecolor by COLOR_0'},characterSpec:JACK_SPEC,...JACK_SPEC,rig:'One 22-joint skeleton including independently blinkable eyes; rounded soft toy geometry',benchPlacement:'Root Y = seat surface Y - characterSpec.benchSeatOffset; move root characterSpec.benchForwardOffset toward seated facing. Restore floor position while stand plays .6s.',helm:'Runtime boatVisual anchor/scale are characterSpec.helmAnchor/.helmScale. All helm body and hand keys are constant.'};root.updateMatrixWorld(true);
+ root.animations=animations;root.userData={originalProceduralAsset:true,assetRevision:'v8-reference-inspired-chibi',surfaceContract:{uv:'TEXCOORD_0',tangent:'Derived from UV in material shader',color:'multiply tile basecolor by COLOR_0'},characterSpec:JACK_SPEC,...JACK_SPEC,rig:'One 22-joint skeleton including independently blinkable eyes; rounded soft toy geometry',benchPlacement:'Root Y = seat surface Y - characterSpec.benchSeatOffset; move root characterSpec.benchForwardOffset toward seated facing. Restore floor position while stand plays .6s.',helm:'Runtime boatVisual anchor/scale are characterSpec.helmAnchor/.helmScale. All helm body and hand keys are constant.'};root.updateMatrixWorld(true);
  return{root,bones:byName,skeleton,animations,materials};
 }

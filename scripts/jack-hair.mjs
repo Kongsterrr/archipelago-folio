@@ -1,11 +1,11 @@
-/** V7 textured spiky crop. Metres, Head-local, facing -Z.
- * A short tapered nape/cap underlies three crown locks and three front tufts.
+/** V8 reference-inspired textured crop. Metres, Head-local, facing -Z.
+ * A short tapered nape/cap underlies three plush crown locks and three forward fringe locks.
  * Call addJackHair(THREE,part). Recommended hair material roughness: .49.
  */
 export function addJackHair(THREE,part){
  const pieces=[];
  const capRadius={x:.212,y:.216,z:.195};
- const colorBase=new THREE.Color('#50372b'),colorLight=new THREE.Color('#86604a'),colorDark=new THREE.Color('#33251f');
+ const colorBase=new THREE.Color('#412b21'),colorLight=new THREE.Color('#865d43'),colorDark=new THREE.Color('#211611');
  const tint=(light,dark=0)=>colorBase.clone().lerp(colorLight,light).lerp(colorDark,dark).toArray();
  const mesh=(name,positions,indices,colors,uvs=null)=>{const g=new THREE.BufferGeometry();g.name=name;g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setIndex(indices);g.computeVertexNormals();pieces.push({geometry:g,colors,uvs});return g;};
  // The sides finish above the ears and the nape follows the upper rear skull.
@@ -16,7 +16,7 @@ export function addJackHair(THREE,part){
   const index=(row,col)=>1+(row-1)*cols+(col+cols)%cols;
   for(let r=1;r<=rows;r++)for(let c=0;c<cols;c++){
    const phi=c/cols*Math.PI*2,front=Math.max(0,-Math.sin(phi)),back=Math.max(0,Math.sin(phi)),limit=1.56-.87*Math.pow(front,.55)+.60*back+.016*Math.cos(phi*7),theta=limit*r/rows;
-   const flow=phi+.08*Math.cos(theta),ridge=(.0024*Math.cos(flow*13)+.0005*Math.cos(flow*29))*Math.sin(theta)**2;
+    const flow=phi+.08*Math.cos(theta),ridge=(.0028*Math.cos(flow*13)+.0007*Math.cos(flow*29))*Math.sin(theta)**2;
    const x=(capRadius.x+ridge)*Math.sin(theta)*Math.cos(phi),z=.008+(capRadius.z+ridge)*Math.sin(theta)*Math.sin(phi);
    const rootFill=.007*Math.exp(-((x/.145)**2)-(((z-.012)/.13)**2))*Math.max(0,Math.cos(theta));
    ps.push(x,-.020+capRadius.y*Math.cos(theta)+rootFill,z);cs.push(...tint(.07+.015*Math.cos(flow*17),.035));
@@ -51,7 +51,7 @@ export function addJackHair(THREE,part){
     // Six long grooves flow with each tuft. Relief stays below 2.4mm and fades
     // toward root/tip; broad convex surfaces remain dominant at game distance.
     const strand=Math.cos((u+.032*Math.sin(t*Math.PI+phase))*Math.PI*5.1+phase),groove=Math.pow(Math.max(0,strand),8);
-    const relief=-.0024*groove*outer**3*Math.sin(Math.PI*t)**.8;
+    const relief=-.0030*groove*outer**3*Math.sin(Math.PI*t)**.8;
     // An asymmetric deep root/underside embeds each lock into the cap. Surface
     // relief remains small, but no thin crescent of sky separates tuft and scalp.
     const underside=-embed*Math.max(0,-Math.sin(a))**2*Math.sin(Math.PI*t)**.55;
@@ -73,22 +73,21 @@ export function addJackHair(THREE,part){
   for(let k=0;k<sides;k++)ix.push(ring(rows-1,k),ring(rows-1,k+1),end);
   mesh(name,ps,ix,cs,uvs);
  };
- // Three broad crown sections flow forward from embedded rear roots. Their
- // unequal heights and slightly offset axes prevent a central part or a single
- // smooth helmet, while broad bases keep the style chunky at game distance.
- lock('Crop_Crown_Left',[[-.102,.129,.093],[-.099,.197,.047],[-.093,.210,-.019],[-.083,.210,-.108]],.061,.027,{phase:.9,light:.05,tip:1.15});
- lock('Crop_Crown_Center',[[.005,.142,.116],[.002,.216,.056],[.008,.221,-.019],[.013,.216,-.117]],.069,.029,{phase:.2,light:.065,tip:1.15});
- lock('Crop_Crown_Right',[[.105,.128,.091],[.101,.194,.041],[.095,.207,-.024],[.082,.212,-.107]],.060,.027,{phase:.6,light:.055,tip:1.20});
- // Compact forward ledges with a small upturned tip, held against the crown.
- // Most of the strand travels forward; only its short end lifts, avoiding a
- // tall vertical cone silhouette or long forehead fringe.
- lock('Crop_Fringe_Left',[[-.111,.155,.012],[-.108,.208,-.045],[-.103,.225,-.095],[-.117,.263,-.146]],.058,.028,{phase:.4,light:.07,tip:1.20,embed:.023});
- lock('Crop_Fringe_Center',[[-.016,.174,.024],[-.010,.224,-.036],[-.012,.234,-.090],[-.023,.273,-.155]],.066,.030,{phase:1.0,light:.08,tip:1.15,embed:.023});
- lock('Crop_Fringe_Right',[[.111,.154,.013],[.111,.204,-.044],[.104,.224,-.093],[.088,.266,-.145]],.057,.028,{phase:.7,light:.065,tip:1.20,embed:.023});
- // Keep the existing head-to-hair height. Flatten only the upper crown if a
- // section thickness would exceed it; never change face geometry or head scale.
+ // Broad, overlapping crown locks flow toward the brow on slightly different
+ // diagonals. The chunky volumes and long shallow grooves echo the supplied
+ // figure without importing its static mesh or texture atlas.
+ lock('Crop_Crown_Left',[[-.112,.132,.104],[-.115,.193,.038],[-.102,.218,-.038],[-.074,.199,-.130]],.069,.032,{phase:.9,light:.075,tip:.94,embed:.024});
+ lock('Crop_Crown_Center',[[.012,.138,.124],[.018,.220,.050],[.030,.237,-.034],[.022,.212,-.139]],.078,.036,{phase:.2,light:.13,tip:.88,embed:.026});
+ lock('Crop_Crown_Right',[[.119,.130,.094],[.125,.190,.030],[.104,.220,-.042],[.077,.195,-.126]],.068,.032,{phase:.6,light:.10,tip:1.00,embed:.024});
+ // Three soft forelocks sweep toward the forehead and settle above the brows.
+ // Their short, staggered tips keep the face open and avoid a bowl-cut edge.
+ lock('Crop_Fringe_Left',[[-.137,.166,.023],[-.143,.183,-.045],[-.137,.117,-.111],[-.109,.078,-.177]],.064,.031,{phase:.4,light:.16,tip:.86,embed:.028});
+ lock('Crop_Fringe_Center',[[-.039,.182,.030],[-.020,.210,-.043],[.003,.130,-.117],[.024,.070,-.190]],.076,.035,{phase:1.0,light:.19,tip:.82,embed:.030});
+ lock('Crop_Fringe_Right',[[.091,.164,.026],[.130,.192,-.040],[.136,.128,-.108],[.151,.088,-.173]],.064,.031,{phase:.7,light:.12,tip:.90,embed:.028});
+ // Preserve Jack's authored height and helm/seat calibration while making
+ // the crown fuller and the forward fringe visibly layered.
  let top=-Infinity;for(const {geometry:g}of pieces){const a=g.getAttribute('position');for(let i=0;i<a.count;i++)top=Math.max(top,a.getY(i));}
- for(const [pieceIndex,{geometry:g,colors,uvs}]of pieces.entries()){const a=g.getAttribute('position');for(let i=0;i<a.count;i++)if(a.getY(i)>.15)a.setY(i,.15+(a.getY(i)-.15)*(.253-.15)/(top-.15));g.computeVertexNormals();g.computeBoundingBox();g.userData={...g.userData,style:'V7_forward_textured_crop',recommendedRoughness:.49};part(g,'hair','Head',undefined,undefined,undefined,'#50372b');g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));if(uvs)g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+ for(const [pieceIndex,{geometry:g,colors,uvs}]of pieces.entries()){const a=g.getAttribute('position');for(let i=0;i<a.count;i++)if(a.getY(i)>.15)a.setY(i,.15+(a.getY(i)-.15)*(.253-.15)/(top-.15));g.computeVertexNormals();g.computeBoundingBox();g.userData={...g.userData,style:'V8_reference_textured_tousled_crop',recommendedRoughness:.49};part(g,'hair','Head',undefined,undefined,undefined,'#412b21');g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));if(uvs)g.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
   // UV1 is a non-overlapping 4x3 authoring atlas for the actual Blender bake.
   // Cell zero is reserved for the brows; the scalp and six locks use 1..7.
   const uv=g.getAttribute('uv'),atlas=[],cell=pieceIndex+1,col=cell%4,row=Math.floor(cell/4),pad=.018;
