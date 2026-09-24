@@ -3,7 +3,7 @@ import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {WakePool} from './wake-pool.js';
 import {islands,toWorld} from '../config.js';
 import {waterClear,clearSegment,oceanHeight} from './water-space.js';
-export const SEA_LIFE=[{id:'dolphin',name:'Bottlenose dolphins',icon:'≈',hint:'Watch the open water east of the welcome channel.'},{id:'shark',name:'Ocean neighbours',icon:'△',hint:'A dorsal fin sometimes breaks the surface of the outer sea.'},{id:'fish',name:'Shoals of colour',icon:'⋈',hint:'Slow down near shallow coastal water.'},{id:'turtle',name:'Unhurried travellers',icon:'◉',hint:'Look around the garden coast and the quiet cove.'}];
+export const SEA_LIFE=[{id:'dolphin',name:'Bottlenose dolphins',hint:'Watch the open water east of the welcome channel.'},{id:'shark',name:'Ocean neighbours',hint:'A dorsal fin sometimes breaks the surface of the outer sea.'},{id:'fish',name:'Shoals of colour',hint:'Slow down near shallow coastal water.'},{id:'turtle',name:'Unhurried travellers',hint:'Look around the garden coast and the quiet cove.'}];
 export const HABITATS=[{kind:'dolphin',x:27,z:45,rx:10,rz:6,count:3},{kind:'shark',x:147,z:0,rx:4,rz:20,count:1},{kind:'shark',x:-147,z:-10,rx:4,rz:18,count:1},{kind:'turtle',x:91,z:55,rx:3,rz:3,count:1},{kind:'turtle',x:41,z:66,rx:3,rz:3,count:1}];
 export const SHOALS=[{x:10,z:51},{x:-45,z:33},{x:53,z:65}];
 const angle=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));

@@ -13,6 +13,7 @@ import { createIslandColliders, createBoundaryColliders } from './core/collision
 import { IslandController } from './world/island.js';
 import { FeedbackSystem } from './world/feedback.js';
 import { Interactable } from './world/interactable.js';
+import { syncInteractionMarkers } from './core/interaction-markers.js';
 import { PropManager } from './world/props.js';
 import {DockInteraction} from './core/dock.js';
 import {AmbientFleet} from './world/fleet.js';
@@ -114,15 +115,17 @@ export class Game {
  }
  createInteractables(){
   for(const i of islands){
-   const marker=label('F',{width:72,height:72,worldWidth:1.25,background:'#fff5dd',color:'#254f62',fontSize:38});marker.position.set(i.action.x,2.1,i.action.z);this.scene.add(marker);this.actionMarkers.push({marker,position:i.action});
-   this.interactables.push(new Interactable({id:i.id,label:islandActions[i.id][0],position:i.action,range:8,object:marker,run:()=>i.id==='learning'?this.events.trigger('challengeopen',['lighthouse']):this.activateIsland(i.id)}));
+   const marker=label('F',{width:72,height:72,worldWidth:1.25,background:'#fff5dd',color:'#254f62',fontSize:38});marker.position.set(i.action.x,2.1,i.action.z);marker.visible=false;this.scene.add(marker);
+   const action=new Interactable({id:i.id,label:islandActions[i.id][0],position:i.action,range:8,object:marker,run:()=>i.id==='learning'?this.events.trigger('challengeopen',['lighthouse']):this.activateIsland(i.id)});
+   this.interactables.push(action);this.actionMarkers.push({marker,action});
   }
   for(const c of challenges)this.interactables.push(new Interactable({id:'challenge-'+c.id,label:'Play '+c.name,position:c,range:9,run:()=>this.events.trigger('challengeopen',[c.id])}));
   for(const lamp of lamps)this.interactables.push(new Interactable({id:'lamp-'+lamp.id,label:'Activate '+lamp.name,position:lamp,range:6,available:()=>this.challenges.kind==='lighthouse'&&this.challenges.state==='running',run:()=>this.challenges.activateLamp(lamp.id)}));
   this.bottle=new THREE.Group();this.bottle.position.set(secretPlaces.bottle.x,.25,secretPlaces.bottle.z);this.scene.add(this.bottle);
   const bottle=cylinder(this.bottle,.25,1.2,'#91dcc4',[0,.1,0]);bottle.rotation.z=1.05;cylinder(bottle,.14,.22,'wood',[0,.68,0]);
-  const paper=box(bottle,[.22,.6,.1],'ivory',[0,0,.15]);paper.rotation.y=.3;const bottleMarker=label('✉',{width:80,height:80,worldWidth:1.1,background:'#fff5dd',color:'#254f62',fontSize:40});bottleMarker.position.set(0,1.8,0);this.bottle.add(bottleMarker);
-  this.interactables.push(new Interactable({id:'bottle',label:'Read the message',position:secretPlaces.bottle,range:8,object:this.bottle,run:()=>{this.findSecret('bottle');this.events.trigger('message',['A message from the sea: Hello, world.']);}}));
+  const paper=box(bottle,[.22,.6,.1],'ivory',[0,0,.15]);paper.rotation.y=.3;const bottleMarker=label('F',{width:72,height:72,worldWidth:1,background:'#fff5dd',color:'#254f62',fontSize:38});bottleMarker.position.set(0,1.8,0);bottleMarker.visible=false;this.bottle.add(bottleMarker);
+  const bottleAction=new Interactable({id:'bottle',label:'Read the message',position:secretPlaces.bottle,range:8,object:this.bottle,run:()=>{this.findSecret('bottle');this.events.trigger('message',['A message from the sea: Hello, world.']);}});
+  this.interactables.push(bottleAction);this.actionMarkers.push({marker:bottleMarker,action:bottleAction});
  }
  bindPointer(){
   this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();let down=null;
@@ -170,7 +173,7 @@ export class Game {
   for(const controller of this.controllers.values()){controller.pedestrian=this.player.walking&&this.player.island.id===controller.island.id?this.character.position:null;controller.update(frozen?0:dt,p,this.simTime,this.focus?.id===controller.island.id,this.settings.reduced);}
   this.appearance?.update(dt,input,this.boat.speed,this.settings.reduced,frozen);this.jack.update(dt,{player:this.player,boatVisual:this.boatVisual,character:this.character,alpha,input,reduced:this.settings.reduced,frozen,lookTarget:this.nearStation?.position});
   this.fleet?.update(alpha,p,this.settings.reduced?0:this.simTime);this.marine?.update(alpha,p,this.camera,this.settings.reduced?0:this.simTime,[...this.loaded.values()].map(i=>i.group).concat(this.fleet?.items.map(i=>i.group)||[]));this.details?.update(frozen?0:dt,p,this.simTime,this.settings.reduced?0:this.simTime,this.controllers);
-  this.environment.update(this.challenges,this.simTime,p);this.updateWake(frozen);this.feedback.update(frozen?0:dt);this.updateCamera(dt);this.updateNearby(dt,now,frozen);this.updateOcclusion(now);
+  this.updateWake(frozen);this.feedback.update(frozen?0:dt);this.updateCamera(dt);this.updateNearby(dt,now,frozen);this.environment.update(this.challenges,this.simTime,p,this.nearAction);this.updateOcclusion(now);
   const lightTarget=this.focus?.boatStudio?this.boat.position:this.focus||p;
   this.lighting.update(lightTarget,!this.focus&&this.player.onLand,this.cameraRig.distance);
   this.events.trigger('frame',[{position:p,yaw:this.activeActor.yaw,speed:this.activeActor.speed,dt,now,frozen}]);this.renderer.info.reset();this.lighting.render();
@@ -189,7 +192,7 @@ export class Game {
    this.nearAction=!this.canBoard&&this.nearStation?.kind!=='read'?this.nearStation:null;
    for(const [id,actions]of this.landActions)for(const a of actions)if(a.object)a.object.visible=!frozen&&id===this.player.island.id&&a===this.nearStation&&!this.canBoard;
   }else{this.nearAction=!frozen?Interactable.nearest(this.interactables,p,this.camera):null;for(const actions of this.landActions.values())for(const a of actions)a.object.visible=false;}
-  for(const m of this.actionMarkers)m.marker.visible=!frozen&&!this.player?.walking&&Math.hypot(p.x-m.position.x,p.z-m.position.z)<15;
+  syncInteractionMarkers(this.actionMarkers,this.nearAction,{frozen,walking:!!this.player?.walking});
   if(!frozen&&!this.player?.walking){if(Math.hypot(p.x-secretPlaces.arch.x,p.z-secretPlaces.arch.z)<3.2)this.findSecret('arch');if(Math.hypot(p.x-secretPlaces.cove.x,p.z-secretPlaces.cove.z)<5)this.findSecret('cove');}
  }
  get activeActor(){return this.player?.activeActor||this.boat;}
@@ -275,7 +278,7 @@ export class Game {
   const point=localToWorld(island,station.type==='bench'?station.approach:{...station,y:station.y??layout.groundY??.85});const kind=station.type;
   const marker=label(kind==='read'?'E':'F',{width:64,height:64,worldWidth:.45,fontSize:32,background:'#fff5dd',color:'#254f62'});marker.position.set(point.x,point.y+1.65,point.z);marker.visible=false;this.scene.add(marker);
   const action=new Interactable({id:island.id+':'+station.id,label:station.label,position:point,range:1.8,object:marker,run:()=>{if(this.frozen||!this.player.walking)return;this.jack.interact();
-   if(kind==='read')this.events.trigger('exhibit',[{island:island.id,station,position:point}]);else if(kind==='studio')this.events.trigger('studio');else if(kind==='challenge')this.events.trigger('challengeopen',['lighthouse']);else if(kind==='bench'){this.character.teleport({...point,y:layout.groundY??.85,yaw:(station.yaw||0)+island.rotation});const seat=localToWorld(island,station);this.character.seatYaw=(station.yaw||0)+island.rotation+Math.PI;this.character.seatVisual=this.jack.seatPosition(seat,station.y+.06,this.character.seatYaw);this.character.seated=true;if(island.id==='affirmation')this.activateIsland(island.id);}else{this.activateIsland(island.id);if(station.action==='rag')this.events.trigger('message',['Concept illustration · Retrieve → context → response.']);}
+   if(kind==='read')this.events.trigger('exhibit',[{island:island.id,station,position:point}]);else if(kind==='studio')this.events.trigger('studio');else if(kind==='challenge')this.events.trigger('challengeopen',['lighthouse']);else if(kind==='bench'){this.character.teleport({...point,y:layout.groundY??.85,yaw:(station.yaw||0)+island.rotation});const seat=localToWorld(island,station);this.character.seatYaw=(station.yaw||0)+island.rotation+Math.PI;this.character.seatVisual=this.jack.seatPosition(seat,station.y+.06,this.character.seatYaw);this.character.seated=true;if(island.id==='affirmation')this.activateIsland(island.id);}else{this.activateIsland(island.id);if(station.action==='rag')this.events.trigger('message',['Concept illustration · Retrieve, add context, and respond.']);}
   }});action.kind=kind;action.station=station;actions.push(action);
  }this.landActions.set(island.id,actions);}
  setQuality(level){this.settings.quality=level;this.renderer.setPixelRatio(Math.min(devicePixelRatio,level==='low'?1:1.5));this.lighting.setQuality(level);this.bayWater.setQuality(level);if(this.mode!=='loading')this.surfaces.loadQuality(level);this.details?.setQuality();for(const [id,item] of this.loaded)if(item.requested&&item.requestedQuality!==level)this.loadModel(id,true);}

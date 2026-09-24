@@ -49,9 +49,9 @@ export class Environment {
   const geo=new THREE.CylinderGeometry(.18,.24,1.5,8),m=material('teal');this.channelPosts=new THREE.InstancedMesh(geo,m,positions.length);const dummy=new THREE.Object3D();positions.forEach(([x,z],i)=>{dummy.position.set(x,.6,z);dummy.updateMatrix();this.channelPosts.setMatrixAt(i,dummy.matrix);});this.scene.add(this.channelPosts);
   for(const [x,z]of positions){ring(this.scene,.5,.1,'ivory',[x,.1,z]);this.world.createCollider(this.R.ColliderDesc.cylinder(1,.25).setTranslation(x,0,z));}
  }
- update(challenge,time,boat){
+ update(challenge,time,boat,nearAction=null){
   this.gateViews.forEach((g,index)=>{const active=challenge.kind==='buoy'&&challenge.active,passed=active&&index<challenge.index,next=active&&index===challenge.index;for(const f of g.flags)f.material.color.set(passed?'#70b59b':next?'#ffd364':'#e8ba77');g.line.material.opacity=next?.6:.16;g.number.visible=!active||next||passed;});
-  for(const c of this.signs){const d=Math.hypot(boat.x-c.position.x,boat.z-c.position.z);c.sign.visible=d<55;c.key.visible=d<16;}
+  for(const c of this.signs){const d=Math.hypot(boat.x-c.position.x,boat.z-c.position.z);c.sign.visible=d<55;c.key.visible=nearAction?.id===`challenge-${c.position.id}`;}
   for(const b of cargoBerths){const m=this.berths.get(b.id).material,done=challenge.kind==='cargo'&&challenge.delivered.has(b.id);m.color.set(done?'#9bd4a6':'#a2b5a1');m.emissive.set(done?'#7ddb8e':'#000000');m.emissiveIntensity=done?.5:0;}
   for(const lamp of lamps){const lit=challenge.kind==='lighthouse'&&challenge.sequence.slice(0,challenge.index).includes(lamp.id),m=this.lamps.get(lamp.id).glow.material;m.emissiveIntensity=lit?1.4:0;}
  }

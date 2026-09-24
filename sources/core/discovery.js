@@ -1,11 +1,11 @@
 export const ISLAND_IDS = ['harbor','amtrak','beaconfire','visionx','affirmation','research','catering','learning','connect'];
 export const SECRETS = [
-  {id:'bottle',title:'Hello, world.',hint:'A small message near the welcome channel.',icon:'✉'},
-  {id:'duck',title:'Harbor master',hint:'Make a little splash with a yellow neighbour.',icon:'◉'},
-  {id:'bell',title:'All aboard',hint:'Ring in a new voyage at Jack’s Harbor.',icon:'♧'},
-  {id:'arch',title:'Under the arch',hint:'Look for a stone passage in the north-west.',icon:'∩'},
-  {id:'cove',title:'A quiet corner',hint:'There is more coast behind the garden.',icon:'❋'},
-  {id:'signal',title:'Across the bay',hint:'A little signal from Connect Island.',icon:'⌁'}
+  {id:'bottle',title:'Hello, world.',hint:'A small message near the welcome channel.'},
+  {id:'duck',title:'Harbor master',hint:'Make a little splash with a yellow neighbour.'},
+  {id:'bell',title:'All aboard',hint:'Ring in a new voyage at Jack’s Harbor.'},
+  {id:'arch',title:'Under the arch',hint:'Look for a stone passage in the north-west.'},
+  {id:'cove',title:'A quiet corner',hint:'There is more coast behind the garden.'},
+  {id:'signal',title:'Across the bay',hint:'A little signal from Connect Island.'}
 ];
 export const CHALLENGE_IDS = ['buoy','cargo','lighthouse'];
 export const COURSE_KEYS = {buoy:'buoy-v2',cargo:'cargo-v2'};

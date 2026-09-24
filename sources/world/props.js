@@ -22,7 +22,7 @@ export class PropManager {
    box(root,[2.1,1.3,2.1],color,[0,.35,0]);
    for(const y of [-.18,.82])for(const z of [-1.075,1.075])box(root,[2.16,.12,.08],'wood',[0,y,z]);
    for(const x of [-.73,.73])box(root,[.12,1.35,2.15],'woodLight',[x,.35,0]);
-   const stamp=label(berth?.symbol||'↑',{width:96,height:96,worldWidth:.9,background:'#fff5dd',color:'#254f62',fontSize:62});stamp.position.set(0,1.07,0);root.add(stamp);
+   if(berth?.symbol){const stamp=label(berth.symbol,{width:96,height:96,worldWidth:.9,background:'#fff5dd',color:'#254f62',fontSize:62});stamp.position.set(0,1.07,0);root.add(stamp);}
   }else if(kind==='ball'){
    mesh(root,new THREE.SphereGeometry(.9,16,10),['orange','teal','yellow','pink'][Number(id.at(-1))%4],[0,.2,0]);ring(root,.885,.09,'ivory',[0,.2,0]);
   }else{
