@@ -1,0 +1,170 @@
+{
+  "revision": "v9-imported-chibi",
+  "file": "jack-imported.glb",
+  "source": "User-provided chibi boy 3d model.glb, exported by Tripo",
+  "processing": "UV seam welding, decimation, six detached fragment removals, fitted skeleton, corrected weights, original base-color texture, seven locally authored clips",
+  "bytes": 1034460,
+  "triangles": 44756,
+  "vertices": 25677,
+  "materials": 1,
+  "skins": 1,
+  "joints": [
+    "Hips",
+    "Spine",
+    "Chest",
+    "Neck",
+    "Head",
+    "LeftShoulder",
+    "LeftArm",
+    "LeftForeArm",
+    "LeftHand",
+    "RightShoulder",
+    "RightArm",
+    "RightForeArm",
+    "RightHand",
+    "LeftUpLeg",
+    "LeftLeg",
+    "LeftFoot",
+    "RightUpLeg",
+    "RightLeg",
+    "RightFoot"
+  ],
+  "animations": [
+    "idle",
+    "walk",
+    "run",
+    "helm",
+    "interact",
+    "sit",
+    "stand"
+  ],
+  "textures": [
+    {
+      "mimeType": "image/jpeg",
+      "bytes": 664400,
+      "sha256": "20184e1f92b7e3caacf2f6388fef6feafe662c6dcf4df78a4f924cda1886f1e7"
+    }
+  ],
+  "compression": "EXT_meshopt_compression",
+  "footSamples": 1832,
+  "riggedSourceOnly": true,
+  "clips": {
+    "idle": {
+      "duration": 2,
+      "frames": 25,
+      "minSoleY": 0.00003969301248153194,
+      "maxLowestSoleY": 0.00003969301248153194
+    },
+    "walk": {
+      "duration": 0.72,
+      "frames": 61,
+      "minSoleY": 0.0014999992589488506,
+      "maxLowestSoleY": 0.0015000006346602749
+    },
+    "run": {
+      "duration": 0.48,
+      "frames": 61,
+      "minSoleY": 0.0014999999945599467,
+      "maxLowestSoleY": 0.01350000013865002
+    },
+    "helm": {
+      "duration": 2,
+      "frames": 2,
+      "minSoleY": 0.13944241920313846,
+      "maxLowestSoleY": 0.13944241920313846
+    },
+    "interact": {
+      "duration": 1.1,
+      "frames": 25,
+      "minSoleY": 0.00003969301248153194,
+      "maxLowestSoleY": 0.00003969301248153194
+    },
+    "sit": {
+      "duration": 2,
+      "frames": 25,
+      "minSoleY": 0.1102733696538086,
+      "maxLowestSoleY": 0.1102733696538086
+    },
+    "stand": {
+      "duration": 0.6,
+      "frames": 25,
+      "minSoleY": 0.00003969301168225683,
+      "maxLowestSoleY": 0.1102733696538086
+    }
+  },
+  "sitting": {
+    "benchSupportedPelvisContactY": 0.23547275652534458,
+    "suggestedBenchSeatOffset": 0.23447275652534458
+  },
+  "benchFit": {
+    "frontEdgeZ": -0.31,
+    "shinRearBelowSeatZ": -0.41989666206003007,
+    "shinClearance": 0.10989666206003007,
+    "hipsBottomAboveSeat": 0.014412421221180055,
+    "pantsSlatIntersections": 0,
+    "allBodySlatIntersections": 0
+  },
+  "spec": {
+    "height": 1.2,
+    "forward": "-Z",
+    "helmScale": 0.97,
+    "helmAnchor": [
+      0.28324,
+      -0.1759658775512539,
+      0.00485
+    ],
+    "benchSeatOffset": 0.23447275652534458,
+    "benchForwardOffset": 0.336,
+    "clips": [
+      "idle",
+      "walk",
+      "run",
+      "helm",
+      "interact",
+      "sit",
+      "stand"
+    ],
+    "helmPalmAnchors": {
+      "Left": {
+        "local": [
+          -0.015366540954157293,
+          0.04282930394587631,
+          -0.01809624350705484
+        ],
+        "source": "weighted centroid of dominant hand vertices; visually confirm steering contact"
+      },
+      "Right": {
+        "local": [
+          0.014815097623476298,
+          0.042390322102687256,
+          -0.018598352873449617
+        ],
+        "source": "weighted centroid of dominant hand vertices; visually confirm steering contact"
+      }
+    }
+  },
+  "helmReach": [
+    {
+      "side": "Left",
+      "distance": 0.25063946401861714,
+      "maxReach": 0.27558395256211143,
+      "error": 4.209511134482271e-9,
+      "palmAnchor": [
+        -0.015366540954157293,
+        0.04282930394587631,
+        -0.01809624350705484
+      ]
+    },
+    {
+      "side": "Right",
+      "distance": 0.2507982384331086,
+      "maxReach": 0.27558395256211143,
+      "error": 4.1477340998187215e-9,
+      "palmAnchor": [
+        0.014815097623476298,
+        0.042390322102687256,
+        -0.018598352873449617
+      ]
+    }
+  ]
+}

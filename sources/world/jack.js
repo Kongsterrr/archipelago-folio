@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {applyJackHairSurface} from './jack-hair-surface.js';
 import {JackExpression} from './jack-expression.js';
+import {JACK_ASSET_URL, JACK_CLIPS} from './jack-asset.js';
 
 const locomotion = name => name === 'walk' || name === 'run';
 const shortestAngle = angle => Math.atan2(Math.sin(angle), Math.cos(angle));
@@ -19,7 +20,10 @@ export class JackAvatar {
 
   async load() {
     if (this.promise) return this.promise;
-    this.promise = this.loader.loadAsync('/models/jack.glb?v=8').then(gltf => {
+    this.promise = this.loader.loadAsync(JACK_ASSET_URL).then(gltf => {
+      // A static export is a valid GLB, but cannot drive this avatar controller.
+      const names = new Set(gltf.animations.map(clip => clip.name));
+      if (JACK_CLIPS.some(name => !names.has(name))) throw new Error('Jack is missing required movement clips.');
       this.model = gltf.scene;
       applyJackHairSurface(this.model);
       this.root.add(this.model);

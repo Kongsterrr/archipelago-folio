@@ -13,6 +13,8 @@
 
 Dependency-specific license files remain available with their installed packages.
 
+- **V9 imported chibi avatar** — actual mesh and embedded base-color texture supplied by Jack as `chibi boy 3d model.glb`, with Tripo recorded as the GLB generator. Local processing welds seams, reduces geometry, removes six detached artifacts, fits a 19-joint skeleton and supplies seven original movement clips. The runtime is `static/models/jack-imported.glb`; editable skin sources are in `assets/source/imported-jack/`. The supplied mesh/texture are not represented as original MIT artwork; their use remains subject to the supplier's applicable rights and Tripo terms. No separate redistribution license was provided in the attachment. The historical original-character descriptions below refer to V4–V8, not this imported asset.
+
 - **V3 fleet, marine fauna and island detail overlays** — original procedural assets authored for Jack’s Archipelago. Sources: `scripts/fleet-vessels.mjs`, `scripts/animals.mjs`, `scripts/island-details.mjs`. Small applied labels use original stroke geometry; no external model or animal imagery is embedded.
 
 - **V4/V4.1/V4.2/V4.3/V4.4/V4.5/V4.6 Jack character and V4 walkable islands** — original procedural geometry, rig and animation authored for this portfolio, reproduced by `scripts/jack-character.mjs`, `scripts/jack-hair.mjs`, `scripts/build-jack.mjs`, and `scripts/build-walk-islands.mjs`. No third-party character scan, photograph or motion-capture clip is included. V4 replaces the original island GLBs while retaining their maritime shorelines and uses the same licensed Helvetiker typeface for plaques.

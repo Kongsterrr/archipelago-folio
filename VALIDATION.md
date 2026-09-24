@@ -1,3 +1,22 @@
+# V9 — Imported Chibi Jack validation · 2026-09-24
+
+This release uses Jack’s supplied Tripo mesh and embedded base-color texture as the playable avatar. The original file had 992,744 triangles and no skin or animation. Local authoring welded UV seam positions before decimation, removed six disconnected artifacts, fitted 19 joints, normalized skin weights and authored seven movement clips. The prior procedural mesh remains as a legacy source/review fixture; it is no longer the runtime avatar.
+
+## Asset and regression checks
+
+- Runtime `jack-imported.glb?v=9`: **1,034,460 bytes, 44,756 triangles, one material, one skin, 19 joints, seven clips**. The original embedded JPEG is unchanged; the tests compare its hash against the source skin. The larger imported asset intentionally exceeds the earlier 350 KB procedural-character target, while retaining a small single-material draw footprint.
+- Blender renders checked the actual imported model from front, side and three-quarter views and under 90-degree shoulder/hip stress. Welding before simplification eliminated the first experiment’s seam tears. The final source has no unweighted vertices and no more than four normalized influences per vertex.
+- **225/225 tests pass**, and the Vite production build succeeds. Five new tests load the imported asset and verify source texture/skin integrity, decoded foot contact between baked frames, fixed palm contact across 30/60/120 Hz updates and boarding, bench-shin clearance, and clean rejection of a static export. Existing geometry-specific V4–V8 tests remain historical procedural-asset checks; the new tests cover the actual runtime replacement.
+- Bake measurements: walk lowest foot about 0.0015 units, run 0.0015–0.0135; supporting seated surface about 0.001 above the bench, shin clearance about 0.110, no sampled body/seat-slat intersections. The shipped compressed asset also passes the runtime contact checks.
+
+## Browser observations
+
+Host: the existing Apple M3 Max workstation, Codex in-app browser, localhost. The actual GLB was reviewed in Three.js/WebGPU in front, side and three-quarter views. The game loaded the imported captain aboard the boat and after landing. Boat Studio’s close view was checked for seat/wheel placement. Nine islands each completed travel → go ashore → brief run → board, returning to sailing at zero speed with the avatar ready.
+
+WebGL2 was checked with high/low quality and reduced motion. Desktop and phone **viewport emulation** covered 1440×900, 1920×1080, 390×844 and 844×390; the avatar remained present and boarding/walking controls stayed available. A warm WebGPU ready sample was 355 ms and a short Harbor sample reported 144 FPS; a WebGL2/low sample reported 123 FPS. These short desktop observations are not sustained benchmarks or physical-phone results. The existing Rapier initialization deprecation warning remains; no new browser error was observed during these checks.
+
+The supplied face has no separate facial rig, so blinking and independent expressions are not claimed. A small source eyebrow mark is preserved. Fingers are not independently animated. Static HTML access, storage schemas, island content, movement speeds and world collisions are unchanged. Physical mobile performance, cold 20 Mbps loading and long-duration thermal/memory behavior remain unmeasured.
+
 # V8 — Reference-Inspired Chibi Captain validation · 2026-09-24
 
 V8 uses the downloaded chibi as a visual reference for fuller layered hair, a more expressive face, and a darker sporty palette. The supplied GLB was not bundled or used as the runtime character: it is a static, high-density mesh without the shared rig and seven authored animations required for driving and walking. Jack remains the site’s original optimized procedural character.

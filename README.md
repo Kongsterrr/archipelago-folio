@@ -4,14 +4,14 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V8 — Reference-Inspired Chibi Captain** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V9 — Imported Chibi Jack** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
 - **Nine content islands:** Jack’s Harbor; Amtrak, BeaconFire, and VisionX for experience; Affirmation, Research, and Catering for projects; Learning for education; and Connect for contact details.
-- **Meet Jack:** a soft oval-faced, approximately 2.2-head-tall cartoon captain with voluminous textured chestnut fringe, larger expressive eyes, a graphite-and-sea-glass outfit, a steady helm pose, and smooth walking animations, nine walkable islands, 28 exhibit/action stops, nine benches, and safe boarding transitions.
+- **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, nine walkable islands, 28 exhibit/action stops, nine benches and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
@@ -40,8 +40,15 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V4.6 — Soft Shapes & Shorter Legs** | Sculpted oval face, shorter legs, continuous clothing surfaces and recalibrated seating | [c9dc7ee](https://github.com/Kongsterrr/archipelago-folio/commit/c9dc7ee9c88938ec822f6a9a6f806f0886565ccd) |
 | **V5 — Sculpted Bay** | Refined character, runabout and Harbor assets, PBR surfaces, daylight/contact shading and shallow-water detail | [1d3b9e9](https://github.com/Kongsterrr/archipelago-folio/commit/1d3b9e9898ba9bd737290697005bd42b5292d418) |
 | **V6 — Sunset Bay** | Fixed low sunset, violet shadows, golden water, nine-island material and landmark detail | [9abe9cd](https://github.com/Kongsterrr/archipelago-folio/commit/9abe9cd7efee08c088ee68d6fbd8667abae2307d) |
-| **V7 — Textured Crop & Compact Silhouette** | Forward spiky crop, integrated shoulder and sleeve shaping, slimmer upper arms, smaller shoes and hands | [Current V7 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
-| **V8 — Reference-Inspired Chibi Captain** | Layered chestnut fringe, brighter chibi eyes, and a graphite/sea-glass outfit while retaining the animated production rig | [Current V8 source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V7 — Textured Crop & Compact Silhouette** | Forward spiky crop, integrated shoulder and sleeve shaping, slimmer upper arms, smaller shoes and hands | [d3c82ed](https://github.com/Kongsterrr/archipelago-folio/commit/d3c82ed) |
+| **V8 — Reference-Inspired Chibi Captain** | Layered chestnut fringe, brighter chibi eyes, and a graphite/sea-glass outfit while retaining the animated production rig | [eac2891](https://github.com/Kongsterrr/archipelago-folio/commit/eac2891e297dc655983c2125ebff1480058f851d) |
+| **V9 — Imported Chibi Jack** | Replaces the procedural avatar with the actual supplied mesh and texture, optimized and locally rigged for all seven actions | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V9 — Imported Chibi Jack
+
+The supplied Tripo export was a static, roughly 993,000-triangle model with no skeleton or animation. V9 uses that actual mesh and texture. It welds duplicated UV seam positions before reduction, removes six detached artifacts, fits a 19-joint skeleton, corrects skin weights, and authors idle, walk, run, helm, interact, sit and stand motions. The runtime asset is 44,756 triangles, one material and approximately 1.03 MB, with fixed palm contacts and recalibrated bench seating. The supplied face remains static; it does not acquire the old procedural avatar’s blink rig.
+
+The prior procedural asset and generator are retained for historical comparison. The game and default model reviewer load `jack-imported.glb`; `?model=jack&legacy` reviews the old version. See [imported avatar source notes](assets/source/imported-jack/README.md) for provenance, reproduction and limits.
 
 ### V1 — First Voyage
 
@@ -298,7 +305,8 @@ Career facts and project claims come from the supplied résumé. Island devices 
 Generated assets are checked in. Regenerate the current character and islands with:
 
 ```sh
-node scripts/build-jack.mjs
+node scripts/build-jack.mjs # legacy procedural model
+node scripts/build-imported-jack.mjs # current playable imported character
 node scripts/build-walk-islands.mjs
 ```
 
@@ -351,6 +359,6 @@ Physical iPhone/Android performance, sustained mobile 30 FPS, controlled 20 Mbps
 
 Inspired by [Bruno Simon’s portfolio](https://bruno-simon.com/) and the organization of [`folio-2025` at commit `41046b5`](https://github.com/brunosimon/folio-2025/tree/41046b57eeed8d156d9c3fd7fa259900baef7816). This project retains the small event dispatcher and its MIT attribution and adapts the input, update-loop, interaction-area, and camera-mode approach for an original ocean world.
 
-Jack’s character, boat, islands, fleet, animals, effects, progression, and portfolio content are specific to Jack’s Archipelago. Bruno’s car, world assets, branding, personal content, music, and private services are not shipped.
+The V9 character mesh and texture were supplied by Jack from Tripo; their provenance is listed separately in the asset notices. The boat, islands, fleet, animals, effects, progression and portfolio content are specific to Jack’s Archipelago. Bruno’s car, world assets, branding, personal content, music, and private services are not shipped.
 
 See [`LICENSE`](LICENSE) for the preserved MIT license and [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md) for dependency, font, résumé, and asset provenance.

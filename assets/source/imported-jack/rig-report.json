@@ -1,0 +1,287 @@
+{
+  "binding": "operator-completed",
+  "vertices": 23335,
+  "triangles": 46658,
+  "unweighted": 0,
+  "boneVertexCountsAbove025": {
+    "Hips": 568,
+    "Spine": 793,
+    "Chest": 238,
+    "Neck": 257,
+    "Head": 11784,
+    "LeftShoulder": 698,
+    "LeftArm": 906,
+    "LeftForeArm": 592,
+    "LeftHand": 779,
+    "RightShoulder": 703,
+    "RightArm": 916,
+    "RightForeArm": 607,
+    "RightHand": 777,
+    "LeftUpLeg": 1628,
+    "LeftLeg": 635,
+    "LeftFoot": 728,
+    "RightUpLeg": 1560,
+    "RightLeg": 637,
+    "RightFoot": 719
+  },
+  "joints": {
+    "Hips": {
+      "head": [
+        0,
+        0,
+        0.265
+      ],
+      "tail": [
+        0,
+        0,
+        0.32
+      ],
+      "parent": null
+    },
+    "Spine": {
+      "head": [
+        0,
+        0,
+        0.32
+      ],
+      "tail": [
+        0,
+        0,
+        0.395
+      ],
+      "parent": "Hips"
+    },
+    "Chest": {
+      "head": [
+        0,
+        0,
+        0.395
+      ],
+      "tail": [
+        0,
+        0,
+        0.475
+      ],
+      "parent": "Spine"
+    },
+    "Neck": {
+      "head": [
+        0,
+        0,
+        0.475
+      ],
+      "tail": [
+        0,
+        0,
+        0.55
+      ],
+      "parent": "Chest"
+    },
+    "Head": {
+      "head": [
+        0,
+        0,
+        0.55
+      ],
+      "tail": [
+        0,
+        0,
+        0.88
+      ],
+      "parent": "Neck"
+    },
+    "LeftShoulder": {
+      "head": [
+        0,
+        0,
+        0.475
+      ],
+      "tail": [
+        0.113,
+        0,
+        0.475
+      ],
+      "parent": "Chest"
+    },
+    "LeftArm": {
+      "head": [
+        0.113,
+        0,
+        0.475
+      ],
+      "tail": [
+        0.185,
+        0,
+        0.365
+      ],
+      "parent": "LeftShoulder"
+    },
+    "LeftForeArm": {
+      "head": [
+        0.185,
+        0,
+        0.365
+      ],
+      "tail": [
+        0.208,
+        -0.01,
+        0.27
+      ],
+      "parent": "LeftArm"
+    },
+    "LeftHand": {
+      "head": [
+        0.208,
+        -0.01,
+        0.27
+      ],
+      "tail": [
+        0.21,
+        -0.02,
+        0.22
+      ],
+      "parent": "LeftForeArm"
+    },
+    "LeftUpLeg": {
+      "head": [
+        0.064,
+        0,
+        0.265
+      ],
+      "tail": [
+        0.078,
+        0,
+        0.125
+      ],
+      "parent": "Hips"
+    },
+    "LeftLeg": {
+      "head": [
+        0.078,
+        0,
+        0.125
+      ],
+      "tail": [
+        0.085,
+        0,
+        0.04
+      ],
+      "parent": "LeftUpLeg"
+    },
+    "LeftFoot": {
+      "head": [
+        0.085,
+        0,
+        0.04
+      ],
+      "tail": [
+        0.085,
+        -0.065,
+        0.025
+      ],
+      "parent": "LeftLeg"
+    },
+    "RightShoulder": {
+      "head": [
+        0,
+        0,
+        0.475
+      ],
+      "tail": [
+        -0.113,
+        0,
+        0.475
+      ],
+      "parent": "Chest"
+    },
+    "RightArm": {
+      "head": [
+        -0.113,
+        0,
+        0.475
+      ],
+      "tail": [
+        -0.185,
+        0,
+        0.365
+      ],
+      "parent": "RightShoulder"
+    },
+    "RightForeArm": {
+      "head": [
+        -0.185,
+        0,
+        0.365
+      ],
+      "tail": [
+        -0.208,
+        -0.01,
+        0.27
+      ],
+      "parent": "RightArm"
+    },
+    "RightHand": {
+      "head": [
+        -0.208,
+        -0.01,
+        0.27
+      ],
+      "tail": [
+        -0.21,
+        -0.02,
+        0.22
+      ],
+      "parent": "RightForeArm"
+    },
+    "RightUpLeg": {
+      "head": [
+        -0.064,
+        0,
+        0.265
+      ],
+      "tail": [
+        -0.078,
+        0,
+        0.125
+      ],
+      "parent": "Hips"
+    },
+    "RightLeg": {
+      "head": [
+        -0.078,
+        0,
+        0.125
+      ],
+      "tail": [
+        -0.085,
+        0,
+        0.04
+      ],
+      "parent": "RightUpLeg"
+    },
+    "RightFoot": {
+      "head": [
+        -0.085,
+        0,
+        0.04
+      ],
+      "tail": [
+        -0.085,
+        -0.065,
+        0.025
+      ],
+      "parent": "RightLeg"
+    }
+  },
+  "weightRepair": "nearest valid point, top4 normalized, rigid head above Z .56",
+  "repairedVertices": 955,
+  "maxRepairDistance": 0.07517791539430618,
+  "finalVertices": 22380,
+  "finalTriangles": 44756,
+  "removedDebrisVertices": 955,
+  "removedDisconnectedComponents": 6,
+  "maxInfluences": 4,
+  "orientation": "Blender z-up / front -Y; exported glTF y-up / front +Z",
+  "height": 1.0001890659332275,
+  "status": "local rig experiment; stress poses show continuous mesh; seven runtime clips require downstream adaptation"
+}
