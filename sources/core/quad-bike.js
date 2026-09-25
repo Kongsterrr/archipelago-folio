@@ -196,11 +196,18 @@ export class QuadBikeController {
   }
 
   hold() {
+    const position = this.position;
+    const rotation = this.body.rotation();
     this.velocity = { x: 0, y: 0, z: 0 };
     this.body.setLinvel(this.velocity, true);
     this.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
-    this.body.setNextKinematicTranslation(this.position);
-    this.body.setNextKinematicRotation(this.body.rotation());
+    this.body.setNextKinematicTranslation(position);
+    this.body.setNextKinematicRotation(rotation);
+    // Cancel queued movement and its render history together. Otherwise a parked
+    // bike keeps replaying its last driving frame as the world alpha cycles.
+    this.yaw = Math.atan2(2 * (rotation.w * rotation.y + rotation.x * rotation.z), 1 - 2 * (rotation.y * rotation.y + rotation.z * rotation.z));
+    this.previous = { ...position };
+    this.previousYaw = this.yaw;
   }
 
   teleport(point) {
@@ -215,7 +222,7 @@ export class QuadBikeController {
   }
 
   updateVisual(dt, frozen = false, alpha = 1) {
-    const p = this.position, t = frozen ? 1 : THREE.MathUtils.clamp(alpha, 0, 1);
+    const p = this.position, t = frozen || this.parked ? 1 : THREE.MathUtils.clamp(alpha, 0, 1);
     this.group.position.set(
       THREE.MathUtils.lerp(this.previous.x, p.x, t),
       THREE.MathUtils.lerp(this.previous.y, p.y, t),

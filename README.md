@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V12.1 — Harbor Quad Repair** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V12.1.1 — Stable Quad Parking** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -48,6 +48,13 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V11 — Four Isles** | Four larger walkable category islands, grouped navigation, preserved district stories and migrated exploration records | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12 — Trail Bike** | A supplied quad bike on Projects Island, full-footprint island driving, rotating wheels, and a shared Jack riding pose | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.1 — Harbor Quad Repair** | Harbor placement, a fitted straddling pose, intact authored wheels, local wall sliding and travel-based wheel rotation | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V12.1.1 — Stable Quad Parking** | Stops parked-bike jitter after moving dismounts, pause recovery and remounting | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V12.1.1 — Stable Quad Parking
+
+- Fixed the quad visibly wobbling after pressing E while driving: stopping now clears the previous movement and heading used for render interpolation. Parked vehicles display their fixed pose directly.
+- Pause/resume and remounting also start from the committed stopped pose; cancelled pending turns cannot return later.
+- Added six actual-Rapier regressions, including 30/60/120 FPS parking, stationary wheels, pause recovery and remounting.
 
 ### V12.1 — Harbor Quad Repair
 
