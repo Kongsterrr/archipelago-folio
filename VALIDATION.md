@@ -1,3 +1,11 @@
+# V12.1.1 — Stable Quad Parking · 2026-09-25
+
+Moving dismounts stopped the physics body but left the previous driving pose in the render interpolation history. As the world continued stepping for walking Jack, the parked quad replayed that stale frame. A boosted turning reproduction oscillated by 0.266667 units and 0.584751 degrees before the fix.
+
+Stopping now synchronizes interpolation history with the committed body position and quaternion, cancelling any queued kinematic target. Parked rendering uses the current fixed pose directly. Six new actual-Rapier regressions failed before the patch and pass afterward: parked frame stability at 30/60/120 FPS, unchanged wheel poses, pause/resume, remounting from rest, and pending-turn cancellation. The complete suite passes **268/268 tests**.
+
+Local macOS Codex in-app browser, WebGPU/high: accelerated and turned to 12.61 units/s, pressed the actual E key, and confirmed Jack walking beside the stable parked quad. Later snapshots retained the same vehicle position, heading and wheel angle. E remounted at the identical position with zero speed; new throttle accelerated normally. Reading and closing a panel returned to riding at zero speed. No browser errors were reported. Production Vite build passes. This patch changes no models, layout, controls or mobile UI; no new physical-phone or performance benchmark is claimed.
+
 # V12.1 — Harbor Quad repair · 2026-09-25
 
 The initial V12 did not meet the intended placement or rider fit. Its runtime triangle slicing lost source transforms and only extracted parts of the tires; a failed footprint check teleported the bike to spawn. This patch replaces those mechanisms.
