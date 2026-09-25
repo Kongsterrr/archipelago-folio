@@ -1,3 +1,11 @@
+# V10 — Imported Fleet validation · 2026-09-24
+
+## V10 imported fleet
+
+- Imported the three supplied cruise/yacht GLBs as six optimized high/low runtime assets. The build manifest records **2,265,008 bytes total**, high variants at **21,192–23,392 triangles** and low variants at **4,332–6,068 triangles**.
+- The development-only `/fleet-review.html` loaded and decoded each optimized high-detail GLB in the local browser. Fleet runtime loading requests both quality variants for each of the three routes.
+- Production Vite build passed after the asset and fleet-route changes. Physical-device frame-rate and cold-network timings have not been measured for V10.
+
 # V9 — Imported Chibi Jack validation · 2026-09-24
 
 This release uses Jack’s supplied Tripo mesh and embedded base-color texture as the playable avatar. The original file had 992,744 triangles and no skin or animation. Local authoring welded UV seam positions before decimation, removed six disconnected artifacts, fitted 19 joints, normalized skin weights and authored seven movement clips. The prior procedural mesh remains as a legacy source/review fixture; it is no longer the runtime avatar.

@@ -4,7 +4,7 @@
 
 Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V9 — Imported Chibi Jack** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V10 — Imported Fleet** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -14,7 +14,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, nine walkable islands, 28 exhibit/action stops, nine benches and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
-- **A living sea:** six ambient vessels, dolphins, sharks, tropical fish, turtles, and seabirds.
+- **A living sea:** one imported cruise ship, two imported luxury yachts, dolphins, sharks, tropical fish, turtles, and seabirds.
 - **Boat Studio:** three selectable finishes on one detailed runabout model.
 - **Sculpted Bay:** refined Jack, main boat and Harbor geometry; original fabric, wood, upholstery, stone, sand and rope surfaces; shared surface detail, contact shading and shoreline-based shallow water.
 - **Sunset Bay:** a fixed orange-and-violet evening, broken golden reflections, warm landmark lights and individual island palettes.
@@ -43,6 +43,14 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V7 — Textured Crop & Compact Silhouette** | Forward spiky crop, integrated shoulder and sleeve shaping, slimmer upper arms, smaller shoes and hands | [d3c82ed](https://github.com/Kongsterrr/archipelago-folio/commit/d3c82ed) |
 | **V8 — Reference-Inspired Chibi Captain** | Layered chestnut fringe, brighter chibi eyes, and a graphite/sea-glass outfit while retaining the animated production rig | [eac2891](https://github.com/Kongsterrr/archipelago-folio/commit/eac2891e297dc655983c2125ebff1480058f851d) |
 | **V9 — Imported Chibi Jack** | Replaces the procedural avatar with the actual supplied mesh and texture, optimized and locally rigged for all seven actions | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V10 — Imported Fleet** | Three owner-supplied ship models replace the ambient NPC fleet; optimized LODs preserve the game's loading budget | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V10 — Imported Fleet
+
+- Replaced the five procedural NPC ship silhouettes with three supplied Tripo models: one cruise ship and two distinct luxury yachts. Jack's drivable runabout and its three saved finishes are unchanged.
+- Fitted each model to a safe waterline and route-specific size/orientation; retained yielding, finite-mass collisions, horn-light replies, wakes, and high/low distance switching.
+- Created textured high and low runtime variants. Meshes are simplified from roughly **0.96–1.95 million source triangles** to **21,192–23,392 high-detail** and **4,332–6,068 low-detail** triangles. Textures are capped at **1024 px / 512 px**; Meshopt-compressed fleet assets total **2,265,008 bytes**.
+- The supplied originals are not copied into this repository. [`scripts/import-fleet-assets.mjs`](scripts/import-fleet-assets.mjs) rebuilds the runtime files when given the original GLBs.
 
 ### V9 — Imported Chibi Jack
 

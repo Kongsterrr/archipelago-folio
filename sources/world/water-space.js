@@ -18,12 +18,9 @@ export function clearSegment(a,b,margin=0,options){const steps=Math.max(1,Math.c
 export function oceanHeight(x,z,time){return -.14+Math.sin(x*.28+time*.6)*Math.sin(z*.32+time*.4)*.045;}
 
 export const FLEET_ROUTES=[
- {id:'cargo',kind:'cargo',name:'Coastal Courier',center:{x:-95,z:-50},rx:6,rz:11,speed:1.5,length:14,width:4.3,phase:0},
- {id:'ferry',kind:'ferry',name:'Bay Connection',center:{x:0,z:-11},rx:20,rz:7,speed:2.5,length:9,width:3.4,phase:0},
- {id:'fishing-west',kind:'fishing',name:'Morning Catch',center:{x:-88,z:17},rx:6,rz:7,speed:1.5,length:6,width:2.4,phase:1},
- {id:'fishing-east',kind:'fishing',name:'Little Marlin',center:{x:96,z:16},rx:5,rz:6,speed:1.7,length:6,width:2.4,phase:2},
- {id:'yacht',kind:'yacht',name:'Solstice',center:{x:62,z:-45},rx:14,rz:6,speed:2,length:11,width:3.5,phase:2.2},
- {id:'sailboat',kind:'sailboat',name:'Trade Wind',center:{x:30,z:-96},rx:6,rz:3,speed:1.5,length:7,width:2.6,phase:.4},
+ {id:'cruise',kind:'cruise',model:'cruise',name:'Pacific Explorer',center:{x:-95,z:-50},rx:6,rz:11,speed:1.5,length:14,width:3.35,modelScale:14,modelYaw:0,modelOffsetY:-.55,lightY:4,phase:0},
+ {id:'yacht-solstice',kind:'yacht',model:'yacht-one',name:'Solstice',center:{x:62,z:-45},rx:14,rz:6,speed:2,length:11,width:4.2,modelScale:11.22,modelYaw:0,modelOffsetY:-.72,lightY:5.25,phase:2.2},
+ {id:'yacht-blue-horizon',kind:'yacht',model:'yacht-two',name:'Blue Horizon',center:{x:140,z:0},rx:5,rz:14,speed:1.7,length:11,width:3.6,modelScale:11,modelYaw:Math.PI/2,modelOffsetY:-.4,lightY:3.05,phase:.4},
 ];
 export function routePoint(route,phase){return{x:route.center.x+Math.cos(phase)*route.rx,z:route.center.z+Math.sin(phase)*route.rz};}
 export function routeYaw(route,phase){return Math.atan2(Math.sin(phase)*route.rx,-Math.cos(phase)*route.rz);}

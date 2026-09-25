@@ -1,0 +1,178 @@
+{
+  "version": 10,
+  "provenance": "Three user-provided GLB files, optimized for this portfolio runtime.",
+  "coordinateSystem": "Y up; model transforms are applied by AmbientFleet.",
+  "lods": {
+    "high": {
+      "maxTexture": 1024
+    },
+    "low": {
+      "maxTexture": 512
+    }
+  },
+  "models": [
+    {
+      "id": "cruise",
+      "label": "Owner-supplied cruise ship",
+      "sourceFile": "cruise ship 3d model.glb",
+      "sourceBytes": 31495532,
+      "variants": {
+        "high": {
+          "file": "cruise.glb",
+          "bytes": 621092,
+          "triangles": 21442,
+          "vertices": 17579,
+          "textureSizes": [
+            {
+              "name": "cruise+ship+3d+model_basecolor.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 250172
+            },
+            {
+              "name": "cruise+ship+3d+model_rm.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 135429
+            },
+            {
+              "name": "cruise+ship+3d+model_normal.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 40814
+            }
+          ]
+        },
+        "low": {
+          "file": "low/cruise.glb",
+          "bytes": 207308,
+          "triangles": 4583,
+          "vertices": 5417,
+          "textureSizes": [
+            {
+              "name": "cruise+ship+3d+model_basecolor.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 81967
+            },
+            {
+              "name": "cruise+ship+3d+model_rm.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 48909
+            },
+            {
+              "name": "cruise+ship+3d+model_normal.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 12943
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "yacht-one",
+      "label": "Owner-supplied luxury yacht 1",
+      "sourceFile": "luxury yacht 3d model (1).glb",
+      "sourceBytes": 58633124,
+      "variants": {
+        "high": {
+          "file": "yacht-one.glb",
+          "bytes": 557160,
+          "triangles": 23392,
+          "vertices": 21094,
+          "textureSizes": [
+            {
+              "name": "luxury+yacht+3d+model_basecolor.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 191562
+            },
+            {
+              "name": "luxury+yacht+3d+model_rm.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 69603
+            },
+            {
+              "name": "luxury+yacht+3d+model_normal.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 65954
+            }
+          ]
+        },
+        "low": {
+          "file": "low/yacht-one.glb",
+          "bytes": 202936,
+          "triangles": 6068,
+          "vertices": 7512,
+          "textureSizes": [
+            {
+              "name": "luxury+yacht+3d+model_basecolor.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 69220
+            },
+            {
+              "name": "luxury+yacht+3d+model_rm.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 25925
+            },
+            {
+              "name": "luxury+yacht+3d+model_normal.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 21488
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "yacht-two",
+      "label": "Owner-supplied luxury yacht 2",
+      "sourceFile": "luxury yacht 3d model.glb",
+      "sourceBytes": 30026908,
+      "variants": {
+        "high": {
+          "file": "yacht-two.glb",
+          "bytes": 507876,
+          "triangles": 21192,
+          "vertices": 17805,
+          "textureSizes": [
+            {
+              "name": "luxury+yacht+3d+model_basecolor.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 172291
+            },
+            {
+              "name": "luxury+yacht+3d+model_rm.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 62213
+            },
+            {
+              "name": "luxury+yacht+3d+model_normal.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 83436
+            }
+          ]
+        },
+        "low": {
+          "file": "low/yacht-two.glb",
+          "bytes": 168636,
+          "triangles": 4332,
+          "vertices": 4632,
+          "textureSizes": [
+            {
+              "name": "luxury+yacht+3d+model_basecolor.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 63553
+            },
+            {
+              "name": "luxury+yacht+3d+model_rm.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 22711
+            },
+            {
+              "name": "luxury+yacht+3d+model_normal.jpg",
+              "mimeType": "image/jpeg",
+              "bytes": 27400
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "totalBytes": 2265008
+}
