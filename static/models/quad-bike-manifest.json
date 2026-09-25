@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "provenance": "Owner-supplied Tripo GLB, optimized for the Archipelago Folio runtime.",
+  "coordinateSystem": "Y up; local -Z forward; runtime scale and heading are defined by QuadBikeController.",
+  "sourceFile": "quad bike 3d model.glb",
+  "sourceBytes": 54733508,
+  "variants": {
+    "high": {
+      "file": "quad-bike.glb",
+      "bytes": 459504,
+      "triangles": 35942,
+      "vertices": 27295,
+      "textureBytes": 151559
+    },
+    "low": {
+      "file": "low/quad-bike.glb",
+      "bytes": 170872,
+      "triangles": 10000,
+      "vertices": 10356,
+      "textureBytes": 51451
+    }
+  },
+  "totalBytes": 630376
+}

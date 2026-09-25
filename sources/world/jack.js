@@ -132,19 +132,33 @@ export class JackAvatar {
     if (this.pose === 'interact') this.actions.get('interact')?.reset().play();
   }
 
-  update(dt, {player, boatVisual, character, alpha, reduced, frozen, lookTarget}) {
+  update(dt, {player, boatVisual, quadBike, character, alpha, reduced, frozen, lookTarget}) {
     if (!this.ready) return;
     const land = player.onLand;
-    const modeChanged = this.onLand !== land;
+    const riding = player.ridingQuad;
+    const actorMode = riding ? 'quad' : land ? 'land' : 'boat';
+    const modeChanged = this.actorMode !== actorMode;
+    this.actorMode = actorMode;
     this.onLand = land;
-    if (modeChanged) this.resetPose(land ? 'idle' : 'helm');
+    if (modeChanged) this.resetPose(riding || !land ? 'helm' : 'idle');
     // A pause holds the rendered pose too. Reset/boarding may still commit a new
     // stable actor in a frozen frame, without reviving old animations.
     if (frozen && !modeChanged && !this.forceFrame) return;
     this.forceFrame = false;
     const step = frozen ? 0 : dt;
     this.expression?.restore();
-    if (land) {
+    if (riding && quadBike) {
+      // Jack stays on the same skeleton while the seat mount follows the
+      // vehicle. The helm clip keeps both hands planted at the grip points.
+      const mount = quadBike.mountPoint;
+      if (this.root.parent !== mount) mount.add(this.root);
+      this.root.position.set(0, 0, 0);
+      this.root.rotation.set(0, 0, 0);
+      this.root.scale.setScalar(.84);
+      this.wasSeated = false;
+      this.standTime = 0;
+      this.setPose('helm');
+    } else if (land) {
       const leavingSeat = !character.seated && this.wasSeated;
       if (leavingSeat) {
         this.standDuration = this.actions.get('stand')?.getClip().duration || .6;
@@ -192,7 +206,8 @@ export class JackAvatar {
     this.advanceBlend(step);
     this.mixer.update(step);
     this.normalizePose();
-    this.expression?.update(step, {reduced, frozen, walking: land, moving: land && character.speed > .1, yaw: this.root.rotation.y, position: character.position, lookTarget: land ? lookTarget : null, interacting: this.interactTime});
+    const expressionPosition = riding ? quadBike.position : character.position;
+    this.expression?.update(step, {reduced, frozen, walking: land && !riding, moving: land && !riding && character.speed > .1, yaw: this.root.rotation.y, position: expressionPosition, lookTarget: land && !riding ? lookTarget : null, interacting: this.interactTime});
   }
 
   outline(value) { for (const object of this.outlines || []) object.visible = value; }

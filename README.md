@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V11 — Four Isles** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V12 — Trail Bike** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -16,6 +16,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** one imported cruise ship, two imported luxury yachts, dolphins, sharks, tropical fish, turtles, and seabirds.
 - **Boat Studio:** three selectable finishes on one detailed runabout model.
+- **Projects Trail Bike:** ride Jack's imported quad bike just beyond the Research footbridge; mount and dismount with E, steer with the usual controls, and keep both hands on the bars.
 - **Sculpted Bay:** refined Jack, main boat and Harbor geometry; original fabric, wood, upholstery, stone, sand and rope surfaces; shared surface detail, contact shading and shoreline-based shallow water.
 - **Sunset Bay:** a fixed orange-and-violet evening, broken golden reflections, warm landmark lights and individual island palettes.
 - **Exploration records:** 13 island/discovery/challenge stamps plus separate Sea Life and four-island Island Walks journals. Legacy physical visits merge into their new parent island; individual story-reading records remain intact.
@@ -45,6 +46,14 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V9 — Imported Chibi Jack** | Replaces the procedural avatar with the actual supplied mesh and texture, optimized and locally rigged for all seven actions | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V10 — Imported Fleet** | Three owner-supplied ship models replace the ambient NPC fleet; optimized LODs preserve the game's loading budget | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V11 — Four Isles** | Four larger walkable category islands, grouped navigation, preserved district stories and migrated exploration records | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V12 — Trail Bike** | A supplied quad bike on Projects Island, full-footprint island driving, rotating wheels, and a shared Jack riding pose | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V12 — Trail Bike
+
+- Added Jack's supplied Tripo quad-bike model just beyond the Research footbridge on the Projects island. The turnout sits beside the path and leaves the ramp open for pedestrians.
+- Press **E / Enter** near the bike to ride; press it again or use the on-screen dismount button to get off. WASD / arrows steer and throttle, Space brakes, and Shift doubles the bike's top speed.
+- Jack uses the existing animated avatar and helm pose while seated. The bike has a separate Rapier collider, bounded driving on island walkable surfaces, rotating wheel groups, safe dismount placement, and reset-to-turnout recovery.
+- Created high and low Meshopt GLBs from the supplied 55 MB static model. The two runtime assets total about **630 KB**; the original GLB stays outside the repository. [`scripts/build-quad-bike.mjs`](scripts/build-quad-bike.mjs) rebuilds them from the supplied file.
 
 ### V11 — Four Isles
 

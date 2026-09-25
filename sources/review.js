@@ -8,10 +8,10 @@ import {daylightEnvironment} from './world/bay-lighting.js';
 import {applyJackHairSurface} from './world/jack-hair-surface.js';
 import {prepareBoatMaterials,BoatAppearance} from './world/boat-appearance.js';
 import {JACK_ASSET_URL} from './world/jack-asset.js';
-const params=new URLSearchParams(location.search),kind=['boat','harbor','about','experience','projects','education'].includes(params.get('model'))?params.get('model'):'jack',clay=params.has('clay');
+const params=new URLSearchParams(location.search),kind=['boat','quad-bike','harbor','about','experience','projects','education'].includes(params.get('model'))?params.get('model'):'jack',clay=params.has('clay');
 const canvas=document.querySelector('canvas'),renderer=new THREE.WebGPURenderer({canvas,antialias:true,forceWebGL:params.has('webgl')});await renderer.init();
 renderer.setPixelRatio(1.5);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
-const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),gltf=await loader.loadAsync(kind==='jack'&&!params.has('legacy')?JACK_ASSET_URL:`/models/${kind}.glb?v=${kind==='jack'?8:11}`),surfaces=new SurfaceLibrary({renderer});
+const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),gltf=await loader.loadAsync(kind==='jack'&&!params.has('legacy')?JACK_ASSET_URL:`/models/${kind}.glb?v=${kind==='jack'?8:kind==='quad-bike'?1:11}`),surfaces=new SurfaceLibrary({renderer});
 const environment=daylightEnvironment();const views=[];
 for(let index=0;index<3;index++){
  const scene=new THREE.Scene();scene.background=new THREE.Color('#eee9df');scene.environment=environment;scene.environmentIntensity=.7;
@@ -28,5 +28,5 @@ for(let index=0;index<3;index++){
 }
 if(!clay)await surfaces.loadQuality('high');
 function render(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);renderer.setScissorTest(true);views.forEach((v,n)=>{v.camera.aspect=(w/3)/h;v.camera.updateProjectionMatrix();const distance=(kind==='jack'?Math.max(v.size.y,v.size.x*1.15):v.size.length())*.62/Math.tan(THREE.MathUtils.degToRad(14))/Math.min(1,v.camera.aspect);v.camera.position.copy(v.center).addScaledVector(v.direction,distance);v.camera.lookAt(v.center);renderer.setViewport(n*w/3,0,w/3,h);renderer.setScissor(n*w/3,0,w/3,h);renderer.render(v.scene,v.camera);});renderer.setScissorTest(false);}
-renderer.setAnimationLoop(render);document.querySelector('h1').textContent=`${kind==='jack'?(params.has('legacy')?'V8 · ORIGINAL':'V9 · IMPORTED'):['about','experience','projects','education'].includes(kind)?'V11':'V9'} · ${kind.toUpperCase()} / ${clay?'CLAY':'ACTUAL MATERIALS'}`;document.querySelector('#state').textContent=`Actual runtime GLB · ${clay?'Neutral clay':kind==='jack'&&!params.has('legacy')?'User-supplied mesh and texture · local rig':surfaces.stats().status+' · shared game surfaces'} · Web${renderer.backend.isWebGPUBackend?'GPU':'GL2'}`;
+renderer.setAnimationLoop(render);document.querySelector('h1').textContent=`${kind==='jack'?(params.has('legacy')?'V8 · ORIGINAL':'V9 · IMPORTED'):['about','experience','projects','education'].includes(kind)?'V11':kind==='quad-bike'?'V12':'V9'} · ${kind.toUpperCase()} / ${clay?'CLAY':'ACTUAL MATERIALS'}`;document.querySelector('#state').textContent=`Actual runtime GLB · ${clay?'Neutral clay':kind==='jack'&&!params.has('legacy')?'User-supplied mesh and texture · local rig':surfaces.stats().status+' · shared game surfaces'} · Web${renderer.backend.isWebGPUBackend?'GPU':'GL2'}`;
 document.querySelector('#capture').onclick=async()=>{render();const blob=await new Promise(resolve=>canvas.toBlob(resolve));const response=await fetch(`http://127.0.0.1:5174/capture/${kind}-${clay?'clay':'materials'}.png`,{method:'POST',body:blob});document.querySelector('#state').textContent=response.ok?'Actual render saved.':'Capture server unavailable.';};

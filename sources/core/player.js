@@ -2,15 +2,18 @@
 export class PlayerController{
  constructor(boat,character){this.boat=boat;this.character=character;this.mode='sailing';this.island=null;this.berth=null;this.transitionEpoch=0;this.pauseReasons=new Set();this.ashoreTime=0;}
  get walking(){return this.mode==='walking';}
+ get ridingQuad(){return this.mode==='riding-quad';}
  get transitioning(){return this.mode==='boarding'||this.mode==='disembarking';}
- get onLand(){return this.walking||(this.mode==='boarding'&&!this.transition?.committed)||(this.mode==='disembarking'&&!!this.transition?.committed);}
- get activeActor(){return this.onLand?this.character:this.boat;}
+ get onLand(){return this.walking||this.ridingQuad||(this.mode==='boarding'&&!this.transition?.committed)||(this.mode==='disembarking'&&!!this.transition?.committed);}
+ get activeActor(){return this.ridingQuad?(this.quad||this.character):this.onLand?this.character:this.boat;}
  invalidate(){this.transitionEpoch++;this.transition=null;return this.transitionEpoch;}
  begin(mode,commit){if(this.transitioning)return false;const epoch=this.invalidate();this.stableMode=this.mode;this.mode=mode;this.transition={epoch,elapsed:0,commit,committed:false};return true;}
  tick(dt){const t=this.transition;if(!t||this.pauseReasons.size)return;if(t.epoch!==this.transitionEpoch)return; t.elapsed+=dt;
   if(t.elapsed>=.3&&!t.committed){t.committed=true;t.commit();}
   if(t.elapsed>=.6){this.mode=t.destination||this.mode;this.transition=null;}
  }
+ rideQuad(quad){if(!this.walking||!quad||this.pauseReasons.size||this.transitioning)return false;this.quad=quad;this.character.enable(false);this.character.seated=false;this.mode='riding-quad';this.ashoreTime=0;return true;}
+ leaveQuad(point){if(!this.ridingQuad||!point||this.pauseReasons.size)return false;this.character.teleport(point,this.character.walkWorld);this.character.enable(true);this.mode='walking';this.ashoreTime=0;return true;}
  toSailing(){this.invalidate();this.mode='sailing';this.character.enable(false);this.character.seated=false;this.island=null;this.berth=null;this.ashoreTime=0;}
 }
 
