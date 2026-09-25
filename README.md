@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V12 — Trail Bike** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V12.1 — Harbor Quad Repair** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -16,7 +16,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** one imported cruise ship, two imported luxury yachts, dolphins, sharks, tropical fish, turtles, and seabirds.
 - **Boat Studio:** three selectable finishes on one detailed runabout model.
-- **Projects Trail Bike:** ride Jack's imported quad bike just beyond the Research footbridge; mount and dismount with E, steer with the usual controls, and keep both hands on the bars.
+- **Projects Trail Bike:** ride Jack's imported quad bike at the Projects harbor entrance; mount and dismount with E, steer with the usual controls, and keep both hands on the bars.
 - **Sculpted Bay:** refined Jack, main boat and Harbor geometry; original fabric, wood, upholstery, stone, sand and rope surfaces; shared surface detail, contact shading and shoreline-based shallow water.
 - **Sunset Bay:** a fixed orange-and-violet evening, broken golden reflections, warm landmark lights and individual island palettes.
 - **Exploration records:** 13 island/discovery/challenge stamps plus separate Sea Life and four-island Island Walks journals. Legacy physical visits merge into their new parent island; individual story-reading records remain intact.
@@ -47,8 +47,17 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V10 — Imported Fleet** | Three owner-supplied ship models replace the ambient NPC fleet; optimized LODs preserve the game's loading budget | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V11 — Four Isles** | Four larger walkable category islands, grouped navigation, preserved district stories and migrated exploration records | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12 — Trail Bike** | A supplied quad bike on Projects Island, full-footprint island driving, rotating wheels, and a shared Jack riding pose | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V12.1 — Harbor Quad Repair** | Harbor placement, a fitted straddling pose, intact authored wheels, local wall sliding and travel-based wheel rotation | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
-### V12 — Trail Bike
+### V12.1 — Harbor Quad Repair
+
+- Moved the quad to the Projects harbor arrival plaza, immediately inland of the main pier. It loads as the island approaches and leaves the pedestrian arrival path open.
+- Fitted the existing Jack to the actual saddle and handlebar grips using a separate, proportion-preserving riding pose. Compact raised foot supports suit the chibi's short legs; boat and walking poses are unchanged.
+- Rebuilt the asset from the original supplied GLB. Four complete wheel assemblies now have authored pivots before compression; runtime code no longer cuts triangles or discards source transforms. Higher-detail tread and texture variants replace the previous aggressive simplification.
+- Replaced collision-triggered respawning with swept position/rotation checks and sliding. Reverse releases wall contact; only an explicit Reset returns to parking. Jack also collides with the parked bike.
+- Wheels rotate from actual distance travelled, reverse direction while backing up, and stop when blocked. Front wheels steer; the riding camera provides more room at speed. E mounts/dismounts, Shift boosts, and Space brakes.
+
+### V12 — Trail Bike (initial implementation, superseded by V12.1)
 
 - Added Jack's supplied Tripo quad-bike model just beyond the Research footbridge on the Projects island. The turnout sits beside the path and leaves the ramp open for pedestrians.
 - Press **E / Enter** near the bike to ride; press it again or use the on-screen dismount button to get off. WASD / arrows steer and throttle, Space brakes, and Shift doubles the bike's top speed.

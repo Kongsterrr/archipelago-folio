@@ -1,24 +1,109 @@
 {
-  "version": 1,
+  "version": 2,
   "provenance": "Owner-supplied Tripo GLB, optimized for the Archipelago Folio runtime.",
-  "coordinateSystem": "Y up; local -Z forward; runtime scale and heading are defined by QuadBikeController.",
+  "coordinateSystem": "Original Y-up, +Z nose geometry. Runtime turns PI around Y; named wheel pivots remain in original source units.",
+  "sourceSHA256": "959c41e5eff0338398b0b2e3a8e33c831e72620c86b857a0add12ec0b3639ab4",
+  "wheelRadius": 0.153,
+  "wheelPivots": [
+    {
+      "id": "front-left",
+      "center": [
+        0.283,
+        0.153,
+        0.347
+      ]
+    },
+    {
+      "id": "front-right",
+      "center": [
+        -0.283,
+        0.153,
+        0.347
+      ]
+    },
+    {
+      "id": "rear-left",
+      "center": [
+        0.281,
+        0.151,
+        -0.317
+      ]
+    },
+    {
+      "id": "rear-right",
+      "center": [
+        -0.281,
+        0.151,
+        -0.317
+      ]
+    }
+  ],
+  "anchors": {
+    "saddle": [
+      0,
+      0.428,
+      -0.1
+    ],
+    "leftGrip": [
+      0.224,
+      0.552,
+      0.114
+    ],
+    "rightGrip": [
+      -0.224,
+      0.552,
+      0.114
+    ],
+    "leftFootrest": [
+      0.205,
+      0.17,
+      -0.05
+    ],
+    "rightFootrest": [
+      -0.205,
+      0.17,
+      -0.05
+    ]
+  },
   "sourceFile": "quad bike 3d model.glb",
   "sourceBytes": 54733508,
   "variants": {
     "high": {
+      "wheelPivots": [
+        "quad-wheel-front-left",
+        "quad-wheel-front-right",
+        "quad-wheel-rear-left",
+        "quad-wheel-rear-right"
+      ],
       "file": "quad-bike.glb",
-      "bytes": 459504,
-      "triangles": 35942,
-      "vertices": 27295,
-      "textureBytes": 151559
+      "bytes": 1031536,
+      "triangles": 80413,
+      "vertices": 57175,
+      "textureBytes": 379456
     },
     "low": {
+      "wheelPivots": [
+        "quad-wheel-front-left",
+        "quad-wheel-front-right",
+        "quad-wheel-rear-left",
+        "quad-wheel-rear-right"
+      ],
       "file": "low/quad-bike.glb",
-      "bytes": 170872,
-      "triangles": 10000,
-      "vertices": 10356,
-      "textureBytes": 51451
+      "bytes": 411464,
+      "triangles": 26328,
+      "vertices": 21288,
+      "textureBytes": 151559
     }
   },
-  "totalBytes": 630376
+  "segmentation": {
+    "sourceTriangles": 1882496,
+    "partitions": {
+      "chassis": 1092769,
+      "front-left": 189933,
+      "front-right": 195072,
+      "rear-left": 200703,
+      "rear-right": 204019
+    }
+  },
+  "totalBytes": 1443000
 }

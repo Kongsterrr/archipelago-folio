@@ -1,3 +1,27 @@
+# V12.1 — Harbor Quad repair · 2026-09-25
+
+The initial V12 did not meet the intended placement or rider fit. Its runtime triangle slicing lost source transforms and only extracted parts of the tires; a failed footprint check teleported the bike to spawn. This patch replaces those mechanisms.
+
+## Real assets and contact fit
+
+The owner-supplied original GLB is reprocessed into a chassis and four complete named wheel assemblies **before** Meshopt compression. All 1,882,496 source triangles are assigned once before simplification. Actual decoded high/low GLBs retain full wheel width, diameter, and all 36 angular tread sectors. High: **80,413 triangles / 1,031,536 bytes**, 2048 texture. Low: **26,328 triangles / 411,464 bytes**, 1024 texture. The two variants total 1,443,000 bytes; only the selected quality loads. These higher detail budgets intentionally replace the earlier aggressive 630 KB pair.
+
+The bike uses scale 1.65 and Jack keeps his natural scale 1.0. A dedicated straddling pose fits the saddle and grips, with compact raised foot supports. Actual pelvic skin clears the saddle, feet match supports within 2 mm, and live skinned-hand centroids are approximately **7.1 / 7.3 mm** from their grip contacts. Contact anchors are within 0.0001 units; arm bones are not stretched. Tests include a first mount at nonzero world position/yaw after boat and walking poses, plus repeated transitions using the same avatar.
+
+## Collision and state checks
+
+Parking is at Projects local **(2.5, 27)**, immediately inland of the harbor pier. The bike is visible as Projects loads. Both pedestrian arrival routes and the route into the island remain clear. Rotated footprint intersection catches thin obstacles between the old sample points. Swept translation and turning stop or slide locally; reverse escapes contact. Explicit R Reset remains the way to return to parking. The parked collider participates in Jack's walking collisions.
+
+Actual-game browser check: sustained boosted contact stopped at world **(76.3022, 10.5)** instead of returning to harbor **(49, 10.5)**. Additional held throttle left position and wheel angle unchanged. Reverse moved away to **(72.7412, 10.5)** and reversed wheel rotation. Separate Rapier tests cover frontal/oblique impacts, steering beside a wall, thin posts, safe dismount, parking, and matching travel under 30/60/120 render schedules.
+
+## Browser and build verification
+
+Local macOS workstation, Codex in-app browser: WebGPU/high, high→low quality switching, reduced motion, and WebGL2/low completed mount and driving. E mount/dismount, reading→resume at zero speed, and reading→Travel→close returned to the correct actor without stale motion. No browser error was reported in the final WebGL2 session. Wheel meshes were inspected from front, side and three-quarter views at zero and 90° rotation plus steering; no missing tire sections were visible.
+
+Viewport checks covered 1440×900, 1920×1080, 390×844 and 844×390, with riding, dismount and mobile driving controls accessible. These are desktop viewport checks, not physical mobile hardware measurements. No new sustained FPS, cold-network or thermal benchmark is claimed. Production Vite build passes; the existing Rapier initialization warning remains.
+
+The final full suite passes **262/262 tests**, including actual-asset, rider and collision regressions. The review page is development-only and renders the same runtime GLBs and rider pose; it is not a generated concept image.
+
 # V11 — Four Isles validation · 2026-09-25
 
 ## Runtime and content
