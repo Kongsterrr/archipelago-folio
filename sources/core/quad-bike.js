@@ -1,36 +1,57 @@
 import * as THREE from 'three';
 import { integrateHelm } from './boat.js';
+import { dockLocal } from './dock.js';
+import { QUAD_RIDER, addQuadRiderSupports } from '../world/quad-rider-pose.js';
 
 export const QUAD_BIKE = Object.freeze({
-  // The local +X road runs off the Research observatory footbridge.
-  localSpawn: Object.freeze({ x: 8.2, z: -8.95, yaw: 0 }),
-  modelScale: 2.4,
-  collisionHalfWidth: .88,
-  collisionHalfLength: 1.22,
-  wheelRadius: .33,
-  riderAnchor: Object.freeze([0, .60, 0]),
+  // Harbor arrival plaza: immediately inland of the Projects pier.
+  localSpawn: Object.freeze({ x: 2.5, z: 27, yaw: 0 }),
+  modelScale: 1.65,
+  collisionHalfWidth: .64,
+  collisionHalfLength: .88,
+  wheelRadius: .252,
+  riderAnchor: QUAD_RIDER.mount,
   speeds: Object.freeze({ cruise: 8, boost: 16, reverse: 4, boostReverse: 8 }),
 });
 
-const WHEELS = [
-  // GLB vertex coordinates are normalized by its parent node's 0.5 scale.
-  { id: 'front-left', x: -.59, y: -.28, z: .76 },
-  { id: 'front-right', x: .59, y: -.28, z: .76 },
-  { id: 'rear-left', x: -.59, y: -.28, z: -.76 },
-  { id: 'rear-right', x: .59, y: -.28, z: -.76 },
-];
+// Full oriented rectangles catch even thin posts inside the vehicle footprint.
+function overlaps(a, b) {
+  const axes = [a.yaw, b.yaw].flatMap(yaw => [{x:Math.cos(yaw),z:-Math.sin(yaw)}, {x:Math.sin(yaw),z:Math.cos(yaw)}]);
+  const extent = (r,axis) => r.w*Math.abs(axis.x*Math.cos(r.yaw)-axis.z*Math.sin(r.yaw)) + r.l*Math.abs(axis.x*Math.sin(r.yaw)+axis.z*Math.cos(r.yaw));
+  return axes.every(axis => Math.abs((a.x-b.x)*axis.x+(a.z-b.z)*axis.z) < extent(a,axis)+extent(b,axis));
+}
 
 export function quadFootprintClear(walkWorld, point, yaw, halfWidth = QUAD_BIKE.collisionHalfWidth, halfLength = QUAD_BIKE.collisionHalfLength) {
-  const forward = { x: -Math.sin(yaw), z: -Math.cos(yaw) };
-  const right = { x: Math.cos(yaw), z: -Math.sin(yaw) };
-  for (const along of [-1, 0, 1]) for (const across of [-1, 0, 1]) {
-    const sample = {
-      x: point.x + forward.x * halfLength * along + right.x * halfWidth * across,
-      z: point.z + forward.z * halfLength * along + right.z * halfWidth * across,
-    };
-    if (!walkWorld.clear(sample, .12)) return false;
+  const c=Math.cos(yaw),s=Math.sin(yaw);
+  // Sample the entire perimeter, not only corners: concave shorelines and
+  // narrow bridges can cut through the middle of an otherwise valid footprint.
+  const sample=(x,z)=>({x:point.x+x*c+z*s,z:point.z-x*s+z*c});
+  const inside=q=>walkWorld.contains ? walkWorld.contains(q,.055) : walkWorld.clear(q,.055);
+  if(!inside(point))return false;
+  for(let n=0;n<=10;n++) {
+    const t=n/10*2-1;
+    if(!inside(sample(t*halfWidth,-halfLength))||!inside(sample(t*halfWidth,halfLength))||!inside(sample(-halfWidth,t*halfLength))||!inside(sample(halfWidth,t*halfLength)))return false;
   }
+  if(walkWorld.layout && walkWorld.island){
+    const p=dockLocal(point,walkWorld.island),a={...p,yaw:yaw-walkWorld.island.rotation,w:halfWidth+.04,l:halfLength+.04};
+    for(const o of walkWorld.layout.obstacles||[])if(overlaps(a,{x:o.x,z:o.z,yaw:o.rotation||0,w:o.width/2,l:o.depth/2}))return false;
+  }else for(const x of [-halfWidth,0,halfWidth])for(const z of [-halfLength,0,halfLength])if(!walkWorld.clear(sample(x,z),.055))return false;
   return true;
+}
+
+// Advance only through clear poses. Translational AND rotational sweeps avoid
+// corner penetration when turning beside a wall. Contact never respawns a rider.
+function sweepPose(walk, start, end) {
+  const turn=Math.atan2(Math.sin(end.yaw-start.yaw),Math.cos(end.yaw-start.yaw));
+  const steps=Math.max(1,Math.ceil(Math.hypot(end.x-start.x,end.z-start.z)/.045),Math.ceil(Math.abs(turn)/.018));
+  let safe={...start};
+  for(let n=1;n<=steps;n++){
+    const t=n/steps,p={x:THREE.MathUtils.lerp(start.x,end.x,t),z:THREE.MathUtils.lerp(start.z,end.z,t),yaw:start.yaw+turn*t};
+    p.y=walk.groundAt(p);
+    if(Math.abs(p.y-safe.y)>.19||!quadFootprintClear(walk,p,p.yaw))break;
+    safe=p;
+  }
+  return safe;
 }
 
 function disposeObject(object) {
@@ -42,65 +63,11 @@ function disposeObject(object) {
   });
 }
 
-function wheelIndexForTriangle(position, a, b, c) {
-  const x = (position.getX(a) + position.getX(b) + position.getX(c)) / 3;
-  const y = (position.getY(a) + position.getY(b) + position.getY(c)) / 3;
-  const z = (position.getZ(a) + position.getZ(b) + position.getZ(c)) / 3;
-  for (let i = 0; i < WHEELS.length; i++) {
-    const wheel = WHEELS[i];
-    // The source is one fused mesh, so isolate each wheel's compact tire/rim
-    // volume into a pivot while leaving the fenders and suspension on the chassis.
-    if (Math.abs(x - wheel.x) < .10 && Math.hypot(y - wheel.y, z - wheel.z) < .18) return i;
-  }
-  return -1;
-}
-
+// Wheels are separated and pivoted in the asset pipeline, before compression.
+// Never mutate triangle membership at runtime: it used to tear the tires apart.
 export function splitQuadWheels(model) {
-  const pivots = [];
-  model.updateMatrixWorld(true);
-  model.traverse(mesh => {
-    if (!mesh.isMesh || !mesh.geometry?.getAttribute('position')) return;
-    const source = mesh.geometry;
-    const position = source.getAttribute('position');
-    const index = source.getIndex();
-    if (!index) return;
-    const chassis = [], separated = WHEELS.map(() => []);
-    for (let i = 0; i < index.count; i += 3) {
-      const a = index.getX(i), b = index.getX(i + 1), c = index.getX(i + 2);
-      const wheel = wheelIndexForTriangle(position, a, b, c);
-      (wheel < 0 ? chassis : separated[wheel]).push(a, b, c);
-    }
-    if (separated.every(triangles => triangles.length < 36)) return;
-    source.setIndex(chassis);
-    source.computeBoundingSphere();
-    for (let i = 0; i < separated.length; i++) {
-      if (separated[i].length < 36) continue;
-      const wheel = WHEELS[i], pivot = new THREE.Group();
-      pivot.name = `quad-wheel-${wheel.id}`;
-      pivot.position.set(wheel.x, wheel.y, wheel.z);
-      const geometry = new THREE.BufferGeometry();
-      for (const [name, attribute] of Object.entries(source.attributes)) {
-        if (name === 'position') {
-          const values = new Float32Array(attribute.count * 3);
-          for (let vertex = 0; vertex < attribute.count; vertex++) {
-            values[vertex * 3] = attribute.getX(vertex) - wheel.x;
-            values[vertex * 3 + 1] = attribute.getY(vertex) - wheel.y;
-            values[vertex * 3 + 2] = attribute.getZ(vertex) - wheel.z;
-          }
-          geometry.setAttribute(name, new THREE.BufferAttribute(values, 3));
-        } else geometry.setAttribute(name, attribute);
-      }
-      geometry.setIndex(separated[i]);
-      geometry.computeBoundingSphere();
-      const tire = new THREE.Mesh(geometry, mesh.material);
-      tire.name = `quad-tire-${wheel.id}`;
-      tire.castShadow = true;
-      tire.receiveShadow = true;
-      pivot.add(tire);
-      mesh.parent.add(pivot);
-      pivots.push(pivot);
-    }
-  });
+  const pivots=[];
+  model.traverse(node=>{if(/^quad-wheel-(front|rear)-(left|right)$/.test(node.name))pivots.push(node);});
   return pivots;
 }
 
@@ -124,11 +91,12 @@ export class QuadBikeController {
     this.mountPoint.name = 'quad-bike-rider-seat';
     this.mountPoint.position.fromArray(QUAD_BIKE.riderAnchor);
     this.group.add(this.mountPoint);
+    addQuadRiderSupports(this.group);
     this.wheelPivots = [];
     this.model = null;
     this.quality = null;
     this.parked = true;
-    this.body = world.createRigidBody(R.RigidBodyDesc.dynamic()
+    this.body = world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased()
       .setTranslation(spawn.x, spawn.y, spawn.z)
       .setGravityScale(0)
       .enabledTranslations(true, false, true)
@@ -142,6 +110,7 @@ export class QuadBikeController {
       .setFriction(.65)
       .setRestitution(.06)
       .setDensity(.8), this.body);
+    this.walkWorld.handles?.add(this.collider.handle);
     this.park(true);
     this.teleport(spawn);
   }
@@ -158,6 +127,7 @@ export class QuadBikeController {
       if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; }
     });
     this.wheelPivots = splitQuadWheels(model);
+    for(const wheel of this.wheelPivots)wheel.rotation.order='YXZ';
     this.visual.add(model);
     this.model = model;
     this.quality = quality;
@@ -173,35 +143,36 @@ export class QuadBikeController {
 
   step(input, dt) {
     if (this.parked) return;
-    const current = this.position, before = { x: current.x, y: current.y, z: current.z };
-    this.previous = before;
-    this.previousYaw = this.yaw;
-    const state = integrateHelm({ yaw: this.yaw, vx: this.velocity.x, vz: this.velocity.z }, input, dt, {
-      speeds: QUAD_BIKE.speeds,
-      normalAcceleration: 6.5,
-      boostAcceleration: 13,
-      brakeAcceleration: 14,
+    const current=this.position,start={...current,yaw:this.yaw};
+    this.previous={...current};this.previousYaw=this.yaw;this.stepDt=dt;
+    const state=integrateHelm({yaw:this.yaw,vx:this.velocity.x,vz:this.velocity.z},input,dt,{
+      speeds:QUAD_BIKE.speeds,normalAcceleration:6.5,boostAcceleration:13,brakeAcceleration:14,
     });
-    let next = { x: current.x + state.vx * dt, y: current.y, z: current.z + state.vz * dt };
-    if (!quadFootprintClear(this.walkWorld, next, state.yaw)) {
-      // Let the ATV slide along a garden edge instead of clipping or locking
-      // diagonally against it. The sampled footprint includes its full wheelbase.
-      const xOnly = { ...next, z: current.z }, zOnly = { ...next, x: current.x };
-      if (!quadFootprintClear(this.walkWorld, xOnly, state.yaw)) state.vx = 0;
-      if (!quadFootprintClear(this.walkWorld, zOnly, state.yaw)) state.vz = 0;
-      next = { x: current.x + state.vx * dt, y: current.y, z: current.z + state.vz * dt };
-      if (!quadFootprintClear(this.walkWorld, next, state.yaw)) { state.vx = 0; state.vz = 0; next = before; }
+    const target={x:current.x+state.vx*dt,z:current.z+state.vz*dt,yaw:state.yaw};
+    let next=sweepPose(this.walkWorld,start,target);
+    // Test the remaining horizontal components separately to slide along edges.
+    for(const axis of ['x','z']){
+      const candidate=sweepPose(this.walkWorld,next,{...next,[axis]:target[axis]});
+      next=candidate;
     }
-    this.yaw = state.yaw;
-    this.velocity = { x: state.vx, y: 0, z: state.vz };
-    this.body.setRotation({ x: 0, y: Math.sin(this.yaw / 2), z: 0, w: Math.cos(this.yaw / 2) }, true);
-    this.body.setLinvel(this.velocity, true);
-    this.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+    const rotated=sweepPose(this.walkWorld,next,{...next,yaw:state.yaw});
+    this.yaw=rotated.yaw;next.yaw=this.yaw;
+    this.steering=THREE.MathUtils.damp(this.steering||0,input.steer||0,8,dt);
+    this.velocity={x:(next.x-current.x)/dt,y:0,z:(next.z-current.z)/dt};
+    this.body.setNextKinematicTranslation({x:next.x,y:next.y,z:next.z});
+    this.body.setNextKinematicRotation({x:0,y:Math.sin(this.yaw/2),z:0,w:Math.cos(this.yaw/2)});
   }
 
   afterStep() {
-    const current = this.position;
-    if (!quadFootprintClear(this.walkWorld, current, this.yaw)) this.teleport(this.spawn);
+    if(this.parked)return;
+    const current=this.position;
+    // Numeric safety restores the immediately previous clear pose, never spawn.
+    if(!Number.isFinite(current.x)||!Number.isFinite(current.z)||!quadFootprintClear(this.walkWorld,current,this.yaw)){
+      this.teleport({...this.previous,yaw:this.previousYaw});return;
+    }
+    const distance=(current.x-this.previous.x)*-Math.sin(this.yaw)+(current.z-this.previous.z)*-Math.cos(this.yaw);
+    this.wheelAngle=(this.wheelAngle||0)+distance/QUAD_BIKE.wheelRadius;
+    this.velocity={x:(current.x-this.previous.x)/(this.stepDt||1/60),y:0,z:(current.z-this.previous.z)/(this.stepDt||1/60)};
   }
 
   dismountPoint() {
@@ -211,7 +182,9 @@ export class QuadBikeController {
     for (const distance of [1.45, 1.8, 2.2]) for (const side of [right, { x: -right.x, z: -right.z }, { x: -forward.x, z: -forward.z }, forward]) {
       const point = { x: p.x + side.x * distance, z: p.z + side.z * distance };
       point.y = this.walkWorld.groundAt(point);
-      if (this.walkWorld.clear(point, .24)) return { ...point, yaw: this.yaw };
+      const dx=point.x-p.x,dz=point.z-p.z;
+      const outside=Math.abs(dx*right.x+dz*right.z)>QUAD_BIKE.collisionHalfWidth+.3||Math.abs(dx*forward.x+dz*forward.z)>QUAD_BIKE.collisionHalfLength+.3;
+      if (outside && this.walkWorld.clear(point, .24) && this.walkWorld.visible(p,point)) return { ...point, yaw: this.yaw };
     }
     return null;
   }
@@ -219,13 +192,15 @@ export class QuadBikeController {
   park(value) {
     this.parked = value;
     this.hold();
-    this.body.setBodyType(value ? this.R.RigidBodyType.Fixed : this.R.RigidBodyType.Dynamic, true);
+    this.body.setBodyType(value ? this.R.RigidBodyType.Fixed : this.R.RigidBodyType.KinematicPositionBased, true);
   }
 
   hold() {
     this.velocity = { x: 0, y: 0, z: 0 };
     this.body.setLinvel(this.velocity, true);
     this.body.setAngvel({ x: 0, y: 0, z: 0 }, true);
+    this.body.setNextKinematicTranslation(this.position);
+    this.body.setNextKinematicRotation(this.body.rotation());
   }
 
   teleport(point) {
@@ -248,15 +223,16 @@ export class QuadBikeController {
     );
     const yawDelta = Math.atan2(Math.sin(this.yaw - this.previousYaw), Math.cos(this.yaw - this.previousYaw));
     this.group.rotation.y = this.previousYaw + yawDelta * t;
-    const steer = this.speed > .1 ? Math.sign(this.velocity.x * -Math.cos(this.yaw) + this.velocity.z * Math.sin(this.yaw)) : 0;
-    this.visual.rotation.z = frozen ? 0 : THREE.MathUtils.damp(this.visual.rotation.z, -steer * Math.min(this.speed, 12) * .0015, 8, dt);
-    if (!frozen) {
-      const rotation = -this.forwardSpeed * dt / QUAD_BIKE.wheelRadius;
-      for (const wheel of this.wheelPivots) wheel.rotation.x += rotation;
+    this.visual.rotation.z=0;
+    for(const wheel of this.wheelPivots){
+      wheel.rotation.x=this.wheelAngle||0;
+      // GLB retains +Z-forward source coordinates, hence the steering sign.
+      wheel.rotation.y=wheel.name.includes('front')?(this.steering||0)*.22:0;
     }
   }
 
   dispose() {
+    this.walkWorld.handles?.delete(this.collider.handle);
     this.world.removeRigidBody(this.body);
     disposeObject(this.group);
   }

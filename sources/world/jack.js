@@ -3,6 +3,7 @@ import {CHARACTER} from '../core/character.js';
 import {applyJackHairSurface} from './jack-hair-surface.js';
 import {JackExpression} from './jack-expression.js';
 import {JACK_ASSET_URL, JACK_CLIPS} from './jack-asset.js';
+import {QUAD_RIDER, QuadRiderPose} from './quad-rider-pose.js';
 
 const locomotion = name => name === 'walk' || name === 'run';
 const shortestAngle = angle => Math.atan2(Math.sin(angle), Math.cos(angle));
@@ -32,6 +33,7 @@ export class JackAvatar {
       this.model.traverse(o => { if (o.userData.characterSpec) Object.assign(this.spec, o.userData.characterSpec); });
       this.poseBones = [];
       this.model.traverse(o => { if (o.isBone) this.poseBones.push(o); });
+      this.quadPose = new QuadRiderPose(this.model, this.root, this.spec);
       this.mixer = new THREE.AnimationMixer(this.model);
       this.actions = new Map(gltf.animations.map(c => [c.name, this.mixer.clipAction(c)]));
       this.outlines = [];
@@ -148,13 +150,13 @@ export class JackAvatar {
     const step = frozen ? 0 : dt;
     this.expression?.restore();
     if (riding && quadBike) {
-      // Jack stays on the same skeleton while the seat mount follows the
-      // vehicle. The helm clip keeps both hands planted at the grip points.
+      // The dedicated quad pose is fitted after the animation mixer below.
+      // Boat steering-wheel contacts cannot be reused for wider handlebars.
       const mount = quadBike.mountPoint;
       if (this.root.parent !== mount) mount.add(this.root);
       this.root.position.set(0, 0, 0);
       this.root.rotation.set(0, 0, 0);
-      this.root.scale.setScalar(.84);
+      this.root.scale.setScalar(1);
       this.wasSeated = false;
       this.standTime = 0;
       this.setPose('helm');
@@ -206,8 +208,25 @@ export class JackAvatar {
     this.advanceBlend(step);
     this.mixer.update(step);
     this.normalizePose();
+    if (riding && quadBike) this.quadPose.apply(quadBike);
     const expressionPosition = riding ? quadBike.position : character.position;
     this.expression?.update(step, {reduced, frozen, walking: land && !riding, moving: land && !riding && character.speed > .1, yaw: this.root.rotation.y, position: expressionPosition, lookTarget: land && !riding ? lookTarget : null, interacting: this.interactTime});
+  }
+
+  quadContactStatus(quad) {
+    if (!this.ready || this.actorMode !== 'quad' || !quad) return null;
+    this.root.updateWorldMatrix(true, true);
+    this.model.traverse(mesh => {if (mesh.isSkinnedMesh) {mesh.updateMatrixWorld(true); mesh.skeleton.update();}});
+    const palms = {};
+    for (const side of ['Left', 'Right']) {
+      const hand = this.model.getObjectByName(side + 'Hand');
+      const actual = new THREE.Vector3(...this.spec.helmPalmAnchors[side].local).applyMatrix4(hand.matrixWorld);
+      quad.group.worldToLocal(actual);
+      const surface = quad.group.worldToLocal(this.quadPose.skinPalm(side));
+      const target = new THREE.Vector3(...QUAD_RIDER.grips[side]);
+      palms[side] = {position: actual.toArray(), error: actual.distanceTo(target), skinCentroid: surface.toArray(), skinError: surface.distanceTo(target)};
+    }
+    return {palms, pelvis: quad.group.worldToLocal(this.model.getObjectByName('Hips').getWorldPosition(new THREE.Vector3())).toArray()};
   }
 
   outline(value) { for (const object of this.outlines || []) object.visible = value; }
