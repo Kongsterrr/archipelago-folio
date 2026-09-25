@@ -1,4 +1,4 @@
-// Original procedural models for Archipelago-folio V4 walking islands.
+// V11 Four Isles: unified walkable coastlines with nine original themed districts.
 // Run: node scripts/build-walk-islands.mjs (preserves the existing boat asset)
 // Original geometry; V6 keeps UVs across all islands for the shared surface library.
 import fs from 'node:fs/promises';
@@ -537,48 +537,166 @@ function buildPaths(){
  layout.routeLength=+routeLength(layout.route).toFixed(2);layout.estimatedWalkingSeconds=+(layout.routeLength/2.4).toFixed(1);layout.width=2.05;
 }
 async function exportIsland(name){
- root.updateMatrixWorld(true);const kept=[];root.traverse(o=>{if(/^(anim_|occluder_|station_)/.test(o.name))kept.push(o);});
+ root.updateMatrixWorld(true);const kept=[];root.traverse(o=>{if(/^(district_|anim_|occluder_|station_)/.test(o.name))kept.push(o);});
  const batches=new Map([[root,new Map()]]);for(const n of kept)batches.set(n,new Map());let sourceMeshes=0;
  root.traverse(o=>{if(!o.isMesh)return;sourceMeshes++;let owner=o.parent;while(owner!==root&&!batches.has(owner))owner=owner.parent;
   const geom=o.geometry.clone();for(const a of Object.keys(geom.attributes))if(!['position','normal','color','uv'].includes(a))geom.deleteAttribute(a);geom.clearGroups();geom.applyMatrix4(new THREE.Matrix4().copy(owner.matrixWorld).invert().multiply(o.matrixWorld));
   if(!geom.index)geom.setIndex(Array.from({length:geom.attributes.position.count},(_,i)=>i));const bins=batches.get(owner),mat=o.material;if(!bins.has(mat))bins.set(mat,[]);bins.get(mat).push(geom);
  });
- const output=new THREE.Group();output.name=name;let triangles=0,vertices=0,drawCalls=0;const animationNodes=[];
- for(const[owner,bins]of batches){let group=output;if(owner!==root){group=new THREE.Group();group.name=owner.name;owner.matrixWorld.decompose(group.position,group.quaternion,group.scale);group.userData={animated:owner.name.startsWith('anim_'),occluder:owner.name.startsWith('occluder_'),station:owner.name.startsWith('station_')};output.add(group);if(group.userData.animated)animationNodes.push({name:group.name,position:group.position.toArray(),rotation:group.rotation.toArray().slice(0,3),quaternion:group.quaternion.toArray(),scale:group.scale.toArray()});}
+ const output=new THREE.Group();output.name=name;let triangles=0,vertices=0,drawCalls=0;const animationNodes=[];const exportedOwners=new Map([[root,output]]);
+ for(const[owner,bins]of batches){let group=output;if(owner!==root){group=new THREE.Group();group.name=owner.name;let parent=owner.parent;while(parent!==root&&!batches.has(parent))parent=parent.parent;new THREE.Matrix4().copy(parent.matrixWorld).invert().multiply(owner.matrixWorld).decompose(group.position,group.quaternion,group.scale);group.userData={animated:owner.name.startsWith('anim_'),occluder:owner.name.startsWith('occluder_'),station:owner.name.startsWith('station_'),district:owner.name.startsWith('district_')};exportedOwners.get(parent).add(group);exportedOwners.set(owner,group);if(group.userData.animated)animationNodes.push({name:group.name,position:group.position.toArray(),rotation:group.rotation.toArray().slice(0,3),quaternion:group.quaternion.toArray(),scale:group.scale.toArray()});}
   for(const[mat,geometries]of bins){const geo=mergeVertices(mergeGeometries(geometries,false),1e-6);geo.normalizeNormals();const m=new THREE.Mesh(geo,mat);m.name=(owner===root?'static':owner.name)+'_'+mat.name;m.castShadow=true;m.receiveShadow=true;group.add(m);triangles+=geo.index.count/3;vertices+=geo.attributes.position.count;drawCalls++;}
  }
- output.userData={originalProceduralAsset:true,version:6,author:'Archipelago-folio original walkable island builder',walkable:true,seaLevel:0,animationNodes:animationNodes.map(n=>n.name)};
+ output.userData={originalProceduralAsset:true,version:11,author:'Archipelago-folio original walkable island builder',walkable:true,seaLevel:0,animationNodes:animationNodes.map(n=>n.name)};
  const bounds=new THREE.Box3().setFromObject(output);const raw=await new GLTFExporter().parseAsync(output,{binary:true,onlyVisible:true,trs:true});if(name==='harbor'&&!low&&process.env.ARCHIPELAGO_SOURCE_OUT){await fs.mkdir(process.env.ARCHIPELAGO_SOURCE_OUT,{recursive:true});root.traverse(o=>{if(o.isMesh&&!o.name)o.name='part_'+o.material.name+'_'+o.id;});const source=await new GLTFExporter().parseAsync(root,{binary:true,onlyVisible:true,trs:true});await fs.writeFile(path.join(process.env.ARCHIPELAGO_SOURCE_OUT,'harbor.glb'),Buffer.from(source));}const doc=await io.readBinary(new Uint8Array(raw));await doc.transform(dedup(),prune({keepAttributes:true}),meshopt({encoder:MeshoptEncoder,level:'medium'}));const file=path.join(OUT,low?'low':'',name+'.glb');await io.write(file,doc);const bytes=(await fs.stat(file)).size;
- const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:'v6-evening-landmark-detail',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{width:3,deckY:Y,startZ:7.9,endZ:15.8},clearApproach:{min:[-6,0,18],max:[6,0,32],spawn:[0,0,24]},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
+ const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:'v11-four-isles',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{...layout.dock},clearApproach:{min:[-7,0,layout.dock.endZ+2],max:[7,0,layout.dock.endZ+18],spawn:[0,0,layout.dock.endZ+8]},districts:layout.districts,camera:{target:[0,2,0],distance:Math.max(PARENTS[name].width,PARENTS[name].depth)*1.18},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
  if(name==='amtrak'){data.animation={train:{trackCentre:[0,0,-1.4],trackRadii:[8.8,5.8],initialAngle:0,rootY:0,forward:'-Z',duration:10}};data.trainTrack={...TRACK,points:Array.from({length:64},(_,i)=>{const a=i*Math.PI*2/64;return[TRACK.radiusX*Math.cos(a),0,TRACK.center[2]+TRACK.radiusZ*Math.sin(a)];}),trainForward:'-Z',rootY:0,railY:Y+.07};}
  return data;
+}
+// Four physical destinations. District geometry stays in local frames so original
+// animation controllers can work without baking the offset into their key poses.
+const PARENTS={
+ about:{label:'JACK KONG',width:56,depth:48,districts:[['harbor',-13,-3],['connect',13,-3]]},
+ experience:{label:'EXPERIENCE',width:78,depth:60,districts:[['amtrak',-24,-4],['beaconfire',0,-4],['visionx',24,-4]]},
+ projects:{label:'PROJECTS',width:78,depth:60,districts:[['affirmation',-24,-4],['research',0,-4],['catering',24,-4]]},
+ education:{label:'EDUCATION',width:56,depth:44,districts:[['learning',0,-3]]},
+};
+const builders={harbor,amtrak,beaconfire,visionx,affirmation,research,catering,learning,connect};
+const transformItem=(item,dx,dz)=>({...item,x:item.x+dx,z:item.z+dz});
+function combinedCoast(w,d){const x=w/2,z=d/2;return[
+ [-4,z],[-x*.48,z*.97],[-x*.79,z*.81],[-x*.95,z*.51],[-x,z*.05],[-x*.94,-z*.47],[-x*.71,-z*.84],[-x*.29,-z],
+ [x*.19,-z*.98],[x*.60,-z*.88],[x*.89,-z*.64],[x,-z*.13],[x*.97,z*.42],[x*.77,z*.81],[x*.4,z*.96],[4,z]
+ ];}
+function parentPier(front){
+ const startZ=front*.96-1.3,endZ=front+8,width=4;
+ layout.dock={width,deckY:Y,startZ,endZ};
+ for(let z=startZ+.2;z<endZ;z+=.42){bevel(width,.20,.40,0,.75,z,'wood',.025);if(!low)for(const x of[-1.43,1.43])cyl(.033,.033,.009,x,.856,z,'metal',8);}
+ for(const x of[-1.72,1.72]){
+  bevel(.18,.22,endZ-startZ,x,.55,(startZ+endZ)/2,'darkWood',.025);
+  for(let z=startZ+.8;z<=endZ-.25;z+=2.35){cyl(.16,.21,1.7,x,.17,z,'wood',low?8:12);bevel(.36,.1,.36,x,1.06,z,'wood',.025);torus(.18,.026,x,1,z,'rope',[Math.PI/2,0,0],5,low?10:16);solid(x,z,.39,.39,.35,Y,0,'pier piling');}
+  for(const z of[endZ-2.1,endZ-4.8]){const f=mesh(new THREE.CapsuleGeometry(.19,.54,3,10),'navy',[x*1.17,.42,z]);rod([x,1.05,z],[x*1.17,.79,z],.025,'rope');}
+ }
+ layout.surfaces.push({x:0,z:(startZ+endZ)/2,width,depth:endZ-startZ,y:Y});
+ layout.berths=[-1,1].map(side=>({boat:{x:side*4.3,z:endZ-2.45,yaw:Math.PI},landing:{x:side*.5,z:endZ-2.5,y:Y,yaw:Math.PI}}));
+}
+function parentTerrain(name,index){
+ const spec=PARENTS[name];currentIsland=name;root=new THREE.Group();root.name=name;seed=89731+index*891;
+ const shore=combinedCoast(spec.width,spec.depth);SHORELINES[name]=shore;
+ ringShape(shore,[[.97,-.65],[1,.04],[.99,.30]],'sandEdge');ringShape(shore,[[.99,.28],[.973,.61],[.96,Y]],'sand');
+ shapePrism(shore.map(([x,z])=>[x*.96,z*.96]),Y-.08,Y,'grass');
+ layout={id:name,groundY:Y,shore:shore.map(([x,z])=>[+(x*.96).toFixed(5),+(z*.96).toFixed(5)]),surfaces:[],obstacles:[],route:[],stations:[],benches:[],bench:null,berths:[],districts:[],crossings:[]};
+ parentPier(spec.depth/2);
+ const headingZ=spec.depth*.5-5.5;
+ // Entry identity is readable from the sea; the broad path passes to both sides.
+ for(const x of[-5.8,5.8]){lamp(x,headingZ,'teal',2.4);solid(x,headingZ,.4,.4,3.4,Y,0,'arrival lamp');}
+ nameSign(spec.label,0,1.75,headingZ-.8,.49);
+ for(const x of[-spec.width*.38,spec.width*.38]){
+  if(name==='education')occluder(name+'_avenue_'+x,()=>conifer(x,-spec.depth*.15,4.5));
+  else occluder(name+'_avenue_'+x,()=>palm(x,-spec.depth*.31,4.8,.4));
+  solid(x+.1,name==='education'?-spec.depth*.15:-spec.depth*.31,.5,.5,4,Y,0,'landmark tree');
+ }
+}
+function assembleDistrict(parent,contentId,dx,dz){
+ const parentRoot=root,parentLayout=layout;const district=group([dx,0,dz]);district.name='district_'+contentId;
+ root=district;currentIsland=contentId;seed=12731+Object.keys(builders).indexOf(contentId)*891;
+ layout={id:contentId,groundY:Y,surfaces:[],obstacles:[],route:[[0,5.8],[6,3.4],[7,-4.8],[4.5,-7.4],[-4.5,-7.4],[-7,-4.8],[-6,3.4],[0,5.8]],stations:[],bench:null};
+ builders[contentId]();eveningDetails(contentId);
+ if(contentId==='connect'){const repo=layout.stations.find(s=>s.id==='repository');repo.x=-6.4;repo.z=-4.5;}
+ if(contentId==='learning'){const light=layout.stations.find(s=>s.id==='lighthouse');light.x=7.5;light.z=-4.5;}
+ if(contentId==='catering'){const order=layout.stations.find(s=>s.id==='order');order.x=5.8;order.z=.1;}
+ // These signs identify districts without recreating each former island's dock.
+ nameSign(THEMES[contentId][0],0,1.45,7.8,.31);
+ layout.stations.forEach((station,index)=>{station.id=contentId+':'+station.id;station.contentId=contentId;station.action=station.action||contentId;plaque(station,index);});
+ const districtLayout=layout;root=parentRoot;layout=parentLayout;currentIsland=parent;
+ layout.surfaces.push(...districtLayout.surfaces.map(s=>transformItem(s,dx,dz)));
+ layout.obstacles.push(...districtLayout.obstacles.map(s=>({...transformItem(s,dx,dz),name:contentId+': '+s.name})));
+ layout.stations.push(...districtLayout.stations.map(s=>transformItem(s,dx,dz)));
+ const b=districtLayout.bench;if(b){const bench={...transformItem(b,dx,dz),id:contentId+':bench',contentId,action:contentId,approach:transformItem(b.approach,dx,dz)};layout.benches.push(bench);layout.bench??=bench;}
+ const districtData={id:contentId,x:dx,z:dz,rotation:0,group:'district_'+contentId};
+ if(districtLayout.crossing){const c={...transformItem(districtLayout.crossing,dx,dz),contentId,trackCenter:[districtLayout.crossing.trackCenter[0]+dx,districtLayout.crossing.trackCenter[1]+dz]};layout.crossings.push(c);layout.crossing=c;districtData.crossing=c;
+  districtData.animation={train:{trackCentre:[0,0,-1.4],trackRadii:[8.8,5.8],initialAngle:0,rootY:0,forward:'-Z',duration:10}};}
+ layout.districts.push(districtData);
+ // Trim obsolete pier legs from the old scenic loop. Stations and scenic points
+ // become visits on the one connected parent path rather than separate islands.
+ return {entry:[dx,dz+10],visits:districtLayout.route.filter(p=>p[1]<6).map(([x,z])=>[x+dx,z+dz]),stations:districtLayout.stations.map(s=>[s.x+dx,s.z+dz]),bench:b?[b.approach.x+dx,b.approach.z+dz]:null};
+}
+function parentRouteFree(x,z,margin=1.05){
+ const dock=layout.dock,inPier=Math.abs(x)<dock.width/2-margin&&z>=dock.startZ&&z<=dock.endZ-.75;
+ if(!inside(layout.shore,x,z)&&!inPier)return false;
+ if(!inPier){const edge=Math.min(...layout.shore.map((p,i)=>distanceToSegment(x,z,p,layout.shore[(i+1)%layout.shore.length])));if(edge<margin&&!(Math.abs(x)<dock.width/2-margin&&z>dock.startZ-1))return false;}
+ return !layout.obstacles.some(o=>{const c=Math.cos(o.rotation||0),s=Math.sin(o.rotation||0),dx=x-o.x,dz=z-o.z;return Math.abs(dx*c-dz*s)<o.width/2+margin&&Math.abs(dx*s+dz*c)<o.depth/2+margin;});
+}
+function parentSurfaceY(x,z){
+ let y=layout.groundY;
+ for(const f of layout.surfaces){const c=Math.cos(f.rotation||0),s=Math.sin(f.rotation||0),dx=x-f.x,dz=z-f.z,lx=dx*c-dz*s,lz=dx*s+dz*c;if(Math.abs(lx)<=f.width/2&&Math.abs(lz)<=f.depth/2)y=Math.max(y,f.y+(f.slope||0)*lz);}
+ return y;
+}
+function parentStepFree(a,b){
+ const[ax,az]=a.split(',').map(v=>Number(v)*.5),[bx,bz]=b.split(',').map(v=>Number(v)*.5);
+ return Math.abs(parentSurfaceY(ax,az)-parentSurfaceY(bx,bz))<=.13;
+}
+function parentPaths(districts){
+ const grid=.5,key=(x,z)=>x+','+z,front=layout.dock.endZ-2.5;
+ const {width,depth}=PARENTS[layout.id],free=new Set();
+ for(let x=-width;x<=width;x++)for(let z=-depth;z<=Math.ceil(layout.dock.endZ/grid);z++)if(parentRouteFree(x*grid,z*grid))free.add(key(x,z));
+ const snap=p=>{let best=Infinity,result;for(const k of free){const[x,z]=k.split(',').map(Number),d=Math.hypot(x*grid-p[0],z*grid-p[1]);if(d<best){best=d;result=k;}}if(!result||best>3.6)throw Error('No parent path near '+layout.id+' '+p);return result;};
+ const start=snap([0,front]),reachable=new Set([start]),flood=[start];
+ for(let i=0;i<flood.length;i++){const[x,z]=flood[i].split(',').map(Number);for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){const k=key(x+dx,z+dz);if(free.has(k)&&!reachable.has(k)&&parentStepFree(flood[i],k)){reachable.add(k);flood.push(k);}}}for(const k of free)if(!reachable.has(k))free.delete(k);
+ const pathBetween=(a,b)=>{const start=snap(a),goal=snap(b),q=[start],parents=new Map([[start,null]]);for(let i=0;i<q.length&&!parents.has(goal);i++){const[x,z]=q[i].split(',').map(Number);for(const[dx,dz]of[[1,0],[-1,0],[0,1],[0,-1]]){const k=key(x+dx,z+dz);if(free.has(k)&&!parents.has(k)&&parentStepFree(q[i],k)){parents.set(k,q[i]);q.push(k);}}}if(!parents.has(goal))throw Error('Disconnected path '+layout.id);const route=[];for(let k=goal;k!==null;k=parents.get(k))route.push(k.split(',').map(v=>Number(v)*grid));route.reverse();return route.filter((p,i)=>i===0||i===route.length-1||p[0]-route[i-1][0]!==route[i+1][0]-p[0]||p[1]-route[i-1][1]!==route[i+1][1]-p[1]);};
+ const waypoints=[[0,front],[0,depth/2-8]];
+ for(const d of districts){waypoints.push(d.entry,...d.stations);if(d.bench)waypoints.push(d.bench);waypoints.push(d.entry);}
+ if(layout.id==='education')waypoints.push([14,3],[17,-9],[0,-15],[-17,-9],[-14,3]);
+ waypoints.push([0,depth/2-8],[0,front]);
+ layout.route=[];for(let i=1;i<waypoints.length;i++){const p=pathBetween(waypoints[i-1],waypoints[i]);layout.route.push(...(i===1?p:p.slice(1)));}
+ // Union meshing avoids dark overlapping strips across the shared promenade.
+ const onLand=layout.route.filter(p=>p[1]<=layout.dock.startZ+.35);harborPath(onLand,2.05,Y+.012);
+ for(const d of districts){for(const v of d.visits){if(!parentRouteFree(...v,.4))continue;const p=pathBetween(d.entry,v);harborPath(p.filter(v=>v[1]<layout.dock.startZ),2.05,Y+.013);}}
+ layout.routeLength=+routeLength(layout.route).toFixed(2);layout.estimatedWalkingSeconds=+(layout.routeLength/2.4).toFixed(1);layout.width=2.05;
+ // Validate every station has a reachable path point within the 1.8m interaction
+ // radius, and no sampled path point overlaps a principal obstacle.
+ for(const s of layout.stations){const nearest=snap([s.x,s.z]).split(',').map(v=>Number(v)*grid);if(Math.hypot(nearest[0]-s.x,nearest[1]-s.z)>1.55)throw Error('Station out of reach '+s.id);if(!parentRouteFree(s.x,s.z,.26))throw Error('Station actor clearance '+s.id);}
+ for(let i=1;i<layout.route.length;i++){const a=layout.route[i-1],b=layout.route[i],steps=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.2));for(let j=0;j<=steps;j++)if(!parentRouteFree(a[0]+(b[0]-a[0])*j/steps,a[1]+(b[1]-a[1])*j/steps,.8))throw Error('Blocked route '+layout.id);}
+ layout.validation={connectedFromDock:true,stationsReachable:layout.stations.length,routeClearance:.8,pathWidth:2.05};
+}
+function arrivalGarden(name){
+ const {width,depth}=PARENTS[name],shore=SHORELINES[name];
+ // Grouped coastal details preserve clear walking interiors and a readable edge.
+ for(let i=0;i<shore.length;i++){const[x,z]=shore[i];if(Math.abs(x)<7&&z>0)continue;const px=x*.85,pz=z*.85;
+  if(layout.route.slice(1).some((p,j)=>distanceToSegment(px,pz,layout.route[j],p)<2.4))continue;
+  if(i%2===0){occluder(name+'_coast_'+i,()=>name==='education'?conifer(px,pz,4):palm(px,pz,4.2,.3));solid(px+.1,pz,.5,.5,4,Y,0,'coast tree');}
+  else{shrub(px,pz,1.4);flowers(px+.5,pz+.3,.7);}
+  if(!low){rocks(x*.965,z*.965,.85);coastalPlant(x*.88,z*.88,.8);}
+ }
+ // Benches and foliage bring scale to the new common spaces without scattering
+ // decorative collision objects into the access paths.
+ for(const z of[depth*.23,depth*.34])for(const x of[-width*.3,width*.3]){
+  if(layout.route.slice(1).some((p,j)=>distanceToSegment(x,z,layout.route[j],p)<2.2))continue;
+  flowers(x,z,1.1);lamp(x+1.4,z,'teal',2);solid(x+1.4,z,.3,.3,3,Y,0,'promenade lamp');
+ }
 }
 await Promise.all([MeshoptEncoder.ready,MeshoptDecoder.ready]);
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.encoder':MeshoptEncoder,'meshopt.decoder':MeshoptDecoder});
 await fs.mkdir(path.join(OUT,'low'),{recursive:true});
 const prior=JSON.parse(await fs.readFile(path.join(OUT,'manifest.json'),'utf8').catch(()=>'{"models":[]}'));
-const requested=process.env.ARCHIPELAGO_ISLANDS?.split(',');
-const existingLayouts=JSON.parse(await fs.readFile(path.join(OUT,'walk-layout.json'),'utf8').catch(()=>'{"islands":[]}'));
-const oldReports=JSON.parse(await fs.readFile(path.join(OUT,'walk-assets-report.json'),'utf8').catch(()=>'{"assets":[]}'));
-const layouts=[];const reports=[];const builders={harbor,amtrak,beaconfire,visionx,affirmation,research,catering,learning,connect};
+const priorLow=JSON.parse(await fs.readFile(path.join(OUT,'low/manifest.json'),'utf8').catch(()=>JSON.stringify(prior)));
+const layouts=[],reports=[];
 for(const quality of['high','low']){
- low=quality==='low';const models=[];const previousQuality=JSON.parse(await fs.readFile(path.join(OUT,low?'low':'','manifest.json'),'utf8').catch(()=>JSON.stringify(prior)));
- for(const[i,[name,build]]of Object.entries(builders).entries()){
-  if(requested&&!requested.includes(name)){models.push(previousQuality.models.find(m=>m.id===name));if(!low)layouts.push(existingLayouts.islands.find(l=>l.id===name));reports.push(oldReports.assets.find(r=>r.id===name&&r.quality===quality));continue;}
-  terrain(name,i);build();coastDetails(name);buildPaths();eveningDetails(name);
-  const asset=await exportIsland(name);models.push(asset);if(!low)layouts.push(structuredClone(layout));
-  else{const hi=layouts.find(l=>l.id===name);if(JSON.stringify(layout)!==JSON.stringify(hi))throw Error('High/low walk collision metadata differs: '+name);}
-  reports.push({id:name,quality,bytes:asset.bytes,triangles:asset.triangles,drawCalls:asset.drawCalls,routeSeconds:layout.estimatedWalkingSeconds});
+ low=quality==='low';const models=[];
+ for(const[i,[name,spec]]of Object.entries(PARENTS).entries()){
+  parentTerrain(name,i);const districts=spec.districts.map(([contentId,x,z])=>assembleDistrict(name,contentId,x,z));
+  parentPaths(districts);arrivalGarden(name);
+  const asset=await exportIsland(name);models.push(asset);
+  if(!low)layouts.push(structuredClone(layout));else if(JSON.stringify(layout)!==JSON.stringify(layouts.find(l=>l.id===name)))throw Error('High/low walk data differs: '+name);
+  reports.push({id:name,quality,bytes:asset.bytes,triangles:asset.triangles,drawCalls:asset.drawCalls,routeSeconds:layout.estimatedWalkingSeconds,...layout.validation});
  }
- const boat=previousQuality.models.find(m=>m.id==='boat');if(boat)models.push(boat);
- const manifest={...prior,generator:'build-walk-islands.mjs',version:6,quality,walkLayout:'walk-layout.json',models,totalBytes:models.reduce((s,m)=>s+m.bytes,0),totalTriangles:models.reduce((s,m)=>s+m.triangles,0)};
+ const boat=(low?priorLow:prior).models.find(m=>m.id==='boat');if(boat)models.push(boat);
+ const manifest={...prior,generator:'build-walk-islands.mjs',version:11,quality,walkLayout:'walk-layout.json',dock:{direction:'+Z',dimensions:'per-model metadata'},models,totalBytes:models.reduce((s,m)=>s+m.bytes,0),totalTriangles:models.reduce((s,m)=>s+m.triangles,0)};
  await fs.writeFile(path.join(OUT,low?'low':'','manifest.json'),JSON.stringify(manifest,null,2)+'\n');
 }
-await fs.writeFile(path.join(OUT,'walk-layout.json'),JSON.stringify({version:4,units:'meters',coordinates:'island-local; Y up; rotation around Y in radians',surfaceHeight:'y is top/center height; ramp y at center, y += slope * localZ',obstacleHeight:'y is bottom; height extends upward',islands:layouts},null,2)+'\n');
-await fs.writeFile(path.join(OUT,'walk-assets-report.json'),JSON.stringify({assets:reports,totalBytes:reports.reduce((s,r)=>s+r.bytes,0)},null,2)+'\n');console.log(JSON.stringify(reports,null,2));
-
-// Refresh existing comparison reports from the actual exported assets, including selective builds.
+await fs.writeFile(path.join(OUT,'walk-layout.json'),JSON.stringify({version:11,units:'meters',coordinates:'island-local; Y up; rotation around Y in radians',surfaceHeight:'y is top/center height; ramp y at center, y += slope * localZ',obstacleHeight:'y is bottom; height extends upward',islands:layouts},null,2)+'\n');
+await fs.writeFile(path.join(OUT,'walk-assets-report.json'),JSON.stringify({version:11,assets:reports,totalBytes:reports.reduce((s,r)=>s+r.bytes,0)},null,2)+'\n');
 const highReport=JSON.parse(await fs.readFile(path.join(OUT,'manifest.json'),'utf8')),lowReport=JSON.parse(await fs.readFile(path.join(OUT,'low/manifest.json'),'utf8'));
-const comparisonPath=path.join(OUT,'low/comparison.json'),compressionPath=path.join(OUT,'compression.json');
-try{const c=JSON.parse(await fs.readFile(comparisonPath,'utf8'));c.models=c.models.map(m=>{const hi=highReport.models.find(x=>x.id===m.id),lo=lowReport.models.find(x=>x.id===m.id);if(!hi||!lo)return m;return {...m,highTriangles:hi.triangles,lowTriangles:lo.triangles,triangleReductionPercent:+(100*(1-lo.triangles/hi.triangles)).toFixed(1),highCompressedBytes:hi.bytes,lowCompressedBytes:lo.bytes,byteReductionPercent:+(100*(1-lo.bytes/hi.bytes)).toFixed(1),drawCalls:hi.drawCalls,...(m.id==='boat'?{}:{animatedGeometry:'same named nodes and base poses; decorative hardware uses quality-dependent tessellation',dock:'same walkable footprint and pier silhouette; decorative hardware uses quality-dependent tessellation'})};});Object.assign(c,{highTotalTriangles:highReport.totalTriangles,lowTotalTriangles:lowReport.totalTriangles,highTotalBytes:highReport.totalBytes,lowTotalBytes:lowReport.totalBytes,totalTriangleReductionPercent:+(100*(1-lowReport.totalTriangles/highReport.totalTriangles)).toFixed(1),totalByteReductionPercent:+(100*(1-lowReport.totalBytes/highReport.totalBytes)).toFixed(1)});await fs.writeFile(comparisonPath,JSON.stringify(c,null,2)+'\n');}catch(error){if(error.code!=='ENOENT')throw error;}
-try{const c=JSON.parse(await fs.readFile(compressionPath,'utf8'));await fs.writeFile(compressionPath,JSON.stringify(c.map(m=>{const h=highReport.models.find(x=>x.file===m.name);return h?.rawBytes?{name:m.name,before:h.rawBytes,after:h.bytes}:m;}),null,2)+'\n');}catch(error){if(error.code!=='ENOENT')throw error;}
+const comparison={version:11,models:highReport.models.map(hi=>{const lo=lowReport.models.find(m=>m.id===hi.id);return{id:hi.id,highTriangles:hi.triangles,lowTriangles:lo.triangles,highCompressedBytes:hi.bytes,lowCompressedBytes:lo.bytes,drawCalls:hi.drawCalls,animatedGeometry:'same named district and animation nodes',dock:'same walkable footprint and collision metadata'};}),highTotalBytes:highReport.totalBytes,lowTotalBytes:lowReport.totalBytes};
+await fs.writeFile(path.join(OUT,'low/comparison.json'),JSON.stringify(comparison,null,2)+'\n');
+await fs.writeFile(path.join(OUT,'compression.json'),JSON.stringify(highReport.models.map(m=>({name:m.file,before:m.rawBytes??m.bytes,after:m.bytes})),null,2)+'\n');
+console.log(JSON.stringify(reports,null,2));

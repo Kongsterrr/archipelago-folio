@@ -42,7 +42,7 @@ function seabedTexture(){
 export class BayWater {
  constructor(scene,islands,reefs,settings){
   this.settings=settings;this.time=uniform(0);this.detail=uniform(settings.quality==='low'?.4:1);
-  const coasts=coastlineData(islands),harbor=islands.find(i=>i.id==='harbor');
+  const coasts=coastlineData(islands),harbor=islands.find(i=>i.id==='about')||islands[0];
   this.depth=depthTexture(coasts,reefs,{x:0,z:0},400,512);this.harborDepth=depthTexture(coasts,reefs,harbor,72,256);this.bed=seabedTexture();
   const p=positionWorld,t=this.time,localUV=p.xz.sub(vec2(harbor.x,harbor.z)).div(72).add(.5);
   const localMask=smoothstep(.42,.47,localUV.x.sub(.5).abs().max(localUV.y.sub(.5).abs())).oneMinus();

@@ -81,7 +81,7 @@ function materialPlan(source, kind, context) {
 }
 
 /** Apply once, before SurfaceLibrary.bind / IslandController.bind.
- * kind: 'jack', 'boat', or one of the nine island ids ('island:id' also accepted).
+ * kind: 'jack', 'boat', or a physical parent island or legacy district id ('island:id' also accepted).
  * Material names, textures, vertex colors, UVs and signal colors survive.
  * Authored opacity survives except for the explicit glass/windshield treatment.
  * Only material instances are owned here; source materials and geometry are not.
@@ -94,9 +94,11 @@ export function applySunsetMaterials(model, kind = model?.userData?.island || 'w
     if (!mesh.isMesh) return;
     const original = mesh.material, list = Array.isArray(original) ? original : [original];
     const context = contextFor(mesh, model);
+    let paletteKind=({about:'harbor',experience:'amtrak',projects:'affirmation',education:'learning'})[kind]||kind;
+    for(let branch=mesh;branch&&branch!==model;branch=branch.parent)if(branch.name.startsWith('district_')){paletteKind=branch.name.slice(9);break;}
     const assigned = list.map(source => {
       if (!source?.isMeshStandardMaterial) return source;
-      const plan = materialPlan(source, kind, context);
+      const plan = materialPlan(source, paletteKind, context);
       if (!plan) return source;
       let variations = clones.get(source);
       if (!variations) clones.set(source, variations = new Map());

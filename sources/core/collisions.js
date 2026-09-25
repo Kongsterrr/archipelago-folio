@@ -10,8 +10,10 @@ export function createIslandColliders(R,world,island){
    const shape=R.ColliderDesc.convexHull(new Float32Array(vertices));if(shape)world.createCollider(shape.setFriction(.12).setRestitution(.08),body);
   }
  }else world.createCollider(R.ColliderDesc.cylinder(3,10.7).setFriction(.12).setRestitution(.08),body);
- world.createCollider(R.ColliderDesc.cuboid(1.5,2,3.95).setTranslation(0,0,11.85).setFriction(.1),body);
- for(const x of [-1.65,1.65])for(const z of [11,14.5]){
+ const pier=i.pier||{width:3,startZ:7.9,endZ:15.8};
+ const length=pier.endZ-pier.startZ,center=(pier.endZ+pier.startZ)/2;
+ world.createCollider(R.ColliderDesc.cuboid(pier.width/2,2,length/2).setTranslation(0,0,center).setFriction(.1),body);
+ for(const x of [-pier.width/2-.15,pier.width/2+.15])for(const z of [pier.startZ+length*.35,pier.endZ-1.3]){
   const px=i.x+x*Math.cos(i.rotation)+z*Math.sin(i.rotation),pz=i.z-x*Math.sin(i.rotation)+z*Math.cos(i.rotation);
   world.createCollider(R.ColliderDesc.cylinder(1.8,.27).setTranslation(px,0,pz).setFriction(.1));
  }

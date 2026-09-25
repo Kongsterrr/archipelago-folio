@@ -1,6 +1,6 @@
 {
   "name": "archipelago-folio",
-  "version": "10.0.0",
+  "version": "11.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -14,7 +14,7 @@
   },
   "author": "",
   "license": "MIT",
-  "description": "A playable ocean portfolio with nine islands, boat physics and a local buoy race.",
+  "description": "A playable four-island portfolio with sailing, walkable exhibitions and three sea challenges.",
   "dependencies": {
     "@dimforge/rapier3d": "^0.17.3",
     "@dimforge/rapier3d-compat": "^0.17.3",

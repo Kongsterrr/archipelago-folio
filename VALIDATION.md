@@ -1,3 +1,29 @@
+# V11 — Four Isles validation · 2026-09-25
+
+## Runtime and content
+
+Nine separate islands have become four continuous physical islands: About, Experience, Projects and Education. The original nine records in `sources/content.json`, the imported Jack GLB and the drivable boat GLB are unchanged. There are 28 exhibit/action stations and nine benches across the grouped districts. Each parent has two validated boat berths and one accessible main dock.
+
+The complete automated suite passes **242/242 tests**. Coverage includes actual Rapier walking loops on all four generated islands (no rescue teleports), both boat berths, station clearance, dock approach/hysteresis, grouped content routing, historical storage migration, all 24 toy spawns, imported fleet swept-hull clearance, two-minute fleet simulations and 30/60/120 render schedules. Existing tests that still expected the pre-V9 Shift speeds were corrected to the already-shipped 24-unit/second boat boost and 4.8-unit/second run.
+
+New actual-GLB tests verify high/low district action isolation, transformed Amtrak pedestrian stopping, one animation transform per semantic node, independent emissive materials, per-district sunset palettes, quality rebind cleanup and story-specific reading highlights. Integration found and fixed a Research route that approached an elevated platform without its ramp, a Catering station next to a table collider, duplicate group/mesh animations and shared district glow materials.
+
+## Browser checks
+
+Local Apple M3 Max workstation, Codex in-app browser. WebGPU/high and WebGPU/low loaded; WebGL2/low loaded and completed Education landing, and switching back to high quality succeeded. All four islands completed travel → go ashore → board at zero boat speed. Projects was run on foot using the same camera-relative input as keyboard/touch. Starting all three sea challenges from shore/sailing restored the sailing actor; reading then traveling cancelled the challenge and left no pause reason or old velocity.
+
+The map shows four named category destinations and three separate game destinations. Experience overview and Research story panels were visually checked. Responsive checks covered **1440×900, 1920×1080, 390×844 and 844×390**: no document horizontal overflow, accessible close buttons, scrollable reading panels and responsive controls. The explicit `?no3d` page displayed four groups and all nine stories, with the résumé link available.
+
+Warm local samples reported **330 ms WebGPU/high** and **275 ms WebGL2/low** readiness, with a short idle sample at 144 FPS. These are cached desktop observations, not cold-network or physical-phone benchmarks. The existing Rapier initialization deprecation warning remains. No new runtime error was observed in the V11 browser checks; older device-loss logs from the earlier model-review session are not attributed to this version.
+
+## Asset and compatibility notes
+
+Four compressed high-detail island GLBs total **3,189,292 bytes**; their low-detail counterparts total **2,727,496 bytes**. High-detail islands range from 26,860 to 63,210 triangles; high/low variants share identical shoreline, dock, collision and walk-layout data. These figures cover islands only, not the full initial download. The three imported NPC ships and avatar keep their V10/V9 assets.
+
+V11 storage merges legacy physical visit/discovery/landing IDs into the four parents, preserves individual story read status, preferences, liveries, Sea Life, secrets and timed challenge records, and remains usable when storage is denied. Progress is now 13 voyage stamps and four Island Walks. The outer race geometry is unchanged. Cargo Dock was translated as a whole without changing its relative puzzle layout, so its old course key remains valid.
+
+Physical mobile performance, cold 20 Mbps transfer timing, sustained thermal behavior and long-duration memory profiling were **not measured**. Full scenic walking loops are now approximately 97–163 seconds at walking speed because islands are intentionally larger; direct reading and map travel remain available for quick visits.
+
 # V10 — Imported Fleet validation · 2026-09-24
 
 ## V10 imported fleet

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {box,cylinder,mesh,ring,label,material} from './geometry.js';
 import {reefGroups,secretPlaces,cargoBay,cargoBerths,lamps,challenges,gates,WORLD_RADIUS} from '../config.js';
+import {CHANNEL_POSTS} from './water-space.js';
 
 export class Environment {
  constructor(scene,R,world,settings){Object.assign(this,{scene,R,world,settings});this.occluders=[];this.lamps=new Map();this.berths=new Map();this.signs=[];this.gateViews=[];this.createReefs();this.createArch();this.createCargo();this.createLamps();this.createStations();this.createGates();this.createChannels();}
@@ -45,7 +46,7 @@ export class Environment {
  });}
  createChannels(){
   // Small navigation posts create readable edges without blocking the fairways.
-  const positions=[[-12,50],[13,43],[-30,40],[-40,25],[27,16],[36,32],[-49,-55],[48,-38],[27,-88],[-11,-70]];
+  const positions=CHANNEL_POSTS;
   const geo=new THREE.CylinderGeometry(.18,.24,1.5,8),m=material('teal');this.channelPosts=new THREE.InstancedMesh(geo,m,positions.length);const dummy=new THREE.Object3D();positions.forEach(([x,z],i)=>{dummy.position.set(x,.6,z);dummy.updateMatrix();this.channelPosts.setMatrixAt(i,dummy.matrix);});this.scene.add(this.channelPosts);
   for(const [x,z]of positions){ring(this.scene,.5,.1,'ivory',[x,.1,z]);this.world.createCollider(this.R.ColliderDesc.cylinder(1,.25).setTranslation(x,0,z));}
  }

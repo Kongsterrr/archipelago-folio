@@ -2,23 +2,23 @@
 
 **A playable 3D portfolio by Jack Kong. Explore my work, island by island.**
 
-Drive a speedboat through nine toy-like islands representing my experience, projects, education, and contact information. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
+Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V10 — Imported Fleet** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V11 — Four Isles** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
-- **Nine content islands:** Jack’s Harbor; Amtrak, BeaconFire, and VisionX for experience; Affirmation, Research, and Catering for projects; Learning for education; and Connect for contact details.
-- **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, nine walkable islands, 28 exhibit/action stops, nine benches and safe boarding transitions.
+- **Four connected exhibition islands:** About combines Harbor and Connect; Experience combines Amtrak, BeaconFire and VisionX; Projects combines Affirmation, Research and Catering; Education keeps BU and CMU together. Nine independent stories remain available through the directory.
+- **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, four walkable islands, 28 exhibit/action stops, nine benches and safe boarding transitions.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** one imported cruise ship, two imported luxury yachts, dolphins, sharks, tropical fish, turtles, and seabirds.
 - **Boat Studio:** three selectable finishes on one detailed runabout model.
 - **Sculpted Bay:** refined Jack, main boat and Harbor geometry; original fabric, wood, upholstery, stone, sand and rope surfaces; shared surface detail, contact shading and shoreline-based shallow water.
 - **Sunset Bay:** a fixed orange-and-violet evening, broken golden reflections, warm landmark lights and individual island palettes.
-- **Exploration records:** 18 island/discovery/challenge stamps plus separate Sea Life and nine-island Island Walks journals.
+- **Exploration records:** 13 island/discovery/challenge stamps plus separate Sea Life and four-island Island Walks journals. Legacy physical visits merge into their new parent island; individual story-reading records remain intact.
 - **Direct access:** navigation, map shortcuts, dock panels, résumé download, and complete 2D reading mode.
 
 ## Version history
@@ -44,6 +44,16 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V8 — Reference-Inspired Chibi Captain** | Layered chestnut fringe, brighter chibi eyes, and a graphite/sea-glass outfit while retaining the animated production rig | [eac2891](https://github.com/Kongsterrr/archipelago-folio/commit/eac2891e297dc655983c2125ebff1480058f851d) |
 | **V9 — Imported Chibi Jack** | Replaces the procedural avatar with the actual supplied mesh and texture, optimized and locally rigged for all seven actions | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V10 — Imported Fleet** | Three owner-supplied ship models replace the ambient NPC fleet; optimized LODs preserve the game's loading budget | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V11 — Four Isles** | Four larger walkable category islands, grouped navigation, preserved district stories and migrated exploration records | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V11 — Four Isles
+
+- Replaced nine separate landmasses with four larger, continuous islands around a central bay. Each has one main dock, two safe boat berths and connected walking routes; the original nine themes survive as named districts.
+- Retained all **nine résumé-backed stories, 28 exhibit/action stops and nine benches**. Nested district controllers preserve train crossings, greenhouse watering, pipeline, garden, research, catering, lighthouse and signal animations.
+- Reworked navigation, map pins, individual story cameras and the complete HTML reading fallback around **About / Experience / Projects / Education**. Contact stays one click away; old content IDs still travel to the correct parent dock.
+- Migrated browser visits, discoveries and Island Walks into the four parent IDs without dropping granular reading records, settings, boat finish, Sea Life, secrets or valid challenge bests. Voyage progress is now **4 visits + 6 discoveries + 3 challenges = 13**.
+- Repositioned the cargo bay, navigation lights, rock arch, reefs, toys, marine habitats and three imported NPC routes. The six-gate outer race is unchanged; Cargo Dock retains its relative challenge geometry, so both existing timed records remain valid.
+- Generated matching high/low geometry and walk data. Character routes use surface-height-aware paths, including Research’s ramp; docking and fleet clearance use actual pier dimensions.
 
 ### V10 — Imported Fleet
 
@@ -246,7 +256,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run dev` | Start the local development server |
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm test` | Run physics, camera, input, challenge, and V1–V7 regression tests |
+| `npm test` | Run physics, camera, input, challenge, and current gameplay, migration and historical asset regression tests |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 
@@ -302,7 +312,7 @@ tests/                   Automated regression checks
 ## Customize the content
 
 - Edit [`sources/content.json`](sources/content.json) to update the nine entries. The scene, panels, directory, and reading mode share this data.
-- Edit [`sources/config.js`](sources/config.js) for world positions, safe harbor headings, dock definitions, and course configuration.
+- Edit [`sources/portfolio-groups.js`](sources/portfolio-groups.js) for parent-to-story grouping, and [`sources/config.js`](sources/config.js) for world positions, safe headings and courses. Generated manifests own actual shoreline and dock dimensions.
 - Replace [`static/resume.pdf`](static/resume.pdf) when updating the résumé.
 - Add verified external links to an entry’s `links` array. Unconfigured GitHub/project demo links remain hidden; placeholder destinations are not presented as real projects.
 
@@ -318,7 +328,7 @@ node scripts/build-imported-jack.mjs # current playable imported character
 node scripts/build-walk-islands.mjs
 ```
 
-The island builder exports both quality variants plus `walk-layout.json`, preserving the existing boat. The earlier `build-assets`, compression, and low-asset scripts are retained for the V1/V2 source history; running them would replace the V4 island design. Use `build-walk-islands.mjs` for the current walking islands. To rebuild only V5 Harbor, set `ARCHIPELAGO_ISLANDS=harbor`; this preserves the other eight GLBs.
+The island builder exports all four V11 parent islands in both quality variants plus `walk-layout.json`, preserving the existing boat and avatar. Use `node scripts/build-walk-islands.mjs` for the current islands. The earlier `build-assets`, compression and low-asset scripts remain historical tools and would overwrite current manifests; do not run them to rebuild V11. Old individual island GLBs remain historical fixtures and are not loaded by the current game.
 
 To rebuild only the main boat:
 
@@ -346,7 +356,7 @@ Intermediate files live in ignored `.asset-build/`. Core compressed geometry siz
 
 ### Inspect actual assets locally
 
-With the development server running, open `/review.html?model=jack`, `/review.html?model=boat`, or `/review.html?model=harbor`. Add `&clay` for neutral materials or `&webgl` for WebGL2. The viewer loads the same GLBs and surface library as the game and shows front, three-quarter and side views. It is not an image-generation mockup.
+With the development server running, open `/review.html?model=jack`, `/review.html?model=boat`, or `/review.html?model=about` (also `experience`, `projects`, `education`). `model=harbor` keeps the legacy Harbor comparison. Add `&clay` for neutral materials or `&webgl` for WebGL2. The viewer loads the same GLBs and surface library as the game and shows front, three-quarter and side views. It is not an image-generation mockup.
 
 The review entry is excluded from Vite’s production build. Its **Save render** button expects an optional local screenshot receiver at `127.0.0.1:5174`; model inspection itself does not require that receiver.
 

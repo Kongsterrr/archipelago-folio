@@ -1,48 +1,23 @@
 [
   {
-    "name": "harbor.glb",
-    "before": 2051364,
-    "after": 644024
+    "name": "about.glb",
+    "before": 2110064,
+    "after": 689356
   },
   {
-    "name": "amtrak.glb",
-    "before": 1597008,
-    "after": 516328
+    "name": "experience.glb",
+    "before": 3668728,
+    "after": 1126480
   },
   {
-    "name": "beaconfire.glb",
-    "before": 1242060,
-    "after": 401548
+    "name": "projects.glb",
+    "before": 2812972,
+    "after": 869208
   },
   {
-    "name": "visionx.glb",
-    "before": 1627516,
-    "after": 548584
-  },
-  {
-    "name": "affirmation.glb",
-    "before": 1187032,
-    "after": 400500
-  },
-  {
-    "name": "research.glb",
-    "before": 1198524,
-    "after": 391672
-  },
-  {
-    "name": "catering.glb",
-    "before": 1247988,
-    "after": 418840
-  },
-  {
-    "name": "learning.glb",
-    "before": 1167344,
-    "after": 384868
-  },
-  {
-    "name": "connect.glb",
-    "before": 1022504,
-    "after": 353800
+    "name": "education.glb",
+    "before": 1539052,
+    "after": 504248
   },
   {
     "name": "boat.glb",

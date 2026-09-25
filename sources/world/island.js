@@ -1,13 +1,25 @@
 import * as THREE from 'three';
-import {islandActions} from '../config.js';
+import {islandActions,toWorld} from '../config.js';
 
 export class IslandController {
  constructor(island,group){this.island=island;this.group=group;this.nodes=[];this.glowing=[];this.occluders=[];this.elapsed=99;this.duration=0;this.lastActive=false;this.model=null;}
  bind(model){
-  this.model=model;this.nodes=[];this.glowing=[];this.occluders=[];
+  this.model=model;this.nodes=[];this.glowing=[];this.occluders=[];this.children=[];
+  for(const district of this.island.districts||[]){
+   const root=model.getObjectByName('district_'+district.id);if(!root)continue;
+   const position=toWorld(this.island,district.x,district.z);
+   const child=new IslandController({...district,...position,rotation:this.island.rotation+(district.rotation||0)},root);
+   child.bind(root);this.children.push(child);
+  }
+  const glowMaterials=new Map();
   model.traverse(o=>{
-   if(o.name.startsWith('anim_'))this.nodes.push({object:o,name:o.name,position:o.position.clone(),rotation:o.rotation.clone(),scale:o.scale.clone()});
+   if(this.children.length){let parent=o;while(parent&&parent!==model){if(parent.name.startsWith('district_'))return;parent=parent.parent;}}
+   // Named batches inside an animated group inherit its transform; animate the group once.
+   if(o.name.startsWith('anim_')&&!o.isMesh)this.nodes.push({object:o,name:o.name,position:o.position.clone(),rotation:o.rotation.clone(),scale:o.scale.clone()});
    if(o.isMesh){
+    // Districts share source materials in a GLB, but their device feedback is independent.
+    const isolate=m=>{if(!m.emissive||!['glass','glassBlue','yellow','orange'].includes(m.name))return m;if(!glowMaterials.has(m))glowMaterials.set(m,m.clone());return glowMaterials.get(m);};
+    o.material=Array.isArray(o.material)?o.material.map(isolate):isolate(o.material);
     const list=Array.isArray(o.material)?o.material:[o.material];
     let branch=o,occludes=false;while(branch&&branch!==model){if(branch.name.startsWith('occluder_')||branch.name.startsWith('station_')||branch.userData.occluder)occludes=true;branch=branch.parent;}if(occludes){
      o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();
@@ -18,9 +30,11 @@ export class IslandController {
    }
   });
   this.glowing=[...new Set(this.glowing)];
+  for(const child of this.children)this.occluders.push(...child.occluders);
  }
- activate(){this.elapsed=0;this.duration=this.island.id==='amtrak'?10:this.island.id==='learning'?10:6;return islandActions[this.island.id]?.[1];}
- update(dt,position,time,focused=false,reduced=false){
+ activate(actionId){if(this.children?.length){const child=actionId==null?this.children[0]:this.children.find(c=>c.island.id===actionId);if(!child)return;const result=child.activate();this.elapsed=0;this.duration=child.duration;return result;}this.elapsed=0;this.duration=this.island.id==='amtrak'?10:this.island.id==='learning'?10:6;return islandActions[this.island.id]?.[1];}
+ update(dt,position,time,focused=false,reduced=false,focusedDistrict=null){
+  if(this.children?.length){for(const child of this.children){child.pedestrian=this.pedestrian;child.update(dt,position,time,focused&&(!focusedDistrict||child.island.id===focusedDistrict),reduced);}this.elapsed+=dt;return;}
   const distance=Math.hypot(position.x-this.island.x,position.z-this.island.z);
   let advance=dt;if(this.island.id==='amtrak'&&this.pedestrian&&this.elapsed<this.duration){const tr=this.island.animation?.train,c=tr?.trackCentre||[0,0,-1.4],r=tr?.trackRadii||[8.8,5.8],p=this.pedestrian,dx=p.x-this.island.x,dz=p.z-this.island.z,co=Math.cos(this.island.rotation),si=Math.sin(this.island.rotation),px=dx*co-dz*si,pz=dx*si+dz*co;for(let n=0;n<=8;n++){const a=(this.elapsed+n*.06)/Math.max(1,this.duration)*Math.PI*2;if(Math.hypot(c[0]+Math.cos(a)*r[0]-px,c[2]+Math.sin(a)*r[1]-pz)<2.2){advance=0;break;}}}this.elapsed+=advance;const playing=this.elapsed<this.duration;
   if(distance>80&&!focused&&!playing)return;

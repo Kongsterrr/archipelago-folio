@@ -1,18 +1,23 @@
 import * as THREE from 'three';
 import {box,cylinder,mesh,ring,label,material} from './geometry.js';
-import {cargoStarts,cargoBerths,cargoBay} from '../config.js';
+import {cargoStarts,cargoBerths,cargoBay,WORLD_RADIUS} from '../config.js';
+
+export const TOY_PLACEMENTS={
+ buoy:[[-19,39],[22,31],[-31,26],[35,-7],[-37,-25],[-92,-55],[94,-54],[39,77]],
+ crate:[[-28,-24],[-91,-65],[42,66],[71,-48],[-41,68]],
+ ball:[[10,37],[17,15],[-35,45],[34,33],[-91,-75],[89,-50]],
+ duck:[[-11,38],[39,57]],
+};
 
 export class PropManager {
  constructor(scene,R,world,{settings,feedback,onSecret=()=>{}}){
   Object.assign(this,{scene,R,world,settings,feedback,onSecret});this.items=[];this.byCollider=new Map();
-  const buoys=[[-10,62],[12,53],[-17,40],[23,25],[-50,34],[-54,-51],[48,-58],[37,-88]];
-  const crates=[[-76,16],[-67,-37],[42,57],[63,-52],[16,82]];
-  const balls=[[1,78],[16,38],[-41,55],[45,23],[-43,-91],[83,-44]];
+  const {buoy:buoys,crate:crates,ball:balls,duck:ducks}=TOY_PLACEMENTS;
   buoys.forEach(([x,z],i)=>this.add('buoy',`buoy-${i}`,x,z));
   crates.forEach(([x,z],i)=>this.add('crate',`crate-${i}`,x,z));
   cargoStarts.forEach(({id,x,z})=>this.add('crate',id,x,z,true));
   balls.forEach(([x,z],i)=>this.add('ball',`ball-${i}`,x,z));
-  this.add('duck','duck-0',-11,66);this.add('duck','duck-1',86,58);
+  ducks.forEach(([x,z],i)=>this.add('duck',`duck-${i}`,x,z));
  }
  add(kind,id,x,z,cargo=false){
   const root=new THREE.Group(),R=this.R,berth=cargoBerths.find(b=>b.id===id),color=berth?.color||'#d39b67';
@@ -42,7 +47,7 @@ export class PropManager {
     const dx=p.x-item.home.x,dz=p.z-item.home.z,v=item.body.linvel();item.body.resetForces(false);
     if(Math.hypot(dx,dz)>.16||Math.hypot(v.x,v.z)>.1)item.body.addForce({x:-dx*.5-v.x*.3,y:0,z:-dz*.5-v.z*.3},true);
    }
-   if(!item.cargo&&Math.hypot(p.x,p.z)>167&&Math.hypot(p.x-boat.x,p.z-boat.z)>12)this.resetItem(item);
+   if(!item.cargo&&Math.hypot(p.x,p.z)>WORLD_RADIUS-7&&Math.hypot(p.x-boat.x,p.z-boat.z)>12)this.resetItem(item);
   }
  }
  afterStep(queue,boatCollider,boatPosition){
@@ -63,7 +68,7 @@ export class PropManager {
  outOfBounds(){return this.items.find(i=>i.cargo&&!i.delivered&&(Math.abs(i.body.translation().x-cargoBay.x)>cargoBay.width/2+3||Math.abs(i.body.translation().z-cargoBay.z)>cargoBay.depth/2+3));}
  recoverCargo(item,boat){
   this.world.propagateModifiedBodyPositionsToColliders();this.world.updateSceneQueries();
-  const candidates=[item.home];for(const z of [-34,-42,-49])for(const x of [-45,-37,-29,-21,-15])candidates.push({x,z});
+  const candidates=[item.home];for(const z of [.28,.03,-.19])for(const x of [-.35,-.15,.05,.25,.4])candidates.push({x:cargoBay.x+x*cargoBay.width,z:cargoBay.z+z*cargoBay.depth});
   const free=candidates.find(p=>Math.hypot(p.x-boat.x,p.z-boat.z)>4.5&&!this.world.intersectionWithShape({x:p.x,y:.35,z:p.z},{x:0,y:0,z:0,w:1},new this.R.Cuboid(1.4,.85,1.4),undefined,0x00010001,item.collider,item.body));
   if(free)this.resetItem(item,free);return !!free;
  }

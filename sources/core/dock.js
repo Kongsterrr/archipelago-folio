@@ -7,7 +7,8 @@ export function dockDistance(p,i){const q=dockLocal(p,i),d=i.pier||{width:3,star
 export function inDockZone(p,i,buffer=0){
  const q=dockLocal(p,i),d=i.pier||{width:3,startZ:7.9,endZ:15.8};
  if(i.shore&&pointInPolygon(q,i.shore))return false;
- const legacy=q.z>=18-buffer&&q.z<=32+buffer&&Math.abs(q.x)<=6+buffer;
+ const approach=i.approach||{min:[-6,0,d.endZ+2.2],max:[6,0,d.endZ+16.2]};
+ const legacy=q.z>=approach.min[2]-buffer&&q.z<=approach.max[2]+buffer&&q.x>=approach.min[0]-buffer&&q.x<=approach.max[0]+buffer;
  if(!legacy&&dockDistance(p,i)>5+buffer)return false;
  if(Math.abs(q.x)<d.width/2&&q.z>d.startZ&&q.z<d.endZ)return false;
  // A concave shoreline can obscure the closest corner while another pier edge remains exposed.

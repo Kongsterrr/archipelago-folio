@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {FLEET_ROUTES,routePoint,routeYaw,waterClear} from './water-space.js';
+import {FLEET_ROUTES,routePoint,routeYaw,hullWaterClear,sweptHullWaterClear} from './water-space.js';
 import {WakePool} from './wake-pool.js';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const gap=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
@@ -22,14 +22,16 @@ export class AmbientFleet{
    const playerVelocity=player.velocity||{x:0,z:0},relative={x:player.position.x-p.x,z:player.position.z-p.z},dv={x:playerVelocity.x-v.x,z:playerVelocity.z-v.z},tt=clamp(-(relative.x*dv.x+relative.z*dv.z)/(dv.x*dv.x+dv.z*dv.z||1),0,2);
    const radius=r.length*.5+3;let yielding=Math.hypot(relative.x+dv.x*tt,relative.z+dv.z*tt)<radius||Math.hypot(relative.x,relative.z)<radius;
    for(const other of this.items)if(other!==i&&gap(p,other.body.translation())<(r.length+other.route.length)/2+3)yielding=true;
-   // Abort drive before a displaced vessel can press the player into land.
-   let shoreRisk=false;const forward={x:-Math.sin(i.yaw),z:-Math.cos(i.yaw)};for(const d of [-.43,0,.43])if(!waterClear({x:p.x+forward.x*r.length*d,z:p.z+forward.z*r.length*d},r.width*.55))shoreRisk=true;
+   // Evaluate the full swept hull before entering a fairway, dock or challenge.
+   // Long bows can clip an enlarged island while a ship center remains clear.
+   const dx=target.x-p.x,dz=target.z-p.z,d=Math.hypot(dx,dz)||1,heading=Math.atan2(-dx,-dz),turn=Math.atan2(Math.sin(heading-i.yaw),Math.cos(heading-i.yaw)),nextYaw=i.yaw+clamp(turn,-.45,.45);
+   const currentClear=hullWaterClear(p,i.yaw,r),future={x:p.x+dx/d*r.speed,z:p.z+dz/d*r.speed},shoreRisk=!sweptHullWaterClear(p,future,i.yaw,nextYaw,r);
    if(r.id==='yacht-solstice'&&gap(p,routePoint(r,0))<3&&this.time-i.lastMoor>65){i.lastMoor=this.time;i.mooredUntil=this.time+10;}const rest=this.time<i.mooredUntil;
-   if(yielding)i.holdUntil=this.time+1.2;const stopped=yielding||this.time<i.holdUntil||rest;
-   const dx=target.x-p.x,dz=target.z-p.z,d=Math.hypot(dx,dz)||1,speed=stopped?0:shoreRisk?.6:r.speed,desired={x:dx/d*speed,z:dz/d*speed};
+   if(yielding)i.holdUntil=this.time+1.2;const stopped=yielding||this.time<i.holdUntil||rest||(currentClear&&shoreRisk);
+   const speed=stopped?0:shoreRisk?.6:r.speed,desired={x:dx/d*speed,z:dz/d*speed};
    const ax=(desired.x-v.x)*1.5,az=(desired.z-v.z)*1.5,mag=Math.hypot(ax,az)||1,limit=stopped?3:.8,mass=i.body.mass();
    i.body.addForce({x:ax*Math.min(1,limit/mag)*mass,y:0,z:az*Math.min(1,limit/mag)*mass},true);
-   const heading=Math.atan2(-dx,-dz),turn=Math.atan2(Math.sin(heading-i.yaw),Math.cos(heading-i.yaw));i.body.setAngvel({x:0,y:stopped?0:clamp(turn*1.8,-.45,.45),z:0},true);i.state=stopped?(rest?'at work':'yielding'):shoreRisk?'returning to route':'cruising';i.phase=a;
+   i.body.setAngvel({x:0,y:stopped?0:clamp(turn*1.8,-.45,.45),z:0},true);i.state=stopped?(rest?'at work':'yielding'):shoreRisk?'returning to route':'cruising';i.phase=a;
   }
  }
  update(alpha,player,waterTime){const ranked=[...this.items].sort((a,b)=>gap(a.body.translation(),player)-gap(b.body.translation(),player)),budget=this.settings.quality==='low'?2:4;

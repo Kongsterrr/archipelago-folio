@@ -1,149 +1,102 @@
 {
+  "version": 11,
   "assets": [
     {
-      "id": "harbor",
+      "id": "about",
       "quality": "high",
-      "bytes": 644024,
-      "triangles": 49880,
-      "drawCalls": 58,
-      "routeSeconds": 31
+      "bytes": 689356,
+      "triangles": 39280,
+      "drawCalls": 97,
+      "routeSeconds": 105,
+      "connectedFromDock": true,
+      "stationsReachable": 6,
+      "routeClearance": 0.8,
+      "pathWidth": 2.05
     },
     {
-      "id": "amtrak",
+      "id": "experience",
       "quality": "high",
-      "bytes": 516328,
-      "triangles": 29100,
-      "drawCalls": 46,
-      "routeSeconds": 29.2
+      "bytes": 1126480,
+      "triangles": 63210,
+      "drawCalls": 124,
+      "routeSeconds": 162.9,
+      "connectedFromDock": true,
+      "stationsReachable": 9,
+      "routeClearance": 0.8,
+      "pathWidth": 2.05
     },
     {
-      "id": "beaconfire",
+      "id": "projects",
       "quality": "high",
-      "bytes": 401548,
-      "triangles": 22620,
-      "drawCalls": 43,
-      "routeSeconds": 38.1
+      "bytes": 869208,
+      "triangles": 51482,
+      "drawCalls": 122,
+      "routeSeconds": 154.2,
+      "connectedFromDock": true,
+      "stationsReachable": 9,
+      "routeClearance": 0.8,
+      "pathWidth": 2.05
     },
     {
-      "id": "visionx",
+      "id": "education",
       "quality": "high",
-      "bytes": 548584,
-      "triangles": 25708,
-      "drawCalls": 46,
-      "routeSeconds": 35.8
+      "bytes": 504248,
+      "triangles": 26860,
+      "drawCalls": 68,
+      "routeSeconds": 96.7,
+      "connectedFromDock": true,
+      "stationsReachable": 4,
+      "routeClearance": 0.8,
+      "pathWidth": 2.05
     },
     {
-      "id": "affirmation",
-      "quality": "high",
-      "bytes": 400500,
-      "triangles": 21728,
-      "drawCalls": 48,
-      "routeSeconds": 31
-    },
-    {
-      "id": "research",
-      "quality": "high",
-      "bytes": 391672,
-      "triangles": 21830,
-      "drawCalls": 47,
-      "routeSeconds": 36.3
-    },
-    {
-      "id": "catering",
-      "quality": "high",
-      "bytes": 418840,
-      "triangles": 21800,
-      "drawCalls": 44,
-      "routeSeconds": 30.2
-    },
-    {
-      "id": "learning",
-      "quality": "high",
-      "bytes": 384868,
-      "triangles": 20420,
-      "drawCalls": 50,
-      "routeSeconds": 31.5
-    },
-    {
-      "id": "connect",
-      "quality": "high",
-      "bytes": 353800,
-      "triangles": 18300,
-      "drawCalls": 46,
-      "routeSeconds": 29.6
-    },
-    {
-      "id": "harbor",
+      "id": "about",
       "quality": "low",
-      "bytes": 334304,
-      "triangles": 23024,
-      "drawCalls": 53,
-      "routeSeconds": 31
+      "bytes": 582508,
+      "triangles": 30808,
+      "drawCalls": 97,
+      "routeSeconds": 105,
+      "connectedFromDock": true,
+      "stationsReachable": 6,
+      "routeClearance": 0.8,
+      "pathWidth": 2.05
     },
     {
-      "id": "amtrak",
+      "id": "experience",
       "quality": "low",
-      "bytes": 383728,
-      "triangles": 21608,
-      "drawCalls": 44,
-      "routeSeconds": 29.2
+      "bytes": 1004336,
+      "triangles": 54018,
+      "drawCalls": 122,
+      "routeSeconds": 162.9,
+      "connectedFromDock": true,
+      "stationsReachable": 9,
+      "routeClearance": 0.8,
+      "pathWidth": 2.05
     },
     {
-      "id": "beaconfire",
+      "id": "projects",
       "quality": "low",
-      "bytes": 266880,
-      "triangles": 15828,
-      "drawCalls": 40,
-      "routeSeconds": 38.1
+      "bytes": 731248,
+      "triangles": 42214,
+      "drawCalls": 118,
+      "routeSeconds": 154.2,
+      "connectedFromDock": true,
+      "stationsReachable": 9,
+      "routeClearance": 0.8,
+      "pathWidth": 2.05
     },
     {
-      "id": "visionx",
+      "id": "education",
       "quality": "low",
-      "bytes": 437364,
-      "triangles": 19936,
-      "drawCalls": 44,
-      "routeSeconds": 35.8
-    },
-    {
-      "id": "affirmation",
-      "quality": "low",
-      "bytes": 252516,
-      "triangles": 14060,
-      "drawCalls": 46,
-      "routeSeconds": 31
-    },
-    {
-      "id": "research",
-      "quality": "low",
-      "bytes": 248976,
-      "triangles": 14670,
-      "drawCalls": 44,
-      "routeSeconds": 36.3
-    },
-    {
-      "id": "catering",
-      "quality": "low",
-      "bytes": 290900,
-      "triangles": 15416,
-      "drawCalls": 43,
-      "routeSeconds": 30.2
-    },
-    {
-      "id": "learning",
-      "quality": "low",
-      "bytes": 257452,
-      "triangles": 14192,
-      "drawCalls": 47,
-      "routeSeconds": 31.5
-    },
-    {
-      "id": "connect",
-      "quality": "low",
-      "bytes": 243924,
-      "triangles": 12816,
-      "drawCalls": 43,
-      "routeSeconds": 29.6
+      "bytes": 409404,
+      "triangles": 20556,
+      "drawCalls": 67,
+      "routeSeconds": 96.7,
+      "connectedFromDock": true,
+      "stationsReachable": 4,
+      "routeClearance": 0.8,
+      "pathWidth": 2.05
     }
   ],
-  "totalBytes": 6776208
+  "totalBytes": 5916788
 }

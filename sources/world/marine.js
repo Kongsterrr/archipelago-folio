@@ -4,8 +4,14 @@ import {WakePool} from './wake-pool.js';
 import {islands,toWorld} from '../config.js';
 import {waterClear,clearSegment,oceanHeight} from './water-space.js';
 export const SEA_LIFE=[{id:'dolphin',name:'Bottlenose dolphins',hint:'Watch the open water east of the welcome channel.'},{id:'shark',name:'Ocean neighbours',hint:'A dorsal fin sometimes breaks the surface of the outer sea.'},{id:'fish',name:'Shoals of colour',hint:'Slow down near shallow coastal water.'},{id:'turtle',name:'Unhurried travellers',hint:'Look around the garden coast and the quiet cove.'}];
-export const HABITATS=[{kind:'dolphin',x:27,z:45,rx:10,rz:6,count:3},{kind:'shark',x:147,z:0,rx:4,rz:20,count:1},{kind:'shark',x:-147,z:-10,rx:4,rz:18,count:1},{kind:'turtle',x:91,z:55,rx:3,rz:3,count:1},{kind:'turtle',x:41,z:66,rx:3,rz:3,count:1}];
-export const SHOALS=[{x:10,z:51},{x:-45,z:33},{x:53,z:65}];
+export const HABITATS=[{kind:'dolphin',x:25,z:35,rx:10,rz:6,count:3},{kind:'shark',x:147,z:0,rx:4,rz:20,count:1},{kind:'shark',x:-147,z:-10,rx:4,rz:18,count:1},{kind:'turtle',x:39,z:57,rx:3,rz:3,count:1},{kind:'turtle',x:-35,z:63,rx:2.5,rz:3,count:1}];
+export const SHOALS=[{x:12,z:43},{x:-37,z:30},{x:38,z:43}];
+export function birdPose(index,time,reduced=false){
+ const island=islands[index%islands.length],pier=island.pier||{width:3,startZ:7.9,endZ:15.8,deckY:.85},perchedCount=Math.min(8,islands.length*2),fly=index>=perchedCount&&!reduced;
+ const tier=Math.floor(index/islands.length),side=tier%2?1:-1,perch=toWorld(island,side*(pier.width/2-.12),pier.startZ+(pier.endZ-pier.startZ)*(.23+.27*tier));
+ const orbit=Math.max(21,(island.r||21)*.85),phase=time*.13+index;
+ return {islandId:island.id,fly,x:fly?island.x+Math.cos(phase)*orbit:perch.x,y:fly?16+index%3*2:pier.deckY+.42,z:fly?island.z+Math.sin(phase)*orbit*.85:perch.z,yaw:fly?-phase:island.rotation,roll:fly?-.15:0};
+}
 const angle=(a,b)=>Math.atan2(Math.sin(a-b),Math.cos(a-b));
 export function mergedModel(model){
  model.updateMatrixWorld(true);const geometries=[];let material;
@@ -44,7 +50,7 @@ export class MarineLife{
   }
   this.wakes.update(this.time,waterTime);
   if(this.fish)for(let n=0;n<36;n++){const f=this.fishPositions[n],a=f.previous||f,x=THREE.MathUtils.lerp(a.x,f.x,alpha),z=THREE.MathUtils.lerp(a.z,f.z,alpha);this.dummy.position.set(x,oceanHeight(x,z,waterTime)+.025,z);this.dummy.rotation.set(0,f.yaw,0);const show=Math.hypot(x-player.x,z-player.z)<48&&(!low||n%2===0);this.dummy.scale.set(show?1:0,.055,show?1:0);this.dummy.updateMatrix();this.fish.setMatrixAt(n,this.dummy.matrix);}if(this.fish)this.fish.instanceMatrix.needsUpdate=true;
-  if(this.birds)for(let n=0;n<12;n++){const island=islands[n%9],perch=toWorld(island,n%2?1.19:-1.19,10.8),fly=n>=9&&!reduced,roost=islands[[0,4,7][n%3]];this.dummy.position.set(fly?roost.x+Math.cos(this.time*.13+n)*21:perch.x,fly?11+n%3*2:1.23,fly?roost.z+Math.sin(this.time*.13+n)*18:perch.z);this.dummy.rotation.set(0,fly?-this.time*.13-n:island.rotation,fly?-.15:0);const distance=Math.hypot(this.dummy.position.x-player.x,this.dummy.position.z-player.z);this.dummy.scale.setScalar(distance<80&&(!low||n%2===0)?.8:0);this.dummy.updateMatrix();this.birds.setMatrixAt(n,this.dummy.matrix);}if(this.birds)this.birds.instanceMatrix.needsUpdate=true;
+  if(this.birds)for(let n=0;n<12;n++){const pose=birdPose(n,this.time,reduced);this.dummy.position.set(pose.x,pose.y,pose.z);this.dummy.rotation.set(0,pose.yaw,pose.roll);const distance=Math.hypot(pose.x-player.x,pose.z-player.z);this.dummy.scale.setScalar(distance<80&&(!low||n%2===0)?.8:0);this.dummy.updateMatrix();this.birds.setMatrixAt(n,this.dummy.matrix);}if(this.birds)this.birds.instanceMatrix.needsUpdate=true;
   if(this.time-this.lastObserve>.15){this.lastObserve=this.time;this.observed=new Set();const check=(kind,point)=>{if(this.observed.has(kind)||Math.hypot(point.x-player.x,point.z-player.z)>35)return;const ndc=point.clone().project(camera);if(ndc.z<0||ndc.z>1||Math.abs(ndc.x)>.9||Math.abs(ndc.y)>.85)return;const direction=point.clone().sub(camera.position),distance=direction.length(),ray=new THREE.Raycaster(camera.position,direction.normalize(),0,distance-.6);if(!ray.intersectObjects(occluders,true).length)this.observed.add(kind);};for(const i of this.items)if(i.group.visible)check(i.h.kind,i.group.position);for(const [n,f]of (this.fishPositions||[]).entries())if(!low||n%2===0)check('fish',new THREE.Vector3(f.x,oceanHeight(f.x,f.z,waterTime)+.03,f.z));}
  }
  onTravel(){if(this.companionUntil>this.time)this.lastCompanion=this.time;this.companionUntil=0;this.wakes.clear();this.observed=new Set();this.seen.clear();for(const i of this.items)i.previous={...i.p};}
