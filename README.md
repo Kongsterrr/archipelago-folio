@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V12.2.3 — Escape to the Bay** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V12.3 — Panel Back Navigation** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -53,6 +53,13 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V12.2.1 — Safe Sound Toggle** | Prevents muting the engine from stopping 3D and switching to the text-only portfolio | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.2.2 — Gameplay Focus** | Clears stale navigation focus outlines when WASD or arrow controls resume gameplay | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.2.3 — Escape to the Bay** | Esc closes menus directly into gameplay without a remaining navigation outline | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V12.3 — Panel Back Navigation** | A persistent Back button across menus, restoring the previous screen, category and scroll position | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V12.3 — Panel Back Navigation
+
+- Every panel has a visible, sticky Back control in its upper-left corner. Project and experience details return to the actual previous list; the same navigation works in About, Education, map, games, logbook and settings.
+- Back restores the previous category, scroll position and originating control. The outermost Back returns to exploration; X and Esc still close the whole panel.
+- History stays local to the current panel session, with fresh rendering of settings and records. Works on desktop, mobile and the text-only portfolio without changing Jack’s boat or quad position.
 
 ### V12.2.3 — Escape to the Bay
 
