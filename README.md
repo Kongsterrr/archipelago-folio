@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V12.2.2 — Gameplay Focus** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V12.2.3 — Escape to the Bay** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -52,6 +52,12 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V12.2 — Island Entry Views** | A consistent upward arrival on all four islands, shared walking/quad orientation, and safe reading-camera transitions | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.2.1 — Safe Sound Toggle** | Prevents muting the engine from stopping 3D and switching to the text-only portfolio | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.2.2 — Gameplay Focus** | Clears stale navigation focus outlines when WASD or arrow controls resume gameplay | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V12.2.3 — Escape to the Bay** | Esc closes menus directly into gameplay without a remaining navigation outline | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V12.2.3 — Escape to the Bay
+
+- Esc now returns focus directly to the live game when closing a panel, immediately clearing the menu trigger’s outline without requiring movement.
+- Tab navigation retains visible focus indicators; text-only browsing still restores the original menu trigger.
 
 ### V12.2.2 — Gameplay Focus
 

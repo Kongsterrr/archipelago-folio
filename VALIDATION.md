@@ -1,3 +1,9 @@
+# V12.2.3 — Escape to the Bay · 2026-09-27
+
+V12.2.2 handed focus back only after movement; pressing Esc alone still restored the menu trigger and displayed its keyboard outline. The dialog cancel handler now explicitly requests canvas focus after close/resume when a live game exists. Native cancel is prevented, so there is a single close path. Text-only fallback keeps the trigger focus restoration; existing focus styles remain intact.
+
+Local macOS Codex in-app browser/WebGPU: each of Projects, Experience, About and Education was opened and closed with Esc, without any movement key, both aboard the boat and while riding the Projects quad. All eight cases immediately focused `world`, closed the panel and left no navigation `:focus-visible` match. Settings → Esc behaved the same. Tab from the canvas still exposed a visible focus indicator on the About link. In `?no3d`, Projects → Esc correctly restored the Projects button. No browser errors were reported. No models, game movement, storage or layout changed.
+
 # V12.2.2 — Gameplay Focus · 2026-09-27
 
 Reproduced on the Projects quad: click Projects, close the panel, then press W. The trigger button retained focus and matched `:focus-visible`, leaving a border while the quad accepted movement. The fix transfers focus to the canvas on WASD/arrow movement intent during exploration, including a camera resume fade. Existing modal focus restoration and keyboard focus CSS remain unchanged.
