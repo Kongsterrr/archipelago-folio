@@ -40,7 +40,7 @@ function openExhibit({island,station,position}){
  const entry=exhibitEntry(station,island,content);if(!entry)return;
  const target=portfolioTarget(entry.id,content,islands),section=station.contentSection||'summary',value=entry[section]||entry.summary;
  const body=section==='links'?`<div class="panel-links">${entry.links.map(linkButton).join('')}</div>`:Array.isArray(value)?`<ul>${value.map(v=>`<li>${esc(v)}</li>`).join('')}</ul>`:`<p>${esc(value)}</p>`;
- store.see(entry.id);showPanel(`<span class="eyebrow">ON THE ISLAND / ${esc(target.group.name)}</span><h2 class="panel-hero" id="panel-title">${esc(station.label)}</h2><div class="exhibit-copy">${body}</div><button class="primary-button" data-open="${entry.id}">Read the full story</button><p class="panel-footnote">Concept illustration · The island brings the story to life. Career details come from my résumé.</p>`,{id:'exhibit-'+station.id,focus:{...position,exhibit:true,camera:{distance:16,height:position.y+1,azimuth:Math.PI/4,elevation:.66}}});
+ store.see(entry.id);showPanel(`<span class="eyebrow">ON THE ISLAND / ${esc(target.group.name)}</span><h2 class="panel-hero" id="panel-title">${esc(station.label)}</h2><div class="exhibit-copy">${body}</div><button class="primary-button" data-open="${entry.id}">Read the full story</button><p class="panel-footnote">Concept illustration · The island brings the story to life. Career details come from my résumé.</p>`,{id:'exhibit-'+station.id,focus:{...position,islandId:island,exhibit:true,camera:{distance:16,height:position.y+1,azimuth:Math.PI/4,elevation:.66}}});
 }
 function openDirectory(category='all'){
  const selected=category==='project'?'projects':category,groups=directoryGroups(content,selected);
