@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V12.3.1 — Contextual Back Navigation** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V12.3.2 — Minimal Back Arrow** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -55,6 +55,12 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V12.2.3 — Escape to the Bay** | Esc closes menus directly into gameplay without a remaining navigation outline | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.3 — Panel Back Navigation** | A persistent Back button across menus, restoring the previous screen, category and scroll position | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.3.1 — Contextual Back Navigation** | Back appears above nested content, with no Back on initial menus or peer category changes | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V12.3.2 — Minimal Back Arrow** | A plain header arrow on nested screens, without a text label, border or button background | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V12.3.2 — Minimal Back Arrow
+
+- Returned nested Back navigation to the header as a single arrow icon, with no visible text, border or background. The content no longer reserves a separate row for it.
+- Initial menus still hide the arrow. The transparent 42 px target retains its screen-reader label and keyboard focus indicator.
 
 ### V12.3.1 — Contextual Back Navigation
 
