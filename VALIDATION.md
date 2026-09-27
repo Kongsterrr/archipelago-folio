@@ -1,3 +1,11 @@
+# V12.2.1 — Safe Sound Toggle · 2026-09-27
+
+Reproduced locally by enabling sound, allowing engine initialization, then muting. The muted frame called `setTargetAtTime` on a GainNode instead of its `gain` AudioParam. The TypeError escaped through the frame event into `Game.safeFrame`, stopping rendering and enabling the text-only fallback; the URL did not change.
+
+Engine audio now schedules mute on the correct AudioParam. Its optional audio operations share an exception boundary so audio-device errors cannot stop rendering. The toolbar tooltip updates to Sound on/off alongside the existing accessible state.
+
+Five focused automated tests pass: repeated enable/mute with one reused oscillator and zero-volume scheduling, initial mute or absent audio context, pause/on-foot muting and sailing recovery, audio scheduling failure/recovery, and failed engine creation. Local macOS Codex in-app browser/WebGPU checks reproduced the original failure, then verified the corrected toolbar click, Enter/Space toggles, settings checkbox, closing settings and subsequent boat movement. The 3D view remained active with no new error after the fix. Existing assets, physics and navigation are unchanged. No new mobile or performance benchmark is claimed.
+
 # V12.2 — Island Entry Views · 2026-09-26
 
 All four islands now share an upward entry composition using each island's existing rotation. Both landing points face inward; boat berth headings, terrain, buildings and GLBs are unchanged. Walking and quad cameras use the same land basis, while sailing retains its global 45-degree direction. Current-island reading uses that island's direction; remote reading and Boat Studio use their dedicated views behind a 0.2-second fade.
