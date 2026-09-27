@@ -1,6 +1,6 @@
 {
   "name": "archipelago-folio",
-  "version": "12.3.1",
+  "version": "12.3.2",
   "main": "index.js",
   "type": "module",
   "scripts": {

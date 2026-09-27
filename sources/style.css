@@ -67,5 +67,5 @@ dialog{border:1px solid #ffffff80;color:var(--ink);background:#fffbf3;padding:0 
 
 .map-large .game-pin[data-map-id="buoy"] .map-pin-name{top:calc(100% + 5px);bottom:auto}
 
-/* Nested-view navigation belongs to the scrolling content, not the header. */
-.panel-back{display:inline-flex;align-items:center;gap:7px;min-height:42px;margin:0 0 18px;padding:0 13px;border:1px solid #d4ddd0;border-radius:12px;background:#edf0e5;font-size:14px;font-weight:700}.panel-back .ui-icon{width:18px;height:18px}
+/* Quiet, icon-only navigation for nested panels. */
+.panel-top{gap:12px}.panel-brand{margin-right:auto}.panel-back{display:grid;place-items:center;flex:0 0 42px;width:42px;height:42px;padding:0;border:0;background:transparent;box-shadow:none}.panel-back .ui-icon{width:24px;height:24px}

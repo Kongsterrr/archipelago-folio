@@ -1,3 +1,9 @@
+# V12.3.2 — Minimal Back Arrow · 2026-09-27
+
+Presentation-only adjustment: the existing nested Back button is now in the sticky header with an SVG arrow and accessible name, without visible label text, border or background. History and focus logic are unchanged. The initial menu keeps the arrow hidden.
+
+Local macOS Codex in-app browser: Projects initially had no visible arrow; ADHD Affirmation displayed the arrow in the header and no separate content row. DOM/computed-style checks confirmed empty button text, transparent background, zero border and a 42×42 px click target. Clicking returned to Projects and hid the arrow. The actual desktop screenshot matched the requested styling; no browser errors were reported. Existing keyboard focus styling remains available. No model, gameplay or storage changes.
+
 # V12.3.1 — Contextual Back Navigation · 2026-09-27
 
 Back now lives in the scrolling content area, outside the sticky panel header, and is hidden unless the current panel session has a predecessor. Root views focus the visible close button; returning from a detail still restores the originating card and list scroll. Peer directory categories replace the current directory state rather than introducing another history layer.
