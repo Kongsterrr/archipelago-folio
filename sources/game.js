@@ -311,18 +311,11 @@ export class Game {
      Object.assign(p,spawn);
     }
     this.quadBike=new QuadBikeController(RAPIER,this.world,walk,p);this.quadBike.setModel(gltf.scene,quality);this.scene.add(this.quadBike.group);this.player.quad=this.quadBike;this.quadBikeSpawn={...p};
-    this.createQuadBikePad(island,p);this.quadRideMarker=label('E',{width:64,height:64,worldWidth:.45,background:'#254f62',color:'#fff5dd',fontSize:32});this.scene.add(this.quadRideMarker);this.quadRideMarker.visible=false;
+    this.quadRideMarker=label('E',{width:64,height:64,worldWidth:.45,background:'#254f62',color:'#fff5dd',fontSize:32});this.scene.add(this.quadRideMarker);this.quadRideMarker.visible=false;
     this.world.propagateModifiedBodyPositionsToColliders();this.world.updateSceneQueries();return this.quadBike;
    }catch(error){console.warn('Quad bike unavailable',error.message);this.events.trigger('asseterror',['quad-bike']);return null;}
    finally{this.quadLoading=null;}
   })();return this.quadLoading;
- }
- createQuadBikePad(island,spawn){
-  const group=new THREE.Group();group.name='Projects · harbor quad parking';group.position.set(spawn.x,spawn.y-.02,spawn.z);group.rotation.y=island.rotation;this.scene.add(group);
-  const pad=new THREE.Mesh(new THREE.BoxGeometry(3.4,.10,3.8),new THREE.MeshStandardMaterial({color:'#a98865',roughness:.92}));pad.position.y=-.06;pad.receiveShadow=true;group.add(pad);
-  const inset=new THREE.Mesh(new THREE.BoxGeometry(3.12,.025,3.52),new THREE.MeshStandardMaterial({color:'#c9ab83',roughness:.96}));inset.position.y=.002;inset.receiveShadow=true;group.add(inset);
-  for(const x of[-1.62,1.62]){const border=new THREE.Mesh(new THREE.BoxGeometry(.12,.10,3.8),new THREE.MeshStandardMaterial({color:'#755940',roughness:.84}));border.position.set(x,-.005,0);border.castShadow=true;group.add(border);}
-  for(const z of[-1.82,1.82]){const border=new THREE.Mesh(new THREE.BoxGeometry(3.28,.10,.12),new THREE.MeshStandardMaterial({color:'#755940',roughness:.84}));border.position.set(0,-.005,z);border.castShadow=true;group.add(border);}
  }
  selectBerth(island,walk){const candidates=(walk.layout.berths||[{boat:{x:-3,z:14,yaw:0},landing:{x:-.6,z:14,y:.85,yaw:0}},{boat:{x:3,z:14,yaw:0},landing:{x:.6,z:14,y:.85,yaw:0}}]).map(b=>({boat:localToWorld(island,b.boat),landing:localToWorld(island,{...b.landing,yaw:0})})).sort((a,b)=>Math.hypot(a.boat.x-this.boat.position.x,a.boat.z-this.boat.position.z)-Math.hypot(b.boat.x-this.boat.position.x,b.boat.z-this.boat.position.z));
   this.world.propagateModifiedBodyPositionsToColliders();this.world.updateSceneQueries();return candidates.find(b=>walk.clear(b.landing)&&!this.world.intersectionWithShape({x:b.boat.x,y:.35,z:b.boat.z},{x:0,y:Math.sin(b.boat.yaw/2),z:0,w:Math.cos(b.boat.yaw/2)},new RAPIER.Cuboid(.85,.7,2.1),undefined,SEA_GROUP,this.boat.collider,this.boat.body));

@@ -1,3 +1,9 @@
+# V12.3.4 — Open Quad Parking · 2026-09-27
+
+Removed the visual-only `createQuadBikePad` helper and its call: four brown border meshes plus the decorative base/inset. The existing island ground supports the quad, and no collider, spawn, interaction or movement code changed.
+
+Local macOS Codex in-app browser/WebGPU before/after screenshots confirmed the brown surround disappeared at the Projects harbor. Jack approached the same vehicle, mounted with E (`riding-quad`, four wheels), dismounted with E (`walking`, parked), and the quad remained at its original x=49, y≈0.85, z=10.5 on a later status read. No browser errors were reported. All 19 existing quad harbor-collision, parking-stability and V12 quad tests passed.
+
 # V12.3.3 — Aligned Back Arrow · 2026-09-27
 
 CSS-only alignment: subtract the centered SVG/path inset with a 16 px left margin adjustment while preserving the 42×42 px button target. Local browser screenshot and DOM measurement confirmed a 0.1 px difference between the visible stroke edge and the content edge (path x=823, 1.8 px stroke, content x=822). Projects initially hid the arrow; detail → arrow returned to Projects and hid it again. Header and content use matching left padding at both desktop and mobile breakpoints; no navigation logic changed.
