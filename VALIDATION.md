@@ -1,3 +1,15 @@
+# V12.3 — Panel Back Navigation · 2026-09-27
+
+Added a shared panel-session history and sticky upper-left Back button. Returning rebuilds the previous screen from current data and restores its category, scroll offset and originating control. Closing, travelling or starting a challenge clears panel history through the existing close path. Root Back uses the same live-game focus handoff as Esc, preserving the recent navigation-outline fix.
+
+- **42/42 focused automated tests passed:** panel history, four-island navigation, UI symbols, input handling and camera transitions. Seven new history tests cover exact predecessor state, branching, same-screen refresh, replacement, clearing, bounded history and no implicit rendering.
+- **Local macOS Codex in-app browser, WebGPU:** Projects → ADHD Affirmation → Back, all other primary categories, Settings → Boat Studio, Games → Buoy Run, Map → Read now, and Logbook → Sea Life returned correctly. A scrolled Projects list returned to exactly 395 px and restored the selected card.
+- **Riding the quad:** nested Back retained the riding actor, position and paused reading state; outermost Back resumed exploration with canvas focus and no focused navigation outline. No browser errors were reported.
+- **Responsive:** visually checked the sticky Back/brand/close header on desktop 1280×720 and emulated mobile 390×844; keyboard activation returned correctly on mobile. This is viewport emulation, not a physical-phone performance measurement.
+- **HTML fallback (`?no3d`):** Projects → ADHD → More on this island → Back → Back restored both earlier screens; final Back closed the panel and restored the Projects navigation trigger.
+
+No model, physics, persisted data or public access settings changed. Production build is included in the deployment workflow; no new frame-rate claim is made.
+
 # V12.2.3 — Escape to the Bay · 2026-09-27
 
 V12.2.2 handed focus back only after movement; pressing Esc alone still restored the menu trigger and displayed its keyboard outline. The dialog cancel handler now explicitly requests canvas focus after close/resume when a live game exists. Native cancel is prevented, so there is a single close path. Text-only fallback keeps the trigger focus restoration; existing focus styles remain intact.
