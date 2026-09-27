@@ -1,3 +1,7 @@
+# V12.3.3 — Aligned Back Arrow · 2026-09-27
+
+CSS-only alignment: subtract the centered SVG/path inset with a 16 px left margin adjustment while preserving the 42×42 px button target. Local browser screenshot and DOM measurement confirmed a 0.1 px difference between the visible stroke edge and the content edge (path x=823, 1.8 px stroke, content x=822). Projects initially hid the arrow; detail → arrow returned to Projects and hid it again. Header and content use matching left padding at both desktop and mobile breakpoints; no navigation logic changed.
+
 # V12.3.2 — Minimal Back Arrow · 2026-09-27
 
 Presentation-only adjustment: the existing nested Back button is now in the sticky header with an SVG arrow and accessible name, without visible label text, border or background. History and focus logic are unchanged. The initial menu keeps the arrow hidden.
