@@ -1,3 +1,9 @@
+# V12.3.1 — Contextual Back Navigation · 2026-09-27
+
+Back now lives in the scrolling content area, outside the sticky panel header, and is hidden unless the current panel session has a predecessor. Root views focus the visible close button; returning from a detail still restores the originating card and list scroll. Peer directory categories replace the current directory state rather than introducing another history layer.
+
+23/23 existing focused tests passed (panel history, four-island navigation and UI symbols). Local macOS Codex in-app browser checks covered all four initial navigation menus without Back, Projects → ADHD Affirmation with Back above the title, returning to Projects with Back hidden again, and Esc returning focus to the game canvas. The same detail-return flow and a peer category change were checked in HTML fallback. Actual desktop screenshots confirmed the button sits inside the body rather than the header. No browser errors were reported. No physics, models or stored progress changed; this update makes no new device-performance claim.
+
 # V12.3 — Panel Back Navigation · 2026-09-27
 
 Added a shared panel-session history and sticky upper-left Back button. Returning rebuilds the previous screen from current data and restores its category, scroll offset and originating control. Closing, travelling or starting a challenge clears panel history through the existing close path. Root Back uses the same live-game focus handoff as Esc, preserving the recent navigation-outline fix.
