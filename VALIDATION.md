@@ -1,3 +1,9 @@
+# V12.2.2 — Gameplay Focus · 2026-09-27
+
+Reproduced on the Projects quad: click Projects, close the panel, then press W. The trigger button retained focus and matched `:focus-visible`, leaving a border while the quad accepted movement. The fix transfers focus to the canvas on WASD/arrow movement intent during exploration, including a camera resume fade. Existing modal focus restoration and keyboard focus CSS remain unchanged.
+
+Local macOS Codex in-app browser/WebGPU: all four navigation menus completed open → close → W while riding. Every check reported active element `world`, no focused navigation outline and a closed panel. Arrow input and Shift+W after dismount also returned focus to the canvas. W while reading stayed inside the dialog; Escape restored the trigger; Tab and Shift+Tab visibly focused Experience and Projects respectively. No browser error was reported. All five existing input regressions pass. No models, layout, movement rules or saved data change; no new device-performance measurement is claimed.
+
 # V12.2.1 — Safe Sound Toggle · 2026-09-27
 
 Reproduced locally by enabling sound, allowing engine initialization, then muting. The muted frame called `setTargetAtTime` on a GainNode instead of its `gain` AudioParam. The TypeError escaped through the frame event into `Game.safeFrame`, stopping rendering and enabling the text-only fallback; the URL did not change.

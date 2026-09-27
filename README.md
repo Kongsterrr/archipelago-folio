@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V12.2.1 — Safe Sound Toggle** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V12.2.2 — Gameplay Focus** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -51,6 +51,12 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V12.1.1 — Stable Quad Parking** | Stops parked-bike jitter after moving dismounts, pause recovery and remounting | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.2 — Island Entry Views** | A consistent upward arrival on all four islands, shared walking/quad orientation, and safe reading-camera transitions | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.2.1 — Safe Sound Toggle** | Prevents muting the engine from stopping 3D and switching to the text-only portfolio | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V12.2.2 — Gameplay Focus** | Clears stale navigation focus outlines when WASD or arrow controls resume gameplay | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V12.2.2 — Gameplay Focus
+
+- Moving with WASD or arrows after closing a menu now returns focus to the game canvas, preventing a leftover outline around the navigation item while walking or riding.
+- Preserves modal focus restoration and visible Tab/Shift+Tab navigation. Reading, editable controls and browser shortcuts keep their focus; camera fades retain their existing input safeguards.
 
 ### V12.2.1 — Safe Sound Toggle
 

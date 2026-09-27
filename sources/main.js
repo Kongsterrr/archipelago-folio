@@ -78,6 +78,14 @@ $('#return-boat').onclick=()=>game?.player.ridingQuad?game.primaryAction():game?
 $('#dock-button').onclick=dock;$('#play-button').onclick=()=>game?.interact();$('#zoom-in').onclick=()=>game?.setZoom(game.zoom-1);$('#zoom-out').onclick=()=>game?.setZoom(game.zoom+1);
 function reset(){if(game){++travelToken;closePanel({resume:false});$('#travel-fade').classList.remove('active');const i=game.reset();if(document.hidden)game.pause('hidden');toast(game.player.ridingQuad?'Back at the trail-bike turnout.':game.player.walking?`Back at the ${i.name} landing.`:`Back in safe water near ${i.name}.`);}}
 $('#reset-button').onclick=reset;$('#touch-reset').onclick=reset;$('#cargo-reset').onclick=()=>startChallenge('cargo');$('#challenge-exit').onclick=()=>{game?.cancelChallenge();inputs.setEnabled(true);toast('Round ended. There’s more to explore.');};
+// Modal close restores its trigger for keyboard navigation. Movement instead
+// returns focus to the game, including during a camera's short resume fade.
+document.addEventListener('keydown',e=>{
+ if(!game?.boat||game.mode!=='exploring'||$('#panel').open)return;
+ if(!['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))return;
+ if(e.ctrlKey||e.metaKey||e.altKey||e.isComposing||e.target.closest('dialog,input,select,textarea,[contenteditable=true]'))return;
+ const world=$('#world');if(document.activeElement!==world)world.focus({preventScroll:true});
+});
 inputs.events.on('action',key=>{if(key==='KeyM')openMap();if(key==='KeyE'||key==='Enter')dock();if(key==='KeyF')game?.interact();if(key==='KeyR')reset();if(key==='KeyH')game?.horn();});
 function background(){if(game?.boat){visibilityPaused=true;game.pause('hidden',game.focus);inputs.clear();audio?.suspend();}}
 function foreground(){if(game?.boat&&visibilityPaused&&!document.hidden){visibilityPaused=false;game.resume('hidden');}}
