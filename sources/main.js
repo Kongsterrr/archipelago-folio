@@ -23,26 +23,27 @@ const panelHistory=new PanelHistory();let restoringPanel=false;
 let game=null,fallbackGame=null,currentId=null,returnFocus=null,toastTimer,travelToken=0,visibilityPaused=false,audio=null,engine=null;
 function sound(kind='click',strength=1){if(!settings.sound)return;try{audio??=new AudioContext();audio.resume();const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;o.type=kind==='wood'||kind.startsWith('horn')?'triangle':'sine';o.frequency.setValueAtTime(({duck:540,wood:140,water:230,bell:900,finish:660,gate:720,horn:175,'horn-reply':145,gull:1400,engine:55})[kind]||420,t);o.frequency.exponentialRampToValueAtTime(kind==='engine'?58:kind.startsWith('horn')?155:kind==='gull'?1900:kind==='duck'?220:kind==='wood'?65:880,t+(kind.startsWith('horn')?.6:.17));const duration=kind==='engine'?1.2:kind.startsWith('horn')?.7:.25;g.gain.setValueAtTime(.035*Math.min(1.5,strength),t);g.gain.exponentialRampToValueAtTime(.001,t+duration);o.connect(g).connect(audio.destination);o.start();o.stop(t+duration+.01);}catch{}}
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,3500);}
+const panelInitialFocus=()=>panelHistory.canGoBack?$('#panel-back'):$('#panel-close');
 const panelFocusable=()=>[...$('#panel-content').querySelectorAll('button,a,input,select,textarea,[tabindex]')];
 function showPanel(markup,{id=null,focus=null,dock=false,render,key=id}={}){
  const panel=$('#panel');
  if(!panel.open){returnFocus=document.activeElement;panelHistory.clear();}
  else if(!restoringPanel&&panelHistory.current){panelHistory.current.scrollTop=panel.scrollTop;panelHistory.current.focusIndex=panelFocusable().indexOf(document.activeElement);}
- panelHistory.visit({key,render,scrollTop:0,focusIndex:-1},{replace:restoringPanel});
+ panelHistory.visit({key,render,scrollTop:0,focusIndex:-1},{replace:restoringPanel||(currentId==='directory'&&id==='directory')});
  currentId=id;document.body.classList.toggle('boat-studio',id==='studio');$('.intro').classList.add('compact');
  $('#panel-content').innerHTML=markup;installIcons($('#panel-content'));
- $('#panel-back').title=panelHistory.canGoBack?'Back to previous menu':game?.boat?'Back to exploring':'Back to portfolio';
- if(!panel.open)panel.showModal();panel.scrollTop=0;$('#panel-back').focus({preventScroll:true});
+ $('#panel-back').hidden=!panelHistory.canGoBack;
+ if(!panel.open)panel.showModal();panel.scrollTop=0;panelInitialFocus().focus({preventScroll:true});
  if(game?.boat){if(dock)game.dock(focus);else game.pause('read',focus);}inputs.setEnabled(false);sound();
 }
 function backPanel(){
  if(!$('#panel').open)return;
  const previous=panelHistory.back();
- if(!previous){closePanel({focusGame:true});return;}
+ if(!previous)return;
  const {scrollTop,focusIndex}=previous;
  restoringPanel=true;try{previous.render();}finally{restoringPanel=false;}
  $('#panel').scrollTop=scrollTop;
- (panelFocusable()[focusIndex]||$('#panel-back')).focus({preventScroll:true});
+ (panelFocusable()[focusIndex]||panelInitialFocus()).focus({preventScroll:true});
 }
 function closePanel({resume=true,focusGame=false}={}){if(!$('#panel').open)return;$('#panel').close();panelHistory.clear();document.body.classList.remove('boat-studio');currentId=null;if(resume&&game?.boat)game.resume('read');if(focusGame&&game?.boat)$('#world').focus({preventScroll:true});else if(returnFocus?.isConnected)returnFocus.focus();else $('#world').focus();}
 
