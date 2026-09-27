@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V12.1.1 — Stable Quad Parking** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V12.2 — Island Entry Views** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -49,6 +49,14 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V12 — Trail Bike** | A supplied quad bike on Projects Island, full-footprint island driving, rotating wheels, and a shared Jack riding pose | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.1 — Harbor Quad Repair** | Harbor placement, a fitted straddling pose, intact authored wheels, local wall sliding and travel-based wheel rotation | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.1.1 — Stable Quad Parking** | Stops parked-bike jitter after moving dismounts, pause recovery and remounting | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V12.2 — Island Entry Views** | A consistent upward arrival on all four islands, shared walking/quad orientation, and safe reading-camera transitions | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V12.2 — Island Entry Views
+
+- Going ashore now frames every island with the dock below and the island interior directly above. Jack faces inland at either landing point; sailing retains its existing camera.
+- Walking and the Projects quad use the same fixed island orientation, including reset and mount/dismount. Screen-relative walking and touch steering follow the actual camera basis.
+- Current-island exhibits and stories retain that orientation. Remote-island and Boat Studio views change direction behind a short fade, then restore the original exploration view on close. Hidden-tab pauses, rapid closing, Reset and Travel cancel or suspend pending transitions safely.
+- Preserves island layouts, models, camera scale, zoom options, north-up maps and saved progress.
 
 ### V12.1.1 — Stable Quad Parking
 

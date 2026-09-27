@@ -1,3 +1,13 @@
+# V12.2 — Island Entry Views · 2026-09-26
+
+All four islands now share an upward entry composition using each island's existing rotation. Both landing points face inward; boat berth headings, terrain, buildings and GLBs are unchanged. Walking and quad cameras use the same land basis, while sailing retains its global 45-degree direction. Current-island reading uses that island's direction; remote reading and Boat Studio use their dedicated views behind a 0.2-second fade.
+
+The full suite passes **330/330 tests**. New projection coverage checks both berths on all four islands at 1440×900, 1920×1080, 390×844 and 844×390, across three zoom levels and walking/quad modes. The inward axis projects vertically upward, with no sideways component. Tests also cover actual camera-relative input, fixed orientation while turning, unchanged sailing/Studio framing, opaque-frame camera commits, paused fades, rapid closing, reset/travel invalidation, and Game/Player/Boarding integration. Existing parked-quad stability regressions remain passing.
+
+Local macOS Codex in-app browser, WebGPU: About and Projects were checked first, followed by Experience and Education. Actual screenshots show the pier below and the island interior above. Projects walking → quad → moving dismount preserved direction. Current-island reading, remote Education reading and return, About Boat Studio and return, boarding back to sailing, Travel and walking Reset restored their expected views. No final browser error was reported.
+
+Browser viewport checks covered **1440×900, 1920×1080, 390×844 and 844×390**; low quality and reduced motion were also checked. Three-zoom projection coverage is automated. These are desktop viewport checks, not physical-phone tests. No new sustained performance, cold-network or renderer-backend benchmark is claimed. Production Vite build passes. No assets, storage schema, island layout or content facts change in this release.
+
 # V12.1.1 — Stable Quad Parking · 2026-09-25
 
 Moving dismounts stopped the physics body but left the previous driving pose in the render interpolation history. As the world continued stepping for walking Jack, the parked quad replayed that stale frame. A boosted turning reproduction oscillated by 0.266667 units and 0.584751 degrees before the fix.
