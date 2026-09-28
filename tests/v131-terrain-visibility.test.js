@@ -17,11 +17,11 @@ const slope=([a,b,c])=>{
  return Math.atan2(Math.hypot(n.x,n.z),n.y);
 };
 
-test('visible grassy land never disguises a quad-blocking slope as level ground',()=>{
+test('visible grassy land distinguishes gentle trails from climbable mountain rock',()=>{
  for(let i=0;i<visible.grass.length;i+=3)assert.ok(slope(triangle(visible.vertices,visible.grass,i))<=Math.PI/15+1.1e-6);
  const moderate=[];
  for(let i=0;i<layout.terrain.indices.length;i+=3){const p=triangle(layout.terrain.vertices,layout.terrain.indices,i),s=slope(p);if(s>Math.PI/15+.001&&s<Math.acos(.92)-.001)moderate.push(p);}
- assert.ok(moderate.length>450,'regression covers the broad previously invisible 12–23 degree banks');
+ assert.ok(moderate.length>450,'regression covers the broad 12–23 degree mountain foothills');
 });
 
 await MeshoptDecoder.ready;
@@ -62,5 +62,12 @@ for(const quality of['high','low'])test(`${quality}: exported Projects keeps one
   assert.ok(hits.some(hit=>hit.object.material.name==='highlandsRock'),`12–23 degree bank is not visibly rock at ${p.x},${p.z}`);checked++;
  }
  assert.ok(checked>15);
+ // The central ridges must exist in the exported model at their collision
+ // heights, not only in navigation metadata or a decorative peak silhouette.
+ for(const [x,z]of[[-2,2],[4,8],[-5,11]]){
+  let y;for(let j=0;j<layout.terrain.vertices.length;j+=3)if(layout.terrain.vertices[j]===x&&layout.terrain.vertices[j+2]===z)y=layout.terrain.vertices[j+1];
+  ray.set(new Vector3(x,15,z),new Vector3(0,-1,0));
+  assert.ok(ray.intersectObject(gltf.scene,true).some(hit=>Math.abs(hit.point.y-y)<.02),`actual ridge height matches collision at ${x},${z}`);
+ }
  assert.ok(document.getRoot().listMaterials().some(m=>m.getName()==='highlandsTrailEdge'),'road shoulders are retained in both qualities');
 });

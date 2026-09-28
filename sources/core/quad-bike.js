@@ -37,7 +37,7 @@ export function quadGroundPose(walk,point,yaw){
  const sample=(x,z)=>walk.groundAt({x:point.x+x*c+z*s,z:point.z-x*s+z*c});
  const fl=sample(-half,front),fr=sample(half,front),bl=sample(-half,back),br=sample(half,back);
  const slopeX=((fr-fl)+(br-bl))/(4*half),slopeZ=((bl+br)-(fl+fr))/(2*(back-front));
- return{height:(fl+fr)/2-slopeZ*front,pitch:-Math.atan(slopeZ),roll:Math.atan(slopeX),slope:Math.atan(Math.hypot(slopeX,slopeZ)),warp:Math.abs((fl+br)-(fr+bl))/2};
+ return{height:(fl+fr)/2-slopeZ*front,pitch:-Math.atan(slopeZ),roll:Math.atan(slopeX/Math.hypot(1,slopeZ)),slope:Math.atan(Math.hypot(slopeX,slopeZ)),warp:Math.abs((fl+br)-(fr+bl))/2};
 }
 
 // Full oriented rectangles catch even thin posts inside the vehicle footprint.
@@ -56,8 +56,11 @@ export function quadFootprintClear(walkWorld, point, yaw, halfWidth = QUAD_BIKE.
   if(!inside(point))return false;
   if(walkWorld.terrain){
     const support=quadGroundPose(walkWorld,point,yaw);
-    if(support.slope>Math.PI/15+.004||support.warp>.12)return false;
-    for(const x of[-halfWidth,0,halfWidth])for(const z of[-halfLength,0,halfLength])if(!walkWorld.safeGround(sample(x,z),.08,Math.PI/15))return false;
+    const limit=walkWorld.allTerrain?walkWorld.climbSlope:Math.PI/15;
+    // Curved ridges can warp the four support points differently by heading.
+    // The authored triangle limit below is authoritative for all-terrain mode.
+    if(!walkWorld.allTerrain&&(support.slope>limit+.004||support.warp>.12))return false;
+    for(const x of[-halfWidth,0,halfWidth])for(const z of[-halfLength,0,halfLength])if(!walkWorld.safeGround(sample(x,z),.08,limit))return false;
   }
   for(let n=0;n<=10;n++) {
     const t=n/10*2-1;
@@ -100,6 +103,25 @@ export function splitQuadWheels(model) {
   const pivots=[];
   model.traverse(node=>{if(/^quad-wheel-(front|rear)-(left|right)$/.test(node.name))pivots.push(node);});
   return pivots;
+}
+
+// Keep the supplied, complete tyre meshes seated on irregular mountain crests.
+// This is a deterministic visual offset, not a spring simulation: parked tyres
+// cannot keep bouncing after Jack gets off.
+export function fitQuadWheelsToGround(walk,wheels){
+  const radius=QUAD_BIKE.wheelRadius/QUAD_BIKE.modelScale,point=new THREE.Vector3();
+  for(const wheel of wheels){
+    let offset=-Infinity;
+    for(const across of[-.075,0,.075])for(let n=0;n<16;n++){
+      const angle=n*Math.PI/8;
+      point.set(across,Math.cos(angle)*radius,Math.sin(angle)*radius).applyMatrix4(wheel.matrixWorld);
+      if(walk.contains(point,0))offset=Math.max(offset,walk.groundAt(point)-point.y);
+    }
+    if(!Number.isFinite(offset))continue;
+    point.setFromMatrixPosition(wheel.matrixWorld);point.y+=offset;
+    wheel.position.copy(wheel.parent.worldToLocal(point));
+    wheel.updateMatrixWorld(true);
+  }
 }
 
 export class QuadBikeController {
@@ -159,7 +181,7 @@ export class QuadBikeController {
       if (node.isMesh) { node.castShadow = true; node.receiveShadow = true; }
     });
     this.wheelPivots = splitQuadWheels(model);
-    for(const wheel of this.wheelPivots)wheel.rotation.order='YXZ';
+    for(const wheel of this.wheelPivots){wheel.rotation.order='YXZ';wheel.userData.groundRest=wheel.position.clone();}
     this.visual.add(model);
     this.model = model;
     this.quality = quality;
@@ -167,18 +189,37 @@ export class QuadBikeController {
   }
 
   get position() { return this.body.translation(); }
-  get speed() { return Math.hypot(this.velocity.x, this.velocity.z); }
+  get speed() { return Math.hypot(this.velocity.x, this.velocity.y, this.velocity.z); }
   get forwardSpeed() {
     const forward = { x: -Math.sin(this.yaw), z: -Math.cos(this.yaw) };
-    return this.velocity.x * forward.x + this.velocity.z * forward.z;
+    const horizontal=Math.hypot(this.velocity.x,this.velocity.z);
+    return (this.velocity.x * forward.x + this.velocity.z * forward.z)*(horizontal>.0001?this.speed/horizontal:1);
   }
 
   step(input, dt) {
     if (this.parked) return;
     const current=this.position,start={...current,yaw:this.yaw};
     this.previous={...current};this.previousYaw=this.yaw;this.stepDt=dt;
-    const state=integrateQuadDrive({yaw:this.yaw,vx:this.velocity.x,vz:this.velocity.z},input,dt);
-    const target={x:current.x+state.vx*dt,z:current.z+state.vz*dt,yaw:state.yaw};
+    // Carry the distance actually travelled last frame across triangle seams.
+    // Rescaling old velocity by the *new* slope would add speed at each ridge.
+    const horizontal=Math.hypot(this.velocity.x,this.velocity.z);
+    const priorScale=horizontal>.0001?this.speed/horizontal:1;
+    const state=integrateQuadDrive({yaw:this.yaw,vx:this.velocity.x*priorScale,vz:this.velocity.z*priorScale},input,dt);
+    let target={x:current.x+state.vx*dt,z:current.z+state.vz*dt,yaw:state.yaw};
+    if(this.walkWorld.allTerrain){
+      // Front tyres reach a slope before the center does. Measure the actual
+      // four-wheel support change, so neither crests nor downhill add speed.
+      const distance=Math.hypot(state.vx,state.vz)*dt;
+      if(distance>1e-7){
+        let lo=0,hi=1;
+        for(let n=0;n<12;n++){
+          const t=(lo+hi)/2,p={x:current.x+state.vx*dt*t,z:current.z+state.vz*dt*t};
+          const y=quadGroundPose(this.walkWorld,p,state.yaw).height;
+          if(Math.hypot(distance*t,y-current.y)<=distance)lo=t;else hi=t;
+        }
+        target={x:current.x+state.vx*dt*lo,z:current.z+state.vz*dt*lo,yaw:state.yaw};
+      }
+    }
     let next=sweepPose(this.walkWorld,start,target);
     // A turn can swing a front corner into a steep bank even while the rear is
     // moving away. Let translation escape at the last clear heading first;
@@ -194,9 +235,9 @@ export class QuadBikeController {
       next=candidate;
     }
     const rotated=sweepPose(this.walkWorld,next,{...next,yaw:state.yaw});
-    this.yaw=rotated.yaw;next.yaw=this.yaw;
+    next=rotated;this.yaw=next.yaw;
     this.steering=THREE.MathUtils.damp(this.steering||0,input.steer||0,8,dt);
-    this.velocity={x:(next.x-current.x)/dt,y:0,z:(next.z-current.z)/dt};
+    this.velocity={x:(next.x-current.x)/dt,y:(next.y-current.y)/dt,z:(next.z-current.z)/dt};
     this.body.setNextKinematicTranslation({x:next.x,y:next.y,z:next.z});
     this.body.setNextKinematicRotation({x:0,y:Math.sin(this.yaw/2),z:0,w:Math.cos(this.yaw/2)});
   }
@@ -211,7 +252,19 @@ export class QuadBikeController {
     const horizontal=(current.x-this.previous.x)*-Math.sin(this.yaw)+(current.z-this.previous.z)*-Math.cos(this.yaw);
     const distance=Math.sign(horizontal)*Math.hypot(horizontal,current.y-this.previous.y);
     this.wheelAngle=(this.wheelAngle||0)+distance/QUAD_BIKE.wheelRadius;
-    this.velocity={x:(current.x-this.previous.x)/(this.stepDt||1/60),y:0,z:(current.z-this.previous.z)/(this.stepDt||1/60)};
+    this.velocity={x:(current.x-this.previous.x)/(this.stepDt||1/60),y:(current.y-this.previous.y)/(this.stepDt||1/60),z:(current.z-this.previous.z)/(this.stepDt||1/60)};
+    this.syncGroundCollider();
+  }
+
+  syncGroundCollider(){
+    if(!this.walkWorld.terrain)return;
+    const ground=quadGroundPose(this.walkWorld,this.position,this.yaw);
+    const rotation=new THREE.Quaternion().setFromEuler(new THREE.Euler(ground.pitch,0,ground.roll,'YXZ'));
+    // The chassis must occupy its uphill end too. A level collider lets Jack
+    // step over that end and then snap through the parked visual on steep land.
+    const offset=new THREE.Vector3(0,.38,0).applyQuaternion(rotation);
+    this.collider.setRotationWrtParent(rotation);
+    this.collider.setTranslationWrtParent(offset);
   }
 
   dismountPoint() {
@@ -223,7 +276,10 @@ export class QuadBikeController {
       point.y = this.walkWorld.groundAt(point);
       const dx=point.x-p.x,dz=point.z-p.z;
       const outside=Math.abs(dx*right.x+dz*right.z)>QUAD_BIKE.collisionHalfWidth+.3||Math.abs(dx*forward.x+dz*forward.z)>QUAD_BIKE.collisionHalfLength+.3;
-      const safe=!this.walkWorld.terrain||(Math.abs(point.y-p.y)<=.25&&this.walkWorld.safeGround(point,.24,Math.PI/15));
+      const limit=this.walkWorld.allTerrain?this.walkWorld.climbSlope:Math.PI/15;
+      // On the continuous mountain, the side's true ground is the landing;
+      // its elevation need not match the axle center on a cross-slope.
+      const safe=!this.walkWorld.terrain||((this.walkWorld.allTerrain||Math.abs(point.y-p.y)<=.25)&&this.walkWorld.safeGround(point,.24,limit));
       if (outside && safe && this.walkWorld.clear(point, .24) && this.walkWorld.visible(p,point)) return { ...point, yaw: this.yaw };
     }
     return null;
@@ -233,6 +289,7 @@ export class QuadBikeController {
     this.parked = value;
     this.hold();
     this.body.setBodyType(value ? this.R.RigidBodyType.Fixed : this.R.RigidBodyType.KinematicPositionBased, true);
+    this.syncGroundCollider();
   }
 
   hold() {
@@ -258,6 +315,7 @@ export class QuadBikeController {
     this.hold();
     this.previous = { x: point.x, y: point.y, z: point.z };
     this.previousYaw = this.yaw;
+    this.syncGroundCollider();
     this.updateVisual(0, true);
   }
 
@@ -276,10 +334,12 @@ export class QuadBikeController {
     this.group.rotation.set(ground.pitch,yaw,ground.roll,'YXZ');
     this.visual.rotation.z=0;
     for(const wheel of this.wheelPivots){
+      if(wheel.userData.groundRest)wheel.position.copy(wheel.userData.groundRest);
       wheel.rotation.x=this.wheelAngle||0;
       // GLB retains +Z-forward source coordinates, hence the steering sign.
       wheel.rotation.y=wheel.name.includes('front')?(this.steering||0)*.22:0;
     }
+    if(this.walkWorld.allTerrain&&this.wheelPivots.length){this.group.updateMatrixWorld(true);fitQuadWheelsToGround(this.walkWorld,this.wheelPivots);}
   }
 
   dispose() {

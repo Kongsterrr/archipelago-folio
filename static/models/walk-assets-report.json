@@ -4,31 +4,31 @@
     {
       "id": "projects",
       "quality": "high",
-      "bytes": 1257184,
-      "triangles": 85043,
+      "bytes": 1387628,
+      "triangles": 89211,
       "drawCalls": 151,
       "routeSeconds": 76.9,
       "connectedFromDock": true,
       "stationsReachable": 12,
       "pathWidth": 5,
       "routeClearance": 2.5,
-      "maxRoadGradeDegrees": 10.072,
-      "terrainTriangles": 7787
+      "maxRoadGradeDegrees": 10.112,
+      "terrainTriangles": 9958
     },
     {
       "id": "projects",
       "quality": "low",
-      "bytes": 971304,
-      "triangles": 64451,
+      "bytes": 906740,
+      "triangles": 68619,
       "drawCalls": 144,
       "routeSeconds": 76.9,
       "connectedFromDock": true,
       "stationsReachable": 12,
       "pathWidth": 5,
       "routeClearance": 2.5,
-      "maxRoadGradeDegrees": 10.072,
-      "terrainTriangles": 7787
+      "maxRoadGradeDegrees": 10.112,
+      "terrainTriangles": 9958
     }
   ],
-  "totalBytes": 2228488
+  "totalBytes": 2294368
 }

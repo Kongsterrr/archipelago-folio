@@ -1767,14 +1767,14 @@
       "id": "projects",
       "name": "projects",
       "file": "projects.glb",
-      "bytes": 1257184,
-      "rawBytes": 4281112,
-      "revision": "v13-projects-highlands",
-      "sourceMeshes": 854,
+      "bytes": 1387628,
+      "rawBytes": 4723852,
+      "revision": "v132-climbable-highlands",
+      "sourceMeshes": 851,
       "drawCalls": 151,
       "staticDrawCalls": 19,
-      "vertices": 112835,
-      "triangles": 85043,
+      "vertices": 125889,
+      "triangles": 89211,
       "bounds": {
         "min": [
           -39,
@@ -2982,8 +2982,8 @@
       ]
     }
   ],
-  "totalBytes": 3836976,
-  "totalTriangles": 232424,
+  "totalBytes": 3967420,
+  "totalTriangles": 236592,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }

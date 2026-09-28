@@ -41,7 +41,12 @@ export class IslandWalkWorld{
   return{...result,normal:{x:n.x*c+n.z*s,y:n.y,z:-n.x*s+n.z*c}};
  }
  groundAt(point){return this.groundSample(point).height;}
- safeGround(point,radius=.22,maxSlope=Math.PI/6){
+ // Authored mountain surfaces opt into one traversal policy for both actors.
+ // Older flat islands and unprofiled terrain retain their original limits.
+ get allTerrain(){return Number.isFinite(this.layout.terrain?.navigation?.maxClimbSlopeDegrees);}
+ get climbSlope(){return this.allTerrain?this.layout.terrain.navigation.maxClimbSlopeDegrees*Math.PI/180:Math.PI/6;}
+ travelScale(point,x,z){const n=this.groundSample(point).normal;return Math.hypot(1,(n.x*x+n.z*z)/Math.max(.01,n.y));}
+ safeGround(point,radius=.22,maxSlope=this.climbSlope){
   if(!this.contains(point,radius))return false;
   const center=this.groundSample(point);
   for(let i=0;i<8;i++){const a=i*Math.PI/4,p={x:point.x+Math.cos(a)*radius,z:point.z+Math.sin(a)*radius},sample=this.groundSample(p);if(sample.slope>maxSlope+.004||Math.abs(sample.height-center.height)>radius*Math.tan(maxSlope)+.07)return false;}
@@ -64,10 +69,30 @@ export class CharacterController{
  hold(){this.previous={...this.position};this.velocity={x:0,y:0,z:0};this.body.setLinvel({x:0,y:0,z:0},true);this.body.setNextKinematicTranslation(this.body.translation());}
  step(input,dt){if(!this.active)return;const p=this.position;this.previous={...p};let x=input.x||0,z=input.z||0;const length=Math.hypot(x,z);if(length>.05&&this.seated)this.seated=false;if(this.seated){this.hold();return;}
   const scale=(input.run?CHARACTER.run:CHARACTER.walk)/Math.max(1,length);x*=scale;z*=scale;
+  if(this.walkWorld.allTerrain){this.stepTerrain(p,x,z,dt);return;}
   const safe=q=>this.walkWorld.contains(q)&&(!this.walkWorld.terrain||(this.walkWorld.safeGround(q,CHARACTER.radius)&&Math.abs(this.walkWorld.groundAt(q)-this.walkWorld.groundAt(p))<.18));
   let next={x:p.x+x*dt,z:p.z+z*dt};if(!safe(next)){if(safe({x:next.x,z:p.z}))next.z=p.z;else if(safe({x:p.x,z:next.z}))next.x=p.x;else next={x:p.x,z:p.z};}
   this.controller.computeColliderMovement(this.collider,{x:next.x-p.x,y:-Math.max(.08,5*dt),z:next.z-p.z},undefined,WALK_GROUP,c=>this.walkWorld.handles.has(c.handle));
   const movement=this.controller.computedMovement(),body=this.body.translation();this.body.setNextKinematicTranslation({x:body.x+movement.x,y:body.y+movement.y,z:body.z+movement.z});this.velocity={x:movement.x/dt,y:movement.y/dt,z:movement.z/dt};
+  if(this.speed>.06){const target=Math.atan2(-movement.x,-movement.z),delta=Math.atan2(Math.sin(target-this.yaw),Math.cos(target-this.yaw));this.yaw+=delta*Math.min(1,12*dt);}
+ }
+ stepTerrain(p,x,z,dt){
+  const walk=this.walkWorld,length=Math.hypot(x,z),factor=length?walk.travelScale(p,x/length,z/length):1;
+  const delta={x:x*dt/factor,z:z*dt/factor};
+  // Sweep the capsule against solid props, then place its feet on the same
+  // heightfield used by the rendered mountain. Rapier's downward slide request
+  // otherwise fights side-on climbs and makes one triangle seam a hidden wall.
+  const safe=q=>walk.safeGround(q,CHARACTER.radius);
+  let next={x:p.x+delta.x,z:p.z+delta.z};
+  if(!safe(next)){if(safe({x:next.x,z:p.z}))next.z=p.z;else if(safe({x:p.x,z:next.z}))next.x=p.x;else next={x:p.x,z:p.z};}
+  const obstacle=c=>walk.handles.has(c.handle)&&(!walk.colliders.includes(c)||walk.obstacles.includes(c));
+  this.controller.computeColliderMovement(this.collider,{x:next.x-p.x,y:walk.groundAt(next)-p.y,z:next.z-p.z},undefined,WALK_GROUP,obstacle);
+  const movement=this.controller.computedMovement();
+  const resolved={x:p.x+movement.x,z:p.z+movement.z};
+  if(!safe(resolved)){this.hold();return;}
+  const height=walk.groundAt(resolved);
+  this.body.setNextKinematicTranslation({x:resolved.x,y:height+CHARACTER.height/2+CHARACTER.offset,z:resolved.z});
+  this.velocity={x:movement.x/dt,y:(height-p.y)/dt,z:movement.z/dt};
   if(this.speed>.06){const target=Math.atan2(-movement.x,-movement.z),delta=Math.atan2(Math.sin(target-this.yaw),Math.cos(target-this.yaw));this.yaw+=delta*Math.min(1,12*dt);}
  }
  afterStep(){const p=this.position;if(this.walkWorld.contains(p)&&Math.abs(p.y-this.walkWorld.groundAt(p))<.3)this.lastSafe={...p,yaw:this.yaw};else if(!this.walkWorld.contains(p,.18)||p.y<this.walkWorld.groundAt(p)-.4||!Number.isFinite(p.y))this.teleport(this.lastSafe);}
