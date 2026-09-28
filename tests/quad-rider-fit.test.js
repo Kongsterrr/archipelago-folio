@@ -48,8 +48,8 @@ function skinPoints(avatar, boneName) {
 
 test('actual imported palms stay on ATV grips during turns, world translations and pauses', async () => {
   const f = await fixture();
-  for (const yaw of [0, Math.PI / 2, Math.PI, -Math.PI / 4]) {
-    f.group.position.set(31, .85, -45); f.group.rotation.y = yaw;
+  for (const yaw of [0, Math.PI / 2, Math.PI, -Math.PI / 4]) for(const [pitch,roll] of [[0,0],[.19,-.08],[-.12,.14]]) {
+    f.group.position.set(31, 6.5, -45); f.group.rotation.set(pitch,yaw,roll,'YXZ');
     for (const frozen of [false, true]) {
       f.update(1 / 30, frozen);
       for (const side of ['Left', 'Right']) {

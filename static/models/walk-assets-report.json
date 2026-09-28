@@ -2,101 +2,33 @@
   "version": 11,
   "assets": [
     {
-      "id": "about",
-      "quality": "high",
-      "bytes": 689356,
-      "triangles": 39280,
-      "drawCalls": 97,
-      "routeSeconds": 105,
-      "connectedFromDock": true,
-      "stationsReachable": 6,
-      "routeClearance": 0.8,
-      "pathWidth": 2.05
-    },
-    {
-      "id": "experience",
-      "quality": "high",
-      "bytes": 1126480,
-      "triangles": 63210,
-      "drawCalls": 124,
-      "routeSeconds": 162.9,
-      "connectedFromDock": true,
-      "stationsReachable": 9,
-      "routeClearance": 0.8,
-      "pathWidth": 2.05
-    },
-    {
       "id": "projects",
       "quality": "high",
-      "bytes": 869208,
-      "triangles": 51482,
-      "drawCalls": 122,
-      "routeSeconds": 154.2,
+      "bytes": 1152328,
+      "triangles": 79669,
+      "drawCalls": 149,
+      "routeSeconds": 76.9,
       "connectedFromDock": true,
-      "stationsReachable": 9,
-      "routeClearance": 0.8,
-      "pathWidth": 2.05
-    },
-    {
-      "id": "education",
-      "quality": "high",
-      "bytes": 504248,
-      "triangles": 26860,
-      "drawCalls": 68,
-      "routeSeconds": 96.7,
-      "connectedFromDock": true,
-      "stationsReachable": 4,
-      "routeClearance": 0.8,
-      "pathWidth": 2.05
-    },
-    {
-      "id": "about",
-      "quality": "low",
-      "bytes": 582508,
-      "triangles": 30808,
-      "drawCalls": 97,
-      "routeSeconds": 105,
-      "connectedFromDock": true,
-      "stationsReachable": 6,
-      "routeClearance": 0.8,
-      "pathWidth": 2.05
-    },
-    {
-      "id": "experience",
-      "quality": "low",
-      "bytes": 1004336,
-      "triangles": 54018,
-      "drawCalls": 122,
-      "routeSeconds": 162.9,
-      "connectedFromDock": true,
-      "stationsReachable": 9,
-      "routeClearance": 0.8,
-      "pathWidth": 2.05
+      "stationsReachable": 12,
+      "pathWidth": 5,
+      "routeClearance": 2.5,
+      "maxRoadGradeDegrees": 10.072,
+      "terrainTriangles": 7787
     },
     {
       "id": "projects",
       "quality": "low",
-      "bytes": 731248,
-      "triangles": 42214,
-      "drawCalls": 118,
-      "routeSeconds": 154.2,
+      "bytes": 866716,
+      "triangles": 59077,
+      "drawCalls": 142,
+      "routeSeconds": 76.9,
       "connectedFromDock": true,
-      "stationsReachable": 9,
-      "routeClearance": 0.8,
-      "pathWidth": 2.05
-    },
-    {
-      "id": "education",
-      "quality": "low",
-      "bytes": 409404,
-      "triangles": 20556,
-      "drawCalls": 67,
-      "routeSeconds": 96.7,
-      "connectedFromDock": true,
-      "stationsReachable": 4,
-      "routeClearance": 0.8,
-      "pathWidth": 2.05
+      "stationsReachable": 12,
+      "pathWidth": 5,
+      "routeClearance": 2.5,
+      "maxRoadGradeDegrees": 10.072,
+      "terrainTriangles": 7787
     }
   ],
-  "totalBytes": 5916788
+  "totalBytes": 2019044
 }

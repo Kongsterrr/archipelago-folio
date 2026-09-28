@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V12.4 — Island Field Maps** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V13 — Projects Highlands** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -59,7 +59,16 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V12.3.2 — Minimal Back Arrow** | A plain header arrow on nested screens, without a text label, border or button background | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.3.3 — Aligned Back Arrow** | Aligns the visible return arrow with the content left edge while preserving its click target | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.3.4 — Open Quad Parking** | Removes the brown parking surround; the quad rests directly on the existing island surface | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V13 — Projects Highlands** | Terraced Projects terrain, numbered project kiosks, direct reading while riding, slope-aware quad and terrain map | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V13 — Projects Highlands
+
+Projects is now a sunset mountain park with a graded two-way loop, an arrival directory and three numbered project pavilions: Affirmation Garden, Research Lookout and Catering Lodge. Each main pavilion opens its full project story directly: **E on foot, F on the quad**, or click/tap the visible display. E still dismounts the quad. Reading stops the vehicle, and closing the panel requires fresh input before moving again.
+
+The visible terrain, Rapier collider, surface queries, roads and local-map elevation bands share one indexed surface. The quad samples all four tyre positions for its slope pose, checks its complete footprint, and only permits a safe nearby dismount. Existing Jack and quad models, the other three islands, and saved progress are retained.
+
+Rebuild only the Projects high/low assets with `node scripts/build-walk-islands.mjs --only=projects`. Validation and measured resource sizes are recorded in [VALIDATION.md](VALIDATION.md).
 
 ### V12.4 — Island Field Maps
 

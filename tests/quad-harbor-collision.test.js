@@ -5,7 +5,7 @@ import R from '@dimforge/rapier3d-compat/rapier.es.js';
 import { islands } from '../sources/config.js';
 import { IslandWalkWorld, CharacterController, localToWorld } from '../sources/core/character.js';
 import { dockLocal } from '../sources/core/dock.js';
-import { QUAD_BIKE, QuadBikeController, quadFootprintClear } from '../sources/core/quad-bike.js';
+import { QUAD_BIKE, QuadBikeController, quadFootprintClear, quadGroundPose } from '../sources/core/quad-bike.js';
 
 const layout = JSON.parse(fs.readFileSync(new URL('../static/models/walk-layout.json', import.meta.url))).islands.find(i => i.id === 'projects');
 const projects = islands.find(i => i.id === 'projects');
@@ -18,6 +18,7 @@ function fixture({ island = projects, walkLayout = layout, localSpawn = QUAD_BIK
   world.timestep = DT;
   const walk = new IslandWalkWorld(R, world, island, walkLayout);
   const spawn = localToWorld(island, { ...localSpawn, y: walkLayout.groundY ?? .85 });
+  spawn.y = walk.groundAt(spawn);
   const bike = new QuadBikeController(R, world, walk, spawn);
   world.propagateModifiedBodyPositionsToColliders();
   world.updateSceneQueries();
@@ -31,11 +32,23 @@ function tick(f, input = drive) {
 }
 
 function relocate(f, x, z, yaw = 0) {
-  const p = localToWorld(f.walk.island, { x, z, y: layout.groundY, yaw });
+  const p = localToWorld(f.walk.island, { x, z, yaw });
+  p.y = f.walk.terrain ? quadGroundPose(f.walk, p, p.yaw).height : f.walk.groundAt(p);
   assert.ok(quadFootprintClear(f.walk, p, p.yaw), `test staging point must be clear: ${x},${z}`);
   f.bike.teleport(p);
   f.bike.park(false);
   return p;
+}
+
+// Stage against the shipped observatory rather than its pre-highlands location.
+// This continues to exercise a real building on elevated terrain, not a mock wall.
+function observatoryApproach(f, yaw = 0) {
+  const wall = f.walk.layout.obstacles.find(o => o.name === 'research: observatory');
+  assert.ok(wall, 'the actual Research observatory supplies the collision fixture');
+  assert.equal(wall.rotation || 0, 0);
+  const front = wall.z + wall.depth / 2;
+  relocate(f, wall.x, front + 5, yaw);
+  return { wall, front };
 }
 
 test('quad starts at the actual Projects harbor, with an unobstructed route into the island', () => {
@@ -74,7 +87,7 @@ for (const approach of [{ name: 'frontal', yaw: 0 }, { name: 'left oblique', yaw
   test(`Projects observatory ${approach.name} collision stays local and can reverse away`, () => {
     const f = fixture();
     try {
-      relocate(f, -.8, 6, approach.yaw);
+      const { front } = observatoryApproach(f, approach.yaw);
       let previous = { ...f.bike.position }, closest = Infinity;
       for (let n = 0; n < 480; n++) {
         tick(f, { ...drive, boost: true });
@@ -85,7 +98,7 @@ for (const approach of [{ name: 'frontal', yaw: 0 }, { name: 'left oblique', yaw
         closest = Math.min(closest, dockLocal(p, projects).z);
         previous = { ...p };
       }
-      assert.ok(closest < 0, 'the test actually reaches the observatory wall');
+      assert.ok(closest < front + QUAD_BIKE.collisionHalfLength + .5, 'the test actually reaches the observatory wall');
       const stopped = dockLocal(f.bike.position, projects);
       for (let n = 0; n < 120; n++) tick(f, { ...drive, throttle: -1 });
       const reversed = dockLocal(f.bike.position, projects);
@@ -97,7 +110,7 @@ for (const approach of [{ name: 'frontal', yaw: 0 }, { name: 'left oblique', yaw
 test('holding throttle against a wall does not keep spinning stationary wheels', () => {
   const f = fixture();
   try {
-    relocate(f, -.8, 6);
+    observatoryApproach(f);
     for (let n = 0; n < 360; n++) tick(f);
     const angle = f.bike.wheelAngle, position = { ...f.bike.position };
     for (let n = 0; n < 120; n++) { tick(f); f.bike.updateVisual(DT, false, 1); }
@@ -109,7 +122,7 @@ test('holding throttle against a wall does not keep spinning stationary wheels',
 test('steering while touching a wall cannot rotate a corner through it or reset the bike', () => {
   const f = fixture();
   try {
-    relocate(f, -.8, 6);
+    observatoryApproach(f);
     for (let n = 0; n < 300; n++) tick(f);
     let previous = { ...f.bike.position };
     for (let n = 0; n < 240; n++) {
@@ -126,9 +139,11 @@ test('Jack cannot walk through the parked quad', () => {
   const f = fixture();
   const character = new CharacterController(R, f.world);
   try {
-    f.bike.teleport(localToWorld(projects, { x: 2.5, z: 20, y: .85 }));
+    relocate(f, 2.5, 20);
     f.bike.park(true);
-    character.teleport(localToWorld(projects, { x: 2.5, z: 24, y: .85 }), f.walk);
+    const start = localToWorld(projects, { x: 2.5, z: 24 });
+    start.y = f.walk.groundAt(start);
+    character.teleport(start, f.walk);
     character.enable(true);
     const yaw = projects.rotation;
     for (let n = 0; n < 180; n++) {
