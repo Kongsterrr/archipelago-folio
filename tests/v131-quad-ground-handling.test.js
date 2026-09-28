@@ -120,17 +120,16 @@ test('reverse-aware quad joystick mapping preserves boat input and keyboard stee
   assert.equal(inputs.read(.2,0,{groundVehicle:true,forwardSpeed:-2}).steer,-1);
 });
 
-function mountainFixture(yawOffset = 0) {
+function wallFixture(yawOffset = 0) {
   const world = new R.World({x:0,y:0,z:0}); world.timestep = DT;
   const walk = new IslandWalkWorld(R, world, projects, layout);
-  // The real central rise immediately inland of the arrival road. There is no
-  // building here: the stopped pose must be caused by steep mountain terrain.
-  const spawn = localToWorld(projects, {x:0,z:18.75,yaw:yawOffset});
+  // Mountain slopes are now traversable; retain contact/escape coverage against
+  // the actual Catering kiosk wall, which must remain a solid obstacle.
+  const spawn = localToWorld(projects, {x:18,z:8,yaw:yawOffset});
   spawn.y = quadGroundPose(walk, spawn, spawn.yaw).height;
   assert.ok(quadFootprintClear(walk, spawn, spawn.yaw), 'approach staging clears the complete chassis');
-  const peak = localToWorld(projects, {x:0,z:15.55});
-  assert.ok(walk.groundSample(peak).slope > Math.PI / 15 + .02, 'fixture actually approaches a non-drivable mountain face');
-  assert.ok(walk.clear(peak, 1.1), 'the mountain collision is not an incidental building wall');
+  const wall = localToWorld(projects, {x:18,z:4});
+  assert.equal(walk.clear(wall, .1), false, 'fixture really approaches an authored building wall');
   const bike = new QuadBikeController(R, world, walk, spawn); bike.park(false);
   let rescues = 0;
   const teleport = bike.teleport.bind(bike);
@@ -143,21 +142,21 @@ function tick(f, input) {
   f.bike.step(input, DT); f.world.step(); f.bike.afterStep();
   const p = f.bike.position;
   assert.ok(Math.hypot(p.x-before.x, p.z-before.z) < .3, 'contact and recovery remain local');
-  assert.ok(quadFootprintClear(f.walk, p, f.bike.yaw), 'no corner enters the steep mountainside while escaping');
+  assert.ok(quadFootprintClear(f.walk, p, f.bike.yaw), 'no corner enters the solid building while escaping');
 }
 
 for (const angle of [0, -.2, .2]) for (const steer of [-1, 1]) {
-  test(`real mountain contact can reverse with ${steer > 0 ? 'left' : 'right'} input after a ${angle} rad approach`, () => {
-    const f = mountainFixture(angle);
+  test(`real building contact can reverse with ${steer > 0 ? 'left' : 'right'} input after a ${angle} rad approach`, () => {
+    const f = wallFixture(angle);
     try {
       for (let n = 0; n < 180; n++) tick(f, {throttle:1, boost:true});
       const reached = f.bike.position;
-      assert.ok(Math.hypot(reached.x-f.spawn.x, reached.z-f.spawn.z) > .5, 'drive actually reaches the mountain');
+      assert.ok(Math.hypot(reached.x-f.spawn.x, reached.z-f.spawn.z) > .5, 'drive actually reaches the kiosk');
       assert.ok(f.bike.speed < .1, 'forward progress is blocked; harmless contact-tangent sliding is allowed');
       assert.equal(quadFootprintClear(f.walk, {
         x:reached.x-Math.sin(f.bike.yaw)*.15,
         z:reached.z-Math.cos(f.bike.yaw)*.15,
-      }, f.bike.yaw), false, 'the complete front footprint is genuinely against the steep terrain');
+      }, f.bike.yaw), false, 'the complete front footprint is genuinely against the solid wall');
       for (let n = 0; n < 6; n++) tick(f, {brake:true});
       const contact = {...f.bike.position}, contactYaw = f.bike.yaw;
       // Full steering from a complete stop rotates one front corner toward the
@@ -165,7 +164,7 @@ for (const angle of [0, -.2, .2]) for (const steer of [-1, 1]) {
       for (let n = 0; n < 75; n++) tick(f, {throttle:-1, steer});
       const p = f.bike.position;
       const retreat = (p.x-contact.x)*Math.sin(contactYaw) + (p.z-contact.z)*Math.cos(contactYaw);
-      assert.ok(retreat > .8, 'reverse plus steering leaves the mountainside without an extra Reset');
+      assert.ok(retreat > .8, 'reverse plus steering leaves the wall without an extra Reset');
       assert.equal(f.rescues(), 0, 'neither impact nor escape relies on safety teleport');
     } finally { f.dispose(); }
   });

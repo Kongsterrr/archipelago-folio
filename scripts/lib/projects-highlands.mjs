@@ -23,8 +23,8 @@ export function highlandsVisibleTerrain(terrain, dock) {
   const points=terrain.indices.slice(i,i+3).map(j=>terrain.vertices.slice(j*3,j*3+3));
   const[a,b,c]=points,ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
   const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx,slope=Math.atan2(Math.hypot(nx,nz),ny);
-  // Match the quad's actual 12-degree drive limit, including formerly grassy
-  // 12–23 degree banks. Steeper cliff faces receive a separate deeper shade.
+  // Distinguish the gentle trail from climbable mountain faces. Both are real
+  // terrain; steeper ridges receive a deeper rock tone, not an invisible wall.
   const indices=slope>Math.PI/6?cliff:slope>Math.PI/15+1e-6?rock:grass;
   let inner=points;const visible=[];
   for(const[axis,value,sign]of edges){if(!inner.length)break;const outside=cut(inner,axis,value,-sign);if(outside.length>=3)visible.push(outside);inner=cut(inner,axis,value,sign);}
@@ -56,7 +56,7 @@ export function highlandsRockStrata(visible) {
   const normal=[uy*vz-uz*vy,uz*vx-ux*vz,ux*vy-uy*vx],length=Math.hypot(...normal);
   if(length<1e-8)continue;
   const cx=(a[0]+b[0]+c[0])/3,cz=(a[2]+b[2]+c[2])/3;
-  for(let level=1.5;level<7;level+=1.1){
+  for(let level=1.5;level<12;level+=1.1){
    // Interrupted runs read as stone layers, not a continuous navigation grid.
    if(Math.sin(cx*.47+cz*.31+level*.73)<-.42)continue;
    for(const [lo,hi,out]of[[level-.025,level+.015,dark],[level+.015,level+.027,light]]){
@@ -74,7 +74,15 @@ export function highlandsHeight(x,z,shore){
  const theta=Math.abs(Math.atan2(x/28,z/22));
  const roadHeight=theta<1.4?.85+1.95*smooth((theta-.22)/1.18):theta<=1.70?2.8:2.8+3.7*smooth((theta-1.70)/1.32);let h=roadHeight;
  const radius=Math.hypot(x/28,z/22),inner=smooth((.78-radius)/.42);
- h=h*(1-inner)+4.4*inner;
+ // Connected, asymmetric ridgelines replace the old flat 4.4 m tableland.
+ // They are part of the same sampled surface as roads and character collision.
+ // Broad chunky flanks give the toy mountain a silhouette from every approach.
+ const peaks=[[-2.5,2.5,10.5,1.02,.76],[4.5,8.5,8.7,.96,.90],[-5.5,11.5,7.4,.86,.86]];
+ const ridge=Math.max(4.4,...peaks.map(([px,pz,top,sx,sz])=>{
+  const dx=x-px,dz=z-pz,angle=Math.atan2(dz,dx);
+  return top-Math.hypot(dx*sx,dz*sz)*(1+.07*Math.cos(angle*5));
+ }));
+ h=h*(1-inner)+ridge*inner;
  for(const p of [{x:-20,z:0,w:17,d:19,y:2.8},{x:20,z:0,w:17,d:19,y:2.8},{x:0,z:-14,w:21,d:19,y:6.5}]){
   const d=Math.hypot(Math.max(0,Math.abs(x-p.x)-p.w/2),Math.max(0,Math.abs(z-p.z)-p.d/2)),mix=1-smooth(d/2.5);h=h*(1-mix)+p.y*mix;
  }
@@ -93,11 +101,11 @@ export function createHighlands(shore){
  const area=shore.reduce((a,p,i)=>a+p[0]*shore[(i+1)%shore.length][1]-shore[(i+1)%shore.length][0]*p[1],0),sign=Math.sign(area);
  function clip(poly){for(let j=0;j<shore.length;j++){const a=shore[j],b=shore[(j+1)%shore.length],cross=p=>sign*((b[0]-a[0])*(p[1]-a[1])-(b[1]-a[1])*(p[0]-a[0]));const out=[];for(let i=0;i<poly.length;i++){const p=poly[i],q=poly[(i+1)%poly.length],u=cross(p),v=cross(q);if(u>=-1e-7)out.push(p);if((u<0)!==(v<0)){const t=u/(u-v);out.push([p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t]);}}poly=out;if(!poly.length)break;}return poly;}
  function id(p){const x=+p[0].toFixed(5),z=+p[1].toFixed(5),key=x+','+z;if(!lookup.has(key)){lookup.set(key,vertices.length/3);vertices.push(x,highlandsHeight(x,z,shore),z);}return lookup.get(key);}
- for(let z=minZ;z<minZ+rows-1;z+=step)for(let x=minX;x<minX+columns-1;x+=step)for(const tri of [[[x,z],[x,z+step],[x+step,z]],[[x+step,z],[x,z+step],[x+step,z+step]]]){const p=clip(tri);for(let i=1;i<p.length-1;i++){const a=id(p[0]),b=id(p[i]),c=id(p[i+1]);if(new Set([a,b,c]).size===3)indices.push(a,b,c);}}
+ for(let z=minZ;z<minZ+rows-1;){const cell=z<-21?.5:step;for(let x=minX;x<minX+columns-1;x+=cell)for(const tri of (z===-21?[[[x,z],[x,z+1],[x+.5,z]],[[x+.5,z],[x,z+1],[x+1,z+1]],[[x+.5,z],[x+1,z+1],[x+1,z]]]:[[[x,z],[x,z+cell],[x+cell,z]],[[x+cell,z],[x,z+cell],[x+cell,z+cell]]])){const p=clip(tri);for(let i=1;i<p.length-1;i++){const a=id(p[0]),b=id(p[i]),c=id(p[i+1]);if(new Set([a,b,c]).size===3)indices.push(a,b,c);}}z+=cell;}
  // Limit the *triangulated wheel surface*, not merely the road centerline.
  // Adjacent terrace blending must never introduce an unexpected steep shoulder.
  const corridors=[{a:[-27,5.82],b:[-24,7]},{a:[-24,7],b:[-18,7]},{a:[27,5.82],b:[24,7]},{a:[24,7],b:[18,7]}];
- const nearRoad=(x,z)=>Math.abs(Math.hypot(x/28,z/22)-1)*25<4.4||corridors.some(p=>seg(x,z,p.a,p.b)<3.5);
+ const nearRoad=(x,z)=>{const r=Math.hypot(x/28,z/22),distance=Math.abs(r-1)/Math.max(.001,Math.hypot(x/784,z/484)/r);return (z<-20?distance<2.49:Math.abs(r-1)*25<4.4)||corridors.some(p=>seg(x,z,p.a,p.b)<3.5);};
  const walk=[[-10,-20.55],[-8,-17],[-8,-8],[0,-8],[8,-8],[8,-17],[10,-20.55]];
  const guarded=[];for(let i=0;i<indices.length;i+=3){const tri=indices.slice(i,i+3),drive=tri.some(j=>nearRoad(vertices[j*3],vertices[j*3+2])),foot=tri.some(j=>walk.slice(1).some((p,k)=>seg(vertices[j*3],vertices[j*3+2],walk[k],p)<1.8));if(drive||foot)guarded.push({tri,target:Math.tan((drive?11.45:24)*Math.PI/180)});}
  const count=vertices.length/3;
@@ -110,6 +118,35 @@ export function createHighlands(shore){
   if(max<=.006)break;
   for(let j=0;j<count;j++)if(weights[j])vertices[j*3+1]+=sums[j]/weights[j]*.9;
  }
+ // A single all-direction climbing policy covers every visible mountain face.
+ // Preserve already-graded roads, exhibit floors and shore while redistributing
+ // excessively steep bank vertices. Project each triangle's true 2D gradient,
+ // rather than grading only along a chosen path (which fails from the side).
+ const locked=new Set(),roadTargets=new Map(guarded.map(g=>[g.tri.join(','),g.target]));
+ for(let j=0;j<count;j++){
+  const y=vertices[j*3+1];
+  const x=vertices[j*3],z=vertices[j*3+2];
+  const floor=(Math.abs(x)>11&&Math.abs(x)<26&&z>-6.5&&z<8.0&&Math.abs(y-2.8)<1e-7)||(Math.abs(x)<7.8&&z>-21.8&&z<-6.1&&Math.abs(y-6.5)<1e-7)||(Math.abs(x)<1.5&&Math.abs(z+22)<1.5&&Math.abs(y-6.5)<1e-7);
+  if(Math.abs(y-.85)<1e-7||floor)locked.add(j);
+ }
+ const climbTarget=Math.tan(54.3*Math.PI/180),mountainFaces=[];
+ for(let i=0;i<indices.length;i+=3){
+  const tri=indices.slice(i,i+3),[a,b,c]=tri.map(j=>vertices.slice(j*3,j*3+3));
+  const ux=b[0]-a[0],uz=b[2]-a[2],vx=c[0]-a[0],vz=c[2]-a[2],det=ux*vz-uz*vx;
+  if(Math.abs(det)<1e-8)continue;
+  mountainFaces.push({tri,target:roadTargets.get(tri.join(','))??climbTarget,gx:[(uz-vz)/det,vz/det,-uz/det],gz:[(vx-ux)/det,-vx/det,ux/det]});
+ }
+ for(let pass=0;pass<2200;pass++){
+  let maximum=0;
+  for(const{tri,target,gx:ax,gz:az}of mountainFaces){
+   const ys=tri.map(j=>vertices[j*3+1]),gx=ax.reduce((s,a,j)=>s+a*ys[j],0),gz=az.reduce((s,a,j)=>s+a*ys[j],0),gradient=Math.hypot(gx,gz);
+   maximum=Math.max(maximum,gradient-target);if(gradient<=target)continue;
+   const derivative=tri.map((j,k)=>locked.has(j)?0:(gx*ax[k]+gz*az[k])/gradient),norm=derivative.reduce((s,v)=>s+v*v,0);
+   if(norm<1e-12)continue;
+   for(let k=0;k<3;k++)if(derivative[k])vertices[tri[k]*3+1]-=(gradient-target)*derivative[k]/norm*.82;
+  }
+  if(maximum<.00005)break;
+ }
  const bins=new Map();for(let i=0;i<indices.length;i+=3){const tri=indices.slice(i,i+3).map(j=>vertices.slice(j*3,j*3+3));for(let x=Math.floor(Math.min(...tri.map(p=>p[0]))/2);x<=Math.floor(Math.max(...tri.map(p=>p[0]))/2);x++)for(let z=Math.floor(Math.min(...tri.map(p=>p[2]))/2);z<=Math.floor(Math.max(...tri.map(p=>p[2]))/2);z++){const key=x+','+z;if(!bins.has(key))bins.set(key,[]);bins.get(key).push(tri);}}
  const height=(x,z)=>{for(const[a,b,c]of bins.get(Math.floor(x/2)+','+Math.floor(z/2))||[]){const d=(b[2]-c[2])*(a[0]-c[0])+(c[0]-b[0])*(a[2]-c[2]);if(Math.abs(d)<1e-8)continue;const u=((b[2]-c[2])*(x-c[0])+(c[0]-b[0])*(z-c[2]))/d,v=((c[2]-a[2])*(x-c[0])+(a[0]-c[0])*(z-c[2]))/d,w=1-u-v;if(u>=-1e-5&&v>=-1e-5&&w>=-1e-5)return u*a[1]+v*b[1]+w*c[1];}return highlandsHeight(x,z,shore);};
  const at=(x,z)=>[+x.toFixed(4),+height(x,z).toFixed(5),+z.toFixed(4)];
@@ -118,5 +155,5 @@ export function createHighlands(shore){
   {id:'affirmation-apron',width:5,points:[at(-27,5.82),at(-24,7),at(-18,7)]},
   {id:'research-walk',kind:'footpath',width:2.2,points:[at(-10,-20.55),at(-8,-17),at(-8,-8),at(0,-8),at(8,-8),at(8,-17),at(10,-20.55)]},
   {id:'catering-apron',width:5,points:[at(27,5.82),at(24,7),at(18,7)]}];
- return {terrain:{vertices,indices,grid:{minX,minZ,step,columns,rows},version:1},roads,at,height};
+ return {terrain:{vertices,indices,grid:{minX,minZ,step,columns,rows},version:2,navigation:{maxClimbSlopeDegrees:55}},roads,at,height};
 }
