@@ -40,15 +40,16 @@ function relocate(f, x, z, yaw = 0) {
   return p;
 }
 
-// Stage against the shipped observatory rather than its pre-highlands location.
-// This continues to exercise a real building on elevated terrain, not a mock wall.
+// The front exhibition kiosk now occupies the old straight approach. Use the
+// observatory's clear north face so this still contacts the real building on
+// elevated terrain, with enough room to reverse away from it.
 function observatoryApproach(f, yaw = 0) {
   const wall = f.walk.layout.obstacles.find(o => o.name === 'research: observatory');
   assert.ok(wall, 'the actual Research observatory supplies the collision fixture');
   assert.equal(wall.rotation || 0, 0);
-  const front = wall.z + wall.depth / 2;
-  relocate(f, wall.x, front + 5, yaw);
-  return { wall, front };
+  const north = wall.z - wall.depth / 2;
+  relocate(f, wall.x, north - 5, Math.PI + yaw);
+  return { wall, distance: p => north - dockLocal(p, f.walk.island).z };
 }
 
 test('quad starts at the actual Projects harbor, with an unobstructed route into the island', () => {
@@ -87,7 +88,7 @@ for (const approach of [{ name: 'frontal', yaw: 0 }, { name: 'left oblique', yaw
   test(`Projects observatory ${approach.name} collision stays local and can reverse away`, () => {
     const f = fixture();
     try {
-      const { front } = observatoryApproach(f, approach.yaw);
+      const { distance } = observatoryApproach(f, approach.yaw);
       let previous = { ...f.bike.position }, closest = Infinity;
       for (let n = 0; n < 480; n++) {
         tick(f, { ...drive, boost: true });
@@ -95,14 +96,14 @@ for (const approach of [{ name: 'frontal', yaw: 0 }, { name: 'left oblique', yaw
         assert.ok(Math.hypot(p.x - previous.x, p.z - previous.z) < .4, `collision cannot teleport on frame ${n}`);
         assert.ok(quadFootprintClear(f.walk, p, f.bike.yaw), `full quad stays outside observatory on frame ${n}`);
         assert.ok(Math.hypot(p.x - f.spawn.x, p.z - f.spawn.z) > 12, 'normal contact never returns to harbor spawn');
-        closest = Math.min(closest, dockLocal(p, projects).z);
+        closest = Math.min(closest, distance(p));
         previous = { ...p };
       }
-      assert.ok(closest < front + QUAD_BIKE.collisionHalfLength + .5, 'the test actually reaches the observatory wall');
-      const stopped = dockLocal(f.bike.position, projects);
+      assert.ok(closest < QUAD_BIKE.collisionHalfLength + .5, 'the test actually reaches the observatory wall');
+      const stopped = distance(f.bike.position);
       for (let n = 0; n < 120; n++) tick(f, { ...drive, throttle: -1 });
-      const reversed = dockLocal(f.bike.position, projects);
-      assert.ok(reversed.z > stopped.z + 2, 'reverse gets the vehicle away from the wall');
+      const reversed = distance(f.bike.position);
+      assert.ok(reversed > stopped + 2, 'reverse gets the vehicle away from the wall');
     } finally { f.dispose(); }
   });
 }

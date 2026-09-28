@@ -25,8 +25,8 @@
       "id": "projects",
       "highTriangles": 89211,
       "lowTriangles": 68619,
-      "highCompressedBytes": 1387628,
-      "lowCompressedBytes": 906740,
+      "highCompressedBytes": 1387152,
+      "lowCompressedBytes": 906388,
       "drawCalls": 151,
       "animatedGeometry": "same named district and animation nodes",
       "dock": "same walkable footprint and collision metadata"
@@ -52,6 +52,6 @@
       "dock": "same walkable footprint and collision metadata"
     }
   ],
-  "highTotalBytes": 3967420,
-  "lowTotalBytes": 3162696
+  "highTotalBytes": 3966944,
+  "lowTotalBytes": 3162344
 }

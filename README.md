@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V13.2 — Open Mountains** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V13.3 — Clear Project Stops** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -62,7 +62,14 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V13 — Projects Highlands** | Terraced Projects terrain, numbered project kiosks, direct reading while riding, slope-aware quad and terrain map | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.1 — Grounded Trails** | Grippy quad handling, intuitive reverse steering, reliable mountain-contact escape, readable rock banks and a flicker-free pier landing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.2 — Open Mountains** | Shared all-direction mountain climbing on foot and by quad, continuous sculpted ridges, terrain-following movement and retained obstacle protection | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V13.3 — Clear Project Stops
+
+The CMU Movie Piracy exhibit now stands on the Research platform’s front forecourt. The harbor directory has its own **E · Browse projects** action that opens all three stories, while its individual rows still open the selected project by click or tap. Its left lantern sits beside the board instead of in front of it.
+
+When Jack is close enough to mount a visible parked quad, **E · Ride quad bike** takes priority over nearby reading. An explicit **View project** button keeps reading available; moving away from the quad restores E reading. Riding still uses **E to dismount / F to read**. HUD labels and keyboard dispatch share the same priority. V13.2 mountains, roads, vehicle handling and stored progress are unchanged.
 
 ### V13.2 — Open Mountains
 

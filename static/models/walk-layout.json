@@ -2576,7 +2576,7 @@
         {
           "name": "research: project kiosk CMU Movie Piracy",
           "x": 0,
-          "z": -24.95,
+          "z": -10,
           "width": 2.6,
           "depth": 0.24,
           "height": 2.1,
@@ -2745,12 +2745,12 @@
         },
         {
           "name": "arrival lantern",
-          "x": -5.9,
-          "z": 26,
+          "x": -8.4,
+          "z": 25.5,
           "width": 0.38,
           "depth": 0.38,
           "height": 3.2,
-          "y": 0.85,
+          "y": 0.852918,
           "rotation": 0
         },
         {
@@ -4163,7 +4163,7 @@
           "type": "read",
           "label": "CMU Movie Piracy",
           "x": 0,
-          "z": -22,
+          "z": -7.3,
           "y": 6.5,
           "contentSection": "summary",
           "contentId": "research",
@@ -4174,7 +4174,7 @@
           "hitArea": {
             "x": 0,
             "y": 7.620000000000001,
-            "z": -24.83,
+            "z": -9.879999999999999,
             "width": 2.65,
             "height": 1.92,
             "yaw": 0
@@ -4243,6 +4243,25 @@
           "contentSection": "contributions",
           "contentId": "catering",
           "action": "catering"
+        },
+        {
+          "id": "projects:overview",
+          "type": "read",
+          "contentId": "projects",
+          "readFull": true,
+          "directoryOverview": true,
+          "label": "Projects overview",
+          "x": -4.9,
+          "z": 27,
+          "y": 0.85,
+          "hitArea": {
+            "x": -4.9,
+            "y": 3.06,
+            "z": 25.67,
+            "width": 4.4,
+            "height": 0.63,
+            "yaw": 0
+          }
         },
         {
           "id": "projects:directory-affirmation",
@@ -51261,7 +51280,7 @@
       "width": 5,
       "validation": {
         "connectedFromDock": true,
-        "stationsReachable": 12,
+        "stationsReachable": 13,
         "pathWidth": 5,
         "routeClearance": 2.5,
         "maxRoadGradeDegrees": 10.112,
