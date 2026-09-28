@@ -23,11 +23,11 @@
     },
     {
       "id": "projects",
-      "highTriangles": 51482,
-      "lowTriangles": 42214,
-      "highCompressedBytes": 869208,
-      "lowCompressedBytes": 731248,
-      "drawCalls": 122,
+      "highTriangles": 79669,
+      "lowTriangles": 59077,
+      "highCompressedBytes": 1152328,
+      "lowCompressedBytes": 866716,
+      "drawCalls": 149,
       "animatedGeometry": "same named district and animation nodes",
       "dock": "same walkable footprint and collision metadata"
     },
@@ -52,6 +52,6 @@
       "dock": "same walkable footprint and collision metadata"
     }
   ],
-  "highTotalBytes": 3449000,
-  "lowTotalBytes": 2987204
+  "highTotalBytes": 3732120,
+  "lowTotalBytes": 3122672
 }

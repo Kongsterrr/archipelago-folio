@@ -117,5 +117,5 @@ test('geometry can render config shoreline, pier and districts while walk data i
   assert.deepEqual(geometry.stations,[]);
   assert.deepEqual(geometry.obstacles,[]);
  }
- assert.deepEqual(islandMapGeometry(null),{shore:[],dock:[],approach:[],route:[],stations:[],districts:[],obstacles:[]});
+ assert.deepEqual(islandMapGeometry(null),{shore:[],dock:[],approach:[],route:[],stations:[],districts:[],obstacles:[],roads:[],terrain:[]});
 });

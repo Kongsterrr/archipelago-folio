@@ -16,6 +16,7 @@ import { IslandController } from './world/island.js';
 import { FeedbackSystem } from './world/feedback.js';
 import { Interactable } from './world/interactable.js';
 import { syncInteractionMarkers } from './core/interaction-markers.js';
+import {exhibitRange,selectLandExhibit,selectProjectSign} from './core/project-exhibits.js';
 import { PropManager } from './world/props.js';
 import {DockInteraction} from './core/dock.js';
 import {AmbientFleet} from './world/fleet.js';
@@ -96,7 +97,7 @@ export class Game {
  async loadModelNow(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v=11');if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='projects'?'13':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
     const materials=Array.isArray(o.material)?o.material:[o.material];
     const glazing=id==='boat'&&materials.some(m=>m.transparent);
     // The clear windscreen should reveal the helm, including in the shadow pass.
@@ -138,8 +139,15 @@ export class Game {
   this.canvas.addEventListener('pointerup',e=>{
    if(!down||Math.hypot(e.clientX-down.x,e.clientY-down.y)>8||this.mode!=='exploring'||this.challenges.frozen)return;down=null;
    this.pointer.set(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2);this.raycaster.setFromCamera(this.pointer,this.camera);
-   const hit=(this.player.ridingQuad?[]:this.player.walking?(this.landActions.get(this.player.island.id)||[]):this.interactables).filter(i=>i.object&&i.available()&&i.distance(this.activeActor.position)<(this.player.walking?2.1:10)).find(i=>this.raycaster.intersectObject(i.object,true).length);
-   if(hit&&(!this.player.walking||this.character.walkWorld.visible(this.character.position,hit.position)))hit.run();
+   if(this.player.onLand){
+    const p=this.activeActor.position,walk=this.character.walkWorld,actions=this.landActions.get(this.player.island.id)||[];
+    const candidates=actions.filter(a=>(!this.player.ridingQuad||a.station?.readFull)&&a.distance(p)<=12&&a.available());
+    const hits=candidates.flatMap(a=>this.raycaster.intersectObject(a.hitObject||a.object,true).map(hit=>({a,distance:hit.distance}))).sort((a,b)=>a.distance-b.distance);
+    const hit=hits.find(({a})=>walk.visible(p,a.position));
+    if(hit){if(hit.a.distance(p)<=exhibitRange(hit.a,this.player.ridingQuad,hit.a===this.nearStation))hit.a.run({direct:true});else if(hit.a.station?.readFull)this.events.trigger('message',['Move closer to view']);}
+   }else{
+    const hit=this.interactables.filter(i=>i.object&&i.available()&&i.distance(this.activeActor.position)<10).find(i=>this.raycaster.intersectObject(i.object,true).length);hit?.run();
+   }
   });
   this.canvas.addEventListener('wheel',e=>{if(this.mode!=='exploring')return;e.preventDefault();if(!this.wheelTime||performance.now()-this.wheelTime>180){this.wheelTime=performance.now();this.setZoom(this.zoom+(e.deltaY>0?1:-1));}},{passive:false});
  }
@@ -194,18 +202,25 @@ export class Game {
   const p=this.activeActor.position;this.nearby=this.player?.onLand?this.player.island:this.docks?.update(p)||null;
   for(const i of islands){const distance=Math.hypot(p.x-i.x,p.z-i.z),near=inDockZone(this.boat.position,i);if(!frozen){if(distance<i.r+16)this.discovery?.discover(i.id);this.discovery?.visit(i.id,near,dt);}const asset=this.loaded.get(i.id);if(!asset.requested&&distance<i.r+60&&(!asset.lastFailure||now-asset.lastFailure>5000))this.loadModel(i.id);}
   this.nearStation=null;this.canBoard=false;this.canRideQuad=false;this.canDismountQuad=!!this.player?.ridingQuad;
-  if(this.player?.walking){const list=this.landActions.get(this.player.island.id)||[],old=this.lastStation;
-   const possible=list.filter(a=>a.distance(p)<(a===old?2.1:1.8)&&a.visible(this.camera)&&this.character.walkWorld.visible(p,a.position)).sort((a,b)=>a.distance(p)-b.distance(p));this.nearStation=frozen?null:possible[0]||null;this.lastStation=this.nearStation;
-   this.canBoard=Math.hypot(p.x-this.player.berth.landing.x,p.z-this.player.berth.landing.z)<2;
-   if(!frozen&&this.player.island.id==='projects'&&this.quadBike){const bike=this.quadBike.position;this.canRideQuad=Math.hypot(p.x-bike.x,p.z-bike.z)<2.8&&this.character.walkWorld.visible(p,{x:bike.x,y:bike.y,z:bike.z});}
-   this.nearAction=!this.canBoard&&this.nearStation?.kind!=='read'?this.nearStation:null;
-   for(const [id,actions]of this.landActions)for(const a of actions)if(a.object)a.object.visible=!frozen&&id===this.player.island.id&&a===this.nearStation&&!this.canBoard;
-  }else if(this.player?.ridingQuad){
-   this.nearAction=null;this.lastStation=null;
-   for(const actions of this.landActions.values())for(const a of actions)if(a.object)a.object.visible=false;
-  }else{this.nearAction=!frozen?Interactable.nearest(this.interactables,p,this.camera):null;for(const actions of this.landActions.values())for(const a of actions)if(a.object)a.object.visible=false;}
+  const onLand=this.player?.onLand,riding=this.player?.ridingQuad;
+  if(onLand){
+   const list=this.landActions.get(this.player.island.id)||[],visible=a=>a.visible(this.camera)&&this.character.walkWorld.visible(p,a.position);
+   this.nearStation=frozen?null:selectLandExhibit(list,p,{riding,previous:this.lastStation,visible});this.lastStation=this.nearStation;
+   this.projectSign=frozen?null:selectProjectSign(list,p,visible);
+   if(!riding){
+    this.canBoard=Math.hypot(p.x-this.player.berth.landing.x,p.z-this.player.berth.landing.z)<2;
+    if(!frozen&&this.player.island.id==='projects'&&this.quadBike){const bike=this.quadBike.position;this.canRideQuad=Math.hypot(p.x-bike.x,p.z-bike.z)<2.8&&this.character.walkWorld.visible(p,bike);}
+   }
+   this.nearAction=riding?this.nearStation:!this.canBoard&&this.nearStation?.kind!=='read'?this.nearStation:null;
+  }else{this.projectSign=null;this.lastStation=null;this.nearAction=!frozen?Interactable.nearest(this.interactables,p,this.camera):null;}
+  for(const [id,actions]of this.landActions)for(const a of actions){
+   const current=!frozen&&onLand&&id===this.player.island.id;
+   if(a.object)a.object.visible=!!(current&&!riding&&a===this.nearStation&&!this.canBoard&&!a.station?.primary);
+   if(a.sign)a.sign.visible=!!(current&&a===this.projectSign&&a!==this.nearStation);
+   if(a.highlight)a.highlight.visible=!!(current&&a===this.nearStation);
+  }
   if(this.quadRideMarker&&this.quadBike){const bp=this.quadBike.position;this.quadRideMarker.position.set(bp.x,bp.y+2.45,bp.z);this.quadRideMarker.visible=!frozen&&this.canRideQuad;}
-  syncInteractionMarkers(this.actionMarkers,this.nearAction,{frozen,walking:!!this.player?.walking});
+  syncInteractionMarkers(this.actionMarkers,this.nearAction,{frozen,walking:!!this.player?.onLand});
   if(!frozen&&!this.player?.walking){if(Math.hypot(p.x-secretPlaces.arch.x,p.z-secretPlaces.arch.z)<3.2)this.findSecret('arch');if(Math.hypot(p.x-secretPlaces.cove.x,p.z-secretPlaces.cove.z)<5)this.findSecret('cove');}
  }
  get activeActor(){return this.player?.activeActor||this.boat;}
@@ -220,7 +235,8 @@ export class Game {
   if(onLand&&focus&&!focus.boatStudio&&focusIsland===this.player.island?.id){
    focus={...focus,camera:{...focus.camera,azimuth:landAzimuth}};
   }
-  return{position,velocity:actor.velocity,yaw:actor.yaw,speed:this.frozen?0:actor.speed,input:onLand&&!this.player?.ridingQuad?{}:this.inputs.read(actor.yaw,this.cameraRig.yaw),focus,landAzimuth,locomotion:this.player?.ridingQuad?'quad':onLand?'walking':'sailing'};
+  const walk=this.character?.walkWorld,terrainHeight=onLand&&walk?.terrain&&(!focus||!focus.boatStudio&&focusIsland===this.player.island.id)?p=>walk.contains(p,0)?walk.groundAt(p):null:null;
+  return{position,terrainHeight,velocity:actor.velocity,yaw:actor.yaw,speed:this.frozen?0:actor.speed,input:onLand&&!this.player?.ridingQuad?{}:this.inputs.read(actor.yaw,this.cameraRig.yaw),focus,landAzimuth,locomotion:this.player?.ridingQuad?'quad':onLand?'walking':'sailing'};
  }
  syncCameraTransition(){
   if(!this.cameraTransition)return;
@@ -232,10 +248,13 @@ export class Game {
  resetCamera(){const p=this.boat.position;this.visualPosition.set(p.x,p.y,p.z);this.prev.copy(this.visualPosition);this.prevYaw=this.boat.yaw;const state=this.cameraState({physical:true});this.cameraTransition?.reset(cameraAzimuth(state));this.cameraRig.lastPoint=null;this.cameraRig.update(0,state,true);}
  updateOcclusion(now){
   if(this.lastOcclusion&&now-this.lastOcclusion<100)return;this.lastOcclusion=now;const p=this.activeActor.position,candidates=[...this.environment.occluders];for(const c of this.controllers.values())if(Math.hypot(c.island.x-p.x,c.island.z-p.z)<c.island.r+25)candidates.push(...c.occluders);
-  const target=vec(p.x,p.y+(this.player.walking?.7:1),p.z),direction=target.clone().sub(this.camera.position),distance=direction.length();const ray=new THREE.Raycaster(this.camera.position,direction.normalize(),0,distance-.3);this.scene.updateMatrixWorld();const hit=new Set(this.focus?[]:ray.intersectObjects(candidates,false).map(h=>h.object));
+  const probes=[vec(p.x,p.y+(this.player.walking?.7:1),p.z)];
+  if(this.player.ridingQuad){const yaw=this.quadBike.yaw,c=Math.cos(yaw),s=Math.sin(yaw);for(const [x,z]of[[0,0],[-.6,-.8],[.6,-.8],[-.6,.8],[.6,.8]])probes.push(vec(p.x+x*c+z*s,p.y+.35,p.z-x*s+z*c));}
+  this.scene.updateMatrixWorld();const hit=new Set();
+  if(!this.focus)for(const target of probes){const direction=target.clone().sub(this.camera.position),distance=direction.length(),ray=new THREE.Raycaster(this.camera.position,direction.normalize(),0,distance-.15);for(const h of ray.intersectObjects(candidates,false)){hit.add(h.object);let group=h.object.parent;while(group&&!group.name.startsWith('occluder_'))group=group.parent;if(group)group.traverse(o=>{if(candidates.includes(o))hit.add(o);});}}
   for(const object of this.occluded||[])if(!hit.has(object))for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=m.userData.occlusionBaseOpacity??1;
   for(const object of hit)for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=.2*(m.userData.occlusionBaseOpacity??1);
-  this.occluded=hit;if(this.boatOutline)this.boatOutline.visible=hit.size>0&&!this.focus&&!this.player.onLand;this.jack.outline(hit.size>0&&!this.focus&&this.player.walking);
+  this.occluded=hit;if(this.boatOutline)this.boatOutline.visible=hit.size>0&&!this.focus&&!this.player.onLand;this.jack.outline(hit.size>0&&!this.focus&&this.player.onLand);
  }
  activateIsland(id){
   if(id==='learning-book')id='learning';const island=resolveIsland(id);if(!island||!islandActions[id])return;
@@ -288,7 +307,7 @@ export class Game {
  startChallenge(id){const config=challenges.find(c=>c.id===id);if(!config)return;this.teleport(config.spawn);this.challenges.start(id);this.inputs.setEnabled(!this.challenges.frozen);}
  startRace(){this.startChallenge('buoy');}
  setZoom(index){if(this.player?.onLand)this.settings.walkZoom=Math.max(0,Math.min(2,index));else this.cameraRig.setZoom(index);this.discovery?.save();this.events.trigger('zoom',[this.settings.zoom]);}
- async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=11');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
+ async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=13');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
  async prepareAshore(island){this.inputs.setEnabled(false);this.events.trigger('message',['Preparing '+island.name+' for a little walk…']);
   if(!this.walkLayouts?.size)await this.loadWalkLayouts();await Promise.all([this.loadModel(island.id),this.jack.load()]);const layout=this.walkLayouts.get(island.id);if(!layout||!this.loaded.get(island.id).model||!this.jack.ready)throw new Error('The island is still loading. You can read it now or try going ashore again.');
   const walk=this.ensureWalkWorld(island);if(island.id==='projects')await this.installQuadBike(island,walk);return walk;
@@ -328,14 +347,26 @@ export class Game {
  async goAshore(){if(!this.nearby||this.player.mode!=='sailing'||this.frozen)return false;this.cancelChallenge();this.boat.hold();this.inputs.setEnabled(false);const result=await this.boarding.disembark(this.nearby);if(!result&&!this.frozen)this.inputs.setEnabled(true);return result;}
  boardBoat(){if(this.frozen||!this.player.walking)return false;this.inputs.setEnabled(false);this.character.hold();return this.boarding.board();}
  rideQuad(){if(this.frozen||!this.player.walking||!this.canRideQuad||!this.quadBike)return false;this.cancelChallenge();this.inputs.setEnabled(false);this.character.hold();this.quadBike.park(false);this.quadBike.hold();if(!this.player.rideQuad(this.quadBike)){this.quadBike.park(true);this.inputs.setEnabled(true);return false;}this.quadBike.hold();this.inputs.setEnabled(true);this.resetCamera();this.events.trigger('locomotion',['riding-quad']);this.events.trigger('message',['WASD to ride · Shift to boost · E to get off.']);return true;}
- dismountQuad(){if(this.frozen||!this.player.ridingQuad||!this.quadBike)return false;const point=this.quadBike.dismountPoint();if(!point){this.events.trigger('message',['There is no clear spot to get off. Move the quad bike onto an open path first.']);return false;}this.inputs.setEnabled(false);this.quadBike.park(true);if(!this.player.leaveQuad(point)){this.quadBike.park(false);this.inputs.setEnabled(true);return false;}this.jack.resetPose('idle');this.inputs.setEnabled(true);this.resetCamera();this.events.trigger('locomotion',['walking']);this.events.trigger('message',['Back on foot · E to ride · F to interact.']);return true;}
- primaryAction(){if(this.frozen)return;if(this.player.ridingQuad)return this.dismountQuad();if(this.player.walking){if(this.canRideQuad)return this.rideQuad();if(this.canBoard)return this.boardBoat();if(this.nearStation?.kind==='read')return this.nearStation.run();}else return this.goAshore();}
+ dismountQuad(){if(this.frozen||!this.player.ridingQuad||!this.quadBike)return false;const point=this.quadBike.dismountPoint();if(!point){this.events.trigger('message',['There is no clear spot to get off. Move the quad bike onto an open path first.']);return false;}this.inputs.setEnabled(false);this.quadBike.park(true);if(!this.player.leaveQuad(point)){this.quadBike.park(false);this.inputs.setEnabled(true);return false;}this.jack.resetPose('idle');this.inputs.setEnabled(true);this.resetCamera();this.events.trigger('locomotion',['walking']);this.events.trigger('message',['Back on foot · Explore the island.']);return true;}
+ primaryAction(){if(this.frozen)return;if(this.player.ridingQuad)return this.dismountQuad();if(this.player.walking){if(this.nearStation?.kind==='read'&&this.nearStation.station?.readFull)return this.nearStation.run();if(this.canRideQuad)return this.rideQuad();if(this.canBoard)return this.boardBoat();if(this.nearStation?.kind==='read')return this.nearStation.run();}else return this.goAshore();}
  createLandActions(island,layout){const actions=[];for(const station of [...layout.stations,...(layout.benches||[layout.bench]).filter(Boolean).map((bench,n)=>({...bench,id:bench.id||'bench-'+n,type:'bench',label:'Sit for a moment'}))]){
   const point=localToWorld(island,station.type==='bench'?station.approach:{...station,y:station.y??layout.groundY??.85});const kind=station.type;
   const marker=label(kind==='read'?'E':'F',{width:64,height:64,worldWidth:.45,fontSize:32,background:'#fff5dd',color:'#254f62'});marker.position.set(point.x,point.y+1.65,point.z);marker.visible=false;this.scene.add(marker);
-  const action=new Interactable({id:island.id+':'+station.id,label:station.label,position:point,range:1.8,object:marker,run:()=>{if(this.frozen||!this.player.walking)return;this.jack.interact();
-   if(kind==='read')this.events.trigger('exhibit',[{island:island.id,station,position:point}]);else if(kind==='studio')this.events.trigger('studio');else if(kind==='challenge')this.events.trigger('challengeopen',['lighthouse']);else if(kind==='bench'){this.character.teleport({...point,y:layout.groundY??.85,yaw:(station.yaw||0)+island.rotation});const seat=localToWorld(island,station);this.character.seatYaw=(station.yaw||0)+island.rotation+Math.PI;this.character.seatVisual=this.jack.seatPosition(seat,station.y+.06,this.character.seatYaw);this.character.seated=true;if(station.contentId==='affirmation')this.activateIsland('affirmation');}else{this.activateIsland(station.action||station.contentId);if(station.action==='rag')this.events.trigger('message',['Concept illustration · Retrieve, add context, and respond.']);}
-  }});action.kind=kind;action.station=station;actions.push(action);
+  const action=new Interactable({id:island.id+':'+station.id,label:station.label,position:point,range:1.8,object:marker,run:({direct=false}={})=>{if(this.frozen||(!this.player.walking&&!(this.player.ridingQuad&&kind==='read'&&station.readFull)))return;this.inputs.clear();this.activeActor.hold();if(!this.player.ridingQuad)this.jack.interact();
+   if(kind==='read')this.events.trigger('exhibit',[{island:island.id,station:station.directory&&!direct?{...station,contentId:'projects'}:station,position:point}]);else if(kind==='studio')this.events.trigger('studio');else if(kind==='challenge')this.events.trigger('challengeopen',['lighthouse']);else if(kind==='bench'){this.character.teleport({...point,y:this.character.walkWorld.groundAt(point),yaw:(station.yaw||0)+island.rotation});const seat=localToWorld(island,station);this.character.seatYaw=(station.yaw||0)+island.rotation+Math.PI;this.character.seatVisual=this.jack.seatPosition(seat,station.y+.06,this.character.seatYaw);this.character.seated=true;if(station.contentId==='affirmation')this.activateIsland('affirmation');}else{this.activateIsland(station.action||station.contentId);if(station.action==='rag')this.events.trigger('message',['Concept illustration · Retrieve, add context, and respond.']);}
+  }});action.kind=kind;action.station=station;
+  if(station.hitArea){
+   const h=station.hitArea,center=localToWorld(island,h);
+   const proxy=new THREE.Mesh(new THREE.PlaneGeometry(h.width,h.height),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+   proxy.position.set(center.x,center.y,center.z);proxy.rotation.y=island.rotation+(h.yaw||0);this.scene.add(proxy);action.hitObject=proxy;
+   const highlight=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(h.width+.1,h.height+.1)),new THREE.LineBasicMaterial({color:'#ffe3a6',transparent:true,opacity:.9}));
+   highlight.position.copy(proxy.position);highlight.rotation.copy(proxy.rotation);highlight.translateZ(.025);highlight.visible=false;this.scene.add(highlight);action.highlight=highlight;
+  }
+  if(station.primary){
+   const sign=label(`${station.number}  ${station.label}  /  VIEW PROJECT`,{width:1024,height:110,worldWidth:4.2,fontSize:34,background:'#fff5dd',color:'#254f62'});
+   sign.position.set(point.x,point.y+3.15,point.z);sign.visible=false;this.scene.add(sign);action.sign=sign;
+  }
+  actions.push(action);
  }this.landActions.set(island.id,actions);}
  setQuality(level){this.settings.quality=level;this.renderer.setPixelRatio(Math.min(devicePixelRatio,level==='low'?1:1.5));this.lighting.setQuality(level);this.bayWater.setQuality(level);if(this.mode!=='loading')this.surfaces.loadQuality(level);this.details?.setQuality();for(const [id,item] of this.loaded)if(item.requested&&item.requestedQuality!==level)this.loadModel(id,true);if(this.quadBike&&this.quadBike.quality!==(level==='low'?'low':'high'))this.reloadQuadQuality(level);}
  async reloadQuadQuality(level){if(!this.quadBike||this.quadReloading)return;this.quadReloading=true;try{const quality=level==='low'?'low':'high',path=quality==='low'?'/models/low/quad-bike.glb?v=12.1':'/models/quad-bike.glb?v=12.1',gltf=await this.loader.loadAsync(path);this.quadBike.setModel(gltf.scene,quality);}catch(error){console.warn('Quad bike quality switch failed',error.message);}finally{this.quadReloading=false;}}

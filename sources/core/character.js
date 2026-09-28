@@ -1,5 +1,6 @@
 import {ShapeUtils,Vector2} from 'three';
 import {pointInPolygon,dockLocal} from './dock.js';
+import {TerrainSurface} from './terrain.js';
 
 export const SEA_GROUP=0x00010001;
 export const WALK_GROUP=0x00020002;
@@ -19,7 +20,8 @@ export class IslandWalkWorld{
   const triangle=(a,b,c)=>{const length=(u,v)=>Math.hypot(verticesList[u][0]-verticesList[v][0],verticesList[u][2]-verticesList[v][2]);if(Math.max(length(a,b),length(b,c),length(c,a))<=8){indicesList.push(a,c,b);return;}const ab=midpoint(a,b),bc=midpoint(b,c),ca=midpoint(c,a);triangle(a,ab,ca);triangle(ab,b,bc);triangle(ca,bc,c);triangle(ab,bc,ca);};
   for(const t of ShapeUtils.triangulateShape(points,[]))triangle(...t);
   const vertices=new Float32Array(verticesList.flat()),indices=new Uint32Array(indicesList);
-  add(R.ColliderDesc.trimesh(vertices,indices,R.TriMeshFlags.FIX_INTERNAL_EDGES));
+  this.terrain=layout.terrain?new TerrainSurface(layout.terrain):null;
+  this.terrainCollider=add(R.ColliderDesc.trimesh(this.terrain?new Float32Array(layout.terrain.vertices):vertices,this.terrain?new Uint32Array(layout.terrain.indices):indices,R.TriMeshFlags.FIX_INTERNAL_EDGES));
   this.surfaces=layout.surfaces?.length?layout.surfaces:[{x:0,z:11.85,width:3,depth:7.9,y:.85}];
   for(const f of this.surfaces){const pitch=-Math.atan(f.slope||0),cy=Math.cos((f.rotation||0)/2),sy=Math.sin((f.rotation||0)/2),cx=Math.cos(pitch/2),sx=Math.sin(pitch/2);add(R.ColliderDesc.cuboid(f.width/2,.1,f.depth/2/Math.cos(pitch)).setTranslation(f.x,f.y-.1/Math.cos(pitch),f.z).setRotation({x:sx*cy,y:cx*sy,z:-sx*sy,w:cx*cy}));}
   for(const o of layout.obstacles||[]){add(R.ColliderDesc.cuboid(o.width/2,o.height/2,o.depth/2).setTranslation(o.x,(o.y??y)+o.height/2,o.z).setRotation({x:0,y:Math.sin((o.rotation||0)/2),z:0,w:Math.cos((o.rotation||0)/2)}),true);}
@@ -28,9 +30,25 @@ export class IslandWalkWorld{
   const inside=q=>pointInPolygon(q,shore)||this.surfaces.some(r=>inRect(q,r));
   if(!inside(p))return false;for(let n=0;n<12;n++){const a=n/12*Math.PI*2;if(!inside({x:p.x+Math.cos(a)*radius,z:p.z+Math.sin(a)*radius}))return false;}return true;
  }
- groundAt(point){const p=dockLocal(point,this.island);let y=this.layout.groundY??.85;for(const f of this.surfaces)if(inRect(p,f)){const dz=(p.x-f.x)*Math.sin(f.rotation||0)+(p.z-f.z)*Math.cos(f.rotation||0);y=Math.max(y,f.y+(f.slope||0)*dz);}return y;}
+ groundSample(point){
+  const p=dockLocal(point,this.island),terrain=this.terrain?.sample(p.x,p.z);
+  let result=terrain||{height:this.layout.groundY??.85,normal:{x:0,y:1,z:0},slope:0};
+  for(const f of this.surfaces)if(inRect(p,f)){
+   const angle=f.rotation||0,slope=f.slope||0,dz=(p.x-f.x)*Math.sin(angle)+(p.z-f.z)*Math.cos(angle),height=f.y+slope*dz;
+   if(height>=result.height-1e-6){const size=Math.hypot(1,slope);result={height,normal:{x:-slope*Math.sin(angle)/size,y:1/size,z:-slope*Math.cos(angle)/size},slope:Math.atan(Math.abs(slope))};}
+  }
+  const c=Math.cos(this.island.rotation),s=Math.sin(this.island.rotation),n=result.normal;
+  return{...result,normal:{x:n.x*c+n.z*s,y:n.y,z:-n.x*s+n.z*c}};
+ }
+ groundAt(point){return this.groundSample(point).height;}
+ safeGround(point,radius=.22,maxSlope=Math.PI/6){
+  if(!this.contains(point,radius))return false;
+  const center=this.groundSample(point);
+  for(let i=0;i<8;i++){const a=i*Math.PI/4,p={x:point.x+Math.cos(a)*radius,z:point.z+Math.sin(a)*radius},sample=this.groundSample(p);if(sample.slope>maxSlope+.004||Math.abs(sample.height-center.height)>radius*Math.tan(maxSlope)+.07)return false;}
+  return center.slope<=maxSlope+.004;
+ }
  clear(point,radius=CHARACTER.radius){if(!this.contains(point,radius))return false;const p=dockLocal(point,this.island);return !(this.layout.obstacles||[]).some(o=>inRect(p,o,radius+.03));}
- visible(a,b){const ray=new this.R.Ray({x:a.x,y:a.y+.65,z:a.z},{x:b.x-a.x,y:(b.y??a.y)+.6-(a.y+.65),z:b.z-a.z});return !this.world.castRay(ray,1,true,undefined,WALK_GROUP,undefined,undefined,c=>this.obstacles.includes(c));}
+ visible(a,b){const ray=new this.R.Ray({x:a.x,y:a.y+.65,z:a.z},{x:b.x-a.x,y:(b.y??a.y)+.6-(a.y+.65),z:b.z-a.z});return !this.world.castRay(ray,1,true,undefined,WALK_GROUP,undefined,undefined,c=>this.obstacles.includes(c)||(!!this.terrain&&c.handle===this.terrainCollider.handle));}
  dispose(){this.world.removeRigidBody(this.body);}
 }
 
@@ -43,10 +61,11 @@ export class CharacterController{
  get speed(){return Math.hypot(this.velocity.x,this.velocity.z);}
  teleport(point,walkWorld=this.walkWorld){this.walkWorld=walkWorld;this.yaw=point.yaw||0;const y=point.y??walkWorld.groundAt(point);this.body.setTranslation({x:point.x,y:y+CHARACTER.height/2+CHARACTER.offset,z:point.z},true);this.body.setNextKinematicTranslation(this.body.translation());this.hold();this.previous={...this.position};this.lastSafe={...this.position,yaw:this.yaw};this.seated=false;}
  enable(value){this.active=value;this.collider.setEnabled(value);this.hold();}
- hold(){this.velocity={x:0,y:0,z:0};this.body.setLinvel({x:0,y:0,z:0},true);this.body.setNextKinematicTranslation(this.body.translation());}
+ hold(){this.previous={...this.position};this.velocity={x:0,y:0,z:0};this.body.setLinvel({x:0,y:0,z:0},true);this.body.setNextKinematicTranslation(this.body.translation());}
  step(input,dt){if(!this.active)return;const p=this.position;this.previous={...p};let x=input.x||0,z=input.z||0;const length=Math.hypot(x,z);if(length>.05&&this.seated)this.seated=false;if(this.seated){this.hold();return;}
   const scale=(input.run?CHARACTER.run:CHARACTER.walk)/Math.max(1,length);x*=scale;z*=scale;
-  let next={x:p.x+x*dt,z:p.z+z*dt};if(!this.walkWorld.contains(next)){if(this.walkWorld.contains({x:next.x,z:p.z}))next.z=p.z;else if(this.walkWorld.contains({x:p.x,z:next.z}))next.x=p.x;else next={x:p.x,z:p.z};}
+  const safe=q=>this.walkWorld.contains(q)&&(!this.walkWorld.terrain||(this.walkWorld.safeGround(q,CHARACTER.radius)&&Math.abs(this.walkWorld.groundAt(q)-this.walkWorld.groundAt(p))<.18));
+  let next={x:p.x+x*dt,z:p.z+z*dt};if(!safe(next)){if(safe({x:next.x,z:p.z}))next.z=p.z;else if(safe({x:p.x,z:next.z}))next.x=p.x;else next={x:p.x,z:p.z};}
   this.controller.computeColliderMovement(this.collider,{x:next.x-p.x,y:-Math.max(.08,5*dt),z:next.z-p.z},undefined,WALK_GROUP,c=>this.walkWorld.handles.has(c.handle));
   const movement=this.controller.computedMovement(),body=this.body.translation();this.body.setNextKinematicTranslation({x:body.x+movement.x,y:body.y+movement.y,z:body.z+movement.z});this.velocity={x:movement.x/dt,y:movement.y/dt,z:movement.z/dt};
   if(this.speed>.06){const target=Math.atan2(-movement.x,-movement.z),delta=Math.atan2(Math.sin(target-this.yaw),Math.cos(target-this.yaw));this.yaw+=delta*Math.min(1,12*dt);}

@@ -11,7 +11,7 @@ export const islands=portfolioGroups.map(group=>{
  return {...i,r:Math.max(...i.shore.map(([x,z])=>Math.hypot(x,z))),dock:{x:p.x,z:p.z},yaw:i.rotation+Math.PI,camera:{distance:145,azimuth:Math.PI/4,elevation:.68,height:2.5},action:toWorld(i,5,model.dock.endZ+6)};
 });
 export function resolveIsland(id){return islands.find(i=>i.id===islandIdFor(id));}
-export function contentFocus(id){const island=resolveIsland(id);if(!island)return null;const district=island.districts.find(d=>d.id===id);return district?{...toWorld(island,district.x,district.z),id:island.id,contentId:id,exhibit:true,camera:{distance:48,height:3,azimuth:Math.PI/4,elevation:.68}}:island;}
+export function contentFocus(id){const island=resolveIsland(id);if(!island)return null;const district=island.districts.find(d=>d.id===id);return district?{...toWorld(island,district.x,district.z),id:island.id,contentId:id,exhibit:true,camera:{distance:48,height:(district.y||0)+3,azimuth:Math.PI/4,elevation:.68}}:island;}
 export const gates=[{x:-75,z:118,r:11},{x:-128,z:40,r:11},{x:-117,z:-80,r:10},{x:0,z:-139,r:9},{x:117,z:-70,r:11},{x:119,z:70,r:11}].map((g,n,all)=>{const p=n?all[n-1]:{x:-31,z:125};const d=Math.hypot(g.x-p.x,g.z-p.z);return {...g,nx:(g.x-p.x)/d,nz:(g.z-p.z)/d};});
 export const raceStart={x:-31,z:125,yaw:Math.PI/2};
 export const boatSpawn={...islands[0].dock,yaw:islands[0].yaw};

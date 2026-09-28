@@ -69,7 +69,7 @@ export class CameraRig {
     return Math.abs(projected.x) < .94 && projected.y > -.85 && projected.y < .82 && Math.abs(boat.x) < .7 && Math.abs(boat.y) < .68;
   }
 
-  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH}, snap = false) {
+  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH, terrainHeight = null}, snap = false) {
     if(this.lastPoint&&!focus&&!this.lastFocus&&!snap){const delta=new THREE.Vector3(position.x-this.lastPoint.x,position.y-this.lastPoint.y,position.z-this.lastPoint.z);this.position.add(delta);this.target.add(delta);}
     this.lastPoint={...position};this.lastFocus=!!focus;
     const azimuth = cameraAzimuth({focus, locomotion, landAzimuth});
@@ -125,9 +125,24 @@ export class CameraRig {
       this.distance = snap ? wantedDistance : THREE.MathUtils.damp(this.distance, wantedDistance, wantedDistance > this.distance ? 5 : 3, dt);
       desired = this.pose(this.distance, position, this.heading, ahead);
     }
+    if(terrainHeight){
+      // Raise the eye along the same azimuth rather than fading real cliff edges.
+      let eyeY=desired.position.y;
+      for(let n=2;n<=24;n++){
+        const t=n/24,q=desired.target.clone().lerp(desired.position,t),ground=terrainHeight(q);
+        if(Number.isFinite(ground))eyeY=Math.max(eyeY,desired.target.y+(ground+.65-desired.target.y)/t);
+      }
+      desired.position.y=eyeY;
+    }
     const rate = snap ? 1 : 1-Math.exp(-(focus ? 4 : 8)*dt);
     this.position.lerp(desired.position, rate);
     this.target.lerp(desired.target, rate);
+    if(terrainHeight){
+      for(let n=2;n<=24;n++){
+        const t=n/24,q=this.target.clone().lerp(this.position,t),ground=terrainHeight(q);
+        if(Number.isFinite(ground))this.position.y=Math.max(this.position.y,this.target.y+(ground+.5-this.target.y)/t);
+      }
+    }
     this.camera.position.copy(this.position);
     this.camera.lookAt(this.target);
     this.camera.updateMatrixWorld();
