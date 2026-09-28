@@ -97,7 +97,7 @@ export class Game {
  async loadModelNow(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='projects'?'13':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='projects'?'13.1':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
     const materials=Array.isArray(o.material)?o.material:[o.material];
     const glazing=id==='boat'&&materials.some(m=>m.transparent);
     // The clear windscreen should reveal the helm, including in the shadow pass.
@@ -174,7 +174,7 @@ export class Game {
     const before={...this.boat.position};this.prev.set(before.x,before.y,before.z);this.prevYaw=this.boat.yaw;this.simTime+=STEP;
     this.fleet?.beforeStep(STEP,this.boat);const actor=this.activeActor;this.marine?.step(STEP,{position:actor.position,velocity:actor.velocity,yaw:actor.yaw,canCompanion:!this.player.onLand});
     this.props.beforeStep(before);
-    if(this.player.walking)this.character.step(this.inputs.readWalking(this.cameraRig.yaw),STEP);else if(this.player.ridingQuad)this.quadBike?.step(this.inputs.read(this.quadBike.yaw,this.cameraRig.yaw),STEP);else{this.boat.step(this.inputs.read(this.boat.yaw,this.cameraRig.yaw),STEP);this.enforceBoundary(before);}
+    if(this.player.walking)this.character.step(this.inputs.readWalking(this.cameraRig.yaw),STEP);else if(this.player.ridingQuad)this.quadBike?.step(this.inputs.read(this.quadBike.yaw,this.cameraRig.yaw,{groundVehicle:true,forwardSpeed:this.quadBike.forwardSpeed}),STEP);else{this.boat.step(this.inputs.read(this.boat.yaw,this.cameraRig.yaw),STEP);this.enforceBoundary(before);}
     this.world.step(this.queue);if(this.player.walking){this.character.afterStep();this.player.ashoreTime+=STEP;if(this.player.ashoreTime>=1)this.discovery?.land(this.player.island.id);}else if(this.player.ridingQuad)this.quadBike?.afterStep();
     this.props.afterStep(this.queue,this.boat.collider,this.boat.position);if(!this.player.walking&&!this.player.ridingQuad)this.challenges.tick(before,this.boat.position,STEP,this.challenges.kind==='cargo'?this.props.cargoData():[]);
     this.accumulator-=STEP;if(this.frozen)break;

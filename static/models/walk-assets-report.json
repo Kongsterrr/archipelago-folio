@@ -4,9 +4,9 @@
     {
       "id": "projects",
       "quality": "high",
-      "bytes": 1152328,
-      "triangles": 79669,
-      "drawCalls": 149,
+      "bytes": 1257184,
+      "triangles": 85043,
+      "drawCalls": 151,
       "routeSeconds": 76.9,
       "connectedFromDock": true,
       "stationsReachable": 12,
@@ -18,9 +18,9 @@
     {
       "id": "projects",
       "quality": "low",
-      "bytes": 866716,
-      "triangles": 59077,
-      "drawCalls": 142,
+      "bytes": 971304,
+      "triangles": 64451,
+      "drawCalls": 144,
       "routeSeconds": 76.9,
       "connectedFromDock": true,
       "stationsReachable": 12,
@@ -30,5 +30,5 @@
       "terrainTriangles": 7787
     }
   ],
-  "totalBytes": 2019044
+  "totalBytes": 2228488
 }

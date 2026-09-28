@@ -13,7 +13,7 @@ import {NodeIO} from '@gltf-transform/core';
 import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
 import {meshopt, dedup, prune} from '@gltf-transform/functions';
 import {MeshoptEncoder,MeshoptDecoder} from 'meshoptimizer';
-import {createHighlands,highlandsHeight} from './lib/projects-highlands.mjs';
+import {createHighlands,highlandsHeight,highlandsVisibleTerrain,highlandsRockStrata} from './lib/projects-highlands.mjs';
 const font = new FontLoader().parse(JSON.parse(await fs.readFile(new URL('../node_modules/three/examples/fonts/helvetiker_bold.typeface.json', import.meta.url),'utf8')));
 const OUT = process.env.ARCHIPELAGO_OUTPUT || fileURLToPath(new URL('../static/models/', import.meta.url));
 await fs.mkdir(OUT,{recursive:true});
@@ -41,13 +41,19 @@ mats.rope=new THREE.MeshStandardMaterial({name:'v5_rope',color:'#e9ddbd',roughne
 mats.sunsetLantern=new THREE.MeshStandardMaterial({name:'sunsetLantern',color:'#ffe1a0',emissive:'#ffb54e',emissiveIntensity:.72,roughness:.36});
 mats.warmWindow=new THREE.MeshStandardMaterial({name:'warmWindow',color:'#f5d8ab',emissive:'#ffc67b',emissiveIntensity:.20,roughness:.48});
 mats.highlandsPine=new THREE.MeshStandardMaterial({name:'highlandsPine',color:'#285b46',roughness:.86});
+mats.highlandsRock=new THREE.MeshStandardMaterial({name:'highlandsRock',color:'#85858b',roughness:.94});
+mats.highlandsCliff=new THREE.MeshStandardMaterial({name:'highlandsCliff',color:'#666773',roughness:.96});
+mats.highlandsTrailEdge=new THREE.MeshStandardMaterial({name:'highlandsTrailEdge',color:'#94775a',roughness:.96});
+mats.highlandsStrataDark=new THREE.MeshStandardMaterial({name:'highlandsStrataDark',color:'#5d626d',roughness:.96});
+mats.highlandsStrataLight=new THREE.MeshStandardMaterial({name:'highlandsStrataLight',color:'#b9b5a8',roughness:.96});
 const harborMaterials=new Map();
 let root, seed, layout, low=false,currentIsland='',highlandsBuild=false;
 function authoredUV(geometry,material){
  if(material==='rope'&&geometry.attributes.uv){const g=geometry.clone();if(g.type==='TubeGeometry'){const uv=g.attributes.uv;for(let i=0;i<uv.count;i++){const u=uv.getX(i),v=uv.getY(i);uv.setXY(i,v,u);}}return g;}
  const g=geometry.index?geometry.toNonIndexed():geometry,p=g.attributes.position,n=g.attributes.normal;
  g.computeBoundingBox();const b=g.boundingBox,s=b.getSize(new THREE.Vector3()),uv=[];
- for(let i=0;i<p.count;i++){const x=(p.getX(i)-b.min.x)/Math.max(s.x,.001),y=(p.getY(i)-b.min.y)/Math.max(s.y,.001),z=(p.getZ(i)-b.min.z)/Math.max(s.z,.001),nx=Math.abs(n.getX(i)),ny=Math.abs(n.getY(i)),nz=Math.abs(n.getZ(i));
+ const rockScale=['highlandsRock','highlandsCliff'].includes(material)?2.6:0;
+ for(let i=0;i<p.count;i++){const x=rockScale?p.getX(i)/rockScale:(p.getX(i)-b.min.x)/Math.max(s.x,.001),y=rockScale?p.getY(i)/rockScale:(p.getY(i)-b.min.y)/Math.max(s.y,.001),z=rockScale?p.getZ(i)/rockScale:(p.getZ(i)-b.min.z)/Math.max(s.z,.001),nx=Math.abs(n.getX(i)),ny=Math.abs(n.getY(i)),nz=Math.abs(n.getZ(i));
   let pair=ny>=nx&&ny>=nz?[x,z]:nx>nz?[z,y]:[x,y];
   if((material==='wood'||material==='darkWood')&&s.x>s.z&&ny>nz)pair=[z,x];
   uv.push(...pair);}
@@ -705,9 +711,14 @@ function highlandsIsland(){
  ringShape(shore,[[.97,-.65],[1,.04],[.99,.30]],'sandEdge');ringShape(shore,[[.99,.28],[.973,.61],[.96,Y]],'sand');
  layout={id:'projects',groundY:Y,shore:shore.map(([x,z])=>[+(x*.96).toFixed(5),+(z*.96).toFixed(5)]),surfaces:[],obstacles:[],route:[],stations:[],benches:[],bench:null,berths:[],districts:[],crossings:[]};
  const terrain=createHighlands(layout.shore);layout.terrain=terrain.terrain;layout.roads=terrain.roads;
- const vertices=layout.terrain.vertices,grass=[],stone=[];
- for(let i=0;i<layout.terrain.indices.length;i+=3){const tri=layout.terrain.indices.slice(i,i+3),a=new THREE.Vector3().fromArray(vertices,tri[0]*3),b=new THREE.Vector3().fromArray(vertices,tri[1]*3),c=new THREE.Vector3().fromArray(vertices,tri[2]*3),n=b.clone().sub(a).cross(c.clone().sub(a)).normalize();(n.y<.92?stone:grass).push(...tri);}
- custom(vertices,grass,'grass');custom(vertices,stone,'stone');parentPier(30);
+ parentPier(30);
+ const visibleTerrain=highlandsVisibleTerrain(layout.terrain,layout.dock);
+ custom(visibleTerrain.vertices,visibleTerrain.grass,'grass');
+ custom(visibleTerrain.vertices,visibleTerrain.rock,'highlandsRock');
+ custom(visibleTerrain.vertices,visibleTerrain.cliff,'highlandsCliff');
+ const strata=highlandsRockStrata(visibleTerrain);
+ custom(strata.vertices,strata.dark,'highlandsStrataDark');
+ custom(strata.vertices,strata.light,'highlandsStrataLight');
  const height=terrain.height,groundGroup=(x,z,fn)=>{const previous=root,g=group([x,height(x,z)-Y,z]);root=g;fn();root=previous;};
  function roadSurface(road){
   const pts=[];for(let i=1;i<road.points.length;i++){const a=road.points[i-1],b=road.points[i],n=Math.max(1,Math.ceil(Math.hypot(b[0]-a[0],b[2]-a[2])/.6));for(let j=0;j<n;j++)pts.push([a[0]+(b[0]-a[0])*j/n,a[2]+(b[2]-a[2])*j/n]);}pts.push([road.points.at(-1)[0],road.points.at(-1)[2]]);
@@ -717,6 +728,19 @@ function highlandsIsland(){
    for(let k=0;k<=across;k++){const side=-road.width/2+k*road.width/across,x=pts[i][0]+dz/len*side,z=pts[i][1]-dx/len*side;v.push([x,height(x,z)+.038,z]);}
    if(i)for(let k=0;k<across;k++){const a=(i-1)*stride+k,b=i*stride+k;ix.push(a,b,a+1,a+1,b,b+1);}
   }custom(v,ix,'sand');
+  // Narrow, surface-conforming shoulders distinguish the complete five-metre
+  // driving ribbon from rock banks. Leave connecting roads and pull-ins open.
+  if(road.kind!=='footpath')for(const side of[-1,1]){
+   const edgeVertices=[],edgeIndices=[];
+   const inJunction=(x,z)=>layout.roads.some(other=>other!==road&&other.kind!=='footpath'&&other.points.slice(1).some((p,j)=>distanceToSegment(x,z,[other.points[j][0],other.points[j][2]],[p[0],p[2]])<other.width/2+.2));
+   for(let i=0;i<pts.length;i++){
+    const a=pts[Math.max(0,i-1)],b=pts[Math.min(pts.length-1,i+1)],dx=b[0]-a[0],dz=b[1]-a[1],len=Math.hypot(dx,dz)||1;
+    for(const offset of[road.width/2-.10,road.width/2+.06]){const x=pts[i][0]+dz/len*side*offset,z=pts[i][1]-dx/len*side*offset;edgeVertices.push([x,height(x,z)+.055,z]);}
+    if(i){const p=edgeVertices.at(-1),q=edgeVertices.at(-3);if(!inJunction((p[0]+q[0])/2,(p[2]+q[2])/2)){const a=(i-1)*2,b=i*2;edgeIndices.push(a,b,a+1,a+1,b,b+1);}}
+   }
+   if(side<0)for(let i=0;i<edgeIndices.length;i+=3)[edgeIndices[i+1],edgeIndices[i+2]]=[edgeIndices[i+2],edgeIndices[i+1]];
+   custom(edgeVertices,edgeIndices,'highlandsTrailEdge');
+  }
  }
  for(const road of layout.roads)roadSurface(road);
  for(const[id,x,z,y]of[['affirmation',-18,0,2.8],['research',0,-14,6.5],['catering',18,0,2.8]])assembleDistrict('projects',id,x,z,y-Y);
@@ -729,7 +753,7 @@ function highlandsIsland(){
  solid(-4.9,25.5,4.4,.3,2.85,Y,0,'highlands directory');
  for(const x of[-5.9,5.9]){groundGroup(x,26,()=>lamp(0,0,'teal',2.2));solid(x,26,.38,.38,3.2,height(x,26),0,'arrival lantern');}
  // Scenic summit rocks stay behind the loop; collision does not cover the road.
- for(const[x,z,w,d,h]of[[-15.5,-24.3,4,2.3,4.8],[15.5,-24.3,4,2.3,5.0],[21,-21.8,4,2.3,3.4]]){const y=height(x,z);occluder('highlands_peak_'+x,()=>{const m=mesh(new THREE.IcosahedronGeometry(1,1),'stone',[x,y+h*.38,z],[.1,.25,.08]);m.scale.set(w/2,h*.65,d/2);});solid(x,z,w,d,h,y,0,'scenic rock ridge');}
+ for(const[x,z,w,d,h]of[[-15.5,-24.3,4,2.3,4.8],[15.5,-24.3,4,2.3,5.0],[21,-21.8,4,2.3,3.4]]){const y=height(x,z);const m=mesh(new THREE.IcosahedronGeometry(1,1),'highlandsRock',[x,y+h*.38,z],[.1,.25,.08]);m.scale.set(w/2,h*.65,d/2);solid(x,z,w,d,h,y,0,'scenic rock ridge');}
  // Plant groups frame the road without making small collision obstacles.
  for(const[x,z,h]of[[-32,6,4.8],[-31,-7,4.0],[32,6,4.6],[32,-5,4.0],[-11,7,4.2],[11,7,4.0],[-15,14,3.8],[15,14,3.8],[-7,-2,3.5],[7,-1,3.7],[-13,-15,3.7],[13,-15,3.8]]){
   groundGroup(x,z,()=>occluder('highlands_tree_'+x+'_'+z,()=>{rod([0,Y,0],[0,Y+h*.84,0],.13,'darkWood');for(let tier=0;tier<3;tier++)cone(h*(.25-tier*.048),h*.50,0,Y+h*(.31+tier*.22),0,'highlandsPine',9);}));solid(x,z,.48,.48,h,height(x,z),0,'pine trunk');

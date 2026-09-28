@@ -1767,14 +1767,14 @@
       "id": "projects",
       "name": "projects",
       "file": "projects.glb",
-      "bytes": 1152328,
-      "rawBytes": 3943568,
+      "bytes": 1257184,
+      "rawBytes": 4281112,
       "revision": "v13-projects-highlands",
-      "sourceMeshes": 843,
-      "drawCalls": 149,
-      "staticDrawCalls": 14,
-      "vertices": 103374,
-      "triangles": 79669,
+      "sourceMeshes": 854,
+      "drawCalls": 151,
+      "staticDrawCalls": 19,
+      "vertices": 112835,
+      "triangles": 85043,
       "bounds": {
         "min": [
           -39,
@@ -2472,9 +2472,6 @@
         "occluder_research_observatory",
         "occluder_research_dome",
         "occluder_catering_canopy",
-        "occluder_highlands_peak_-15.5",
-        "occluder_highlands_peak_15.5",
-        "occluder_highlands_peak_21",
         "occluder_highlands_tree_-32_6",
         "occluder_highlands_tree_-31_-7",
         "occluder_highlands_tree_32_6",
@@ -2985,8 +2982,8 @@
       ]
     }
   ],
-  "totalBytes": 3732120,
-  "totalTriangles": 227050,
+  "totalBytes": 3836976,
+  "totalTriangles": 232424,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }
