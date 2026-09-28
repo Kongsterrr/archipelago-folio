@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { integrateHelm } from './boat.js';
 import { dockLocal } from './dock.js';
 import { QUAD_RIDER, addQuadRiderSupports } from '../world/quad-rider-pose.js';
 
@@ -13,6 +12,24 @@ export const QUAD_BIKE = Object.freeze({
   riderAnchor: QUAD_RIDER.mount,
   speeds: Object.freeze({ cruise: 8, boost: 16, reverse: 4, boostReverse: 8 }),
 });
+
+// Tires carry a signed forward speed, not the boat's independent sideways
+// momentum. Steering follows the rearward travel direction when reversing.
+export function integrateQuadDrive(state,input,dt) {
+  let speed=state.vx*-Math.sin(state.yaw)+state.vz*-Math.cos(state.yaw);
+  const throttle=THREE.MathUtils.clamp(input.throttle||0,-1,1);
+  const toward=(value,target,amount)=>value+THREE.MathUtils.clamp(target-value,-amount,amount);
+  if(input.brake) speed=toward(speed,0,28*dt);
+  else if(!throttle) speed=toward(speed,0,16*dt);
+  else if(speed*throttle<0) speed=toward(speed,0,22*dt);
+  else {
+    const limit=throttle<0?(input.boost?QUAD_BIKE.speeds.boostReverse:QUAD_BIKE.speeds.reverse):(input.boost?QUAD_BIKE.speeds.boost:QUAD_BIKE.speeds.cruise);
+    speed=toward(speed,throttle*limit,(input.boost?18:10)*dt);
+  }
+  const turn=(input.steer||0)*Math.sign(speed)*Math.min(Math.abs(speed)/1.5,1)*1.8/(1+Math.abs(speed)/35);
+  const yaw=state.yaw+turn*dt;
+  return {yaw,vx:-Math.sin(yaw)*speed,vz:-Math.cos(yaw)*speed};
+}
 
 // Tyre support points from the retained imported wheel pivots, in the game frame.
 export function quadGroundPose(walk,point,yaw){
@@ -160,11 +177,17 @@ export class QuadBikeController {
     if (this.parked) return;
     const current=this.position,start={...current,yaw:this.yaw};
     this.previous={...current};this.previousYaw=this.yaw;this.stepDt=dt;
-    const state=integrateHelm({yaw:this.yaw,vx:this.velocity.x,vz:this.velocity.z},input,dt,{
-      speeds:QUAD_BIKE.speeds,normalAcceleration:6.5,boostAcceleration:13,brakeAcceleration:14,
-    });
+    const state=integrateQuadDrive({yaw:this.yaw,vx:this.velocity.x,vz:this.velocity.z},input,dt);
     const target={x:current.x+state.vx*dt,z:current.z+state.vz*dt,yaw:state.yaw};
     let next=sweepPose(this.walkWorld,start,target);
+    // A turn can swing a front corner into a steep bank even while the rear is
+    // moving away. Let translation escape at the last clear heading first;
+    // otherwise the blocked rotation also traps an otherwise safe reverse.
+    const progress=p=>(p.x-current.x)*(target.x-current.x)+(p.z-current.z)*(target.z-current.z);
+    if(progress(next)<progress(target)-1e-10){
+      const straight=sweepPose(this.walkWorld,start,{...target,yaw:start.yaw});
+      if(progress(straight)>progress(next)+1e-10)next=straight;
+    }
     // Test the remaining horizontal components separately to slide along edges.
     for(const axis of ['x','z']){
       const candidate=sweepPose(this.walkWorld,next,{...next,[axis]:target[axis]});

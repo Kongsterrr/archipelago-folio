@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V13 — Projects Highlands** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V13.1 — Grounded Trails** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -60,7 +60,12 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V12.3.3 — Aligned Back Arrow** | Aligns the visible return arrow with the content left edge while preserving its click target | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.3.4 — Open Quad Parking** | Removes the brown parking surround; the quad rests directly on the existing island surface | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13 — Projects Highlands** | Terraced Projects terrain, numbered project kiosks, direct reading while riding, slope-aware quad and terrain map | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V13.1 — Grounded Trails** | Grippy quad handling, intuitive reverse steering, reliable mountain-contact escape, readable rock banks and a flicker-free pier landing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V13.1 — Grounded Trails
+
+The quad now uses its own tire-grip controller: turning follows the wheels, releasing the throttle stops promptly, and reverse plus right/left moves the rear toward the requested side. The boat retains its original sailing feel. Mountain contact separates blocked turns from clear retreat so reversing out does not require a reset. Steep banks are visibly rocky, the road has readable shoulders, and overlapping terrain beneath the harbor planks is removed. Existing speed limits, terrain collision, three project exhibits and the other islands are preserved.
 
 ### V13 — Projects Highlands
 

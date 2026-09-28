@@ -2,6 +2,74 @@
 const clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 const smooth=v=>{v=clamp(v);return v*v*(3-2*v);};
 const seg=(x,z,a,b)=>{const dx=b[0]-a[0],dz=b[1]-a[1],t=clamp(((x-a[0])*dx+(z-a[1])*dz)/(dx*dx+dz*dz));return Math.hypot(x-a[0]-dx*t,z-a[1]-dz*t);};
+
+// The rendered ground has a small cutout beneath the wooden pier. Physics keeps
+// the continuous terrain plus its explicit deck surface; overlapping surfaces
+// must not both be rendered at exactly the .85m arrival height.
+export function highlandsVisibleTerrain(terrain, dock) {
+ const vertices=[],grass=[],rock=[],cliff=[],lookup=new Map();
+ const vertex=p=>{const key=p.map(v=>v.toFixed(7)).join(',');if(!lookup.has(key)){lookup.set(key,vertices.length/3);vertices.push(...p);}return lookup.get(key);};
+ const cut=(poly,axis,value,sign)=>{
+  const out=[];
+  for(let i=0;i<poly.length;i++){
+   const p=poly[i],q=poly[(i+1)%poly.length],a=sign*(p[axis]-value),b=sign*(q[axis]-value);
+   if(a>=-1e-9)out.push(p);
+   if((a<0)!==(b<0)){const t=a/(a-b);out.push(p.map((v,k)=>v+(q[k]-v)*t));}
+  }
+  return out;
+ };
+ const edges=[[0,-dock.width/2,1],[0,dock.width/2,-1],[2,dock.startZ,1],[2,dock.endZ,-1]];
+ for(let i=0;i<terrain.indices.length;i+=3){
+  const points=terrain.indices.slice(i,i+3).map(j=>terrain.vertices.slice(j*3,j*3+3));
+  const[a,b,c]=points,ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+  const nx=uy*vz-uz*vy,ny=uz*vx-ux*vz,nz=ux*vy-uy*vx,slope=Math.atan2(Math.hypot(nx,nz),ny);
+  // Match the quad's actual 12-degree drive limit, including formerly grassy
+  // 12–23 degree banks. Steeper cliff faces receive a separate deeper shade.
+  const indices=slope>Math.PI/6?cliff:slope>Math.PI/15+1e-6?rock:grass;
+  let inner=points;const visible=[];
+  for(const[axis,value,sign]of edges){if(!inner.length)break;const outside=cut(inner,axis,value,-sign);if(outside.length>=3)visible.push(outside);inner=cut(inner,axis,value,sign);}
+  for(const poly of visible)for(let j=1;j<poly.length-1;j++){
+   const p=poly[0],q=poly[j],r=poly[j+1],area=(q[0]-p[0])*(r[2]-p[2])-(q[2]-p[2])*(r[0]-p[0]);
+   if(Math.abs(area)>1e-10)indices.push(vertex(p),vertex(q),vertex(r));
+  }
+ }
+ return{vertices,grass,rock,cliff};
+}
+
+// Thin mineral seams lie on the actual bank triangles rather than standing in
+// for new boulders. They add readable strata without changing any collision.
+export function highlandsRockStrata(visible) {
+ const vertices=[],dark=[],light=[];
+ const clip=(poly,y,above)=>{
+  const out=[];
+  for(let i=0;i<poly.length;i++){
+   const p=poly[i],q=poly[(i+1)%poly.length],a=(p[1]-y)*(above?1:-1),b=(q[1]-y)*(above?1:-1);
+   if(a>=0)out.push(p);
+   if((a<0)!==(b<0)){const t=a/(a-b);out.push(p.map((v,k)=>v+(q[k]-v)*t));}
+  }
+  return out;
+ };
+ const indices=[...visible.rock,...visible.cliff];
+ for(let i=0;i<indices.length;i+=3){
+  const points=indices.slice(i,i+3).map(j=>visible.vertices.slice(j*3,j*3+3)),[a,b,c]=points;
+  const ux=b[0]-a[0],uy=b[1]-a[1],uz=b[2]-a[2],vx=c[0]-a[0],vy=c[1]-a[1],vz=c[2]-a[2];
+  const normal=[uy*vz-uz*vy,uz*vx-ux*vz,ux*vy-uy*vx],length=Math.hypot(...normal);
+  if(length<1e-8)continue;
+  const cx=(a[0]+b[0]+c[0])/3,cz=(a[2]+b[2]+c[2])/3;
+  for(let level=1.5;level<7;level+=1.1){
+   // Interrupted runs read as stone layers, not a continuous navigation grid.
+   if(Math.sin(cx*.47+cz*.31+level*.73)<-.42)continue;
+   for(const [lo,hi,out]of[[level-.025,level+.015,dark],[level+.015,level+.027,light]]){
+    const poly=clip(clip(points,lo,true),hi,false);
+    if(poly.length<3)continue;
+    const base=vertices.length/3;
+    for(const p of poly)vertices.push(...p.map((v,k)=>v+normal[k]/length*.026));
+    for(let j=1;j<poly.length-1;j++)out.push(base,base+j,base+j+1);
+   }
+  }
+ }
+ return{vertices,dark,light};
+}
 export function highlandsHeight(x,z,shore){
  const theta=Math.abs(Math.atan2(x/28,z/22));
  const roadHeight=theta<1.4?.85+1.95*smooth((theta-.22)/1.18):theta<=1.70?2.8:2.8+3.7*smooth((theta-1.70)/1.32);let h=roadHeight;
