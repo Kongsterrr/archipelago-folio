@@ -560,7 +560,7 @@ async function exportIsland(name){
  }
  output.userData={originalProceduralAsset:true,version:11,author:'Archipelago-folio original walkable island builder',walkable:true,seaLevel:0,animationNodes:animationNodes.map(n=>n.name)};
  const bounds=new THREE.Box3().setFromObject(output);const raw=await new GLTFExporter().parseAsync(output,{binary:true,onlyVisible:true,trs:true});if(name==='harbor'&&!low&&process.env.ARCHIPELAGO_SOURCE_OUT){await fs.mkdir(process.env.ARCHIPELAGO_SOURCE_OUT,{recursive:true});root.traverse(o=>{if(o.isMesh&&!o.name)o.name='part_'+o.material.name+'_'+o.id;});const source=await new GLTFExporter().parseAsync(root,{binary:true,onlyVisible:true,trs:true});await fs.writeFile(path.join(process.env.ARCHIPELAGO_SOURCE_OUT,'harbor.glb'),Buffer.from(source));}const doc=await io.readBinary(new Uint8Array(raw));await doc.transform(dedup(),prune({keepAttributes:true}),meshopt({encoder:MeshoptEncoder,level:name==='projects'&&low?'high':'medium'}));const file=path.join(OUT,low?'low':'',name+'.glb');await io.write(file,doc);const bytes=(await fs.stat(file)).size;
- const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:name==='projects'?'v132-climbable-highlands':'v11-four-isles',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{...layout.dock},clearApproach:{min:[-7,0,layout.dock.endZ+2],max:[7,0,layout.dock.endZ+18],spawn:[0,0,layout.dock.endZ+8]},districts:layout.districts,camera:{target:[0,2,0],distance:Math.max(PARENTS[name].width,PARENTS[name].depth)*1.18},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
+ const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:name==='projects'?'v133-readable-project-arrival':'v11-four-isles',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{...layout.dock},clearApproach:{min:[-7,0,layout.dock.endZ+2],max:[7,0,layout.dock.endZ+18],spawn:[0,0,layout.dock.endZ+8]},districts:layout.districts,camera:{target:[0,2,0],distance:Math.max(PARENTS[name].width,PARENTS[name].depth)*1.18},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
  if(name==='amtrak'){data.animation={train:{trackCentre:[0,0,-1.4],trackRadii:[8.8,5.8],initialAngle:0,rootY:0,forward:'-Z',duration:10}};data.trainTrack={...TRACK,points:Array.from({length:64},(_,i)=>{const a=i*Math.PI*2/64;return[TRACK.radiusX*Math.cos(a),0,TRACK.center[2]+TRACK.radiusZ*Math.sin(a)];}),trainForward:'-Z',rootY:0,railY:Y+.07};}
  return data;
 }
@@ -617,7 +617,7 @@ function assembleDistrict(parent,contentId,dx,dz,dy=0){
  if(contentId==='catering'){const order=layout.stations.find(s=>s.id==='order');order.x=5.8;order.z=.1;}
  // These signs identify districts without recreating each former island's dock.
  if(!highlandsBuild)nameSign(THEMES[contentId][0],0,1.45,7.8,.31);
- layout.stations.forEach((station,index)=>{station.id=contentId+':'+station.id;station.contentId=contentId;station.action=station.action||contentId;if(highlandsBuild&&index===0){Object.assign(station,{x:0,z:contentId==='research'?-8:6.7,y:Y,primary:true,readFull:true,number:{affirmation:'01',research:'02',catering:'03'}[contentId],label:{affirmation:'ADHD Affirmation',research:'CMU Movie Piracy',catering:'Business Catering Dashboard'}[contentId]});highlandsKiosk(station);}else plaque(station,index);});
+ layout.stations.forEach((station,index)=>{station.id=contentId+':'+station.id;station.contentId=contentId;station.action=station.action||contentId;if(highlandsBuild&&index===0){Object.assign(station,{x:0,z:6.7,y:Y,primary:true,readFull:true,number:{affirmation:'01',research:'02',catering:'03'}[contentId],label:{affirmation:'ADHD Affirmation',research:'CMU Movie Piracy',catering:'Business Catering Dashboard'}[contentId]});highlandsKiosk(station);}else plaque(station,index);});
  const districtLayout=layout;root=parentRoot;layout=parentLayout;currentIsland=parent;
  layout.surfaces.push(...districtLayout.surfaces.map(s=>transformItem(s,dx,dz,dy)));
  layout.obstacles.push(...districtLayout.obstacles.map(s=>({...transformItem(s,dx,dz,dy),name:contentId+': '+s.name})));
@@ -688,7 +688,7 @@ function arrivalGarden(name){
 
 // V13: a terrain-authored loop rather than flat disconnected district paths.
 function highlandsKiosk(station){
- const {x,z,y=Y,number,label,contentId}=station,bz=z-(contentId==='research'?2.95:2.7),g=group();g.name='station_'+station.id;
+ const {x,z,y=Y,number,label,contentId}=station,bz=z-2.7,g=group();g.name='station_'+station.id;
  const accent={affirmation:'lilac',research:'blue',catering:'orange'}[contentId]||'teal';
  for(const dx of[-1.02,1.02]){bevel(.12,1.9,.12,x+dx,y+.95,bz,'wood',.025,[0,0,0],g);bevel(.3,.11,.32,x+dx,y+.055,bz,'stone',.035,[0,0,0],g);}
  bevel(2.6,1.8,.18,x,y+1.10,bz,'ivory',.07,[0,0,0],g);
@@ -749,9 +749,14 @@ function highlandsIsland(){
  for(const x of[-1.85,1.85])rod([x,0,0],[x,2.75,0],.10,'wood',board);
  bevel(4.4,2.3,.20,0,1.65,0,'ivory',.09,[0,0,0],board);
  text3D('PROJECTS',.43,0,2.22,.13,'navy',.02,board);text3D('EXPLORE THE HIGHLANDS',.13,0,1.92,.13,'teal',.012,board);
+ // The overview is an intentional keyboard target; row faces remain separate
+ // mouse/touch links so approaching the board never picks an arbitrary project.
+ layout.stations.push({id:'projects:overview',type:'read',contentId:'projects',readFull:true,directoryOverview:true,label:'Projects overview',x:-4.9,z:27.0,y:Y,hitArea:{x:-4.9,y:Y+2.21,z:25.67,width:4.4,height:.63,yaw:0}});
  [['affirmation','01  ADHD AFFIRMATION'],['research','02  CMU MOVIE PIRACY'],['catering','03  CATERING DASHBOARD']].forEach(([id,label],i)=>{const yy=1.47-i*.42;bevel(3.9,.34,.03,0,yy, .13,['lilac','blue','orange'][i],.025,[0,0,0],board);text3D(label,.135,0,yy-.055,.155,'navy',.008,board);layout.stations.push({id:'projects:directory-'+id,type:'read',contentId:id,readFull:true,directory:true,label:{affirmation:'ADHD Affirmation',research:'CMU Movie Piracy',catering:'Business Catering Dashboard'}[id],x:-4.9,z:27.0,y:Y,hitArea:{x:-4.9,y:Y+yy,z:25.67,width:3.9,height:.34,yaw:0}});});
  solid(-4.9,25.5,4.4,.3,2.85,Y,0,'highlands directory');
- for(const x of[-5.9,5.9]){groundGroup(x,26,()=>lamp(0,0,'teal',2.2));solid(x,26,.38,.38,3.2,height(x,26),0,'arrival lantern');}
+ // Keep the left lantern beside the directory, outside its entire face and
+ // reading apron; the former (-5.9, 26) position obscured its project rows.
+ for(const[x,z]of[[-8.4,25.5],[5.9,26]]){groundGroup(x,z,()=>lamp(0,0,'teal',2.2));solid(x,z,.38,.38,3.2,height(x,z),0,'arrival lantern');}
  // Summits are now the shared heightfield itself. No decorative peak mesh or
  // invisible box sits on top of a different, lower walking surface.
  // Plant groups frame the road without making small collision obstacles.

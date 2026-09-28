@@ -35,9 +35,15 @@ for(const island of islands)test(`${island.id}: actual map geometry fits and ali
  for(const [n,point] of geometry.route.entries())closePoint(point,toWorld(island,...layout.route[n]),'route');
  for(const station of geometry.stations){
   const source=layout.stations.find(s=>s.id===station.id),district=geometry.districts.find(d=>d.id===station.contentId),localDistrict=layout.districts.find(d=>d.id===station.contentId);
-  assert.ok(district,`${station.id} has its district`);
   closePoint(station,toWorld(island,source.x,source.z),station.id);
-  close(Math.hypot(station.x-district.x,station.z-district.z),Math.hypot(source.x-localDistrict.x,source.z-localDistrict.z),'station-to-district distance');
+  if(source.directoryOverview){
+   assert.equal(station.contentId,island.id,'an overview belongs to the whole physical island');
+   assert.equal(district,undefined,'an overview must not be assigned to one project district');
+   close(Math.hypot(station.x-island.x,station.z-island.z),Math.hypot(source.x,source.z),'overview-to-island distance');
+  }else{
+   assert.ok(district,`${station.id} has its district`);
+   close(Math.hypot(station.x-district.x,station.z-district.z),Math.hypot(source.x-localDistrict.x,source.z-localDistrict.z),'station-to-district distance');
+  }
   assert.equal(station.label,source.label);
   assert.equal(station.action,source.action);
   assert.equal(station.y,source.y,'elevated station height remains metadata');

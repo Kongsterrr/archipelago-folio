@@ -1767,9 +1767,9 @@
       "id": "projects",
       "name": "projects",
       "file": "projects.glb",
-      "bytes": 906740,
-      "rawBytes": 3423956,
-      "revision": "v132-climbable-highlands",
+      "bytes": 906388,
+      "rawBytes": 3423940,
+      "revision": "v133-readable-project-arrival",
       "sourceMeshes": 646,
       "drawCalls": 144,
       "staticDrawCalls": 19,
@@ -2986,7 +2986,7 @@
       "triangleReductionPercent": 0
     }
   ],
-  "totalBytes": 3162696,
+  "totalBytes": 3162344,
   "totalTriangles": 192032,
   "quality": "low",
   "walkLayout": "walk-layout.json"

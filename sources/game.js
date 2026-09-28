@@ -16,7 +16,7 @@ import { IslandController } from './world/island.js';
 import { FeedbackSystem } from './world/feedback.js';
 import { Interactable } from './world/interactable.js';
 import { syncInteractionMarkers } from './core/interaction-markers.js';
-import {exhibitRange,selectLandExhibit,selectProjectSign} from './core/project-exhibits.js';
+import {exhibitRange,selectLandExhibit,selectProjectSign,landPrimaryAction} from './core/project-exhibits.js';
 import { PropManager } from './world/props.js';
 import {DockInteraction} from './core/dock.js';
 import {AmbientFleet} from './world/fleet.js';
@@ -97,7 +97,7 @@ export class Game {
  async loadModelNow(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='projects'?'13.2':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='projects'?'13.3':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
     const materials=Array.isArray(o.material)?o.material:[o.material];
     const glazing=id==='boat'&&materials.some(m=>m.transparent);
     // The clear windscreen should reveal the helm, including in the shadow pass.
@@ -215,7 +215,7 @@ export class Game {
   }else{this.projectSign=null;this.lastStation=null;this.nearAction=!frozen?Interactable.nearest(this.interactables,p,this.camera):null;}
   for(const [id,actions]of this.landActions)for(const a of actions){
    const current=!frozen&&onLand&&id===this.player.island.id;
-   if(a.object)a.object.visible=!!(current&&!riding&&a===this.nearStation&&!this.canBoard&&!a.station?.primary);
+   if(a.object)a.object.visible=!!(current&&!riding&&a===this.nearStation&&!this.canBoard&&!(this.canRideQuad&&a.kind==='read')&&!a.station?.primary);
    if(a.sign)a.sign.visible=!!(current&&a===this.projectSign&&a!==this.nearStation);
    if(a.highlight)a.highlight.visible=!!(current&&a===this.nearStation);
   }
@@ -307,7 +307,7 @@ export class Game {
  startChallenge(id){const config=challenges.find(c=>c.id===id);if(!config)return;this.teleport(config.spawn);this.challenges.start(id);this.inputs.setEnabled(!this.challenges.frozen);}
  startRace(){this.startChallenge('buoy');}
  setZoom(index){if(this.player?.onLand)this.settings.walkZoom=Math.max(0,Math.min(2,index));else this.cameraRig.setZoom(index);this.discovery?.save();this.events.trigger('zoom',[this.settings.zoom]);}
- async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=13.2');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
+ async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=13.3');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
  async prepareAshore(island){this.inputs.setEnabled(false);this.events.trigger('message',['Preparing '+island.name+' for a little walk…']);
   if(!this.walkLayouts?.size)await this.loadWalkLayouts();await Promise.all([this.loadModel(island.id),this.jack.load()]);const layout=this.walkLayouts.get(island.id);if(!layout||!this.loaded.get(island.id).model||!this.jack.ready)throw new Error('The island is still loading. You can read it now or try going ashore again.');
   const walk=this.ensureWalkWorld(island);if(island.id==='projects')await this.installQuadBike(island,walk);return walk;
@@ -348,7 +348,16 @@ export class Game {
  boardBoat(){if(this.frozen||!this.player.walking)return false;this.inputs.setEnabled(false);this.character.hold();return this.boarding.board();}
  rideQuad(){if(this.frozen||!this.player.walking||!this.canRideQuad||!this.quadBike)return false;this.cancelChallenge();this.inputs.setEnabled(false);this.character.hold();this.quadBike.park(false);this.quadBike.hold();if(!this.player.rideQuad(this.quadBike)){this.quadBike.park(true);this.inputs.setEnabled(true);return false;}this.quadBike.hold();this.inputs.setEnabled(true);this.resetCamera();this.events.trigger('locomotion',['riding-quad']);this.events.trigger('message',['WASD to ride · Shift to boost · E to get off.']);return true;}
  dismountQuad(){if(this.frozen||!this.player.ridingQuad||!this.quadBike)return false;const point=this.quadBike.dismountPoint();if(!point){this.events.trigger('message',['There is no clear spot to get off. Move the quad bike onto an open path first.']);return false;}this.inputs.setEnabled(false);this.quadBike.park(true);if(!this.player.leaveQuad(point)){this.quadBike.park(false);this.inputs.setEnabled(true);return false;}this.jack.resetPose('idle');this.inputs.setEnabled(true);this.resetCamera();this.events.trigger('locomotion',['walking']);this.events.trigger('message',['Back on foot · Explore the island.']);return true;}
- primaryAction(){if(this.frozen)return;if(this.player.ridingQuad)return this.dismountQuad();if(this.player.walking){if(this.nearStation?.kind==='read'&&this.nearStation.station?.readFull)return this.nearStation.run();if(this.canRideQuad)return this.rideQuad();if(this.canBoard)return this.boardBoat();if(this.nearStation?.kind==='read')return this.nearStation.run();}else return this.goAshore();}
+ primaryAction(){
+  if(this.frozen)return;
+  if(!this.player.walking&&!this.player.ridingQuad)return this.goAshore();
+  switch(landPrimaryAction(this)?.kind){
+   case 'mount':return this.rideQuad();
+   case 'dismount':return this.dismountQuad();
+   case 'board':return this.boardBoat();
+   case 'read':return this.nearStation.run();
+  }
+ }
  createLandActions(island,layout){const actions=[];for(const station of [...layout.stations,...(layout.benches||[layout.bench]).filter(Boolean).map((bench,n)=>({...bench,id:bench.id||'bench-'+n,type:'bench',label:'Sit for a moment'}))]){
   const point=localToWorld(island,station.type==='bench'?station.approach:{...station,y:station.y??layout.groundY??.85});const kind=station.type;
   const marker=label(kind==='read'?'E':'F',{width:64,height:64,worldWidth:.45,fontSize:32,background:'#fff5dd',color:'#254f62'});marker.position.set(point.x,point.y+1.65,point.z);marker.visible=false;this.scene.add(marker);

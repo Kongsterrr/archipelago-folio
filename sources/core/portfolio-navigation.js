@@ -20,3 +20,11 @@ export function exhibitEntry(station,islandId,content) {
   // Legacy events used the content ID as island; grouped events name it explicitly.
   return content.find(entry=>entry.id===(station?.contentId||islandId))||null;
 }
+
+export function exhibitTarget(station,islandId,content,islands) {
+  // Complete exhibits can open an island overview as well as a source story.
+  // Section-only exhibits must still resolve a real story before reading it.
+  if(station?.readFull)return portfolioTarget(station.contentId||islandId,content,islands);
+  const entry=exhibitEntry(station,islandId,content);
+  return entry?portfolioTarget(entry.id,content,islands):null;
+}
