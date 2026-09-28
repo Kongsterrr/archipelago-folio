@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V12.3.4 — Open Quad Parking** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V12.4 — Island Field Maps** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -20,6 +20,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Sculpted Bay:** refined Jack, main boat and Harbor geometry; original fabric, wood, upholstery, stone, sand and rope surfaces; shared surface detail, contact shading and shoreline-based shallow water.
 - **Sunset Bay:** a fixed orange-and-violet evening, broken golden reflections, warm landmark lights and individual island palettes.
 - **Exploration records:** 13 island/discovery/challenge stamps plus separate Sea Life and four-island Island Walks journals. Legacy physical visits merge into their new parent island; individual story-reading records remain intact.
+- **Island field maps:** a larger, sharper north-up minimap switches from the bay to the current island at its dock. Real shoreline, paths, exhibit districts, Jack, the parked boat and quad make on-foot exploration easier; click it to open world navigation.
 - **Direct access:** navigation, map shortcuts, dock panels, résumé download, and complete 2D reading mode.
 
 ## Version history
@@ -58,6 +59,14 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V12.3.2 — Minimal Back Arrow** | A plain header arrow on nested screens, without a text label, border or button background | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.3.3 — Aligned Back Arrow** | Aligns the visible return arrow with the content left edge while preserving its click target | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.3.4 — Open Quad Parking** | Removes the brown parking surround; the quad rests directly on the existing island surface | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V12.4 — Island Field Maps
+
+- Enlarged the corner map and made its canvas resolution follow the screen density, with clearer labels, coastlines and player markers.
+- Arrival at a dock selects that island’s real walk map; walking and quad riding keep it visible. Sailing away restores the bay map, and sea challenges keep their global course overlays.
+- Local maps show paths, major building footprints, exhibition districts, the dock, parked boat and quad. Both modes remain north-up and use the active actor’s real world heading.
+- Click the minimap or press M to open the full world map with the current island selected. Responsive sizes keep mobile controls and Jack visible.
 
 ### V12.3.4 — Open Quad Parking
 

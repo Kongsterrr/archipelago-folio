@@ -1,3 +1,10 @@
+# V12.4 — Island Field Maps · 2026-09-27
+
+- **25/25 focused automated tests passed:** nine minimap geometry/selection tests plus the existing four-island navigation and UI-symbol checks. Coverage includes real shoreline/pier transforms, station and obstacle alignment, uniform north-up projection, unavailable walk layouts, arrival/departure/challenge selection, and retained approach-zone corners at desktop/mobile sizes.
+- **Local macOS Codex in-app browser, WebGPU:** travelled to and went ashore on all four islands; each selected its own local map. Walking and riding the Projects quad tracked the controlled actor while preserving its parked boat marker. Reading another island did not change the occupied island map. Sailing away restored the global map; Buoy Run kept the global course overlay. Clicking the local map opened world navigation with Projects selected. No browser errors were captured.
+- **Responsive visual checks:** 1440×900, 1920×1080, 390×844 and 844×390. Desktop map width is 280–300 px; mobile portrait size adapts to keep Jack and the controls visible. The canvas uses the CSS dimensions and device pixel ratio instead of stretching a fixed low-resolution buffer. This was viewport emulation, not a physical-phone performance measurement.
+- Geometry reuses the existing config and walk-layout data; there are no new downloadable models, changes to gameplay physics, or storage migrations. Production build runs in the release workflow. No new frame-rate claim is made.
+
 # V12.3.4 — Open Quad Parking · 2026-09-27
 
 Removed the visual-only `createQuadBikePad` helper and its call: four brown border meshes plus the decorative base/inset. The existing island ground supports the quad, and no collider, spawn, interaction or movement code changed.
