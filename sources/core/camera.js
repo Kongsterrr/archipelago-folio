@@ -14,7 +14,7 @@ const groundForward = azimuth => new THREE.Vector3(-Math.sin(azimuth), 0, -Math.
 export function cameraAzimuth({focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH} = {}) {
   if (focus?.boatStudio) return AZIMUTH;
   if (focus) return focus.camera?.azimuth ?? AZIMUTH;
-  return locomotion === 'walking' || locomotion === 'quad' ? landAzimuth : AZIMUTH;
+  return locomotion === 'walking' || locomotion === 'quad' || locomotion === 'bicycle' ? landAzimuth : AZIMUTH;
 }
 
 export class CameraRig {
@@ -92,8 +92,8 @@ export class CameraRig {
       const target = new THREE.Vector3(focus.x, cfg.height || 3, focus.z);
       if (this.width >= 900) target.addScaledVector(right, focus.exhibit?460/this.height*distance*Math.tan(THREE.MathUtils.degToRad(FOV/2)):7.4);
       desired = {target, position: target.clone().add(new THREE.Vector3(Math.sin(az)*Math.cos(el), Math.sin(el), Math.cos(az)*Math.cos(el)).multiplyScalar(distance))};
-    } else if (locomotion === 'quad') {
-      const base=Math.max(17,32*(this.height/this.width)/(844/390));
+    } else if (locomotion === 'quad' || locomotion === 'bicycle') {
+      const base=Math.max(locomotion==='bicycle'?15:17,(locomotion==='bicycle'?28:32)*(this.height/this.width)/(844/390));
       const desiredDistance=base*ZOOM_LEVELS[this.settings.walkZoom??1]+(this.settings.reduced?10:Math.min(10,speed*.5));
       this.distance=snap?desiredDistance:THREE.MathUtils.damp(this.distance,desiredDistance,4,dt);
       const direction=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));

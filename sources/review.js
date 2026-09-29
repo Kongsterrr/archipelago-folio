@@ -9,13 +9,16 @@ import {applyJackHairSurface} from './world/jack-hair-surface.js';
 import {prepareBoatMaterials,BoatAppearance} from './world/boat-appearance.js';
 import {JACK_ASSET_URL} from './world/jack-asset.js';
 import {JackAvatar} from './world/jack.js';
+import RAPIER from '@dimforge/rapier3d-compat/rapier.es.js';
+import {BicycleController} from './core/bicycle.js';
 import {addQuadRiderSupports} from './world/quad-rider-pose.js';
-const params=new URLSearchParams(location.search),kind=['boat','quad-bike','harbor','about','experience','projects','education'].includes(params.get('model'))?params.get('model'):'jack',clay=params.has('clay');
+const params=new URLSearchParams(location.search),kind=['bicycle','boat','quad-bike','harbor','about','experience','projects','education'].includes(params.get('model'))?params.get('model'):'jack',clay=params.has('clay');
 const canvas=document.querySelector('canvas'),renderer=new THREE.WebGPURenderer({canvas,antialias:true,forceWebGL:params.has('webgl')});await renderer.init();
 renderer.setPixelRatio(1.5);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
-const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),gltf=await loader.loadAsync(kind==='jack'&&!params.has('legacy')?JACK_ASSET_URL:`/models/${kind}.glb?v=${kind==='education'?'14.1':kind==='jack'?8:kind==='quad-bike'?2:11}`),surfaces=new SurfaceLibrary({renderer});
+const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),gltf=await loader.loadAsync(kind==='jack'&&!params.has('legacy')?JACK_ASSET_URL:`/models/${kind}.glb?v=${kind==='bicycle'?'14.2':kind==='education'?'14.1':kind==='jack'?8:kind==='quad-bike'?2:11}`),surfaces=new SurfaceLibrary({renderer});
 const environment=daylightEnvironment();const views=[];
-const riderReview=kind==='quad-bike'&&params.has('rider');
+const riderReview=['quad-bike','bicycle'].includes(kind)&&params.has('rider');
+if(kind==='bicycle')await RAPIER.init();
 const riderGLTF=riderReview?await loader.loadAsync(JACK_ASSET_URL):null;
 for(let index=0;index<3;index++){
  const scene=new THREE.Scene();scene.background=new THREE.Color('#eee9df');scene.environment=environment;scene.environmentIntensity=.7;
@@ -29,7 +32,7 @@ for(let index=0;index<3;index++){
  if(clay)model.traverse(o=>{if(o.isMesh)o.material=new THREE.MeshStandardMaterial({color:'#bcb7ad',roughness:.85});});else surfaces.bind(model,kind);
  if(kind==='boat'&&!clay)new BoatAppearance({livery:'marina'}).bind(model);
  model.traverse(o=>{if(o.isMesh){o.castShadow=!o.material.transparent;o.receiveShadow=true;}});scene.add(model);
- if(riderReview){
+ if(riderReview&&kind==='quad-bike'){
    const bikeModel=model,group=new THREE.Group(),mountPoint=new THREE.Group();
    scene.remove(model);scene.add(group);group.add(bikeModel,mountPoint);bikeModel.scale.setScalar(1.65);bikeModel.rotation.y=Math.PI;
    addQuadRiderSupports(group);
@@ -41,6 +44,14 @@ for(let index=0;index<3;index++){
    group.userData.contacts=avatar.quadPose.contacts;model=group;
  }
 
+ if(kind==='bicycle'){
+   const world=new RAPIER.World({x:0,y:0,z:0}),walk={handles:new Set(),groundAt:()=>0,contains:()=>true,clear:()=>true,visible:()=>true};
+   const bicycle=new BicycleController(RAPIER,world,walk,{x:0,y:0,z:0,yaw:0});
+   scene.remove(model);bicycle.setModel(model);scene.add(bicycle.group);
+   bicycle.crankAngle=bicycle.previousCrankAngle=Number(params.get('crankAngle')||0);bicycle.steering=Number(params.get('wheelSteer')||0);bicycle.updateVisual(0,true);
+   if(riderReview){const avatar=new JackAvatar(scene,{loadAsync:async()=>({scene:clone(riderGLTF.scene),animations:riderGLTF.animations})});await avatar.load();avatar.update(0,{player:{onLand:true,ridingBicycle:true},bicycle,character:{position:{x:0,y:0,z:0}},alpha:1,reduced:true,frozen:false});if(clay)avatar.model.traverse(o=>{if(o.isMesh)o.material=new THREE.MeshStandardMaterial({color:'#bcb7ad',roughness:.85});});}
+   model=bicycle.group;
+ }
  const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:'#eee9df',roughness:.9}));floor.position.y=bounds.min.y-.007;floor.receiveShadow=true;scene.add(floor);
  scene.add(new THREE.HemisphereLight('#e8f3ed','#aaa28b',.9));const sun=new THREE.DirectionalLight('#fff0d5',3.25);sun.position.set(-3,6,-4);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.normalBias=.009;sun.shadow.bias=-.0001;const extent=Math.max(2,size.length());Object.assign(sun.shadow.camera,{left:-extent,right:extent,top:extent,bottom:-extent,near:.1,far:500});scene.add(sun);
@@ -49,5 +60,5 @@ for(let index=0;index<3;index++){
 }
 if(!clay)await surfaces.loadQuality('high');
 function render(){const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);renderer.setScissorTest(true);views.forEach((v,n)=>{v.camera.aspect=(w/3)/h;v.camera.updateProjectionMatrix();const distance=(kind==='jack'||riderReview?Math.max(v.size.y,v.size.x*1.15):v.size.length())*.62/Math.tan(THREE.MathUtils.degToRad(14))/Math.min(1,v.camera.aspect);v.camera.position.copy(v.center).addScaledVector(v.direction,distance);v.camera.lookAt(v.center);renderer.setViewport(n*w/3,0,w/3,h);renderer.setScissor(n*w/3,0,w/3,h);renderer.render(v.scene,v.camera);});renderer.setScissorTest(false);}
-renderer.setAnimationLoop(render);document.querySelector('h1').textContent=`${kind==='jack'?(params.has('legacy')?'V8 · ORIGINAL':'V9 · IMPORTED'):kind==='education'?'V14.1':['about','experience','projects'].includes(kind)?'V11':kind==='quad-bike'?'V12.1':'V9'} · ${riderReview?'QUAD + ACTUAL JACK':kind.toUpperCase()} / ${clay?'CLAY':'ACTUAL MATERIALS'}`;document.querySelector('#state').textContent=`Actual runtime GLB · ${clay?'Neutral clay':kind==='jack'&&!params.has('legacy')?'User-supplied mesh and texture · local rig':surfaces.stats().status+' · shared game surfaces'}${riderReview?' · Palms fitted to actual handlebar grips':''} · Web${renderer.backend.isWebGPUBackend?'GPU':'GL2'}`;
+renderer.setAnimationLoop(render);document.querySelector('h1').textContent=`${kind==='jack'?(params.has('legacy')?'V8 · ORIGINAL':'V9 · IMPORTED'):kind==='bicycle'?'V14.2':kind==='education'?'V14.1':['about','experience','projects'].includes(kind)?'V11':kind==='quad-bike'?'V12.1':'V9'} · ${riderReview?`${kind==='bicycle'?'BICYCLE':'QUAD'} + ACTUAL JACK`:kind.toUpperCase()} / ${clay?'CLAY':'ACTUAL MATERIALS'}`;document.querySelector('#state').textContent=`Actual runtime GLB · ${clay?'Neutral clay':kind==='jack'&&!params.has('legacy')?'User-supplied mesh and texture · local rig':surfaces.stats().status+' · shared game surfaces'}${riderReview?' · Palms fitted to actual handlebar grips':''} · Web${renderer.backend.isWebGPUBackend?'GPU':'GL2'}`;
 document.querySelector('#capture').onclick=async()=>{render();const blob=await new Promise(resolve=>canvas.toBlob(resolve));const response=await fetch(`http://127.0.0.1:5174/capture/${kind}-${clay?'clay':'materials'}.png`,{method:'POST',body:blob});document.querySelector('#state').textContent=response.ok?'Actual render saved.':'Capture server unavailable.';};

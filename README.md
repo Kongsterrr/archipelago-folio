@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V14.1 — Campus Landmark** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V14.2 — Campus Cycling** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -16,6 +16,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** one imported cruise ship, two imported luxury yachts, dolphins, sharks, tropical fish, turtles, and seabirds.
 - **Boat Studio:** three selectable finishes on one detailed runabout model.
+- **Campus Bicycle:** Jack’s supplied road-bike model waits just beyond the Education bridge. Ride around BU, CMU and the coastal paths with spinning wheels, opposite moving pedals, feet on the platforms and hands on the turning bars.
 - **Projects Trail Bike:** ride Jack's imported quad bike at the Projects harbor entrance; mount and dismount with E, steer with the usual controls, and keep both hands on the bars.
 - **Sculpted Bay:** refined Jack, main boat and Harbor geometry; original fabric, wood, upholstery, stone, sand and rope surfaces; shared surface detail, contact shading and shoreline-based shallow water.
 - **Sunset Bay:** a fixed orange-and-violet evening, broken golden reflections, warm landmark lights and individual island palettes.
@@ -62,12 +63,21 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V13 — Projects Highlands** | Terraced Projects terrain, numbered project kiosks, direct reading while riding, slope-aware quad and terrain map | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.1 — Grounded Trails** | Grippy quad handling, intuitive reverse steering, reliable mountain-contact escape, readable rock banks and a flicker-free pier landing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.2 — Open Mountains** | Shared all-direction mountain climbing on foot and by quad, continuous sculpted ridges, terrain-following movement and retained obstacle protection | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V14.2 — Campus Cycling** | An imported rideable bicycle at the Education bridgehead, grounded campus handling and fitted animated pedal/handlebar contacts | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.1 — Campus Signage** | Removes redundant arrival signs and ground lettering; mounts landmark names on their own facades | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V14.2 — Campus Cycling
+
+A single rideable bicycle is parked on the right just beyond Education’s bridge, clear of the welcome exhibit and walking route. Press **E to ride / get off**, use **WASD or arrows** to cycle, **Shift for 2× speed**, **Space to brake**, and **F to read** nearby school or landmark exhibits. Mounting takes priority when the bicycle and a sign are both close; explicit reading remains available. Menus, focus loss and dismounts stop motion, and the local map shows where the bicycle is parked. R returns a mounted rider to the bridgehead.
+
+The supplied white/lavender bicycle keeps its original frame, tires, spokes and three embedded PBR maps. Offline processing separates complete components before compression, repairs the misplaced source pedal and adapts the seat, frame, crank and bars to Jack’s fixed short-limbed anatomy. The same Jack rig drives both hands to the bar grips and both feet to the level pedal platforms. Pedals remain half a turn apart and follow actual travel, as do the wheels; the front assembly steers. Parked bikes do not keep wobbling or pedaling.
+
+The bicycle uses the island’s existing ground, buildings and shoreline. It can follow the campus circuit and Duan’s ground-floor through-route; collisions stop or slide locally. Projects’ quad, avatar model, academic content and saved records are retained. The 2.29 MB high / 1.58 MB low bicycle loads on arrival at Education, after the initial voyage is ready. Rebuild with `npm run models:bicycle -- --input "/path/to/bicycle+3d+model.glb"`; the original 45.9 MB source is not published. See [validation notes](VALIDATION.md) for checks, screenshots and limitations.
 
 ### V14.1 — Campus Landmark
 
@@ -407,17 +417,17 @@ No API keys, backend, account setup, or environment variables are required to ru
 | Steer | A / D or ← / → |
 | Boost / run | Hold Shift for 2× movement speed |
 | Quick brake | Space |
-| Go ashore / read a nearby exhibit / board | E / Enter |
+| Go ashore / read / board boat / mount or dismount a land vehicle | E / Enter |
 | Walk on land | WASD / arrows, relative to the screen |
 | Run on land | Hold Shift |
-| Operate the nearest available device | F |
+| Operate a nearby device on foot / read while riding | F |
 | Horn | H |
 | Map | M |
 | Reset to safe harbor / current island dock | R |
 | Close a panel | Escape |
 | Camera zoom | Mouse wheel or + / − controls |
 
-Touch devices have a camera-relative joystick and on-screen driving, horn, reading, and action buttons. Boat Studio is available from Jack’s Harbor and Settings. On land, the joystick moves Jack and Boost becomes Run; both Shift and the on-screen speed button double movement speed. Move to stand up from a bench; use Return to boat from anywhere on the current island.
+Touch devices have a camera-relative joystick and on-screen driving, horn, reading, and action buttons. Boat Studio is available from Jack’s Harbor and Settings. On land, the joystick moves Jack and Boost becomes Run; both Shift and the on-screen speed button double movement speed. Move to stand up from a bench; use Return to boat while on foot. While riding, that shortcut becomes Dismount, and the joystick steers the vehicle.
 
 Opening a menu or switching away pauses simulation; an active challenge resumes after a short countdown. Going ashore, resetting, and traveling cancel an unfinished challenge. On land, the parked boat stays locked while sea life and traffic continue. Reading pauses the whole simulation. Sound starts off, and visual cues remain available while muted.
 

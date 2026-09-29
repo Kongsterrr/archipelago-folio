@@ -3,6 +3,7 @@ import {CHARACTER} from '../core/character.js';
 import {applyJackHairSurface} from './jack-hair-surface.js';
 import {JackExpression} from './jack-expression.js';
 import {JACK_ASSET_URL, JACK_CLIPS} from './jack-asset.js';
+import {BicycleRiderPose} from './bicycle-rider-pose.js';
 import {QUAD_RIDER, QuadRiderPose} from './quad-rider-pose.js';
 
 const locomotion = name => name === 'walk' || name === 'run';
@@ -34,6 +35,7 @@ export class JackAvatar {
       this.poseBones = [];
       this.model.traverse(o => { if (o.isBone) this.poseBones.push(o); });
       this.quadPose = new QuadRiderPose(this.model, this.root, this.spec);
+      this.bicyclePose = new BicycleRiderPose(this.model, this.root, this.spec);
       this.mixer = new THREE.AnimationMixer(this.model);
       this.actions = new Map(gltf.animations.map(c => [c.name, this.mixer.clipAction(c)]));
       this.outlines = [];
@@ -134,25 +136,32 @@ export class JackAvatar {
     if (this.pose === 'interact') this.actions.get('interact')?.reset().play();
   }
 
-  update(dt, {player, boatVisual, quadBike, character, alpha, reduced, frozen, lookTarget}) {
+  update(dt, {player, boatVisual, quadBike, bicycle, character, alpha, reduced, frozen, lookTarget}) {
     if (!this.ready) return;
     const land = player.onLand;
-    const riding = player.ridingQuad;
-    const actorMode = riding ? 'quad' : land ? 'land' : 'boat';
+    const cycling = !!player.ridingBicycle;
+    const riding = player.ridingQuad || cycling;
+    const vehicle = cycling ? bicycle : quadBike;
+    const actorMode = cycling ? 'bicycle' : riding ? 'quad' : land ? 'land' : 'boat';
     const modeChanged = this.actorMode !== actorMode;
     this.actorMode = actorMode;
     this.onLand = land;
     if (modeChanged) this.resetPose(riding || !land ? 'helm' : 'idle');
     // A pause holds the rendered pose too. Reset/boarding may still commit a new
     // stable actor in a frozen frame, without reviving old animations.
-    if (frozen && !modeChanged && !this.forceFrame) return;
+    if (frozen && !modeChanged && !this.forceFrame) {
+      // Holding physics commits its interpolated crank. Keep the same frozen
+      // rider attached to those final pedal contacts without advancing a clip.
+      if (cycling && bicycle) this.bicyclePose.apply(bicycle);
+      return;
+    }
     this.forceFrame = false;
     const step = frozen ? 0 : dt;
     this.expression?.restore();
-    if (riding && quadBike) {
+    if (riding && vehicle) {
       // The dedicated quad pose is fitted after the animation mixer below.
       // Boat steering-wheel contacts cannot be reused for wider handlebars.
-      const mount = quadBike.mountPoint;
+      const mount = vehicle.mountPoint;
       if (this.root.parent !== mount) mount.add(this.root);
       this.root.position.set(0, 0, 0);
       this.root.rotation.set(0, 0, 0);
@@ -208,9 +217,15 @@ export class JackAvatar {
     this.advanceBlend(step);
     this.mixer.update(step);
     this.normalizePose();
-    if (riding && quadBike) this.quadPose.apply(quadBike);
-    const expressionPosition = riding ? quadBike.position : character.position;
+    if (cycling && bicycle) this.bicyclePose.apply(bicycle);
+    else if (riding && quadBike) this.quadPose.apply(quadBike);
+    const expressionPosition = riding ? vehicle.position : character.position;
     this.expression?.update(step, {reduced, frozen, walking: land && !riding, moving: land && !riding && character.speed > .1, yaw: this.root.rotation.y, position: expressionPosition, lookTarget: land && !riding ? lookTarget : null, interacting: this.interactTime});
+  }
+
+  bicycleContactStatus(bicycle) {
+    if (!this.ready || this.actorMode !== 'bicycle' || !bicycle) return null;
+    return this.bicyclePose.contactStatus(bicycle);
   }
 
   quadContactStatus(quad) {

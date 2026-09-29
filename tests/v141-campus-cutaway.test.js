@@ -89,7 +89,11 @@ for(const quality of['high','low']){
    f.inside();f.tick(1400);assertOpacity(upper,.025,'reentered cutaway');
    f.game.focus={id:'education',landmarkId:'duan-center'};f.tick(1600);assertOpacity(upper,1,'reading restoration');assert.equal(f.game.occluded.size,0);assert.equal(f.outlines.at(-1),false);
    f.game.focus=null;f.tick(1800);assertOpacity(upper,.025,'closing reader reapplies cutaway');
-   f.game.player.walking=false;f.tick(2000);assertOpacity(upper,1,'non-walking actor does not activate interior cutaway');assert.equal(f.game.occluded.size,0);
+   f.game.player.walking=false;f.game.player.ridingBicycle=true;
+   f.game.bicycle={yaw:0,spec:{collisionHalfWidth:.30,collisionHalfLength:.70}};
+   f.tick(2000);assertOpacity(upper,.025,'a cyclist inside Duan keeps the same clear view as a walker');
+   f.game.player.ridingBicycle=false;f.game.player.onLand=false;
+   f.tick(2200);assertOpacity(upper,1,'returning to sea does not retain an interior cutaway');assert.equal(f.game.occluded.size,0);
   }finally{f.controller.release();}
  });
 }

@@ -51,6 +51,7 @@ export class VoyageMinimap {
   }
   this.drawChallenge(game?.challenges,projection);
   if(island&&game?.player.onLand&&game.boat){this.vehicle(projection.project(game.boat.position),game.boat.yaw,'boat');}
+  if(island?.id==='education'&&game?.bicycle?.parked){this.vehicle(projection.project(game.bicycle.position),game.bicycle.yaw,'bicycle');}
   if(island?.id==='projects'&&game?.quadBike?.parked){this.vehicle(projection.project(game.quadBike.position),game.quadBike.yaw,'quad');}
   this.player(projection.project(position),yaw,w,h);
   this.compass(w);
@@ -96,6 +97,7 @@ export class VoyageMinimap {
  vehicle(p,yaw,kind){
   const c=this.ctx;c.save();c.translate(p.x,p.y);c.rotate(-yaw);c.fillStyle=INK;c.strokeStyle=PAPER;c.lineWidth=1.5;c.beginPath();
   if(kind==='boat'){c.moveTo(0,-7);c.lineTo(4.5,-1);c.lineTo(4.5,6);c.lineTo(-4.5,6);c.lineTo(-4.5,-1);c.closePath();c.fill();c.stroke();}
+  else if(kind==='bicycle'){c.lineWidth=2;c.beginPath();c.moveTo(0,-6);c.lineTo(0,6);c.moveTo(-4,-4);c.lineTo(4,-4);c.strokeStyle=INK;c.stroke();for(const y of[-6,6]){c.beginPath();c.ellipse(0,y,2,3,0,0,Math.PI*2);c.fill();c.strokeStyle=PAPER;c.lineWidth=1;c.stroke();}}
   else{c.fillRect(-3,-5,6,10);for(const x of[-6,3])for(const y of[-5,2])c.fillRect(x,y,3,4);c.strokeRect(-3,-5,6,10);}
   c.restore();
  }

@@ -1,0 +1,178 @@
+{
+  "version": 1,
+  "provenance": "Owner-supplied Tripo bicycle GLB; imported geometry, colors and all three texture maps retained. Compact frame and short-crank fit for Jack.",
+  "sourceFile": "bicycle+3d+model.glb",
+  "sourceBytes": 45869820,
+  "sourceSHA256": "a2cb36e2e415692243bec151ddfaca626561f9a43e5034fbd820aad07c9688b6",
+  "coordinateSystem": "Y-up, -Z forward, tire contact Y=0. Geometry is already in world units; runtime scale is 1.",
+  "rig": {
+    "version": 1,
+    "wheelRadius": 0.27405,
+    "crankRadius": 0.055,
+    "saddleTop": [
+      0,
+      0.565,
+      0.1
+    ],
+    "steeringPivot": [
+      0,
+      0.594,
+      -0.2835
+    ],
+    "grips": {
+      "left": [
+        -0.2,
+        0.85,
+        -0.17
+      ],
+      "right": [
+        0.2,
+        0.85,
+        -0.17
+      ]
+    },
+    "crankCenter": [
+      0,
+      0.43,
+      0.04
+    ],
+    "pedalOffset": 0.145,
+    "pedalThickness": 0.02,
+    "frontAxle": [
+      0,
+      0.27405,
+      -0.3996
+    ],
+    "rearAxle": [
+      0,
+      0.27405,
+      0.4023
+    ]
+  },
+  "source": {
+    "scale": 1.35,
+    "frontAxle": [
+      -0.296,
+      0.203,
+      0
+    ],
+    "rearAxle": [
+      0.298,
+      0.203,
+      0
+    ],
+    "wheelRadius": 0.203,
+    "saddle": [
+      0.145,
+      0.535,
+      0
+    ],
+    "grips": {
+      "left": [
+        -0.315,
+        0.522,
+        0.13
+      ],
+      "right": [
+        -0.315,
+        0.522,
+        -0.13
+      ]
+    },
+    "crank": [
+      0.045,
+      0.164,
+      0
+    ],
+    "pedal": [
+      -0.035,
+      0.218,
+      0.102
+    ]
+  },
+  "variants": {
+    "high": {
+      "file": "bicycle.glb",
+      "bytes": 2288368,
+      "triangles": 146180,
+      "vertices": 118108,
+      "draws": 11,
+      "textures": [
+        {
+          "name": "bicycle_3d_model_normal",
+          "bytes": 92053
+        },
+        {
+          "name": "bicycle_3d_model_basecolor",
+          "bytes": 548171
+        },
+        {
+          "name": "bicycle_3d_model_rm",
+          "bytes": 410634
+        }
+      ],
+      "bounds": {
+        "min": [
+          -0.22165153920650482,
+          0.0001235929012298742,
+          -0.6749162646826075
+        ],
+        "max": [
+          0.22270791232585907,
+          0.8940518009725985,
+          0.6749878954285389
+        ]
+      }
+    },
+    "low": {
+      "file": "low/bicycle.glb",
+      "bytes": 1581112,
+      "triangles": 141011,
+      "vertices": 113979,
+      "draws": 11,
+      "textures": [
+        {
+          "name": "bicycle_3d_model_normal",
+          "bytes": 31716
+        },
+        {
+          "name": "bicycle_3d_model_basecolor",
+          "bytes": 196738
+        },
+        {
+          "name": "bicycle_3d_model_rm",
+          "bytes": 160776
+        }
+      ],
+      "bounds": {
+        "min": [
+          -0.22165153920650482,
+          0.0001235929012298742,
+          -0.6749230043709011
+        ],
+        "max": [
+          0.22136983275413513,
+          0.8940383025274182,
+          0.6749878954285389
+        ]
+      }
+    }
+  },
+  "segmentation": {
+    "sourceTriangles": 1430174,
+    "retainedTriangles": 1430174,
+    "parts": {
+      "frame": 377047,
+      "fork": 79230,
+      "wheel-front": 330880,
+      "wheel-rear": 345480,
+      "saddle": 77062,
+      "handlebar": 114342,
+      "crank-left": 16059,
+      "crank-right": 5168,
+      "chainring": 50007,
+      "pedal-left": 17690,
+      "pedal-right": 17209
+    }
+  }
+}
