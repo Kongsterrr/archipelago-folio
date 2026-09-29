@@ -51737,26 +51737,6 @@
           "rotation": 0
         },
         {
-          "name": "campus bicycle rack",
-          "x": -17.4,
-          "z": 8.1,
-          "width": 2.5,
-          "depth": 0.5,
-          "height": 1.2,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "campus bicycle rack",
-          "x": 19.6,
-          "z": 6.2,
-          "width": 2.5,
-          "depth": 0.5,
-          "height": 1.2,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
           "name": "campus lamp",
           "x": -6.8,
           "z": 18,

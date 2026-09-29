@@ -1,3 +1,9 @@
+# V14.0.2 — Clear Campus Paths · 2026-09-29
+
+Removed all four Education campus bicycles from both high/low models and deleted their two collision obstacles. The model generator no longer emits the bicycle geometry. Other island models, campus buildings, school reading stations and saved records remain unchanged. Both Education asset URLs and the shared walking-layout URL receive the new cache version so returning visitors receive matching visuals and physics.
+
+**29/29 existing V14 tests and the production build passed**, including actual high/low model and Rapier walking-route checks. Real-game checks in the macOS Codex in-app browser at 1280×720 confirmed both former bicycle areas are clear and traversable. No new device-performance measurement was made. Education high/low assets are **898,860 / 808,608 bytes**.
+
 # V14.0.1 — Campus Signage · 2026-09-29
 
 Removed the large CAMPUS SHORES pavement lettering, the ground MARSH PLAZA label and the two redundant low BU/CMU slate signs. Marsh Chapel and Hamerschlag names now sit on backed facade tablets; CAS uses its upper cornice band, Hamburg/Heinz use wall lintels, and Bay State Road has a two-line plate above the middle house doorway. Nameplates belong to the building occlusion groups, not the ground or independent floating signage. Academic kiosks and the welcome directory retain their existing interaction targets.

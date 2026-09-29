@@ -82,11 +82,6 @@ export function buildEducationCampus(api) {
   obstacle('campus tree '+id,x,z,.34,.34,h);
  }
  function planter(x,z,w=2.2,d=.85){b(w,.25,d,x,Y+.125,z,'campus_limestone');bx(w-.16,.035,d-.16,x,Y+.27,z,'darkWood');for(let i=0;i<(low?3:5);i++){const xx=x-w*.35+i*w*.7/((low?3:5)-1);mesh(new THREE.IcosahedronGeometry(.31,0),'campus_leaf',pos(xx,Y+.5,z),zero,district);if(!low)cyl(.10,.05,.08,xx,Y+.77,z,'campus_paintRose',7,zero,district);}obstacle('campus planter',x,z,w,d,.7);}
- function bike(x,z){
-  for(const dx of[-.46,.46])torus(.33,.035,x+dx,Y+.38,z,'campus_iron',zero,5,low?12:18,district);
-  for(const[a,c]of[[[-.46,.38],[.07,.84]],[[.07,.84],[.46,.38]],[[-.46,.38],[-.02,.36]],[[-.02,.36],[.07,.84]],[[-.02,.36],[.46,.38]]])rod([x+a[0],Y+a[1],z],[x+c[0],Y+c[1],z],.027,'campus_red',district,6);
-  b(.24,.075,.16,x+.04,Y+.9,z,'campus_iron');rod([x+.38,Y+.64,z],[x+.34,Y+1.0,z],.025,'campus_iron',district);rod([x+.26,Y+1.0,z],[x+.47,Y+1.0,z],.03,'campus_iron',district);
- }
  // BU: chapel volume and geometric Gothic tracery, without an invented bell tower.
  {
   const buildingStart=new Set(district.children),x=-12,z=-9,w=6,d=8,h=4.8;
@@ -210,7 +205,6 @@ export function buildEducationCampus(api) {
  bench('bu-bench',-15.8,-2.4,0);bench('cmu-bench',19.2,-7.0,0);bench('coast-bench',-4,-16.5,0);
  for(const[id,x,z,h]of[['bu1',-23,-11,4.2],['bu2',-22.8,6.1,3.4],['bu3',-5,-10.5,4.0],['cmu1',22,-3,4.2],['cmu2',21.4,-10.7,4.4],['north',4.9,-16.7,3.6]])broadleaf(id,x,z,h);
  for(const[x,z]of[[21,5.9],[-2,-5],[13,10.8],[-2.8,12.1],[5.0,12.3]])planter(x,z);
- for(const[x,z]of[[-18,8.1],[19,6.2]]){bike(x,z);bike(x+1.2,z);obstacle('campus bicycle rack',x+.6,z,2.5,.5,1.2);}
  for(const[x,z]of[[-6.8,18.0],[6.8,18.0],[-5.6,12.7],[5.6,12.7],[-18,-11],[18,-15]]){lamp(x,z,'campus_iron',2.15);obstacle('campus lamp',x,z,.37,.37,3.25);}
  if(!low){books(18.4,1.57,-7);b(.5,.7,.35,20.4,Y+.35,-7,'campus_red');}
  // Shared loop leaves the welcome area, passes both campus courtyards and the north garden.
