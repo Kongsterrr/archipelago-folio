@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V14.2.3 — Road Cycling Reach** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V14.3 — Walking to the Sky** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -66,13 +66,20 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14.2 — Campus Cycling** | An imported rideable bicycle at the Education bridgehead, grounded campus handling and fitted animated pedal/handlebar contacts | [8b33f61](https://github.com/Kongsterrr/archipelago-folio/commit/8b33f6197f17cf4a349da82b2ce8d6784436b2c5) |
 | **V14.2.1 — Paving Contact Fix** | Bicycle tires follow the actual campus paving and plaza heights, including transitions to grass and stationary parking | [054274b](https://github.com/Kongsterrr/archipelago-folio/commit/054274b42c5764d8eca61f8e68c52d1a357ab661) |
 | **V14.2.2 — Original Bars & Cycling Posture** | Restores the supplied bicycle’s original drop bars; Jack leans forward to grip the existing top bar | [403db21](https://github.com/Kongsterrr/archipelago-folio/commit/403db214e0ebb9de4b5d87751c5d860fe1d65086) |
-| **V14.2.3 — Road Cycling Reach** | Moves palms slightly forward onto the original bar shoulders and opens the elbows for a road-bike posture | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V14.2.3 — Road Cycling Reach** | Moves palms slightly forward onto the original bar shoulders and opens the elbows for a road-bike posture | [42903d4](https://github.com/Kongsterrr/archipelago-folio/commit/42903d413b8d1999bc144b52541c3361acfebaad) |
+| **V14.3 — Walking to the Sky** | A silver inclined sculpture with six painted walkers on the CMU lawn, retained campus circulation and updated CMU framing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.1 — Campus Signage** | Removes redundant arrival signs and ground lettering; mounts landmark names on their own facades | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V14.3 — Walking to the Sky
+
+- Adds a silver, inclined sculpture and six painted figures in distinct walking poses to the CMU front lawn, inspired by Jonathan Borofsky’s campus landmark and the owner’s photograph.
+- Preserves the campus buildings, paths and bicycle parking. Only the base and low pole section block movement; the aerial span creates no invisible ground wall.
+- Keeps the complete silhouette in both quality levels and includes the sculpture in the CMU reading composition. Figures are static sculptural details, not new roaming characters.
 
 ### V14.2.3 — Road Cycling Reach
 

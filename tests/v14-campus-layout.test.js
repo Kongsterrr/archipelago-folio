@@ -130,7 +130,7 @@ for(const quality of['high','low'])test(`${quality}: shipped campus landmarks an
  const folder=quality==='low'?'low/':'',url=new URL(`../static/models/${folder}education.glb`,import.meta.url),manifest=json(`../static/models/${folder}manifest.json`),metadata=manifest.models.find(m=>m.id==='education');
  const bytes=fs.statSync(url).size;
  assert.ok(bytes<=(quality==='high'?1_500_000:1_000_000),`${quality} model exceeds budget: ${bytes}`);
- assert.equal(metadata.bytes,bytes);assert.equal(metadata.revision,'v141-campus-landmark');
+ assert.equal(metadata.bytes,bytes);assert.equal(metadata.revision,'v143-campus-sculpture');
  assert.equal(manifest.walkLayout,'walk-layout.json');assert.deepEqual(metadata.dock,layout.dock);
  for(const [n,point]of metadata.shorePolygon.entries())for(const axis of[0,1])assert.ok(Math.abs(layout.shore[n][axis]-point[axis]*.96)<1e-8,'character boundary retains the same inset of the visible coastline');
  const document=await io.read(fileURLToPath(url));

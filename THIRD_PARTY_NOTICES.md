@@ -66,3 +66,10 @@ The Duan Center, Scotty sculpture, furniture and architectural details are origi
 - CMU — Scotty and campus traditions: https://www.cmu.edu/admission/campus-experience/traditions
 
 The landmark article is original concise prose, distinct from Jack’s resume-backed education history. Concept-wall animations illustrate themes and do not represent live building measurements. New glass and metal finishes use authored material colors and the existing sunset environment; no new third-party assets or dependencies are added.
+
+
+## V14.3 Walking to the Sky reference
+
+The CMU lawn sculpture is a miniature procedural interpretation of **Walking to the Sky** by **Jonathan Borofsky**, based on the owner's supplied reference photograph and CMU's public-art catalog. The six static figures follow the owner's requested miniature composition; this is not an exact survey or claim about the original sculpture's figure count. No photograph, downloaded university mesh, or third-party texture is bundled. The original artwork remains attributed to its artist; the repository's MIT license does not grant rights to the underlying artwork.
+
+- CMU Public Art — Walking to the Sky: https://publicart.cmu.edu/objects/1086/walking-to-the-sky

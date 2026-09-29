@@ -51797,6 +51797,26 @@
           "rotation": 0
         },
         {
+          "name": "Walking to the Sky plinth",
+          "x": 16,
+          "z": 8.5,
+          "width": 1.38,
+          "depth": 1.04,
+          "height": 0.3,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Walking to the Sky lower pole",
+          "x": 16.49578713968958,
+          "z": 8.366518847006652,
+          "width": 1.3815742793791577,
+          "depth": 0.6569623059866962,
+          "height": 1.9,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
           "name": "book sculpture",
           "x": 0,
           "z": 1.5,
@@ -52209,9 +52229,9 @@
           "readFull": true,
           "readLabel": "View education",
           "cameraTarget": {
-            "x": 13.2,
-            "y": 3.4,
-            "z": -4.5
+            "x": 14,
+            "y": 4.2,
+            "z": -1.5
           },
           "camera": {
             "distance": 35,
@@ -52222,9 +52242,9 @@
                 "z": -14.1
               },
               "max": {
-                "x": 20.5,
-                "y": 8.85,
-                "z": 4.55
+                "x": 22.5,
+                "y": 11.35,
+                "z": 10
               }
             }
           },
@@ -52671,6 +52691,15 @@
           "depth": 8,
           "height": 13.53,
           "walkableInterior": true
+        },
+        {
+          "id": "walking-to-the-sky",
+          "schoolId": "cmu",
+          "label": "Walking to the Sky",
+          "x": 16,
+          "z": 8.5,
+          "width": 1.38,
+          "depth": 1.04
         }
       ],
       "interiors": [
@@ -52716,6 +52745,190 @@
               -10.6,
               -8.5
             ]
+          ]
+        }
+      ],
+      "sculptures": [
+        {
+          "id": "walking-to-the-sky",
+          "name": "Walking to the Sky",
+          "artist": "Jonathan Borofsky",
+          "group": "occluder_campus_walking_to_sky",
+          "figureCount": 6,
+          "static": true,
+          "base": {
+            "x": 16,
+            "y": 0.85,
+            "z": 8.5
+          },
+          "poleStart": {
+            "x": 16,
+            "y": 1.03,
+            "z": 8.5
+          },
+          "poleEnd": {
+            "x": 21.2,
+            "y": 10.05,
+            "z": 7.1
+          },
+          "direction": {
+            "x": 0.9656157585206696,
+            "z": -0.2599734734478726
+          },
+          "height": 9.2,
+          "run": 5.385164807134505,
+          "yaw": 1.8337910584758161,
+          "baseFootprint": {
+            "x": 16,
+            "z": 8.5,
+            "width": 1.38,
+            "depth": 1.04
+          },
+          "figures": [
+            {
+              "name": "sky_walker_01",
+              "index": 1,
+              "t": 0.2,
+              "garment": "campus_paintBlue",
+              "static": true,
+              "anchor": {
+                "x": 16.90734,
+                "y": 2.91602,
+                "z": 8.25571
+              },
+              "footContacts": [
+                {
+                  "x": 16.83278,
+                  "y": 2.73217,
+                  "z": 8.3434
+                },
+                {
+                  "x": 17.01396,
+                  "y": 3.10096,
+                  "z": 8.15941
+                }
+              ]
+            },
+            {
+              "name": "sky_walker_02",
+              "index": 2,
+              "t": 0.33,
+              "garment": "campus_tram",
+              "static": true,
+              "anchor": {
+                "x": 17.58873,
+                "y": 4.08529,
+                "z": 8.07226
+              },
+              "footContacts": [
+                {
+                  "x": 17.71542,
+                  "y": 4.24775,
+                  "z": 8.10377
+                },
+                {
+                  "x": 17.49265,
+                  "y": 3.92235,
+                  "z": 8.03252
+                }
+              ]
+            },
+            {
+              "name": "sky_walker_03",
+              "index": 3,
+              "t": 0.46,
+              "garment": "campus_red",
+              "static": true,
+              "anchor": {
+                "x": 18.27012,
+                "y": 5.25455,
+                "z": 7.88881
+              },
+              "footContacts": [
+                {
+                  "x": 18.19325,
+                  "y": 5.06593,
+                  "z": 7.97579
+                },
+                {
+                  "x": 18.3805,
+                  "y": 5.4439,
+                  "z": 7.79282
+                }
+              ]
+            },
+            {
+              "name": "sky_walker_04",
+              "index": 4,
+              "t": 0.59,
+              "garment": "campus_trim",
+              "static": true,
+              "anchor": {
+                "x": 18.95151,
+                "y": 6.42382,
+                "z": 7.70536
+              },
+              "footContacts": [
+                {
+                  "x": 19.0918,
+                  "y": 6.60214,
+                  "z": 7.73652
+                },
+                {
+                  "x": 18.84775,
+                  "y": 6.24326,
+                  "z": 7.66437
+                }
+              ]
+            },
+            {
+              "name": "sky_walker_05",
+              "index": 5,
+              "t": 0.72,
+              "garment": "campus_paintGold",
+              "static": true,
+              "anchor": {
+                "x": 19.6329,
+                "y": 7.59309,
+                "z": 7.52191
+              },
+              "footContacts": [
+                {
+                  "x": 19.56363,
+                  "y": 7.41724,
+                  "z": 7.60485
+                },
+                {
+                  "x": 19.73599,
+                  "y": 7.76792,
+                  "z": 7.42987
+                }
+              ]
+            },
+            {
+              "name": "sky_walker_06",
+              "index": 6,
+              "t": 0.85,
+              "garment": "campus_iron",
+              "static": true,
+              "anchor": {
+                "x": 20.31429,
+                "y": 8.76236,
+                "z": 7.33846
+              },
+              "footContacts": [
+                {
+                  "x": 20.44808,
+                  "y": 8.92772,
+                  "z": 7.37004
+                },
+                {
+                  "x": 20.21847,
+                  "y": 8.59253,
+                  "z": 7.29665
+                }
+              ]
+            }
           ]
         }
       ],
@@ -52964,7 +53177,7 @@
         "routeClearance": 1.2,
         "pathWidth": 2.6,
         "campuses": 2,
-        "landmarks": 10
+        "landmarks": 11
       }
     }
   ]

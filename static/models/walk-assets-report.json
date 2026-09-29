@@ -4,31 +4,31 @@
     {
       "id": "education",
       "quality": "high",
-      "bytes": 1312776,
-      "triangles": 82248,
-      "drawCalls": 170,
+      "bytes": 1485368,
+      "triangles": 98608,
+      "drawCalls": 184,
       "routeSeconds": 71.9,
       "connectedFromDock": true,
       "stationsReachable": 10,
       "routeClearance": 1.2,
       "pathWidth": 2.6,
       "campuses": 2,
-      "landmarks": 10
+      "landmarks": 11
     },
     {
       "id": "education",
       "quality": "low",
-      "bytes": 945624,
-      "triangles": 54204,
-      "drawCalls": 160,
+      "bytes": 924616,
+      "triangles": 58648,
+      "drawCalls": 173,
       "routeSeconds": 71.9,
       "connectedFromDock": true,
       "stationsReachable": 10,
       "routeClearance": 1.2,
       "pathWidth": 2.6,
       "campuses": 2,
-      "landmarks": 10
+      "landmarks": 11
     }
   ],
-  "totalBytes": 2258400
+  "totalBytes": 2409984
 }

@@ -2490,14 +2490,14 @@
       "id": "education",
       "name": "education",
       "file": "education.glb",
-      "bytes": 1312776,
-      "rawBytes": 4742624,
-      "revision": "v141-campus-landmark",
-      "sourceMeshes": 1629,
-      "drawCalls": 170,
+      "bytes": 1485368,
+      "rawBytes": 5199728,
+      "revision": "v143-campus-sculpture",
+      "sourceMeshes": 1785,
+      "drawCalls": 184,
       "staticDrawCalls": 15,
-      "vertices": 127254,
-      "triangles": 82248,
+      "vertices": 137978,
+      "triangles": 98608,
       "bounds": {
         "min": [
           -28,
@@ -3429,6 +3429,7 @@
         "occluder_campus_duan_upper",
         "occluder_campus_duan_crown",
         "occluder_campus_duan_terraces",
+        "occluder_campus_walking_to_sky",
         "occluder_campus_tree_bu1",
         "occluder_campus_tree_bu2",
         "occluder_campus_tree_bu3",
@@ -3616,8 +3617,8 @@
       ]
     }
   ],
-  "totalBytes": 4775472,
-  "totalTriangles": 291980,
+  "totalBytes": 4948064,
+  "totalTriangles": 308340,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }

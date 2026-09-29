@@ -33,11 +33,11 @@
     },
     {
       "id": "education",
-      "highTriangles": 82248,
-      "lowTriangles": 54204,
-      "highCompressedBytes": 1312776,
-      "lowCompressedBytes": 945624,
-      "drawCalls": 170,
+      "highTriangles": 98608,
+      "lowTriangles": 58648,
+      "highCompressedBytes": 1485368,
+      "lowCompressedBytes": 924616,
+      "drawCalls": 184,
       "animatedGeometry": "same named district and animation nodes",
       "dock": "same walkable footprint and collision metadata"
     },
@@ -52,6 +52,6 @@
       "dock": "same walkable footprint and collision metadata"
     }
   ],
-  "highTotalBytes": 4775472,
-  "lowTotalBytes": 3698564
+  "highTotalBytes": 4948064,
+  "lowTotalBytes": 3677556
 }

@@ -72,7 +72,7 @@ for(const quality of['high','low'])test(`${quality}: shipped Duan has staggered 
 test('high and low exports retain the same campus scene contracts and meet both compressed budgets',async()=>{
  const high=await json('../static/models/manifest.json'),low=await json('../static/models/low/manifest.json'),a=high.models.find(m=>m.id==='education'),b=low.models.find(m=>m.id==='education');
  assert.equal(high.walkLayout,low.walkLayout);assert.deepEqual(a.dock,b.dock);assert.deepEqual(a.shorePolygon,b.shorePolygon);assert.deepEqual(a.occluders,b.occluders);assert.deepEqual(a.animationNodes.map(n=>[n.name,n.position,n.rotation,n.scale]),b.animationNodes.map(n=>[n.name,n.position,n.rotation,n.scale]));
- assert.equal(a.revision,'v141-campus-landmark');assert.equal(b.revision,a.revision);assert.ok(a.bytes<=1_500_000);assert.ok(b.bytes<=1_000_000);assert.ok(b.triangles<a.triangles);
+ assert.equal(a.revision,'v143-campus-sculpture');assert.equal(b.revision,a.revision);assert.ok(a.bytes<=1_500_000);assert.ok(b.bytes<=1_000_000);assert.ok(b.triangles<a.triangles);
  for(const [metadata,folder]of[[a,''],[b,'low/']])assert.equal(metadata.bytes,(await fs.stat(new URL(`../static/models/${folder}education.glb`,import.meta.url))).size);
 });
 

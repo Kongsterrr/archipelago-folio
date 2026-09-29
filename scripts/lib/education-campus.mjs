@@ -2,6 +2,7 @@
 // Model and walk metadata are authored together; no campus image is baked into the asset.
 import * as THREE from 'three';
 import {buildDuanCenter} from './duan-center.mjs';
+import {buildWalkingToSky} from './walking-to-sky.mjs';
 
 export const campusPalette = {
  campus_limestone:'#d8d1b9',campus_sandstone:'#c9b681',campus_brick:'#945d4e',
@@ -11,6 +12,7 @@ export const campusPalette = {
  campus_lawn:'#93af69',campus_tram:'#417766',campus_paintBlue:'#668da7',
  campus_paintGold:'#e4b761',campus_paintRose:'#c07a8a',
  campus_windowClear:'#a2bdc0',campus_reflectionBlue:'#607f9d',campus_reflectionGold:'#c6bda0',campus_silver:'#aab5b4',campus_bronze:'#937456',
+ campus_sculptureSteel:'#c5d0da',
 };
 
 export function buildEducationCampus(api) {
@@ -216,8 +218,9 @@ export function buildEducationCampus(api) {
  plaque('bu',schoolById.get('bu').title,-9,8.0);plaque('cmu',schoolById.get('cmu').title,9,8.0);
  const windows=named('anim_bu_windows');for(const x of[-8,-6,-4])b(.58,.28,.035,x,Y+1.17,-5.80,'warmWindow',windows);
  buildDuanCenter({district,layout,Y,low,b,bx,tx,named,obstacle,footprint,mesh,cyl,rod,books});
+ buildWalkingToSky({district,layout,Y,low,b,bx,tx,named,obstacle,footprint,mesh,cyl,rod});
  const buStation=layout.stations.find(s=>s.id==='learning:bu');buStation.cameraTarget={x:-13,y:5.5,z:-7};buStation.camera={distance:43,fitBounds:{min:{x:-22.2,y:Y,z:-14.6},max:{x:-2.4,y:Y+13.6,z:2.4}}};
- const cmuStation=layout.stations.find(s=>s.id==='learning:cmu');cmuStation.cameraTarget={x:13.2,y:3.4,z:-4.5};cmuStation.camera={distance:35,fitBounds:{min:{x:5.8,y:Y,z:-14.1},max:{x:20.5,y:Y+8.0,z:4.55}}};
+ const cmuStation=layout.stations.find(s=>s.id==='learning:cmu');cmuStation.cameraTarget={x:14,y:4.2,z:-1.5};cmuStation.camera={distance:35,fitBounds:{min:{x:5.8,y:Y,z:-14.1},max:{x:22.5,y:Y+10.5,z:10.0}}};
  // Shared garden book: same action and animation names as previous versions.
  {
   const x=0,z=1.5,g=named('anim_book',x,Y+.48,z);
