@@ -1,3 +1,9 @@
+# V14.0.1 — Campus Signage · 2026-09-29
+
+Removed the large CAMPUS SHORES pavement lettering, the ground MARSH PLAZA label and the two redundant low BU/CMU slate signs. Marsh Chapel and Hamerschlag names now sit on backed facade tablets; CAS uses its upper cornice band, Hamburg/Heinz use wall lintels, and Bay State Road has a two-line plate above the middle house doorway. Nameplates belong to the building occlusion groups, not the ground or independent floating signage. Academic kiosks and the welcome directory retain their existing interaction targets.
+
+**29/29 existing V14 tests and production build passed.** Real-game WebGPU checks at 1440×900 covered the clear arrival pavement, E opening the Education overview, BU and CMU reading views with raised facade names, and CAS in low quality. No browser errors were captured. Screenshots are in ignored `test-results/v141/` (`arrival-clean.png`, `bu-facade.png`, `cmu-facades.png`, `cas-facade.png`). Education high/low models are **921,712 / 828,640 bytes**. Walk-layout and all other island models are unchanged. This visual patch does not alter movement, collisions, content facts or saved records; no new device-performance claim is made.
+
 # V14 — Campus Shores · 2026-09-29
 
 - **442/442 automated tests passed**, Node 20.20.1, no failures or skips; the final production build also passed. The 29 added checks cover canonical BU/CMU content, menu and exhibit selection, retained reading ranges and hysteresis, mapped campus identities, actual high/low GLB landmarks and animation bindings, feedback material lifetime, quality switching, and school reading cameras. Actual Rapier traversal from both dock landings checks BU, CMU, the coast, all three benches and return paths. Independent route/clearance checks keep scenery out of walking and sign-reading space.

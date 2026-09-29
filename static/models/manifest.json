@@ -2490,14 +2490,14 @@
       "id": "education",
       "name": "education",
       "file": "education.glb",
-      "bytes": 945636,
-      "rawBytes": 3495424,
+      "bytes": 921712,
+      "rawBytes": 3358312,
       "revision": "v14-campus-shores",
-      "sourceMeshes": 1005,
+      "sourceMeshes": 1004,
       "drawCalls": 113,
       "staticDrawCalls": 15,
-      "vertices": 93777,
-      "triangles": 62666,
+      "vertices": 89965,
+      "triangles": 60146,
       "bounds": {
         "min": [
           -28,
@@ -3225,8 +3225,8 @@
       ]
     }
   ],
-  "totalBytes": 4408332,
-  "totalTriangles": 272398,
+  "totalBytes": 4384408,
+  "totalTriangles": 269878,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }

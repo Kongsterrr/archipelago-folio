@@ -4,8 +4,8 @@
     {
       "id": "education",
       "quality": "high",
-      "bytes": 945636,
-      "triangles": 62666,
+      "bytes": 921712,
+      "triangles": 60146,
       "drawCalls": 113,
       "routeSeconds": 67.7,
       "connectedFromDock": true,
@@ -18,8 +18,8 @@
     {
       "id": "education",
       "quality": "low",
-      "bytes": 844796,
-      "triangles": 53638,
+      "bytes": 828640,
+      "triangles": 51722,
       "drawCalls": 106,
       "routeSeconds": 67.7,
       "connectedFromDock": true,
@@ -30,5 +30,5 @@
       "landmarks": 9
     }
   ],
-  "totalBytes": 1790432
+  "totalBytes": 1750352
 }

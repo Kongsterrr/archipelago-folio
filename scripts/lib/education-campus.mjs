@@ -97,10 +97,11 @@ export function buildEducationCampus(api) {
   entrance(x,f,1.4,1.85);pointedWindow(x,Y+1.96,f+.02,1.66,1.00);
   cyl(.86,.86,.075,x,Y+3.84,f+.03,'campus_glass',low?16:24,[Math.PI/2,0,0],district);torus(.93,.095,x,Y+3.84,f+.08,'campus_trim',zero,6,low?20:32,district);
   for(let i=0;i<8;i++){const a=i*Math.PI/4;rod([x,Y+3.84,f+.14],[x+Math.cos(a)*.79,Y+3.84+Math.sin(a)*.79,f+.14],.032,'campus_trim',district,6);}
-  torus(.26,.05,x,Y+3.84,f+.15,'campus_trim',zero,5,16,district);tx('MARSH CHAPEL',.21,x,Y+.32,f+.12);
+  torus(.26,.05,x,Y+3.84,f+.15,'campus_trim',zero,5,16,district);
+  b(3.5,.38,.16,x,Y+5.18,f+.07,'campus_trim');tx('MARSH CHAPEL',.21,x,Y+5.07,f+.16);
   for(const side of[-1,1])for(let i=0;i<4;i++){const zz=z-3+i*2;b(.6,3.8,.40,x+side*3.14,Y+1.9,zz,'campus_trim');b(.75,.15,.54,x+side*3.14,Y+3.84,zz,'campus_trim');}
   includeBuilding('marsh_roof',buildingStart);
-  bx(8,.016,5,x,Y+.035,-1.5,'campus_paving');tx('MARSH PLAZA',.20,x,Y+.05,.45,'campus_iron',district).rotation.x=-Math.PI/2;
+  bx(8,.016,5,x,Y+.035,-1.5,'campus_paving');
  }
  // CAS: rhythmic limestone windows, string courses and a clearly framed entrance.
  {
@@ -108,7 +109,7 @@ export function buildEducationCampus(api) {
   b(w,h,d,x,Y+h/2,z,'campus_limestone');courses(x,z,w,h,d);obstacle('College of Arts and Sciences',x,z,w,d,h);footprint('cas','bu','College of Arts & Sciences',x,z,w,d);
   roof('cas_roof',g=>{b(w+.35,.28,d+.25,x,Y+h+.12,z,'campus_slate',g);b(w+.5,.15,d+.4,x,Y+h+.26,z,'campus_trim',g);});
   entrance(x,z+d/2+.12,1.2,1.65);for(const dx of[-1.7,0,1.7])for(const yy of[2.2,3.4])facadeWindow(x+dx,Y+yy,z+d/2+.14,.76,.80);
-  tx('COLLEGE OF ARTS & SCIENCES',.133,x,Y+1.7,z+d/2+.27);includeBuilding('cas_roof',buildingStart);
+  b(4.7,.26,.15,x,Y+4.03,z+d/2+.16,'campus_trim');tx('COLLEGE OF ARTS & SCIENCES',.133,x,Y+3.97,z+d/2+.245);includeBuilding('cas_roof',buildingStart);
  }
  // Three Bay State Road houses have distinct cornices, bay windows and doors.
  {
@@ -117,11 +118,11 @@ export function buildEducationCampus(api) {
    b(w,h,d,x,Y+h/2,z,mat);courses(x,z,w,h,d,mat);obstacle('Bay State Road brownstone '+(i+1),x,z,w,d,h+.4);footprint('bay-state-'+i,'bu','Bay State Road',x,z,w,d);
    roof('brownstone_'+i,g=>{b(w+.2,.22,d+.17,x,Y+h+.08,z,'campus_slate',g);for(const yy of[h-.14,h+.2])b(w+.29,.13,.34,x,Y+yy,z+d/2+.1,'campus_trim',g);});
    entrance(x-.77,z+2.1,.65,1.55);b(.93,.12,.45,x-.77,Y+.065,z+2.28,'campus_limestone');
+   if(i===1){b(1.10,.55,.24,x-.77,Y+2.05,z+2.1,'campus_iron');tx('BAY STATE',.11,x-.77,Y+2.09,z+2.232,'campus_trim');tx('ROAD',.11,x-.77,Y+1.90,z+2.232,'campus_trim');}
    for(const yy of[1.37,2.86]){b(1.36,1.27,.5,x+.58,Y+yy,z+2.0,'campus_brick');facadeWindow(x+.58,Y+yy,z+2.3,.94,.86);}
    if(!low)for(const dx of[-1.35,1.35])rod([x+dx,Y,z+2.55],[x+dx,Y+.77,z+2.55],.026,'campus_iron',district);
    includeBuilding('brownstone_'+i,buildingStart);
   }
-  b(3.75,.56,.15,-17,3.14,6.10,'campus_iron');tx('BAY STATE ROAD',.18,-17,3.05,6.20,'campus_trim');
  }
  // Green Line tram is a static backdrop, outside every walking route.
  {
@@ -148,7 +149,8 @@ export function buildEducationCampus(api) {
   });
   for(const dx of[-4.6,-3.4,3.4,4.6])facadeWindow(x+dx,Y+2.6,z-.46,.70,1.65);
   for(let i=0;i<7;i++){const a=-Math.PI*.38+i*Math.PI*.76/6,g=group([x+Math.sin(a)*2.82,Y,z+Math.cos(a)*2.82],[0,a,0],district);pointedWindow(0,1.3,.035,.68,1.75,g);b(.94,.19,.24,0,3.38,.02,'campus_trim',g);}
-  entrance(x,z+2.94,1.03,1.65);tx('HAMERSCHLAG HALL',.16,x,Y+.29,z+3.10);includeBuilding('hamerschlag_dome',buildingStart);
+  entrance(x,z+2.94,1.03,1.65);
+  b(2.9,.48,.66,x,Y+3.82,z+2.57,'campus_trim');tx('HAMERSCHLAG HALL',.16,x,Y+3.71,z+2.913);includeBuilding('hamerschlag_dome',buildingStart);
  }
  // Hamburg Hall: Heinz school courtyard, paired entrance and pale stone details.
  {
@@ -157,7 +159,7 @@ export function buildEducationCampus(api) {
   roof('hamburg_roof',g=>{b(w+.3,.25,d+.3,x,Y+h+.04,z,'campus_slate',g);b(w+.48,.18,.34,x,Y+h+.24,z+d/2,'campus_trim',g);});
   entrance(x,z+d/2+.12,1.4,2.1);
   for(const dx of[-3.0,-1.7,1.7,3.0])for(const yy of[1.1,2.8])facadeWindow(x+dx,Y+yy,z+d/2+.12,.74,1.0);
-  b(2.5,.28,.24,x,Y+2.45,z+d/2+.15,'campus_trim');tx('HEINZ COLLEGE',.17,x,Y+3.56,z+d/2+.26);tx('HAMBURG HALL',.15,x,Y+2.38,z+d/2+.29);includeBuilding('hamburg_roof',buildingStart);
+  b(2.5,.28,.24,x,Y+2.45,z+d/2+.15,'campus_trim');b(2.5,.32,.14,x,Y+3.64,z+d/2+.13,'campus_trim');tx('HEINZ COLLEGE',.17,x,Y+3.56,z+d/2+.21);tx('HAMBURG HALL',.15,x,Y+2.38,z+d/2+.29);includeBuilding('hamburg_roof',buildingStart);
  }
  // The Fence: paint variants share one placement, with runtime selecting one design.
  {
@@ -203,7 +205,6 @@ export function buildEducationCampus(api) {
    b(3.48,.41,.035,x,Y+yy,bz+.15,mat,g);tx(label,.129,x,Y+yy-.07,bz+.18,'campus_trim',g);
    layout.stations.push({id:'education:directory-'+schoolId,type:'read',contentId:'learning',schoolId,directory:true,readFull:true,readLabel:'View education',label:schoolId==='bu'?'Boston University':'Carnegie Mellon University',x,z,y:Y,hitArea:{x,y:Y+yy,z:bz+.17,width:3.48,height:.41,yaw:0}});
   }
-  tx('CAMPUS SHORES',.45,2.0,Y+.07,17.1,'campus_iron').rotation.x=-Math.PI/2;
  }
  // Benches, planting and street furniture sit outside the 2.6 m circulation network.
  bench('bu-bench',-15.8,-2.4,0);bench('cmu-bench',19.2,-7.0,0);bench('coast-bench',-4,-16.5,0);
@@ -211,7 +212,7 @@ export function buildEducationCampus(api) {
  for(const[x,z]of[[21,5.9],[-2,-5],[13,10.8],[-2.8,12.1],[5.0,12.3]])planter(x,z);
  for(const[x,z]of[[-18,8.1],[19,6.2]]){bike(x,z);bike(x+1.2,z);obstacle('campus bicycle rack',x+.6,z,2.5,.5,1.2);}
  for(const[x,z]of[[-6.8,18.0],[6.8,18.0],[-5.6,12.7],[5.6,12.7],[-18,-11],[18,-15]]){lamp(x,z,'campus_iron',2.15);obstacle('campus lamp',x,z,.37,.37,3.25);}
- if(!low){books(18.4,1.57,-7);b(.5,.7,.35,20.4,Y+.35,-7,'campus_red');for(const[x,z]of[[-7,11],[7,11]]){b(.7,.98,.09,x,Y+.49,z,'campus_slate');tx(x<0?'BU':'CMU',.19,x,Y+.56,z+.075,'campus_trim');}}
+ if(!low){books(18.4,1.57,-7);b(.5,.7,.35,20.4,Y+.35,-7,'campus_red');}
  // Shared loop leaves the welcome area, passes both campus courtyards and the north garden.
  // Each branch is authored before decorative paving, and checked against the same colliders.
  layout.route=[[0,27.5],[0,18],[0,10],[-9,10],[-9,8],[-5.5,8],[-5.5,1],[-8,-.6],[-15.8,-.6],[-8,-.6],[-5.5,1],[-7,-1.5],[-7,-6],[-7,-14],[-3,-14],[0,-13.8],[4.3,-14],[4.3,-7],[7,-5.8],[9,-5.8],[9,-2.35],[16,-2.35],[9,-2.35],[5.5,-2.35],[5.5,8],[9,8],[9,10],[0,10],[0,18],[0,27.5]];
