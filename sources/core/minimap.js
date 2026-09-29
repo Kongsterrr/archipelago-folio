@@ -34,7 +34,7 @@ function rectangle({x=0,z=0,width,depth,rotation=0}){
 }
 
 export function islandMapGeometry(island,layout={}){
- const empty={shore:[],dock:[],approach:[],route:[],stations:[],districts:[],campuses:[],obstacles:[],roads:[],terrain:[]};
+ const empty={shore:[],dock:[],approach:[],route:[],stations:[],districts:[],campuses:[],landmarks:[],obstacles:[],roads:[],terrain:[]};
  if(!island)return empty;
  layout=layout??{};
  const project=p=>worldPoint(island,p),dock=layout.dock??island.pier,approach=island.approach;
@@ -52,6 +52,7 @@ export function islandMapGeometry(island,layout={}){
   stations:(layout.stations??[]).map(station=>({...station,...project(station)})),
   districts:(layout.districts??island.districts??[]).map(district=>({...district,...project(district)})),
   campuses:(layout.campuses??[]).map(campus=>({...campus,...project(campus),polygon:(campus.polygon??[]).map(project)})),
+  landmarks:(layout.landmarks??[]).map(landmark=>({...landmark,...project(landmark),polygon:rectangle(landmark).map(project)})),
   obstacles:(layout.obstacles??[]).map(obstacle=>({...obstacle,...project(obstacle),polygon:rectangle(obstacle).map(project)})),
  };
 }

@@ -53,3 +53,14 @@ Education campus meshes are original procedural interpretations made for this po
 - BU Green Line setting: https://www.bu.edu/chapel/about/directions-contact/
 
 Academic facts continue to come from Jack's existing resume-backed content. Campus brick/stone/copper colors are authored material values; masonry detail reuses this repository's original V5 stone normal/ORM texture pack without recoloring campus albedo.
+
+
+## V14.1 Duan Center and campus details
+
+The Duan Center, Scotty sculpture, furniture and architectural details are original procedural geometry, authored for this fictional campus miniature. No university model, logo, photograph or downloaded texture is bundled. Architectural and historical references:
+
+- KPMB — Duan Family Center for Computing & Data Sciences: https://www.kpmb.com/project/duan-family-center-for-computing-data-sciences-at-boston-university/
+- Boston University — building history, December 8, 2022 opening and environmental design: https://www.bu.edu/cds-faculty/explore/bu-center-for-computing-data-sciences/
+- CMU — Scotty and campus traditions: https://www.cmu.edu/admission/campus-experience/traditions
+
+The landmark article is original concise prose, distinct from Jack’s resume-backed education history. Concept-wall animations illustrate themes and do not represent live building measurements. New glass and metal finishes use authored material colors and the existing sunset environment; no new third-party assets or dependencies are added.

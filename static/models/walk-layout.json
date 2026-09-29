@@ -51448,8 +51448,8 @@
         },
         {
           "name": "Marsh Chapel",
-          "x": -12,
-          "z": -9,
+          "x": -6,
+          "z": -10,
           "width": 6.42,
           "depth": 8.3,
           "height": 7.2,
@@ -51458,48 +51458,48 @@
         },
         {
           "name": "College of Arts and Sciences",
-          "x": -21,
-          "z": -5,
-          "width": 5.2,
-          "depth": 6,
+          "x": -19,
+          "z": 0.3,
+          "width": 7,
+          "depth": 3.4,
           "height": 4.2,
           "y": 0.85,
           "rotation": 0
         },
         {
           "name": "Bay State Road brownstone 1",
-          "x": -20,
-          "z": 3.9,
-          "width": 3.1,
-          "depth": 4,
+          "x": -22,
+          "z": 7.5,
+          "width": 3,
+          "depth": 3.6,
           "height": 4.5,
           "y": 0.85,
           "rotation": 0
         },
         {
           "name": "Bay State Road brownstone 2",
-          "x": -16.55,
-          "z": 3.9,
-          "width": 3.1,
-          "depth": 4,
+          "x": -18.5,
+          "z": 7.5,
+          "width": 3,
+          "depth": 3.6,
           "height": 5,
           "y": 0.85,
           "rotation": 0
         },
         {
           "name": "Bay State Road brownstone 3",
-          "x": -13.1,
-          "z": 3.9,
-          "width": 3.1,
-          "depth": 4,
+          "x": -15,
+          "z": 7.5,
+          "width": 3,
+          "depth": 3.6,
           "height": 4.5,
           "y": 0.85,
           "rotation": 0
         },
         {
           "name": "static Green Line tram",
-          "x": -22,
-          "z": 10.2,
+          "x": -18.5,
+          "z": 13.5,
           "width": 4.8,
           "depth": 2.3,
           "height": 2.1,
@@ -51547,6 +51547,56 @@
           "rotation": 0
         },
         {
+          "name": "Scotty sculpture plinth",
+          "x": 7.9,
+          "z": 2.15,
+          "width": 1.8,
+          "depth": 1.35,
+          "height": 1.3,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus study bench",
+          "x": 21.6,
+          "z": 8.8,
+          "width": 2,
+          "depth": 0.72,
+          "height": 1.24,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "CMU outdoor study table",
+          "x": 21.6,
+          "z": 6.6,
+          "width": 2,
+          "depth": 0.8,
+          "height": 1.1,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "cafe table",
+          "x": -5,
+          "z": -2.65,
+          "width": 1.12,
+          "depth": 1.12,
+          "height": 0.85,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "cafe table",
+          "x": -2.8,
+          "z": -1.75,
+          "width": 1.12,
+          "depth": 1.12,
+          "height": 0.85,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
           "name": "Boston University education display",
           "x": -9,
           "z": 5.9,
@@ -51563,6 +51613,186 @@
           "width": 3.5,
           "depth": 0.45,
           "height": 2.36,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan rear wall",
+          "x": -17,
+          "z": -11.94,
+          "width": 9.88,
+          "depth": 0.12,
+          "height": 2.55,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan west wall",
+          "x": -21.94,
+          "z": -8.5,
+          "width": 0.12,
+          "depth": 6.88,
+          "height": 2.55,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan front west glazing",
+          "x": -20.3,
+          "z": -5.06,
+          "width": 3.28,
+          "depth": 0.12,
+          "height": 2.55,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan front east glazing",
+          "x": -13.7,
+          "z": -5.06,
+          "width": 3.28,
+          "depth": 0.12,
+          "height": 2.55,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan east rear glazing",
+          "x": -12.06,
+          "z": -10.9,
+          "width": 0.12,
+          "depth": 2.08,
+          "height": 2.55,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan east front glazing",
+          "x": -12.06,
+          "z": -6.1,
+          "width": 0.12,
+          "depth": 2.08,
+          "height": 2.55,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan structural column",
+          "x": -21.9,
+          "z": -11.9,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan structural column",
+          "x": -12.1,
+          "z": -11.9,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan structural column",
+          "x": -21.9,
+          "z": -5.1,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan structural column",
+          "x": -12.1,
+          "z": -5.1,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan structural column",
+          "x": -18.7,
+          "z": -5.06,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan structural column",
+          "x": -15.3,
+          "z": -5.06,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan structural column",
+          "x": -12.06,
+          "z": -10.05,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan structural column",
+          "x": -12.06,
+          "z": -6.95,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan circulation core",
+          "x": -20.5,
+          "z": -11.3,
+          "width": 2.05,
+          "depth": 1.15,
+          "height": 2.75,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan collaborative table",
+          "x": -20.05,
+          "z": -6.65,
+          "width": 2.2,
+          "depth": 1.9,
+          "height": 1.22,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan collaborative table",
+          "x": -14,
+          "z": -10.75,
+          "width": 2.2,
+          "depth": 1.9,
+          "height": 1.22,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Duan reading nook",
+          "x": -20.8,
+          "z": -9.45,
+          "width": 1.65,
+          "depth": 0.8,
+          "height": 1.13,
           "y": 0.85,
           "rotation": 0
         },
@@ -51598,8 +51828,8 @@
         },
         {
           "name": "campus bench bu-bench",
-          "x": -15.8,
-          "z": -2.4,
+          "x": -23.4,
+          "z": -2.8,
           "width": 2,
           "depth": 0.72,
           "height": 1.24,
@@ -51618,8 +51848,8 @@
         },
         {
           "name": "campus bench coast-bench",
-          "x": -4,
-          "z": -16.5,
+          "x": -6.5,
+          "z": -18.5,
           "width": 2,
           "depth": 0.72,
           "height": 1.24,
@@ -51628,8 +51858,8 @@
         },
         {
           "name": "campus tree bu1",
-          "x": -23,
-          "z": -11,
+          "x": -24,
+          "z": -13,
           "width": 0.34,
           "depth": 0.34,
           "height": 4.2,
@@ -51638,8 +51868,8 @@
         },
         {
           "name": "campus tree bu2",
-          "x": -22.8,
-          "z": 6.1,
+          "x": -24.7,
+          "z": 5.5,
           "width": 0.34,
           "depth": 0.34,
           "height": 3.4,
@@ -51648,11 +51878,11 @@
         },
         {
           "name": "campus tree bu3",
-          "x": -5,
-          "z": -10.5,
+          "x": -10,
+          "z": -18.5,
           "width": 0.34,
           "depth": 0.34,
-          "height": 4,
+          "height": 3.7,
           "y": 0.85,
           "rotation": 0
         },
@@ -51683,16 +51913,6 @@
           "width": 0.34,
           "depth": 0.34,
           "height": 3.6,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "campus planter",
-          "x": 21,
-          "z": 5.9,
-          "width": 2.2,
-          "depth": 0.85,
-          "height": 0.7,
           "y": 0.85,
           "rotation": 0
         },
@@ -51778,8 +51998,8 @@
         },
         {
           "name": "campus lamp",
-          "x": -18,
-          "z": -11,
+          "x": -23.2,
+          "z": -6.8,
           "width": 0.37,
           "depth": 0.37,
           "height": 3.25,
@@ -51819,48 +52039,56 @@
           8
         ],
         [
-          -5.5,
-          8
+          -9,
+          10.8
         ],
         [
-          -5.5,
-          1
+          -12.1,
+          10.8
         ],
         [
-          -8,
-          -0.6
+          -12.1,
+          3.5
         ],
         [
-          -15.8,
-          -0.6
+          -10.6,
+          3.5
         ],
         [
-          -8,
-          -0.6
+          -10.6,
+          -3
         ],
         [
-          -5.5,
-          1
+          -17,
+          -3
         ],
         [
-          -7,
-          -1.5
+          -17,
+          -8.5
         ],
         [
-          -7,
-          -6
+          -10.6,
+          -8.5
         ],
         [
-          -7,
+          -10.6,
+          -16.5
+        ],
+        [
+          -2.6,
+          -16.5
+        ],
+        [
+          -2.6,
+          -18.5
+        ],
+        [
+          2.6,
+          -18.5
+        ],
+        [
+          2.6,
           -14
-        ],
-        [
-          -3,
-          -14
-        ],
-        [
-          0,
-          -13.8
         ],
         [
           4.3,
@@ -51940,12 +52168,24 @@
           "readFull": true,
           "readLabel": "View education",
           "cameraTarget": {
-            "x": -12,
-            "y": 3,
-            "z": -3
+            "x": -13,
+            "y": 5.5,
+            "z": -7
           },
           "camera": {
-            "distance": 30
+            "distance": 43,
+            "fitBounds": {
+              "min": {
+                "x": -22.2,
+                "y": 0.85,
+                "z": -14.6
+              },
+              "max": {
+                "x": -2.4,
+                "y": 14.45,
+                "z": 2.4
+              }
+            }
           },
           "x": -9,
           "z": 8,
@@ -51969,12 +52209,24 @@
           "readFull": true,
           "readLabel": "View education",
           "cameraTarget": {
-            "x": 13,
-            "y": 3,
-            "z": -1
+            "x": 13.2,
+            "y": 3.4,
+            "z": -4.5
           },
           "camera": {
-            "distance": 30
+            "distance": 35,
+            "fitBounds": {
+              "min": {
+                "x": 5.8,
+                "y": 0.85,
+                "z": -14.1
+              },
+              "max": {
+                "x": 20.5,
+                "y": 8.85,
+                "z": 4.55
+              }
+            }
           },
           "x": 9,
           "z": 8,
@@ -51987,6 +52239,58 @@
             "height": 1.94,
             "yaw": 0
           }
+        },
+        {
+          "id": "learning:duan",
+          "type": "read",
+          "contentId": "learning",
+          "landmarkId": "duan-center",
+          "schoolId": "bu",
+          "primary": false,
+          "readFull": true,
+          "readLabel": "About this landmark",
+          "label": "Duan Center",
+          "x": -13.8,
+          "z": -3.35,
+          "y": 0.85,
+          "cameraTarget": {
+            "x": -17,
+            "y": 6.1,
+            "z": -8.5
+          },
+          "camera": {
+            "fitBounds": {
+              "min": {
+                "x": -22.1,
+                "y": 0.85,
+                "z": -12.25
+              },
+              "max": {
+                "x": -11.9,
+                "y": 14.379999999999999,
+                "z": -4.55
+              }
+            },
+            "distance": 41
+          },
+          "hitArea": {
+            "x": -13.8,
+            "y": 1.9700000000000002,
+            "z": -4.85,
+            "width": 2.65,
+            "height": 1.25,
+            "yaw": 0
+          }
+        },
+        {
+          "id": "learning:duan-explore",
+          "type": "action",
+          "contentId": "learning",
+          "action": "education-duan",
+          "label": "Explore the building",
+          "x": -16.25,
+          "z": -10.12,
+          "y": 0.85
         },
         {
           "id": "learning:books",
@@ -52073,17 +52377,49 @@
       ],
       "benches": [
         {
-          "id": "learning:bu-bench",
+          "id": "learning:study-break",
+          "contentId": "learning",
+          "action": "education-study",
+          "label": "Take a study break",
+          "x": 21.6,
+          "z": 8.8,
+          "y": 1.45,
+          "rotation": 3.141592653589793,
+          "yaw": 3.141592653589793,
+          "approach": {
+            "x": 21.6,
+            "z": 7.6000000000000005,
+            "y": 0.85
+          }
+        },
+        {
+          "id": "learning:duan-seat",
           "contentId": "learning",
           "action": "learning",
-          "x": -15.8,
-          "z": -2.4,
+          "label": "Read by the window",
+          "x": -20.8,
+          "z": -9.45,
           "y": 1.45,
           "rotation": 0,
           "yaw": 0,
           "approach": {
-            "x": -15.8,
-            "z": -1.2,
+            "x": -20.8,
+            "z": -8.25,
+            "y": 0.85
+          }
+        },
+        {
+          "id": "learning:bu-bench",
+          "contentId": "learning",
+          "action": "learning",
+          "x": -23.4,
+          "z": -2.8,
+          "y": 1.45,
+          "rotation": 0,
+          "yaw": 0,
+          "approach": {
+            "x": -23.4,
+            "z": -1.5999999999999999,
             "y": 0.85
           }
         },
@@ -52106,14 +52442,14 @@
           "id": "learning:coast-bench",
           "contentId": "learning",
           "action": "learning",
-          "x": -4,
-          "z": -16.5,
+          "x": -6.5,
+          "z": -18.5,
           "y": 1.45,
           "rotation": 0,
           "yaw": 0,
           "approach": {
-            "x": -4,
-            "z": -15.3,
+            "x": -6.5,
+            "z": -17.3,
             "y": 0.85
           }
         }
@@ -52122,14 +52458,14 @@
         "id": "learning:bu-bench",
         "contentId": "learning",
         "action": "learning",
-        "x": -15.8,
-        "z": -2.4,
+        "x": -23.4,
+        "z": -2.8,
         "y": 1.45,
         "rotation": 0,
         "yaw": 0,
         "approach": {
-          "x": -15.8,
-          "z": -1.2,
+          "x": -23.4,
+          "z": -1.5999999999999999,
           "y": 0.85
         }
       },
@@ -52248,8 +52584,8 @@
           "id": "marsh-chapel",
           "schoolId": "bu",
           "label": "Marsh Chapel",
-          "x": -12,
-          "z": -9,
+          "x": -6,
+          "z": -10,
           "width": 6,
           "depth": 8
         },
@@ -52257,44 +52593,44 @@
           "id": "cas",
           "schoolId": "bu",
           "label": "College of Arts & Sciences",
-          "x": -21,
-          "z": -5,
-          "width": 5.2,
-          "depth": 6
+          "x": -19,
+          "z": 0.3,
+          "width": 7,
+          "depth": 3.4
         },
         {
           "id": "bay-state-0",
           "schoolId": "bu",
           "label": "Bay State Road",
-          "x": -20,
-          "z": 3.9,
-          "width": 3.1,
-          "depth": 4
+          "x": -22,
+          "z": 7.5,
+          "width": 3,
+          "depth": 3.6
         },
         {
           "id": "bay-state-1",
           "schoolId": "bu",
           "label": "Bay State Road",
-          "x": -16.55,
-          "z": 3.9,
-          "width": 3.1,
-          "depth": 4
+          "x": -18.5,
+          "z": 7.5,
+          "width": 3,
+          "depth": 3.6
         },
         {
           "id": "bay-state-2",
           "schoolId": "bu",
           "label": "Bay State Road",
-          "x": -13.1,
-          "z": 3.9,
-          "width": 3.1,
-          "depth": 4
+          "x": -15,
+          "z": 7.5,
+          "width": 3,
+          "depth": 3.6
         },
         {
           "id": "green-line",
           "schoolId": "bu",
           "label": "Green Line",
-          "x": -22,
-          "z": 10.2,
+          "x": -18.5,
+          "z": 13.5,
           "width": 4.8,
           "depth": 2.3
         },
@@ -52324,6 +52660,63 @@
           "z": -3.8,
           "width": 5.1,
           "depth": 0.6
+        },
+        {
+          "id": "duan-center",
+          "schoolId": "bu",
+          "label": "Duan Center",
+          "x": -17,
+          "z": -8.5,
+          "width": 10,
+          "depth": 8,
+          "height": 13.53,
+          "walkableInterior": true
+        }
+      ],
+      "interiors": [
+        {
+          "landmarkId": "duan-center",
+          "floorY": 0.85,
+          "bounds": {
+            "x": -17,
+            "z": -8.5,
+            "width": 10,
+            "depth": 7
+          },
+          "entrances": [
+            {
+              "id": "front",
+              "x": -17,
+              "z": -5,
+              "width": 3.2,
+              "yaw": 0
+            },
+            {
+              "id": "east",
+              "x": -12,
+              "z": -8.5,
+              "width": 3,
+              "yaw": 1.5707963267948966
+            }
+          ],
+          "walkRoute": [
+            [
+              -17,
+              -3
+            ],
+            [
+              -17,
+              -6.1
+            ],
+            [
+              -17,
+              -8.5
+            ],
+            [
+              -10.6,
+              -8.5
+            ]
+          ]
         }
       ],
       "paths": [
@@ -52352,48 +52745,56 @@
               8
             ],
             [
-              -5.5,
-              8
+              -9,
+              10.8
             ],
             [
-              -5.5,
-              1
+              -12.1,
+              10.8
             ],
             [
-              -8,
-              -0.6
+              -12.1,
+              3.5
             ],
             [
-              -15.8,
-              -0.6
+              -10.6,
+              3.5
             ],
             [
-              -8,
-              -0.6
+              -10.6,
+              -3
             ],
             [
-              -5.5,
-              1
+              -17,
+              -3
             ],
             [
-              -7,
-              -1.5
+              -17,
+              -8.5
             ],
             [
-              -7,
-              -6
+              -10.6,
+              -8.5
             ],
             [
-              -7,
+              -10.6,
+              -16.5
+            ],
+            [
+              -2.6,
+              -16.5
+            ],
+            [
+              -2.6,
+              -18.5
+            ],
+            [
+              2.6,
+              -18.5
+            ],
+            [
+              2.6,
               -14
-            ],
-            [
-              -3,
-              -14
-            ],
-            [
-              0,
-              -13.8
             ],
             [
               4.3,
@@ -52484,16 +52885,16 @@
           "width": 2.6,
           "points": [
             [
-              -5.5,
-              1
+              -10.6,
+              -3
             ],
             [
-              -8,
-              -0.6
+              -17,
+              -3
             ],
             [
-              -15.8,
-              -0.6
+              -20.8,
+              -3
             ]
           ]
         },
@@ -52524,20 +52925,28 @@
           "width": 2.6,
           "points": [
             [
-              -7,
+              -10.6,
+              -16.5
+            ],
+            [
+              -6.5,
+              -16.5
+            ],
+            [
+              -2.6,
+              -16.5
+            ],
+            [
+              -2.6,
+              -18.5
+            ],
+            [
+              2.6,
+              -18.5
+            ],
+            [
+              2.6,
               -14
-            ],
-            [
-              -4,
-              -14.8
-            ],
-            [
-              -3,
-              -14
-            ],
-            [
-              0,
-              -13.8
             ],
             [
               4.3,
@@ -52546,16 +52955,16 @@
           ]
         }
       ],
-      "routeLength": 162.52,
-      "estimatedWalkingSeconds": 67.7,
+      "routeLength": 172.65,
+      "estimatedWalkingSeconds": 71.9,
       "width": 2.6,
       "validation": {
         "connectedFromDock": true,
-        "stationsReachable": 8,
+        "stationsReachable": 10,
         "routeClearance": 1.2,
         "pathWidth": 2.6,
         "campuses": 2,
-        "landmarks": 9
+        "landmarks": 10
       }
     }
   ]

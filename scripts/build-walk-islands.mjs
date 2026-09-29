@@ -48,7 +48,7 @@ mats.highlandsCliff=new THREE.MeshStandardMaterial({name:'highlandsCliff',color:
 mats.highlandsTrailEdge=new THREE.MeshStandardMaterial({name:'highlandsTrailEdge',color:'#94775a',roughness:.96});
 mats.highlandsStrataDark=new THREE.MeshStandardMaterial({name:'highlandsStrataDark',color:'#5d626d',roughness:.96});
 mats.highlandsStrataLight=new THREE.MeshStandardMaterial({name:'highlandsStrataLight',color:'#b9b5a8',roughness:.96});
-for(const[name,color]of Object.entries(campusPalette))mats[name]=new THREE.MeshStandardMaterial({name,color,roughness:name==='campus_glass'?.32:.80,metalness:name==='campus_copper'?.16:0});
+for(const[name,color]of Object.entries(campusPalette))mats[name]=new THREE.MeshStandardMaterial({name,color,roughness:/glass|windowClear|reflection/.test(name)?.25:name==='campus_silver'?.34:.80,metalness:/silver|bronze|reflection/.test(name)?.38:name==='campus_copper'?.16:0,transparent:name==='campus_windowClear',opacity:name==='campus_windowClear'?.24:1,depthWrite:name!=='campus_windowClear'});
 const harborMaterials=new Map();
 let root, seed, layout, low=false,currentIsland='',highlandsBuild=false;
 function authoredUV(geometry,material){
@@ -78,9 +78,9 @@ function group(pos=[0,0,0], rot=[0,0,0], parent=root) { const g=new THREE.Group(
 function box(w,h,d,x,y,z,mat='ivory',rot=[0,0,0],parent=root) { return mesh(new THREE.BoxGeometry(w,h,d),mat,[x,y,z],rot,parent); }
 const bevelCache = new Map();
 function bevel(w,h,d,x,y,z,mat='ivory',b=.06,rot=[0,0,0],parent=root) {
-  b=Math.min(b,w/4,h/4,d/4); const key=[w,h,d,b].join(','); let g=bevelCache.get(key);
+  b=Math.min(b,w/4,h/4,d/4); const bevelSegments=low&&currentIsland==='education'?1:2;const key=[w,h,d,b,bevelSegments].join(','); let g=bevelCache.get(key);
   if(!g) { const s=new THREE.Shape();const a=w/2-b,c=h/2-b;s.moveTo(-a,-c);s.lineTo(a,-c);s.lineTo(a,c);s.lineTo(-a,c);s.closePath();
-    g=new THREE.ExtrudeGeometry(s,{depth:d-2*b,bevelEnabled:true,bevelThickness:b,bevelSize:b,bevelSegments:2,steps:1});g.translate(0,0,-d/2+b);bevelCache.set(key,g); }
+    g=new THREE.ExtrudeGeometry(s,{depth:d-2*b,bevelEnabled:true,bevelThickness:b,bevelSize:b,bevelSegments,steps:1});g.translate(0,0,-d/2+b);bevelCache.set(key,g); }
   return mesh(g,mat,[x,y,z],rot,parent);
 }
 function cyl(rt,rb,h,x,y,z,mat='ivory',segments=12,rot=[0,0,0],parent=root) { return mesh(new THREE.CylinderGeometry(rt,rb,h,segments,1),mat,[x,y,z],rot,parent); }
@@ -162,7 +162,7 @@ function animatedFlag(x,y,z,h,name){
   custom(pts,[0,1,5,1,4,5,1,2,4,2,3,4,5,1,0,5,4,1,4,2,1,4,3,2],'orange',g);
 }
 function text3D(label,size,x,y,z,mat='navy',depth=.07,parent=root){
-  const geo=new TextGeometry(label,{font,size,depth,curveSegments:low&&highlandsBuild?1:2,bevelEnabled:false});
+  const geo=new TextGeometry(label,{font,size,depth,curveSegments:low&&(highlandsBuild||currentIsland==='education')?1:2,bevelEnabled:false});
   geo.computeBoundingBox();geo.translate(-(geo.boundingBox.max.x+geo.boundingBox.min.x)/2,0,0);
   return mesh(geo,mat,[x,y,z],[0,0,0],parent);
 }
@@ -565,7 +565,7 @@ async function exportIsland(name){
  }
  output.userData={originalProceduralAsset:true,version:11,author:'Archipelago-folio original walkable island builder',walkable:true,seaLevel:0,animationNodes:animationNodes.map(n=>n.name)};
  const bounds=new THREE.Box3().setFromObject(output);const raw=await new GLTFExporter().parseAsync(output,{binary:true,onlyVisible:true,trs:true});if(name==='harbor'&&!low&&process.env.ARCHIPELAGO_SOURCE_OUT){await fs.mkdir(process.env.ARCHIPELAGO_SOURCE_OUT,{recursive:true});root.traverse(o=>{if(o.isMesh&&!o.name)o.name='part_'+o.material.name+'_'+o.id;});const source=await new GLTFExporter().parseAsync(root,{binary:true,onlyVisible:true,trs:true});await fs.writeFile(path.join(process.env.ARCHIPELAGO_SOURCE_OUT,'harbor.glb'),Buffer.from(source));}const doc=await io.readBinary(new Uint8Array(raw));await doc.transform(dedup(),prune({keepAttributes:true}),meshopt({encoder:MeshoptEncoder,level:name==='projects'&&low?'high':'medium'}));const file=path.join(OUT,low?'low':'',name+'.glb');await io.write(file,doc);const bytes=(await fs.stat(file)).size;
- const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:name==='education'?'v14-campus-shores':name==='projects'?'v133-readable-project-arrival':'v11-four-isles',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{...layout.dock},clearApproach:{min:[-7,0,layout.dock.endZ+2],max:[7,0,layout.dock.endZ+18],spawn:[0,0,layout.dock.endZ+8]},districts:layout.districts,camera:{target:[0,2,0],distance:Math.max(PARENTS[name].width,PARENTS[name].depth)*1.18},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
+ const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:name==='education'?'v141-campus-landmark':name==='projects'?'v133-readable-project-arrival':'v11-four-isles',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{...layout.dock},clearApproach:{min:[-7,0,layout.dock.endZ+2],max:[7,0,layout.dock.endZ+18],spawn:[0,0,layout.dock.endZ+8]},districts:layout.districts,camera:{target:[0,2,0],distance:Math.max(PARENTS[name].width,PARENTS[name].depth)*1.18},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
  if(name==='amtrak'){data.animation={train:{trackCentre:[0,0,-1.4],trackRadii:[8.8,5.8],initialAngle:0,rootY:0,forward:'-Z',duration:10}};data.trainTrack={...TRACK,points:Array.from({length:64},(_,i)=>{const a=i*Math.PI*2/64;return[TRACK.radiusX*Math.cos(a),0,TRACK.center[2]+TRACK.radiusZ*Math.sin(a)];}),trainForward:'-Z',rootY:0,railY:Y+.07};}
  return data;
 }

@@ -2490,14 +2490,14 @@
       "id": "education",
       "name": "education",
       "file": "education.glb",
-      "bytes": 898860,
-      "rawBytes": 3286772,
-      "revision": "v14-campus-shores",
-      "sourceMeshes": 964,
-      "drawCalls": 113,
+      "bytes": 1312776,
+      "rawBytes": 4742624,
+      "revision": "v141-campus-landmark",
+      "sourceMeshes": 1629,
+      "drawCalls": 170,
       "staticDrawCalls": 15,
-      "vertices": 88165,
-      "triangles": 57826,
+      "vertices": 127254,
+      "triangles": 82248,
       "bounds": {
         "min": [
           -28,
@@ -2506,13 +2506,13 @@
         ],
         "max": [
           28,
-          8.579999923706055,
+          14.375,
           30
         ]
       },
       "dimensions": [
         56,
-        9.259999930858612,
+        15.055000007152557,
         52
       ],
       "animationNodes": [
@@ -2613,7 +2613,199 @@
           ]
         },
         {
+          "name": "anim_campus_study_page",
+          "position": [
+            21.700000000000003,
+            1.8649999999999998,
+            6.6
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_campus_study_lights",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
           "name": "anim_bu_windows",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_theme_0",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_pulse_0",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_theme_1",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_pulse_1",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_theme_2",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_pulse_2",
           "position": [
             0,
             0,
@@ -2783,7 +2975,199 @@
           ]
         },
         {
+          "name": "anim_campus_study_page",
+          "position": [
+            21.700000000000003,
+            1.8649999999999998,
+            6.6
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_campus_study_lights",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
           "name": "anim_bu_windows",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_theme_0",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_pulse_0",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_theme_1",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_pulse_1",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_theme_2",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_duan_pulse_2",
           "position": [
             0,
             0,
@@ -3038,6 +3422,13 @@
         "occluder_campus_brownstone_2",
         "occluder_campus_hamerschlag_dome",
         "occluder_campus_hamburg_roof",
+        "occluder_campus_duan_ground_walls",
+        "occluder_campus_duan_podium_roof",
+        "occluder_campus_duan_lower",
+        "occluder_campus_duan_middle",
+        "occluder_campus_duan_upper",
+        "occluder_campus_duan_crown",
+        "occluder_campus_duan_terraces",
         "occluder_campus_tree_bu1",
         "occluder_campus_tree_bu2",
         "occluder_campus_tree_bu3",
@@ -3225,8 +3616,8 @@
       ]
     }
   ],
-  "totalBytes": 4361556,
-  "totalTriangles": 267558,
+  "totalBytes": 4775472,
+  "totalTriangles": 291980,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }

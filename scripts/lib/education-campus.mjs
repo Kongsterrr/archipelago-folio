@@ -1,6 +1,7 @@
 // V14: original campus miniatures, based on the public silhouettes of CMU and BU.
 // Model and walk metadata are authored together; no campus image is baked into the asset.
 import * as THREE from 'three';
+import {buildDuanCenter} from './duan-center.mjs';
 
 export const campusPalette = {
  campus_limestone:'#d8d1b9',campus_sandstone:'#c9b681',campus_brick:'#945d4e',
@@ -9,6 +10,7 @@ export const campusPalette = {
  campus_paving:'#d6ccad',campus_leaf:'#547753',campus_iron:'#374951',
  campus_lawn:'#93af69',campus_tram:'#417766',campus_paintBlue:'#668da7',
  campus_paintGold:'#e4b761',campus_paintRose:'#c07a8a',
+ campus_windowClear:'#a2bdc0',campus_reflectionBlue:'#607f9d',campus_reflectionGold:'#c6bda0',campus_silver:'#aab5b4',campus_bronze:'#937456',
 };
 
 export function buildEducationCampus(api) {
@@ -84,7 +86,7 @@ export function buildEducationCampus(api) {
  function planter(x,z,w=2.2,d=.85){b(w,.25,d,x,Y+.125,z,'campus_limestone');bx(w-.16,.035,d-.16,x,Y+.27,z,'darkWood');for(let i=0;i<(low?3:5);i++){const xx=x-w*.35+i*w*.7/((low?3:5)-1);mesh(new THREE.IcosahedronGeometry(.31,0),'campus_leaf',pos(xx,Y+.5,z),zero,district);if(!low)cyl(.10,.05,.08,xx,Y+.77,z,'campus_paintRose',7,zero,district);}obstacle('campus planter',x,z,w,d,.7);}
  // BU: chapel volume and geometric Gothic tracery, without an invented bell tower.
  {
-  const buildingStart=new Set(district.children),x=-12,z=-9,w=6,d=8,h=4.8;
+  const buildingStart=new Set(district.children),x=-6,z=-10,w=6,d=8,h=4.8;
   b(w,h,d,x,Y+h/2,z,'campus_limestone');courses(x,z,w,h,d,'campus_limestone');obstacle('Marsh Chapel',x,z,w+.42,d+.3,7.2);footprint('marsh-chapel','bu','Marsh Chapel',x,z,w,d);
   roof('marsh_roof',g=>{pitchedRoof(w+.35,d+.4,Y+h,x,z,'campus_slate',g,2.25);for(const xx of[x-w/2-.1,x+w/2+.1])for(const zz of[z-d/2-.07,z+d/2+.07]){b(.34,1.15,.4,xx,Y+h+.2,zz,'campus_limestone',g);cone(.25,.48,xx,Y+h+.99,zz,'campus_slate',6,g);}});
   const f=z+d/2+.18;
@@ -96,11 +98,11 @@ export function buildEducationCampus(api) {
   b(3.5,.38,.16,x,Y+5.18,f+.07,'campus_trim');tx('MARSH CHAPEL',.21,x,Y+5.07,f+.16);
   for(const side of[-1,1])for(let i=0;i<4;i++){const zz=z-3+i*2;b(.6,3.8,.40,x+side*3.14,Y+1.9,zz,'campus_trim');b(.75,.15,.54,x+side*3.14,Y+3.84,zz,'campus_trim');}
   includeBuilding('marsh_roof',buildingStart);
-  bx(8,.016,5,x,Y+.035,-1.5,'campus_paving');
+  bx(7.8,.016,3.9,x,Y+.035,-3.25,'campus_paving');
  }
  // CAS: rhythmic limestone windows, string courses and a clearly framed entrance.
  {
-  const buildingStart=new Set(district.children),x=-21,z=-5,w=5.2,d=6,h=4.2;
+  const buildingStart=new Set(district.children),x=-19,z=.3,w=7,d=3.4,h=4.2;
   b(w,h,d,x,Y+h/2,z,'campus_limestone');courses(x,z,w,h,d);obstacle('College of Arts and Sciences',x,z,w,d,h);footprint('cas','bu','College of Arts & Sciences',x,z,w,d);
   roof('cas_roof',g=>{b(w+.35,.28,d+.25,x,Y+h+.12,z,'campus_slate',g);b(w+.5,.15,d+.4,x,Y+h+.26,z,'campus_trim',g);});
   entrance(x,z+d/2+.12,1.2,1.65);for(const dx of[-1.7,0,1.7])for(const yy of[2.2,3.4])facadeWindow(x+dx,Y+yy,z+d/2+.14,.76,.80);
@@ -109,19 +111,19 @@ export function buildEducationCampus(api) {
  // Three Bay State Road houses have distinct cornices, bay windows and doors.
  {
   for(let i=0;i<3;i++){
-   const buildingStart=new Set(district.children),x=-20+i*3.45,z=3.9,w=3.1,d=4,h=4.1+(i===1?.5:0),mat=i===1?'campus_brickDark':'campus_brick';
+   const buildingStart=new Set(district.children),x=-22+i*3.5,z=7.5,w=3,d=3.6,h=4.1+(i===1?.5:0),mat=i===1?'campus_brickDark':'campus_brick';
    b(w,h,d,x,Y+h/2,z,mat);courses(x,z,w,h,d,mat);obstacle('Bay State Road brownstone '+(i+1),x,z,w,d,h+.4);footprint('bay-state-'+i,'bu','Bay State Road',x,z,w,d);
    roof('brownstone_'+i,g=>{b(w+.2,.22,d+.17,x,Y+h+.08,z,'campus_slate',g);for(const yy of[h-.14,h+.2])b(w+.29,.13,.34,x,Y+yy,z+d/2+.1,'campus_trim',g);});
-   entrance(x-.77,z+2.1,.65,1.55);b(.93,.12,.45,x-.77,Y+.065,z+2.28,'campus_limestone');
-   if(i===1){b(1.10,.55,.24,x-.77,Y+2.05,z+2.1,'campus_iron');tx('BAY STATE',.11,x-.77,Y+2.09,z+2.232,'campus_trim');tx('ROAD',.11,x-.77,Y+1.90,z+2.232,'campus_trim');}
-   for(const yy of[1.37,2.86]){b(1.36,1.27,.5,x+.58,Y+yy,z+2.0,'campus_brick');facadeWindow(x+.58,Y+yy,z+2.3,.94,.86);}
-   if(!low)for(const dx of[-1.35,1.35])rod([x+dx,Y,z+2.55],[x+dx,Y+.77,z+2.55],.026,'campus_iron',district);
+   entrance(x-.77,z+1.9,.65,1.55);b(.93,.12,.45,x-.77,Y+.065,z+2.08,'campus_limestone');
+   if(i===1){b(1.10,.55,.24,x-.77,Y+2.05,z+1.9,'campus_iron');tx('BAY STATE',.11,x-.77,Y+2.09,z+2.032,'campus_trim');tx('ROAD',.11,x-.77,Y+1.90,z+2.032,'campus_trim');}
+   for(const yy of[1.37,2.86]){b(1.36,1.27,.5,x+.58,Y+yy,z+1.8,'campus_brick');facadeWindow(x+.58,Y+yy,z+2.1,.94,.86);}
+   if(!low)for(const dx of[-1.35,1.35])rod([x+dx,Y,z+2.35],[x+dx,Y+.77,z+2.35],.026,'campus_iron',district);
    includeBuilding('brownstone_'+i,buildingStart);
   }
  }
  // Green Line tram is a static backdrop, outside every walking route.
  {
-  const x=-22.0,z=10.2,g=group([x,Y,z],zero,district);g.rotation.y=Math.PI/2;
+  const x=-18.5,z=13.5,g=group([x,Y,z],zero,district);g.rotation.y=Math.PI/2;
   b(2.1,1.55,4.6,0,1.0,0,'campus_tram',g);b(2.1,.48,4.65,0,.64,0,'campus_trim',g);b(2.0,.22,4.65,0,1.91,0,'campus_slate',g);
   for(const zz of[-1.54,-.48,.58,1.6])for(const side of[-1,1])b(.035,.63,.73,side*1.072,1.45,zz,'campus_glass',g);
   b(1.48,.62,.03,0,1.41,2.335,'campus_glass',g);tx('B / BU CENTRAL',.11,0,1.92,2.33,'campus_trim',g);
@@ -170,9 +172,52 @@ export function buildEducationCampus(api) {
   layout.stations.push({id:'learning:fence',type:'action',contentId:'learning',action:'education-fence',label:'Paint The Fence',x,z:z+1.45,y:Y});
   b(2.3,.5,.10,x,Y+.55,z+.48,'campus_trim');tx('THE FENCE / TRY F',.145,x,Y+.49,z+.55);
  }
+ // V14.1: compact campus life vignettes, safely outside through-paths.
+ {
+  const g=named('campus_scotty');
+  const dog=(r,xx,yy,zz,sx,sy,sz,mat='campus_iron')=>{const m=mesh(new THREE.SphereGeometry(r,low?8:12,low?6:8),mat,[xx,yy,zz],zero,g);m.scale.set(sx,sy,sz);return m;};
+  const xx=7.9,zz=2.15;
+  b(1.8,.24,1.35,xx,Y+.12,zz,'campus_limestone',g);obstacle('Scotty sculpture plinth',xx,zz,1.8,1.35,1.3);
+  dog(.43,xx,Y+.77,zz,1.10,.82,.64);dog(.31,xx+.31,Y+1.1,zz,.90,1.08,.88);dog(.22,xx+.53,Y+.99,zz,.90,.58,.80);
+  for(const dx of[-.26,.26])for(const dz of[-.17,.17])b(.16,.34,.17,xx+dx,Y+.43,zz+dz,'campus_iron',g);
+  for(const dz of[-.18,.18])cone(.105,.29,xx+.30,Y+1.44,zz+dz,'campus_iron',4,g);
+  rod([xx-.40,Y+.82,zz],[xx-.57,Y+1.1,zz],.052,'campus_iron',g,6);
+  b(.16,.22,.62,xx+.14,Y+.96,zz,'campus_red',g);for(const dz of[-.19,.02,.22])bx(.167,.23,.028,xx+.14,Y+.96,zz+dz,'campus_trim',g);
+  for(const side of[-1,1])dog(.032,xx+.42,Y+1.14,zz+side*.257,1,1,1,'campus_trim');
+  b(1.1,.23,.05,xx,Y+.18,zz+.70,'campus_iron',g);tx('SCOTTY',.127,xx,Y+.12,zz+.734,'campus_trim',g);
+ }
+ {
+  const x=21.6,z=8.8,tableZ=6.6;
+  slatBench(x,z,Math.PI);obstacle('campus study bench',x,z,2,.72,1.24);
+  const seat={id:'learning:study-break',contentId:'learning',action:'education-study',label:'Take a study break',x,z,y:Y+.60,rotation:Math.PI,yaw:Math.PI,approach:{x,z:z-1.2,y:Y}};layout.benches.push(seat);
+  const g=named('campus_study_desk');b(2.0,.15,.80,x,Y+.86,tableZ,'wood',g);for(const dx of[-.79,.79])for(const dz of[-.28,.28])bx(.085,.8,.085,x+dx,Y+.4,tableZ+dz,'campus_iron',g);obstacle('CMU outdoor study table',x,tableZ,2,.8,1.1);
+  for(const i of[0,1,2])b(.37,.07,.30,x-.58,Y+.98+i*.07,tableZ+.05,['campus_slate','campus_red','campus_trim'][i],g);
+  b(.36,.025,.29,x+.1,Y+.97,tableZ,'campus_red',g);b(.17,.016,.27,x+.01,Y+.99,tableZ,'campus_trim',g);
+  const page=named('anim_campus_study_page',x+.1,Y+1.015,tableZ);b(.17,.009,.27,.085,0,0,'campus_trim',page);
+  const lampX=x+.70;rod([lampX,Y+.96,tableZ-.1],[lampX,Y+1.43,tableZ-.13],.025,'campus_bronze',g,6);b(.31,.09,.24,lampX-.07,Y+1.43,tableZ-.07,'campus_slate',g);
+  const lights=named('anim_campus_study_lights');b(.25,.025,.19,lampX-.07,Y+1.375,tableZ-.07,'warmWindow',lights);
+  cyl(.085,.07,.18,x+.4,Y+1.02,tableZ+.14,'campus_red',8,zero,g);b(.44,.56,.29,x-.8,Y+.31,tableZ+.6,'campus_red',g);
+ }
+ // Café chairs and books complement the chapel forecourt without blocking it.
+ for(const[x,z]of[[-5,-2.65],[-2.8,-1.75]]){
+  cyl(.52,.52,.10,x,Y+.75,z,'wood',low?10:16,zero,district);cyl(.08,.10,.68,x,Y+.35,z,'campus_iron',8,zero,district);obstacle('cafe table',x,z,1.12,1.12,.85);
+  for(const dx of[-.9,.9]){b(.48,.09,.46,x+dx,Y+.43,z,'campus_red');b(.09,.5,.48,x+dx*1.2,Y+.68,z,'campus_red');for(const dz of[-.16,.16])rod([x+dx,Y+.02,z+dz],[x+dx,Y+.44,z+dz],.031,'campus_iron',district,5);}
+  cyl(.065,.06,.13,x+.16,Y+.875,z,'campus_trim',8,zero,district);b(.37,.045,.27,x-.17,Y+.835,z,'campus_trim');
+  // Small folded menu card lives entirely on the existing tabletop.
+  bx(.29,.27,.022,x+.02,Y+.96,z-.23,'campus_trim',district,[-.20,0,0]);
+  bx(.29,.27,.022,x+.02,Y+.96,z-.285,'campus_red',district,[.20,0,0]);
+  tx('MENU',.046,x+.02,Y+1.025,z-.175,'campus_iron');
+  for(let i=0;i<3;i++)bx(.16-i*.018,.009,.009,x+.02,Y+.965-i*.037,z-.197,'campus_bronze');
+
+ }
+ // Original fence painting props do not introduce tiny collision obstacles.
+ if(!low)for(const[xx,mat]of[[18.85,'campus_paintBlue'],[19.2,'campus_paintRose'],[19.55,'campus_paintGold']]){cyl(.12,.12,.20,xx,Y+.10,-4.6,mat,8,zero,district);rod([xx,Y+.2,-4.6],[xx+.09,Y+.51,-4.6],.018,'wood',district,5);}
  // Two clear front-facing academic reading stations, beside open seating courts.
  plaque('bu',schoolById.get('bu').title,-9,8.0);plaque('cmu',schoolById.get('cmu').title,9,8.0);
- const windows=named('anim_bu_windows');for(const x of[-14,-12,-10])b(.58,.28,.035,x,Y+1.17,-4.80,'warmWindow',windows);
+ const windows=named('anim_bu_windows');for(const x of[-8,-6,-4])b(.58,.28,.035,x,Y+1.17,-5.80,'warmWindow',windows);
+ buildDuanCenter({district,layout,Y,low,b,bx,tx,named,obstacle,footprint,mesh,cyl,rod,books});
+ const buStation=layout.stations.find(s=>s.id==='learning:bu');buStation.cameraTarget={x:-13,y:5.5,z:-7};buStation.camera={distance:43,fitBounds:{min:{x:-22.2,y:Y,z:-14.6},max:{x:-2.4,y:Y+13.6,z:2.4}}};
+ const cmuStation=layout.stations.find(s=>s.id==='learning:cmu');cmuStation.cameraTarget={x:13.2,y:3.4,z:-4.5};cmuStation.camera={distance:35,fitBounds:{min:{x:5.8,y:Y,z:-14.1},max:{x:20.5,y:Y+8.0,z:4.55}}};
  // Shared garden book: same action and animation names as previous versions.
  {
   const x=0,z=1.5,g=named('anim_book',x,Y+.48,z);
@@ -202,20 +247,20 @@ export function buildEducationCampus(api) {
   }
  }
  // Benches, planting and street furniture sit outside the 2.6 m circulation network.
- bench('bu-bench',-15.8,-2.4,0);bench('cmu-bench',19.2,-7.0,0);bench('coast-bench',-4,-16.5,0);
- for(const[id,x,z,h]of[['bu1',-23,-11,4.2],['bu2',-22.8,6.1,3.4],['bu3',-5,-10.5,4.0],['cmu1',22,-3,4.2],['cmu2',21.4,-10.7,4.4],['north',4.9,-16.7,3.6]])broadleaf(id,x,z,h);
- for(const[x,z]of[[21,5.9],[-2,-5],[13,10.8],[-2.8,12.1],[5.0,12.3]])planter(x,z);
- for(const[x,z]of[[-6.8,18.0],[6.8,18.0],[-5.6,12.7],[5.6,12.7],[-18,-11],[18,-15]]){lamp(x,z,'campus_iron',2.15);obstacle('campus lamp',x,z,.37,.37,3.25);}
+ bench('bu-bench',-23.4,-2.8,0);bench('cmu-bench',19.2,-7.0,0);bench('coast-bench',-6.5,-18.5,0);
+ for(const[id,x,z,h]of[['bu1',-24,-13,4.2],['bu2',-24.7,5.5,3.4],['bu3',-10,-18.5,3.7],['cmu1',22,-3,4.2],['cmu2',21.4,-10.7,4.4],['north',4.9,-16.7,3.6]])broadleaf(id,x,z,h);
+ for(const[x,z]of[[-2,-5],[13,10.8],[-2.8,12.1],[5.0,12.3]])planter(x,z);
+ for(const[x,z]of[[-6.8,18.0],[6.8,18.0],[-5.6,12.7],[5.6,12.7],[-23.2,-6.8],[18,-15]]){lamp(x,z,'campus_iron',2.15);obstacle('campus lamp',x,z,.37,.37,3.25);}
  if(!low){books(18.4,1.57,-7);b(.5,.7,.35,20.4,Y+.35,-7,'campus_red');}
  // Shared loop leaves the welcome area, passes both campus courtyards and the north garden.
  // Each branch is authored before decorative paving, and checked against the same colliders.
- layout.route=[[0,27.5],[0,18],[0,10],[-9,10],[-9,8],[-5.5,8],[-5.5,1],[-8,-.6],[-15.8,-.6],[-8,-.6],[-5.5,1],[-7,-1.5],[-7,-6],[-7,-14],[-3,-14],[0,-13.8],[4.3,-14],[4.3,-7],[7,-5.8],[9,-5.8],[9,-2.35],[16,-2.35],[9,-2.35],[5.5,-2.35],[5.5,8],[9,8],[9,10],[0,10],[0,18],[0,27.5]];
+ layout.route=[[0,27.5],[0,18],[0,10],[-9,10],[-9,8],[-9,10.8],[-12.1,10.8],[-12.1,3.5],[-10.6,3.5],[-10.6,-3],[-17,-3],[-17,-8.5],[-10.6,-8.5],[-10.6,-16.5],[-2.6,-16.5],[-2.6,-18.5],[2.6,-18.5],[2.6,-14],[4.3,-14],[4.3,-7],[7,-5.8],[9,-5.8],[9,-2.35],[16,-2.35],[9,-2.35],[5.5,-2.35],[5.5,8],[9,8],[9,10],[0,10],[0,18],[0,27.5]];
  layout.paths=[
   {id:'campus-loop',width:2.6,points:layout.route},
   {id:'central-learning-walk',width:2.6,points:[[0,10],[2.8,6],[2.8,0],[2.8,-10],[4.3,-14]]},
-  {id:'bu-plaza',width:2.6,points:[[-5.5,1],[-8,-.6],[-15.8,-.6]]},
+  {id:'bu-plaza',width:2.6,points:[[-10.6,-3],[-17,-3],[-20.8,-3]]},
   {id:'cmu-courtyard',width:2.6,points:[[16,-2.35],[20.3,-2.1],[20.3,-5.3],[19.2,-5.3]]},
-  {id:'coastal-study-walk',width:2.6,points:[[-7,-14],[-4,-14.8],[-3,-14],[0,-13.8],[4.3,-14]]},
+  {id:'coastal-study-walk',width:2.6,points:[[-10.6,-16.5],[-6.5,-16.5],[-2.6,-16.5],[-2.6,-18.5],[2.6,-18.5],[2.6,-14],[4.3,-14]]},
  ];
  const pavingPaths=layout.paths.map(path=>path.points.filter(p=>p[1]<layout.dock.startZ+.05));
  harborPath(pavingPaths.flat(),2.6,Y+.025,pavingPaths);

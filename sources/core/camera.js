@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {fitBoundsPose} from './focus-framing.js';
 import {BOAT_SPEED} from './boat.js';
 
 const FOV = 28;
@@ -80,6 +81,8 @@ export class CameraRig {
       if(this.width>this.height)point.addScaledVector(right,(this.width>=900?460:360)/this.height*desktopDistance*Math.tan(THREE.MathUtils.degToRad(FOV/2)));
       if(this.height>this.width)point.addScaledVector(this.flatForward,-4.5);
       const distance=this.width>=900?desktopDistance:this.height>this.width?24:16;desired={target:point,position:point.clone().addScaledVector(this.direction,distance)};
+    } else if (focus?.camera?.fitBounds) {
+      desired=fitBoundsPose(focus.camera.fitBounds,{width:this.width,height:this.height,fov:FOV,azimuth,elevation:focus.camera.elevation??.66,near:this.camera.near});
     } else if (focus) {
       const cfg = focus.camera || {};
       const az = azimuth;

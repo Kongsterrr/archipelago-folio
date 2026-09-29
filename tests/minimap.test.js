@@ -123,5 +123,15 @@ test('geometry can render config shoreline, pier and districts while walk data i
   assert.deepEqual(geometry.stations,[]);
   assert.deepEqual(geometry.obstacles,[]);
  }
- assert.deepEqual(islandMapGeometry(null),{shore:[],dock:[],approach:[],route:[],stations:[],districts:[],campuses:[],obstacles:[],roads:[],terrain:[]});
+ assert.deepEqual(islandMapGeometry(null),{shore:[],dock:[],approach:[],route:[],stations:[],districts:[],campuses:[],landmarks:[],obstacles:[],roads:[],terrain:[]});
+});
+
+test('Duan map footprint includes the full open podium without turning it into a walking obstacle',()=>{
+ const island=islands.find(i=>i.id==='education'),layout=layouts.islands.find(l=>l.id===island.id),geometry=islandMapGeometry(island,layout);
+ const landmark=geometry.landmarks.find(l=>l.id==='duan-center'),source=layout.landmarks.find(l=>l.id==='duan-center');
+ assert.ok(landmark);assert.equal(landmark.label,'Duan Center');assert.equal(landmark.walkableInterior,true);
+ closePoint(landmark,toWorld(island,source.x,source.z),'landmark');
+ assert.equal(landmark.polygon.length,4);assert.ok(landmark.width===10&&landmark.depth===8);
+ assert.ok(!geometry.obstacles.some(o=>o.width===landmark.width&&o.depth===landmark.depth&&o.x===landmark.x&&o.z===landmark.z));
+ assert.deepEqual(islandMapGeometry(island,null).landmarks,[]);
 });

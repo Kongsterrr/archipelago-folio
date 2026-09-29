@@ -1,3 +1,4 @@
+import {getCampusLandmark} from '../campus-landmarks.js';
 import {portfolioGroups,groupFor,islandIdFor} from '../portfolio-groups.js';
 
 // One mapping serves the directory, plain HTML fallback, map and automation.
@@ -22,6 +23,7 @@ export function exhibitEntry(station,islandId,content) {
 }
 
 export function exhibitTarget(station,islandId,content,islands) {
+  if(station?.landmarkId)return landmarkTarget(station.landmarkId,content,islands);
   if(station?.schoolId)return schoolTarget(station.schoolId,content,islands,station.contentId||'learning');
   // Complete exhibits can open an island overview as well as a source story.
   // Section-only exhibits must still resolve a real story before reading it.
@@ -40,4 +42,10 @@ export function schoolTarget(schoolId,content,islands,contentId='learning') {
   const school=educationSchools(content).find(school=>school.schoolId===schoolId);
   const target=school&&portfolioTarget('learning',content,islands);
   return target?{...target,school}:null;
+}
+
+export function landmarkTarget(landmarkId,content,islands){
+  const landmark=getCampusLandmark(landmarkId);
+  const target=landmark&&portfolioTarget('learning',content,islands);
+  return target?{...target,landmark}:null;
 }

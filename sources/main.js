@@ -7,6 +7,8 @@ import {DiscoveryStore,SECRETS,VOYAGE_STAMP_TOTAL} from './core/discovery.js';
 import {portfolioGroups,islandIdFor} from './portfolio-groups.js';
 import {directoryGroups,portfolioTarget,exhibitTarget,educationSchools,schoolTarget} from './core/portfolio-navigation.js';
 import {educationCards,educationDetail} from './ui/education.js';
+import {campusLandmarks,getCampusLandmark} from './campus-landmarks.js';
+import {landmarkCards,landmarkDetail} from './ui/campus-landmarks.js';
 import {landPrimaryAction,exhibitReadLabel} from './core/project-exhibits.js';
 import {ZOOM_NAMES} from './core/camera.js';
 import {LIVERIES} from './world/boat-appearance.js';
@@ -33,7 +35,7 @@ function showPanel(markup,{id=null,focus=null,dock=false,render,key=id}={}){
  if(!panel.open){returnFocus=document.activeElement;panelHistory.clear();}
  else if(!restoringPanel&&panelHistory.current){panelHistory.current.scrollTop=panel.scrollTop;panelHistory.current.focusIndex=panelFocusable().indexOf(document.activeElement);}
  panelHistory.visit({key,render,scrollTop:0,focusIndex:-1},{replace:restoringPanel||(currentId==='directory'&&id==='directory')});
- currentId=id;document.body.classList.toggle('boat-studio',id==='studio');$('.intro').classList.add('compact');
+ currentId=id;document.body.classList.toggle('boat-studio',id==='studio');document.body.classList.toggle('campus-reading',!!game&&!!focus&&(id?.startsWith('school:')||id?.startsWith('landmark:')));$('.intro').classList.add('compact');
  $('#panel-content').innerHTML=markup;installIcons($('#panel-content'));
  $('#panel-back').hidden=!panelHistory.canGoBack;
  if(!panel.open)panel.showModal();panel.scrollTop=0;panelInitialFocus().focus({preventScroll:true});
@@ -48,11 +50,11 @@ function backPanel(){
  $('#panel').scrollTop=scrollTop;
  (panelFocusable()[focusIndex]||panelInitialFocus()).focus({preventScroll:true});
 }
-function closePanel({resume=true,focusGame=false}={}){if(!$('#panel').open)return;game?.endSchoolRead?.();$('#panel').close();panelHistory.clear();document.body.classList.remove('boat-studio');currentId=null;if(resume&&game?.boat)game.resume('read');if(focusGame&&game?.boat)$('#world').focus({preventScroll:true});else if(returnFocus?.isConnected)returnFocus.focus();else $('#world').focus();}
+function closePanel({resume=true,focusGame=false}={}){if(!$('#panel').open)return;game?.endSchoolRead?.();$('#panel').close();panelHistory.clear();document.body.classList.remove('boat-studio','campus-reading');currentId=null;if(resume&&game?.boat)game.resume('read');if(focusGame&&game?.boat)$('#world').focus({preventScroll:true});else if(returnFocus?.isConnected)returnFocus.focus();else $('#world').focus();}
 
 function card(e){return `<button class="directory-card" data-open="${e.id}"><small>${esc(e.eyebrow)}</small><h3>${esc(e.title)}</h3><p>${esc(e.summary)}</p></button>`;}
 function linkButton(link){const opensNewTab=!link.url.startsWith('mailto:');return `<a class="primary-button" href="${esc(link.url)}" ${opensNewTab?'target="_blank" rel="noopener noreferrer"':''}>${esc(link.label)}${opensNewTab?'<span class="sr-only"> (opens in a new tab)</span>':''}</a>`;}
-function groupCards(groups,{educationDetails=false}={}){return groups.map(group=>`<section class="portfolio-group" data-portfolio-group="${group.id}"><div class="portfolio-group-heading"><div><span class="eyebrow">ISLAND ${String(group.n).padStart(2,'0')}</span><h3>${esc(group.label)}</h3></div><button class="text-link" data-open="${group.id}" aria-label="Explore ${esc(group.label)} island">Island overview</button></div><p class="group-summary">${esc(group.summary)}</p>${group.id==='education'?educationCards(educationSchools(content),{complete:educationDetails}):group.entries.map(card).join('')}</section>`).join('');}
+function groupCards(groups,{educationDetails=false}={}){return groups.map(group=>`<section class="portfolio-group" data-portfolio-group="${group.id}"><div class="portfolio-group-heading"><div><span class="eyebrow">ISLAND ${String(group.n).padStart(2,'0')}</span><h3>${esc(group.label)}</h3></div><button class="text-link" data-open="${group.id}" aria-label="Explore ${esc(group.label)} island">Island overview</button></div><p class="group-summary">${esc(group.summary)}</p>${group.id==='education'?educationCards(educationSchools(content),{complete:educationDetails})+landmarkCards(campusLandmarks):group.entries.map(card).join('')}</section>`).join('');}
 function openGroup(id,{dock=false}={}){
  const target=portfolioTarget(id,content,islands);if(!target)return;
  const {group,island,entries}=target;if(group.id==='education')return openEducation({dock});
@@ -67,17 +69,22 @@ function openEntry(id,{dock=false,exhibitFocus=null}={}){
 }
 function openEducation({dock=false,exhibitFocus=null}={}){
  const entry=content.find(e=>e.id==='learning');store.see('learning');
- showPanel(`<span class="eyebrow">ISLAND 04 / CAMPUS SHORES</span><h2 class="panel-hero" id="panel-title">Where I’ve learned.</h2><p class="panel-summary">${esc(entry.summary)}</p><div class="school-list">${educationCards(educationSchools(content),{complete:true})}</div><section class="panel-section"><h3>Tools &amp; foundations</h3><div class="tags">${entry.technologies.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></section><div class="panel-links">${game?'<button class="secondary-button" data-travel="education">Travel to Education</button>':''}<a class="primary-button" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Download résumé<span class="sr-only"> (opens in a new tab)</span></a></div>`,{id:'learning',focus:game?(exhibitFocus||contentFocus('learning')):null,dock,render:()=>openEducation({exhibitFocus})});
+ showPanel(`<span class="eyebrow">ISLAND 04 / EDUCATION</span><h2 class="panel-hero" id="panel-title">Where I’ve learned.</h2><p class="panel-summary">${esc(entry.summary)}</p><div class="school-list">${educationCards(educationSchools(content),{complete:true})}</div>${landmarkCards(campusLandmarks)}<section class="panel-section"><h3>Tools &amp; foundations</h3><div class="tags">${entry.technologies.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></section><div class="panel-links">${game?'<button class="secondary-button" data-travel="education">Travel to Education</button>':''}<a class="primary-button" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Download résumé<span class="sr-only"> (opens in a new tab)</span></a></div>`,{id:'learning',focus:game?(exhibitFocus||contentFocus('learning')):null,dock,render:()=>openEducation({exhibitFocus})});
 }
 function openSchool(schoolId,{exhibitFocus=null}={}){
  const target=schoolTarget(schoolId,content,islands);if(!target)return;
  const {school}=target;store.see('learning');
- showPanel(`${educationDetail(school)}<div class="panel-links">${game?'<button class="secondary-button" data-travel="education">Travel to Education</button>':''}<button class="text-link" data-open="learning">Both schools</button></div>`,{id:'school:'+schoolId,focus:game?(game.educationFocus?.(schoolId)||exhibitFocus||contentFocus('learning')):null,render:()=>openSchool(schoolId,{exhibitFocus})});
+ showPanel(`${educationDetail(school)}${landmarkCards(campusLandmarks.filter(l=>l.schoolId===schoolId))}<div class="panel-links">${game?'<button class="secondary-button" data-travel="education">Travel to Education</button>':''}<button class="text-link" data-open="learning">Both schools</button></div>`,{id:'school:'+schoolId,focus:game?(game.educationFocus?.(schoolId)||exhibitFocus||contentFocus('learning')):null,render:()=>openSchool(schoolId,{exhibitFocus})});
  game?.readSchool?.(schoolId);
+}
+function openLandmark(id){
+ const landmark=getCampusLandmark(id);if(!landmark)return;
+ showPanel(`${landmarkDetail(landmark)}<div class="panel-links"><button class="secondary-button" data-school="${esc(landmark.schoolId)}">View my BU education</button>${game?'<button class="text-link" data-travel="education">Travel to Education</button>':''}</div>`,{id:'landmark:'+id,focus:game?(game.landmarkFocus(id)||contentFocus('learning')):null,render:()=>openLandmark(id)});
 }
 function openExhibit({island,station,position}){
  const destination=exhibitTarget(station,island,content,islands);if(!destination)return;
  const exhibitFocus={...position,islandId:island,exhibit:true,camera:{distance:16,height:position.y+1,azimuth:Math.PI/4,elevation:.66}};
+ if(destination.landmark)return openLandmark(destination.landmark.id);
  if(destination.school)return openSchool(destination.school.schoolId,{exhibitFocus});
  if(!destination.entry)return openGroup(destination.group.id);
  const entry=destination.entry;
@@ -111,7 +118,7 @@ function openSettings(){showPanel(`<span class="eyebrow">MAKE YOURSELF AT HOME</
 async function settleLocomotion(){const start=performance.now();while(game?.player.transitioning&&performance.now()-start<2500)await new Promise(r=>setTimeout(r,20));}
 async function dock(){if(game&&!$('#panel').open){$('.intro').classList.add('compact');await game.primaryAction();await settleLocomotion();}}
 $('#panel-back').onclick=backPanel;$('#panel-close').onclick=()=>closePanel();$('#panel').addEventListener('cancel',e=>{e.preventDefault();closePanel({focusGame:true});});
-document.addEventListener('click',e=>{const b=e.target.closest('button,a');if(!b)return;const d=b.dataset;if('studio'in d)openStudio();else if(d.livery){game?.setLivery(d.livery);for(const card of document.querySelectorAll('[data-livery]'))card.setAttribute('aria-pressed',String(card.dataset.livery===settings.livery));$('#livery-status').textContent=LIVERIES.find(l=>l.id===settings.livery).name+' · saved for your next voyage';}else if(d.logtab)openLogbook(d.logtab);else if(b.id==='clear-walks'){store.clearWalks();openLogbook('walks');}else if(b.id==='clear-sealife'){store.clearSeaLife();openLogbook('sea');}else if(d.school)openSchool(d.school);else if(d.open)openEntry(d.open);else if(d.category)openDirectory(d.category);else if(d.travel)travel(d.travel);else if(d.mapId)openMap(d.mapId);else if(d.challenge)openChallenge(d.challenge);else if(d.start)startChallenge(d.start);else if('logbook'in d)openLogbook();else if('close'in d)closePanel();else if(b.id==='reading-mode'){closePanel({resume:false});enableFallback(false);}else if(b.id==='clear-logbook'){store.clearLogbook();toast('Exploration stamps cleared. A fresh voyage awaits.');}else if(b.classList.contains('brand')){e.preventDefault();openEntry('about');}});
+document.addEventListener('click',e=>{const b=e.target.closest('button,a');if(!b)return;const d=b.dataset;if('studio'in d)openStudio();else if(d.livery){game?.setLivery(d.livery);for(const card of document.querySelectorAll('[data-livery]'))card.setAttribute('aria-pressed',String(card.dataset.livery===settings.livery));$('#livery-status').textContent=LIVERIES.find(l=>l.id===settings.livery).name+' · saved for your next voyage';}else if(d.logtab)openLogbook(d.logtab);else if(b.id==='clear-walks'){store.clearWalks();openLogbook('walks');}else if(b.id==='clear-sealife'){store.clearSeaLife();openLogbook('sea');}else if(d.landmark)openLandmark(d.landmark);else if(d.school)openSchool(d.school);else if(d.open)openEntry(d.open);else if(d.category)openDirectory(d.category);else if(d.travel)travel(d.travel);else if(d.mapId)openMap(d.mapId);else if(d.challenge)openChallenge(d.challenge);else if(d.start)startChallenge(d.start);else if('logbook'in d)openLogbook();else if('close'in d)closePanel();else if(b.id==='reading-mode'){closePanel({resume:false});enableFallback(false);}else if(b.id==='clear-logbook'){store.clearLogbook();toast('Exploration stamps cleared. A fresh voyage awaits.');}else if(b.classList.contains('brand')){e.preventDefault();openEntry('about');}});
 document.addEventListener('change',e=>{if(e.target.id==='setting-sound')toggleSound(e.target.checked);if(e.target.id==='setting-quality'){settings.quality=e.target.value;game?.setQuality(settings.quality);}if(e.target.id==='setting-motion'){settings.reduced=e.target.checked;document.body.classList.toggle('reduced',settings.reduced);}if(e.target.id==='setting-zoom'){game?.setZoom(Number(e.target.value));syncZoom();}store.save();});
 $('#browse-button').onclick=()=>openDirectory();$('#mobile-menu').onclick=()=>openDirectory();$('#minimap-button').onclick=()=>openMap(minimapView.island?.id||'about');$('#settings-button').onclick=openSettings;$('#sound-button').onclick=()=>toggleSound();$('#games-button').onclick=openGames;$('#logbook-button').onclick=()=>openLogbook();$('#mobile-logbook').onclick=()=>openLogbook();
 $('#helm-button').onclick=()=>{$('.intro').classList.add('compact');$('#world').focus();toast(matchMedia('(pointer:coarse)').matches?'Use the joystick to steer. Go ashore lets Jack explore an island.':'WASD to sail · E to go ashore · F to play.');};
