@@ -353,8 +353,8 @@ export class Game {
   if(this.bicycleLoading)return this.bicycleLoading;
   this.bicycleLoading=(async()=>{try{
    let quality=this.settings.quality==='low'?'low':'high';
-   let gltf=await this.loader.loadAsync(`/models/${quality==='low'?'low/':''}bicycle.glb?v=14.2`);
-   if(quality!==(this.settings.quality==='low'?'low':'high')){quality=this.settings.quality==='low'?'low':'high';gltf=await this.loader.loadAsync(`/models/${quality==='low'?'low/':''}bicycle.glb?v=14.2`);}
+   let gltf=await this.loader.loadAsync(`/models/${quality==='low'?'low/':''}bicycle.glb?v=14.2.2`);
+   if(quality!==(this.settings.quality==='low'?'low':'high')){quality=this.settings.quality==='low'?'low':'high';gltf=await this.loader.loadAsync(`/models/${quality==='low'?'low/':''}bicycle.glb?v=14.2.2`);}
    let spawn=null;
    for(const [x,z]of [[BICYCLE.localSpawn.x,BICYCLE.localSpawn.z],[3.8,18.3],[3.2,17.8]]){
     const p=localToWorld(island,{x,z,yaw:BICYCLE.localSpawn.yaw});p.y=walk.groundAt(p);
@@ -372,7 +372,7 @@ export class Game {
   if(!this.bicycle||this.bicycleReloading)return;
   this.bicycleReloading=true;
   try{while(this.bicycle&&this.bicycle.quality!==(this.settings.quality==='low'?'low':'high')){
-   const quality=this.settings.quality==='low'?'low':'high',gltf=await this.loader.loadAsync(`/models/${quality==='low'?'low/':''}bicycle.glb?v=14.2`);
+   const quality=this.settings.quality==='low'?'low':'high',gltf=await this.loader.loadAsync(`/models/${quality==='low'?'low/':''}bicycle.glb?v=14.2.2`);
    this.bicycle.setModel(gltf.scene,quality);
   }}catch(error){console.warn('Bicycle quality switch failed',error.message);}finally{this.bicycleReloading=false;}
  }

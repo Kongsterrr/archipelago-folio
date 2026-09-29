@@ -5,6 +5,7 @@ import test from 'node:test';
 import {NodeIO} from '@gltf-transform/core';
 import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
 import {MeshoptDecoder} from 'meshoptimizer';
+import {Triangle,Vector3} from 'three';
 import {BICYCLE_RIG,classifyBicycleTriangle} from '../scripts/lib/bicycle-geometry.mjs';
 
 await MeshoptDecoder.ready;
@@ -95,4 +96,28 @@ test('quality variants share exact saddle, grips, wheel axles and opposing pedal
   assert.equal(left[0],-.145);assert.equal(right[0],.145);
   close(left.map((v,i)=>(v+right[i])/2),[0,.44,.04]);
   assert.ok(left[2]<.04&&right[2]>.04,'Pedals start opposite, correcting the source model.');
+});
+
+test('exported drop bars keep the supplied GLB silhouette, with grips on the original upper-bar surface',()=>{
+  // Independently measured from the original source triangles, after only
+  // uniform 1.35 scale and the -X to -Z coordinate rotation. The former raised,
+  // swept-back cockpit exceeds these bounds by 14–25 cm.
+  const original={min:[-.195982381,.600306702,-.480418476],max:[.195982381,.749157715,-.213615438]};
+  for(const [quality,document]of Object.entries(assets)){
+    const bar=node(document,'bicycle-handlebar-geometry'),matrix=bar.getWorldMatrix();
+    const bounds={min:[Infinity,Infinity,Infinity],max:[-Infinity,-Infinity,-Infinity]},triangles=[];
+    for(const primitive of bar.getMesh().listPrimitives()){
+      const positions=primitive.getAttribute('POSITION'),indices=primitive.getIndices().getArray();
+      const points=Array.from({length:positions.getCount()},(_,i)=>new Vector3(...transform(matrix,positions.getElement(i,[]))));
+      for(const p of points)for(let k=0;k<3;k++){bounds.min[k]=Math.min(bounds.min[k],p.getComponent(k));bounds.max[k]=Math.max(bounds.max[k],p.getComponent(k));}
+      for(let i=0;i<indices.length;i+=3){const triangle=new Triangle(points[indices[i]],points[indices[i+1]],points[indices[i+2]]);if(triangle.getArea()>1e-12)triangles.push(triangle);}
+    }
+    for(const end of ['min','max'])for(let k=0;k<3;k++)assert.ok(Math.abs(bounds[end][k]-original[end][k])<.003,`${quality}: original ${end} axis ${k}`);
+    for(const side of ['left','right']){
+      const grip=new Vector3(...worldPosition(node(document,'bicycle-grip-'+side))),closest=new Vector3();
+      const gap=Math.min(...triangles.map(t=>t.closestPointToPoint(grip,closest).distanceTo(grip)));
+      assert.ok(gap<.0025,`${quality} ${side}: grip must touch the imported upper bar, gap ${gap}`);
+      assert.ok(grip.y<.75&&grip.z<-.30,'hands cannot target the former extended cockpit');
+    }
+  }
 });

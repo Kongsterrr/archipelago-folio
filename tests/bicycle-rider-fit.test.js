@@ -113,6 +113,27 @@ test('pausing commits the last crank interpolation and refits both soles without
   }
 });
 
+test('Jack hinges forward from his seated hips while keeping his face above the unmodified bars',async()=>{
+  const f=await fixture();f.articulate(Math.PI/2,.26);f.update();
+  const pose=f.avatar.bicyclePose,bones=pose.bones,position=name=>f.group.worldToLocal(bones[name].getWorldPosition(new THREE.Vector3()));
+  const torso=position('Chest').sub(position('Hips'));
+  const lean=Math.atan2(-torso.z,torso.y);
+  assert.ok(lean>.7&&lean<1.1,`clear cycling hinge, not an upright torso: ${lean}`);
+  const status=f.avatar.bicycleContactStatus(f.bicycle);
+  assert.ok(new THREE.Vector3(...status.pelvis).distanceTo(new THREE.Vector3(...f.bicycle.contactTargets().pelvis))<1e-5,'pelvis remains on the saddle');
+  let lowestHead=Infinity;
+  f.avatar.model.traverse(mesh=>{
+    if(!mesh.isSkinnedMesh)return;
+    const ids=mesh.geometry.getAttribute('skinIndex'),weights=mesh.geometry.getAttribute('skinWeight');
+    for(let i=0;i<ids.count;i++)for(let k=0;k<4;k++){
+      if(weights.getComponent(i,k)<.65||mesh.skeleton.bones[ids.getComponent(i,k)].name!=='Head')continue;
+      const p=f.group.worldToLocal(mesh.getVertexPosition(i,new THREE.Vector3()).applyMatrix4(mesh.matrixWorld));lowestHead=Math.min(lowestHead,p.y);
+    }
+  });
+  assert.ok(lowestHead>.79,`actual head stays above the bar's .749m maximum: ${lowestHead}`);
+  for(const side of ['Left','Right'])assert.ok(status.palms[side].reach-status.palms[side].requested>.02,'a bent elbow retains reach while steering');
+});
+
 test('cycling reuses the existing Jack and restores walking, boat and quad poses after dismount', async () => {
   const f = await fixture(); f.update(); const model = f.avatar.model;
   for (let repeat = 0; repeat < 3; repeat++) {

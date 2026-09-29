@@ -1,12 +1,12 @@
 {
-  "version": 1,
-  "provenance": "Owner-supplied Tripo bicycle GLB; imported geometry, colors and all three texture maps retained. Compact frame and short-crank fit for Jack.",
+  "version": 2,
+  "provenance": "Owner-supplied Tripo bicycle GLB; imported geometry, colors and all three texture maps retained. Original handlebar shape with measured upper-bar grip contacts; compact frame and short-crank fit for Jack.",
   "sourceFile": "bicycle+3d+model.glb",
   "sourceBytes": 45869820,
   "sourceSHA256": "a2cb36e2e415692243bec151ddfaca626561f9a43e5034fbd820aad07c9688b6",
   "coordinateSystem": "Y-up, -Z forward, tire contact Y=0. Geometry is already in world units; runtime scale is 1.",
   "rig": {
-    "version": 1,
+    "version": 2,
     "wheelRadius": 0.27405,
     "crankRadius": 0.055,
     "saddleTop": [
@@ -21,14 +21,14 @@
     ],
     "grips": {
       "left": [
-        -0.2,
-        0.85,
-        -0.17
+        -0.10800000000000001,
+        0.73741947733665,
+        -0.31050000000000005
       ],
       "right": [
-        0.2,
-        0.85,
-        -0.17
+        0.10800000000000001,
+        0.7376467296177,
+        -0.31050000000000005
       ]
     },
     "crankCenter": [
@@ -69,14 +69,14 @@
     ],
     "grips": {
       "left": [
-        -0.315,
-        0.522,
-        0.13
+        -0.23,
+        0.546236649879,
+        0.08
       ],
       "right": [
-        -0.315,
-        0.522,
-        -0.13
+        -0.23,
+        0.546404984902,
+        -0.08
       ]
     },
     "crank": [
@@ -93,9 +93,9 @@
   "variants": {
     "high": {
       "file": "bicycle.glb",
-      "bytes": 2288368,
-      "triangles": 146180,
-      "vertices": 118108,
+      "bytes": 2287828,
+      "triangles": 146182,
+      "vertices": 118111,
       "draws": 11,
       "textures": [
         {
@@ -113,22 +113,22 @@
       ],
       "bounds": {
         "min": [
-          -0.22165153920650482,
+          -0.19587938487529755,
           0.0001235929012298742,
           -0.6749162646826075
         ],
         "max": [
-          0.22270791232585907,
-          0.8940518009725985,
+          0.19542619585990906,
+          0.7487401657628336,
           0.6749878954285389
         ]
       }
     },
     "low": {
       "file": "low/bicycle.glb",
-      "bytes": 1581112,
-      "triangles": 141011,
-      "vertices": 113979,
+      "bytes": 1580964,
+      "triangles": 141010,
+      "vertices": 113970,
       "draws": 11,
       "textures": [
         {
@@ -146,13 +146,13 @@
       ],
       "bounds": {
         "min": [
-          -0.22165153920650482,
+          -0.19449922442436218,
           0.0001235929012298742,
           -0.6749230043709011
         ],
         "max": [
-          0.22136983275413513,
-          0.8940383025274182,
+          0.19425202906131744,
+          0.74874019352428,
           0.6749878954285389
         ]
       }

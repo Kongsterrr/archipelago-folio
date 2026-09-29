@@ -6,18 +6,21 @@ export const BICYCLE_SOURCE = Object.freeze({
   frontAxle: [-.296, .203, 0], rearAxle: [.298, .203, 0],
   wheelRadius: .203,
   saddle: [.145, .535, 0],
-  grips: {left: [-.315, .522, .13], right: [-.315, .522, -.13]},
+  // Top-bar surface hits on the supplied mesh, suitable for a relaxed grip.
+  grips: {left: [-.230, .546236649879, .080], right: [-.230, .546404984902, -.080]},
   crank: [.045, .164, 0],
   pedal: [-.035, .218, .102],
 });
 
 export const BICYCLE_RIG = Object.freeze({
-  version: 1,
+  version: 2,
   wheelRadius: .203 * 1.35,
   crankRadius: .055,
   saddleTop: [0, .565, .10],
   steeringPivot: [0, .594, -.2835],
-  grips: {left: [-.20, .85, -.17], right: [.20, .85, -.17]},
+  // Original upper bar, rotated and uniformly scaled with the source.
+  // Jack reaches these by leaning forward; the cockpit is never stretched.
+  grips: Object.fromEntries(Object.entries(BICYCLE_SOURCE.grips).map(([side,[x,y,z]])=>[side,[-z*1.35,y*1.35,x*1.35]])),
   crankCenter: [0, .43, .04],
   pedalOffset: .145,
   pedalThickness: .020,
@@ -95,15 +98,7 @@ function transformPart(name,x,y,z){
     const seat=BICYCLE_SOURCE.saddle;
     return [p[0],(y-seat[1])*s+BICYCLE_RIG.saddleTop[1],(x-seat[0])*s+BICYCLE_RIG.saddleTop[2]];
   }
-  if(name==='handlebar'){
-    // Preserve the drops, tape, brakes and all original handlebar surfaces.
-    // A smooth bend brings the grips back toward the small rider's shoulders.
-    const away=Math.min(1,Math.abs(z)/.11),blend=away*away*(3-2*away);
-    p[0]*=.20/(.13*s);
-    p[1]+=(.85-.522*s)*blend;
-    p[2]+=(-.17+.315*s)*blend;
-    return p;
-  }
+  if(name==='handlebar')return p;
   if(name.startsWith('crank-')||name==='chainring'){
     const dx=(x-.045)*s,dy=(y-.164)*s;
     const r=Math.hypot(-.08,.054)*s,along=(dx*(-.08)+dy*.054)/Math.hypot(-.08,.054),across=(dx*.054+dy*.08)/Math.hypot(-.08,.054);
