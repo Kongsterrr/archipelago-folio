@@ -116,6 +116,7 @@ export class Game {
    }else{
     const shore=item.group.children.filter(o=>o.userData.shore);if(item.model){this.surfaces.release(item.model);this.controllers.get(id)?.release();releaseSunsetMaterials(item.model);}if(item.model)item.model.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});item.group.clear();item.quality=quality;item.group.add(...shore,gltf.scene);item.model=gltf.scene;applySunsetMaterials(gltf.scene,id);this.controllers.get(id).bind(gltf.scene);this.surfaces.bind(gltf.scene,id);gltf.scene.traverse(o=>{if(o.isMesh&&(Array.isArray(o.material)?o.material:[o.material]).some(m=>['glass','campus_windowClear'].includes(m.userData.sunsetMaterial?.role)))o.castShadow=false;});
    }
+   if(id==='education'&&this.bicycle)this.bicycle.setSurfaceModel(item.model);
    if(id==='projects'&&this.walkLayouts?.has(id))this.installQuadBike(item.island,this.ensureWalkWorld(item.island)).catch(e=>console.warn(e));
    this.loadedCount++;this.events.trigger('asset',[{id,count:this.loadedCount}]);return true;
   }catch(error){if(item){item.lastFailure=performance.now();item.requested=false;}console.warn('Model unavailable: '+id,error.message);this.events.trigger('asseterror',[id]);}
@@ -361,7 +362,7 @@ export class Game {
    }
    if(!spawn)throw new Error('The campus bicycle parking space is unavailable.');
    const bicycle=new BicycleController(RAPIER,this.world,walk,spawn);
-   try{bicycle.setModel(gltf.scene,quality);}catch(error){bicycle.dispose();throw error;}
+   try{bicycle.setModel(gltf.scene,quality);bicycle.setSurfaceModel(this.loaded?.get(island.id)?.model);}catch(error){bicycle.dispose();throw error;}
    this.bicycle=bicycle;this.scene.add(bicycle.group);this.player.bicycle=bicycle;
    this.bicycleRideMarker=label('E',{width:64,height:64,worldWidth:.4,background:'#254f62',color:'#fff5dd',fontSize:32});this.scene.add(this.bicycleRideMarker);this.bicycleRideMarker.visible=false;
    this.world.propagateModifiedBodyPositionsToColliders();this.world.updateSceneQueries();return this.bicycle;

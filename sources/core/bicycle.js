@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {QuadBikeController, quadFootprintClear} from './quad-bike.js';
+import {BicycleSurface,bicycleTireEnvelope,fitBicycleToSurface} from './bicycle-surface.js';
 
 // Campus cycling is a grounded vehicle: no side-slip, spring motion or idle wobble.
 export function integrateBicycleDrive(state,input,dt){
@@ -45,6 +46,12 @@ export class BicycleController extends QuadBikeController{
   this.model=model;this.quality=quality;this.visual.add(model);
   model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
   Object.assign(this,{rig,wheelPivots,steeringNode,crankNode,pedals});
+  this.tireEnvelopes=wheelPivots.map(wheel=>bicycleTireEnvelope(wheel,rig.wheelRadius||BICYCLE.wheelRadius));
+  this.tireWheelbase=wheelPivots[0].getWorldPosition(new THREE.Vector3()).distanceTo(wheelPivots[1].getWorldPosition(new THREE.Vector3()));
+  this.updateVisual(0,true);
+ }
+ setSurfaceModel(model){
+  this.surface=new BicycleSurface(model,this.walkWorld);
   this.updateVisual(0,true);
  }
  step(input,dt){
@@ -78,7 +85,7 @@ export class BicycleController extends QuadBikeController{
   this.steeringNode.rotation.y=(this.steering||0)*.26;
   this.crankNode.rotation.x=-crank;
   for(const pedal of this.pedals)pedal.rotation.x=crank;
-  this.visualCrankAngle=crank;this.group.updateWorldMatrix(true,true);
+  this.visualCrankAngle=crank;fitBicycleToSurface(this);this.group.updateWorldMatrix(true,true);
  }
  contactTargets(){
   this.group.updateWorldMatrix(true,true);

@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V14.2 — Campus Cycling** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V14.2.1 — Paving Contact Fix** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -63,13 +63,20 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V13 — Projects Highlands** | Terraced Projects terrain, numbered project kiosks, direct reading while riding, slope-aware quad and terrain map | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.1 — Grounded Trails** | Grippy quad handling, intuitive reverse steering, reliable mountain-contact escape, readable rock banks and a flicker-free pier landing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.2 — Open Mountains** | Shared all-direction mountain climbing on foot and by quad, continuous sculpted ridges, terrain-following movement and retained obstacle protection | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
-| **V14.2 — Campus Cycling** | An imported rideable bicycle at the Education bridgehead, grounded campus handling and fitted animated pedal/handlebar contacts | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V14.2 — Campus Cycling** | An imported rideable bicycle at the Education bridgehead, grounded campus handling and fitted animated pedal/handlebar contacts | [8b33f61](https://github.com/Kongsterrr/archipelago-folio/commit/8b33f6197f17cf4a349da82b2ce8d6784436b2c5) |
+| **V14.2.1 — Paving Contact Fix** | Bicycle tires follow the actual campus paving and plaza heights, including transitions to grass and stationary parking | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.1 — Campus Signage** | Removes redundant arrival signs and ground lettering; mounts landmark names on their own facades | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V14.2.1 — Paving Contact Fix
+
+- Front and rear tires now follow the actual exported roads, plazas and Duan flooring instead of using grass height everywhere. The whole frame and rider share the resulting height and pitch.
+- Cached tread envelopes clear raised pavement edges through wheel rotation without introducing parked bobbing. High/low quality swaps refresh the same contact data.
+- Keeps the imported model, navigation collisions, controls and campus layout unchanged. Five new asset-based regressions bring the suite to **536 tests**.
 
 ### V14.2 — Campus Cycling
 
