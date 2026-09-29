@@ -64,11 +64,11 @@ export class BicycleRiderPose extends QuadRiderPose {
     const frameQ = worldRotation(frame);
     const toWorld = coordinates => frame.localToWorld(new THREE.Vector3(...coordinates));
 
-    // Hinge at the hips to reach the imported upper bar instead of stretching
+    // Hinge at the hips to reach the original forward bar shoulders instead of stretching
     // the cockpit toward an upright rider. Counter-rotate the neck to look
     // ahead. IK below keeps the pelvis seated and soles on the moving pedals.
     // Bone translations, lengths and Jack's scale remain unchanged.
-    for (const [name, amount] of [['Hips', -.70], ['Spine', -.15], ['Chest', -.10], ['Neck', .83]]) {
+    for (const [name, amount] of [['Hips', -.75], ['Spine', -.15], ['Chest', -.10], ['Neck', .88]]) {
       const bone = this.bones[name];
       const delta = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0).applyQuaternion(frameQ), amount);
       bone.quaternion.copy(worldRotation(bone.parent).invert().multiply(delta).multiply(worldRotation(bone))).normalize();

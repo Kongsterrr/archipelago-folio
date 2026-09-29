@@ -98,7 +98,7 @@ test('quality variants share exact saddle, grips, wheel axles and opposing pedal
   assert.ok(left[2]<.04&&right[2]>.04,'Pedals start opposite, correcting the source model.');
 });
 
-test('exported drop bars keep the supplied GLB silhouette, with grips on the original upper-bar surface',()=>{
+test('exported drop bars keep the supplied GLB silhouette, with grips on the original forward shoulders',()=>{
   // Independently measured from the original source triangles, after only
   // uniform 1.35 scale and the -X to -Z coordinate rotation. The former raised,
   // swept-back cockpit exceeds these bounds by 14–25 cm.
@@ -116,8 +116,8 @@ test('exported drop bars keep the supplied GLB silhouette, with grips on the ori
     for(const side of ['left','right']){
       const grip=new Vector3(...worldPosition(node(document,'bicycle-grip-'+side))),closest=new Vector3();
       const gap=Math.min(...triangles.map(t=>t.closestPointToPoint(grip,closest).distanceTo(grip)));
-      assert.ok(gap<.0025,`${quality} ${side}: grip must touch the imported upper bar, gap ${gap}`);
-      assert.ok(grip.y<.75&&grip.z<-.30,'hands cannot target the former extended cockpit');
+      assert.ok(gap<.0025,`${quality} ${side}: grip must touch the imported bar shoulder, gap ${gap}`);
+      assert.ok(grip.y<.75&&grip.z<-.35&&grip.z>-.38,'hands move modestly ahead of the old upper-bar grip, without altering the cockpit');
     }
   }
 });

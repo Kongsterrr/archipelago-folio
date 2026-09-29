@@ -1,12 +1,12 @@
 {
-  "version": 2,
-  "provenance": "Owner-supplied Tripo bicycle GLB; imported geometry, colors and all three texture maps retained. Original handlebar shape with measured upper-bar grip contacts; compact frame and short-crank fit for Jack.",
+  "version": 3,
+  "provenance": "Owner-supplied Tripo bicycle GLB; imported geometry, colors and all three texture maps retained. Original handlebar shape with measured forward-shoulder grip contacts; compact frame and short-crank fit for Jack.",
   "sourceFile": "bicycle+3d+model.glb",
   "sourceBytes": 45869820,
   "sourceSHA256": "a2cb36e2e415692243bec151ddfaca626561f9a43e5034fbd820aad07c9688b6",
   "coordinateSystem": "Y-up, -Z forward, tire contact Y=0. Geometry is already in world units; runtime scale is 1.",
   "rig": {
-    "version": 2,
+    "version": 3,
     "wheelRadius": 0.27405,
     "crankRadius": 0.055,
     "saddleTop": [
@@ -21,14 +21,14 @@
     ],
     "grips": {
       "left": [
-        -0.10800000000000001,
-        0.73741947733665,
-        -0.31050000000000005
+        -0.15525000000000003,
+        0.7482144263346001,
+        -0.36450000000000005
       ],
       "right": [
-        0.10800000000000001,
-        0.7376467296177,
-        -0.31050000000000005
+        0.15525000000000003,
+        0.7479688237857001,
+        -0.36450000000000005
       ]
     },
     "crankCenter": [
@@ -69,14 +69,14 @@
     ],
     "grips": {
       "left": [
-        -0.23,
-        0.546236649879,
-        0.08
+        -0.27,
+        0.554232908396,
+        0.115
       ],
       "right": [
-        -0.23,
-        0.546404984902,
-        -0.08
+        -0.27,
+        0.554050980582,
+        -0.115
       ]
     },
     "crank": [
@@ -93,7 +93,7 @@
   "variants": {
     "high": {
       "file": "bicycle.glb",
-      "bytes": 2287828,
+      "bytes": 2287832,
       "triangles": 146182,
       "vertices": 118111,
       "draws": 11,
@@ -126,7 +126,7 @@
     },
     "low": {
       "file": "low/bicycle.glb",
-      "bytes": 1580964,
+      "bytes": 1580968,
       "triangles": 141010,
       "vertices": 113970,
       "draws": 11,

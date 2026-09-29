@@ -131,7 +131,23 @@ test('Jack hinges forward from his seated hips while keeping his face above the 
     }
   });
   assert.ok(lowestHead>.79,`actual head stays above the bar's .749m maximum: ${lowestHead}`);
-  for(const side of ['Left','Right'])assert.ok(status.palms[side].reach-status.palms[side].requested>.02,'a bent elbow retains reach while steering');
+  for(const side of ['Left','Right'])assert.ok(status.palms[side].reach-status.palms[side].requested>.008,'a bent elbow retains reach while steering');
+});
+
+test('forward road-bar grip opens the elbows without locking them at full steering',async()=>{
+  const f=await fixture();
+  for(const steering of[-.26,0,.26]){
+    f.articulate(.8,steering);f.update();
+    const pose=f.avatar.bicyclePose;
+    for(const side of ['Left','Right']){
+      const point=name=>pose.bones[side+name].getWorldPosition(new THREE.Vector3());
+      const upper=point('Arm').sub(point('ForeArm')),lower=point('Hand').sub(point('ForeArm'));
+      const angle=THREE.MathUtils.radToDeg(upper.angleTo(lower));
+      if(steering===0)assert.ok(angle>100&&angle<120,`relaxed, more extended elbow: ${angle}`);
+      assert.ok(angle<160,`elbow must not lock while turning: ${angle}`);
+      assert.ok(pose.contacts[side].reach-pose.contacts[side].requested>.008);
+    }
+  }
 });
 
 test('cycling reuses the existing Jack and restores walking, boat and quad poses after dismount', async () => {

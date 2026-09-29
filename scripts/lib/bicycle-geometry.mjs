@@ -6,19 +6,19 @@ export const BICYCLE_SOURCE = Object.freeze({
   frontAxle: [-.296, .203, 0], rearAxle: [.298, .203, 0],
   wheelRadius: .203,
   saddle: [.145, .535, 0],
-  // Top-bar surface hits on the supplied mesh, suitable for a relaxed grip.
-  grips: {left: [-.230, .546236649879, .080], right: [-.230, .546404984902, -.080]},
+  // Real top surface at the road bar's forward shoulders, ahead of the stem.
+  grips: {left: [-.270, .554232908396, .115], right: [-.270, .554050980582, -.115]},
   crank: [.045, .164, 0],
   pedal: [-.035, .218, .102],
 });
 
 export const BICYCLE_RIG = Object.freeze({
-  version: 2,
+  version: 3,
   wheelRadius: .203 * 1.35,
   crankRadius: .055,
   saddleTop: [0, .565, .10],
   steeringPivot: [0, .594, -.2835],
-  // Original upper bar, rotated and uniformly scaled with the source.
+  // Original bar shoulders, rotated and uniformly scaled with the source.
   // Jack reaches these by leaning forward; the cockpit is never stretched.
   grips: Object.fromEntries(Object.entries(BICYCLE_SOURCE.grips).map(([side,[x,y,z]])=>[side,[-z*1.35,y*1.35,x*1.35]])),
   crankCenter: [0, .43, .04],
