@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V13.3 — Clear Project Stops** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V14 — Campus Shores** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -62,8 +62,17 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V13 — Projects Highlands** | Terraced Projects terrain, numbered project kiosks, direct reading while riding, slope-aware quad and terrain map | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.1 — Grounded Trails** | Grippy quad handling, intuitive reverse steering, reliable mountain-contact escape, readable rock banks and a flicker-free pier landing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.2 — Open Mountains** | Shared all-direction mountain climbing on foot and by quad, continuous sculpted ridges, terrain-following movement and retained obstacle protection | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V14 — Campus Shores
+
+Education is now a campus-inspired miniature: BU on the left with Marsh Chapel, Marsh Plaza, a CAS facade, Bay State Road brownstones and a static Green Line tram; CMU on the right with Hamerschlag Hall, Hamburg/Heinz, a campus lawn and The Fence. The existing shoreline, berths, island camera, character and other three islands remain in place. Connected paths lead from the welcome plaza to both school exhibits, the shared book sculpture, benches and the Lighthouse Link entrance.
+
+School exhibits open with **E · View education** or a click/tap across their face. The Education menu presents two school cards directly; each panel shows only the corresponding verified degree, graduation date, GPA and study topics. Both remain available in the HTML reading mode. The three Fence paint patterns are a local visual interaction, without new records or accounts. BU reading lights its nearby windows; quality switches retain this transient feedback. The local north-up map uses the same school identifiers, building footprints and path data as the scene.
+
+Campus geometry is original, generated in `scripts/lib/education-campus.mjs` using official campus references listed in `THIRD_PARTY_NOTICES.md`. It combines landmarks at a compressed scale rather than reproducing the real campus map, and does not assert that Jack attended classes in any specific depicted building. Run `node scripts/build-walk-islands.mjs --only=education` to rebuild only Education high/low resources. Existing exploration and challenge records require no migration. See [validation notes](VALIDATION.md) for actual test conditions and remaining device limitations.
 
 ### V13.3 — Clear Project Stops
 

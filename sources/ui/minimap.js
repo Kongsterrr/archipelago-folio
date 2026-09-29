@@ -64,6 +64,7 @@ export class VoyageMinimap {
  }
  drawDetails(island,g,projection,w){
   const c=this.ctx;
+  for(const campus of g.campuses){if(!campus.polygon.length)continue;this.polygon(campus.polygon,projection);c.fillStyle=campus.schoolId==='bu'?'#dbcac2':'#c0d0a5';c.fill();}
   if(g.terrain.length){
    const key=[w,this.canvas.clientHeight,projection.scale].join(':');
    if(g.mapPaths?.key!==key){
@@ -74,11 +75,11 @@ export class VoyageMinimap {
    for(const band of g.mapPaths.bands){c.fillStyle=band.color;c.fill(band.path);}
   }
   for(const road of g.roads.length?g.roads:[{points:g.route,width:2.05}])if(road.points.length){c.beginPath();road.points.forEach((p,n)=>{const q=projection.project(p);n?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y);});c.lineWidth=Math.max(2.5,projection.scale*road.width);c.strokeStyle='#fff3d5';c.stroke();}
-  for(const o of g.obstacles){if(o.width*o.depth<2||o.height<1.4)continue;this.polygon(o.polygon,projection);c.fillStyle='#98afa0';c.fill();c.strokeStyle='#718b80';c.lineWidth=.7;c.stroke();}
+  for(const o of g.obstacles){if(o.width*o.depth<2||o.height<1.4)continue;this.polygon(o.polygon,projection);c.fillStyle=o.mapColor||'#98afa0';c.fill();c.strokeStyle='#718b80';c.lineWidth=.7;c.stroke();}
   for(const s of g.stations){const p=projection.project(s);this.dot(p,s.type==='read'?3.4:2.3,s.type==='read'?'#285d72':'#94804d',PAPER);}
   if(island.id==='education'){
-   const schools=g.stations.filter(s=>s.id.endsWith(':bu')||s.id.endsWith(':cmu'));
-   schools.forEach((s,n)=>{const p=projection.project(s);this.tag(n?'CMU':'BU',p.x+(n?19:-19),p.y-13,10,w);});
+   const schools=g.campuses.length?g.campuses:g.stations.filter(s=>s.schoolId&&s.primary);
+   for(const school of schools){const p=projection.project(school);this.tag(school.schoolId==='bu'?'BU':'CMU',p.x,p.y-13,10,w);}
   }else{
    for(const d of g.districts){const p=projection.project(d),primary=g.stations.find(s=>s.contentId===d.id&&s.primary);this.tag(`${primary?primary.number+' ':''}${NAMES[d.id]||d.id}`,p.x,p.y-16,w<190?9:10,w);}
   }

@@ -14,7 +14,9 @@ import {ALL_EXTENSIONS} from '@gltf-transform/extensions';
 import {meshopt, dedup, prune} from '@gltf-transform/functions';
 import {MeshoptEncoder,MeshoptDecoder} from 'meshoptimizer';
 import {createHighlands,highlandsHeight,highlandsVisibleTerrain,highlandsRockStrata} from './lib/projects-highlands.mjs';
+import {buildEducationCampus,campusPalette} from './lib/education-campus.mjs';
 const font = new FontLoader().parse(JSON.parse(await fs.readFile(new URL('../node_modules/three/examples/fonts/helvetiker_bold.typeface.json', import.meta.url),'utf8')));
+const campusSchools=JSON.parse(await fs.readFile(new URL('../sources/content.json',import.meta.url),'utf8')).find(item=>item.id==='learning').schools;
 const OUT = process.env.ARCHIPELAGO_OUTPUT || fileURLToPath(new URL('../static/models/', import.meta.url));
 await fs.mkdir(OUT,{recursive:true});
 globalThis.FileReader = class {
@@ -46,6 +48,7 @@ mats.highlandsCliff=new THREE.MeshStandardMaterial({name:'highlandsCliff',color:
 mats.highlandsTrailEdge=new THREE.MeshStandardMaterial({name:'highlandsTrailEdge',color:'#94775a',roughness:.96});
 mats.highlandsStrataDark=new THREE.MeshStandardMaterial({name:'highlandsStrataDark',color:'#5d626d',roughness:.96});
 mats.highlandsStrataLight=new THREE.MeshStandardMaterial({name:'highlandsStrataLight',color:'#b9b5a8',roughness:.96});
+for(const[name,color]of Object.entries(campusPalette))mats[name]=new THREE.MeshStandardMaterial({name,color,roughness:name==='campus_glass'?.32:.80,metalness:name==='campus_copper'?.16:0});
 const harborMaterials=new Map();
 let root, seed, layout, low=false,currentIsland='',highlandsBuild=false;
 function authoredUV(geometry,material){
@@ -212,15 +215,17 @@ function solid(x,z,w,d,h=1,y=Y,rotation=0,name='obstacle'){layout.obstacles.push
 function occluder(name,fn){const owner=root,g=group();g.name='occluder_'+name;root=g;fn();root=owner;return g;}
 function cubeSolid(w,h,d,x,y,z,mat='ivory',rotation=0,name='building'){bevel(w,h,d,x,y,z,mat,.06,[0,rotation,0]);solid(x,z,w,d,h,y-h/2,rotation,name);}
 // A single union surface avoids coplanar dark joins where the scenic route doubles back.
-function harborPath(points,width,y){
- const step=.12,r=width/2,loX=Math.floor((Math.min(...points.map(p=>p[0]))-r)/step)-1,hiX=Math.ceil((Math.max(...points.map(p=>p[0]))+r)/step)+1,loZ=Math.floor((Math.min(...points.map(p=>p[1]))-r)/step)-1,hiZ=Math.ceil((Math.max(...points.map(p=>p[1]))+r)/step)+1;
+function harborPath(points,width,y,branches=null){
+ const campusPaving=currentIsland==='education';
+ const segments=branches?branches.flatMap(points=>points.slice(1).map((b,i)=>[points[i],b])):points.slice(1).map((b,i)=>[points[i],b]);
+ const step=campusPaving?.045:.12,r=width/2,loX=Math.floor((Math.min(...points.map(p=>p[0]))-r)/step)-1,hiX=Math.ceil((Math.max(...points.map(p=>p[0]))+r)/step)+1,loZ=Math.floor((Math.min(...points.map(p=>p[1]))-r)/step)-1,hiZ=Math.ceil((Math.max(...points.map(p=>p[1]))+r)/step)+1;
  const filled=new Set(),key=(x,z)=>x+','+z;
- for(let x=loX;x<=hiX;x++)for(let z=loZ;z<=hiZ;z++)if(points.slice(1).some((b,i)=>distanceToSegment((x+.5)*step,(z+.5)*step,points[i],b)<=r))filled.add(key(x,z));
+ for(let x=loX;x<=hiX;x++)for(let z=loZ;z<=hiZ;z++)if(segments.some(([a,b])=>distanceToSegment((x+.5)*step,(z+.5)*step,a,b)<=r))filled.add(key(x,z));
  const edges=new Map(),add=(a,b)=>edges.set(key(...a),b);
  for(const k of filled){const[x,z]=k.split(',').map(Number);if(!filled.has(key(x,z-1)))add([x,z],[x+1,z]);if(!filled.has(key(x+1,z)))add([x+1,z],[x+1,z+1]);if(!filled.has(key(x,z+1)))add([x+1,z+1],[x,z+1]);if(!filled.has(key(x-1,z)))add([x,z+1],[x,z]);}
  const loops=[];
  while(edges.size){let at=edges.keys().next().value;const start=at,loop=[];do{const next=edges.get(at);if(!next)break;loop.push(at.split(',').map(v=>Number(v)*step));edges.delete(at);at=key(...next);}while(at!==start);if(loop.length>3)loops.push(loop.filter((p,i)=>{const a=loop[(i+loop.length-1)%loop.length],b=loop[(i+1)%loop.length];return Math.abs((p[0]-a[0])*(b[1]-p[1])-(p[1]-a[1])*(b[0]-p[0]))>1e-7;}));}
- function simplify(points,tolerance=.075){if(points.length<4)return points;let best=0,index=0;for(let i=1;i<points.length-1;i++){const d=distanceToSegment(...points[i],points[0],points.at(-1));if(d>best){best=d;index=i;}}if(best<=tolerance)return[points[0],points.at(-1)];return[...simplify(points.slice(0,index+1),tolerance).slice(0,-1),...simplify(points.slice(index),tolerance)];}
+ function simplify(points,tolerance=campusPaving?.065:.075){if(points.length<4)return points;let best=0,index=0;for(let i=1;i<points.length-1;i++){const d=distanceToSegment(...points[i],points[0],points.at(-1));if(d>best){best=d;index=i;}}if(best<=tolerance)return[points[0],points.at(-1)];return[...simplify(points.slice(0,index+1),tolerance).slice(0,-1),...simplify(points.slice(index),tolerance)];}
  for(let i=0;i<loops.length;i++){const p=loops[i],middle=Math.floor(p.length/2);loops[i]=[...simplify(p.slice(0,middle+1)).slice(0,-1),...simplify([...p.slice(middle),p[0]]).slice(0,-1)];}
  const area=p=>p.reduce((s,a,i)=>{const b=p[(i+1)%p.length];return s+a[0]*b[1]-b[0]*a[1];},0);
  for(const outer of loops.filter(p=>area(p)>0)){
@@ -560,7 +565,7 @@ async function exportIsland(name){
  }
  output.userData={originalProceduralAsset:true,version:11,author:'Archipelago-folio original walkable island builder',walkable:true,seaLevel:0,animationNodes:animationNodes.map(n=>n.name)};
  const bounds=new THREE.Box3().setFromObject(output);const raw=await new GLTFExporter().parseAsync(output,{binary:true,onlyVisible:true,trs:true});if(name==='harbor'&&!low&&process.env.ARCHIPELAGO_SOURCE_OUT){await fs.mkdir(process.env.ARCHIPELAGO_SOURCE_OUT,{recursive:true});root.traverse(o=>{if(o.isMesh&&!o.name)o.name='part_'+o.material.name+'_'+o.id;});const source=await new GLTFExporter().parseAsync(root,{binary:true,onlyVisible:true,trs:true});await fs.writeFile(path.join(process.env.ARCHIPELAGO_SOURCE_OUT,'harbor.glb'),Buffer.from(source));}const doc=await io.readBinary(new Uint8Array(raw));await doc.transform(dedup(),prune({keepAttributes:true}),meshopt({encoder:MeshoptEncoder,level:name==='projects'&&low?'high':'medium'}));const file=path.join(OUT,low?'low':'',name+'.glb');await io.write(file,doc);const bytes=(await fs.stat(file)).size;
- const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:name==='projects'?'v133-readable-project-arrival':'v11-four-isles',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{...layout.dock},clearApproach:{min:[-7,0,layout.dock.endZ+2],max:[7,0,layout.dock.endZ+18],spawn:[0,0,layout.dock.endZ+8]},districts:layout.districts,camera:{target:[0,2,0],distance:Math.max(PARENTS[name].width,PARENTS[name].depth)*1.18},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
+ const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:name==='education'?'v14-campus-shores':name==='projects'?'v133-readable-project-arrival':'v11-four-isles',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{...layout.dock},clearApproach:{min:[-7,0,layout.dock.endZ+2],max:[7,0,layout.dock.endZ+18],spawn:[0,0,layout.dock.endZ+8]},districts:layout.districts,camera:{target:[0,2,0],distance:Math.max(PARENTS[name].width,PARENTS[name].depth)*1.18},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
  if(name==='amtrak'){data.animation={train:{trackCentre:[0,0,-1.4],trackRadii:[8.8,5.8],initialAngle:0,rootY:0,forward:'-Z',duration:10}};data.trainTrack={...TRACK,points:Array.from({length:64},(_,i)=>{const a=i*Math.PI*2/64;return[TRACK.radiusX*Math.cos(a),0,TRACK.center[2]+TRACK.radiusZ*Math.sin(a)];}),trainForward:'-Z',rootY:0,railY:Y+.07};}
  return data;
 }
@@ -597,6 +602,7 @@ function parentTerrain(name,index){
  shapePrism(shore.map(([x,z])=>[x*.96,z*.96]),Y-.08,Y,'grass');
  layout={id:name,groundY:Y,shore:shore.map(([x,z])=>[+(x*.96).toFixed(5),+(z*.96).toFixed(5)]),surfaces:[],obstacles:[],route:[],stations:[],benches:[],bench:null,berths:[],districts:[],crossings:[]};
  parentPier(spec.depth/2);
+ if(name==='education')return;
  const headingZ=spec.depth*.5-5.5;
  // Entry identity is readable from the sea; the broad path passes to both sides.
  for(const x of[-5.8,5.8]){lamp(x,headingZ,'teal',2.4);solid(x,headingZ,.4,.4,3.4,Y,0,'arrival lamp');}
@@ -777,19 +783,32 @@ function highlandsIsland(){
  layout.validation={connectedFromDock:true,stationsReachable:layout.stations.length,pathWidth:5,routeClearance:2.5,maxRoadGradeDegrees:+maxSlope.toFixed(3),terrainTriangles:layout.terrain.indices.length/3};
  highlandsBuild=false;
 }
+
+function validateCampus(){
+ // Verify the walkable route independently of the decorative mesh.
+ for(const path of layout.paths){for(let i=1;i<path.points.length;i++){
+  const a=path.points[i-1],b=path.points[i],steps=Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/.15);
+  for(let j=0;j<=steps;j++) {const x=a[0]+(b[0]-a[0])*j/steps,z=a[1]+(b[1]-a[1])*j/steps;
+   const margin=z>layout.dock.startZ?.30:1.2;
+   if(!parentRouteFree(x,z,margin))throw Error('Campus route obstruction '+path.id+' at '+x+','+z);
+  }
+ }}
+ for(const station of layout.stations)if(!parentRouteFree(station.x,station.z,.3))throw Error('Campus station obstruction '+station.id);
+}
+
 await Promise.all([MeshoptEncoder.ready,MeshoptDecoder.ready]);
 const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.encoder':MeshoptEncoder,'meshopt.decoder':MeshoptDecoder});
 await fs.mkdir(path.join(OUT,'low'),{recursive:true});
 const prior=JSON.parse(await fs.readFile(path.join(OUT,'manifest.json'),'utf8').catch(()=>'{"models":[]}'));
 const priorLow=JSON.parse(await fs.readFile(path.join(OUT,'low/manifest.json'),'utf8').catch(()=>JSON.stringify(prior)));
 const only=process.argv.find(a=>a.startsWith('--only='))?.slice(7),previousLayouts=JSON.parse(await fs.readFile(path.join(OUT,'walk-layout.json'),'utf8')).islands;
-if(only&&only!=='projects')throw Error('Supported selective build: --only=projects');
+if(only&&!['projects','education'].includes(only))throw Error('Supported selective build: --only=projects or --only=education');
 const layouts=[],reports=[];
 for(const quality of['high','low']){
  low=quality==='low';const models=[];
  for(const[i,[name,spec]]of Object.entries(PARENTS).entries()){
   if(only&&name!==only){models.push((low?priorLow:prior).models.find(m=>m.id===name));if(!low)layouts.push(previousLayouts.find(l=>l.id===name));continue;}
-  if(name==='projects')highlandsIsland();else{parentTerrain(name,i);const districts=spec.districts.map(([contentId,x,z])=>assembleDistrict(name,contentId,x,z));parentPaths(districts);arrivalGarden(name);}
+  if(name==='education'){parentTerrain(name,i);buildEducationCampus({root,layout,low,Y,schools:campusSchools,box,bevel,cyl,cone,mesh,rod,torus,text3D,group,solid,pitchedRoof,slatBench,lamp,books,harborPath,inside});validateCampus();}else if(name==='projects')highlandsIsland();else{parentTerrain(name,i);const districts=spec.districts.map(([contentId,x,z])=>assembleDistrict(name,contentId,x,z));parentPaths(districts);arrivalGarden(name);}
   const asset=await exportIsland(name);models.push(asset);
   if(!low)layouts.push(structuredClone(layout));else if(JSON.stringify(layout)!==JSON.stringify(layouts.find(l=>l.id===name)))throw Error('High/low walk data differs: '+name);
   reports.push({id:name,quality,bytes:asset.bytes,triangles:asset.triangles,drawCalls:asset.drawCalls,routeSeconds:layout.estimatedWalkingSeconds,...layout.validation});

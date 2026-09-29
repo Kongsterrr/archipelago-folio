@@ -9,7 +9,7 @@ export function selectLandExhibit(actions,position,{riding=false,previous=null,v
 }
 
 export function exhibitReadLabel(action){
- return action?.station?.directoryOverview||action?.station?.directory?'Browse projects':action?.station?.readFull?'View project':action?.label||'Read exhibit';
+ return action?.station?.readLabel||(action?.station?.directoryOverview||action?.station?.directory?'Browse projects':action?.station?.readFull?'View project':action?.label||'Read exhibit');
 }
 
 // Dispatch and the on-screen E button share this priority, including overlapping exhibits.

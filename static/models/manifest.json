@@ -2490,14 +2490,14 @@
       "id": "education",
       "name": "education",
       "file": "education.glb",
-      "bytes": 504248,
-      "rawBytes": 1539052,
-      "revision": "v11-four-isles",
-      "sourceMeshes": 620,
-      "drawCalls": 68,
-      "staticDrawCalls": 14,
-      "vertices": 40787,
-      "triangles": 26860,
+      "bytes": 945636,
+      "rawBytes": 3495424,
+      "revision": "v14-campus-shores",
+      "sourceMeshes": 1005,
+      "drawCalls": 113,
+      "staticDrawCalls": 15,
+      "vertices": 93777,
+      "triangles": 62666,
       "bounds": {
         "min": [
           -28,
@@ -2506,22 +2506,142 @@
         ],
         "max": [
           28,
-          6.059999942779541,
+          8.579999923706055,
           30
         ]
       },
       "dimensions": [
         56,
-        6.739999949932098,
+        9.259999930858612,
         52
       ],
       "animationNodes": [
         {
+          "name": "anim_campus_fence",
+          "position": [
+            16,
+            0.85,
+            -3.8
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_campus_fence_pattern_0",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_campus_fence_pattern_1",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_campus_fence_pattern_2",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_bu_windows",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
           "name": "anim_book",
           "position": [
             0,
-            1.22,
-            2.8
+            1.33,
+            1.5
           ],
           "rotation": [
             0,
@@ -2545,7 +2665,7 @@
           "position": [
             0,
             5.1,
-            -4.5
+            -16
           ],
           "rotation": [
             0,
@@ -2567,11 +2687,131 @@
       ],
       "nodes": [
         {
+          "name": "anim_campus_fence",
+          "position": [
+            16,
+            0.85,
+            -3.8
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_campus_fence_pattern_0",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_campus_fence_pattern_1",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_campus_fence_pattern_2",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_bu_windows",
+          "position": [
+            0,
+            0,
+            0
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
           "name": "anim_book",
           "position": [
             0,
-            1.22,
-            2.8
+            1.33,
+            1.5
           ],
           "rotation": [
             0,
@@ -2595,7 +2835,7 @@
           "position": [
             0,
             5.1,
-            -4.5
+            -16
           ],
           "rotation": [
             0,
@@ -2776,7 +3016,7 @@
         {
           "id": "learning",
           "x": 0,
-          "z": -3,
+          "z": 0,
           "rotation": 0,
           "group": "district_learning"
         }
@@ -2791,16 +3031,19 @@
       },
       "quality": "high",
       "occluders": [
-        "occluder_education_avenue_-21.28",
-        "occluder_education_avenue_21.28",
-        "occluder_learning_BU_roof",
-        "occluder_learning_CMU_roof",
-        "occluder_education_coast_2",
-        "occluder_education_coast_4",
-        "occluder_education_coast_8",
-        "occluder_education_coast_10",
-        "occluder_education_coast_12",
-        "occluder_education_coast_14"
+        "occluder_campus_marsh_roof",
+        "occluder_campus_cas_roof",
+        "occluder_campus_brownstone_0",
+        "occluder_campus_brownstone_1",
+        "occluder_campus_brownstone_2",
+        "occluder_campus_hamerschlag_dome",
+        "occluder_campus_hamburg_roof",
+        "occluder_campus_tree_bu1",
+        "occluder_campus_tree_bu2",
+        "occluder_campus_tree_bu3",
+        "occluder_campus_tree_cmu1",
+        "occluder_campus_tree_cmu2",
+        "occluder_campus_tree_north"
       ]
     },
     {
@@ -2982,8 +3225,8 @@
       ]
     }
   ],
-  "totalBytes": 3966944,
-  "totalTriangles": 236592,
+  "totalBytes": 4408332,
+  "totalTriangles": 272398,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }

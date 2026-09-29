@@ -51447,79 +51447,139 @@
           "rotation": 0
         },
         {
-          "name": "arrival lamp",
-          "x": -5.8,
-          "z": 16.5,
-          "width": 0.4,
-          "depth": 0.4,
-          "height": 3.4,
+          "name": "Marsh Chapel",
+          "x": -12,
+          "z": -9,
+          "width": 6.42,
+          "depth": 8.3,
+          "height": 7.2,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "arrival lamp",
-          "x": 5.8,
-          "z": 16.5,
-          "width": 0.4,
-          "depth": 0.4,
-          "height": 3.4,
+          "name": "College of Arts and Sciences",
+          "x": -21,
+          "z": -5,
+          "width": 5.2,
+          "depth": 6,
+          "height": 4.2,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "landmark tree",
-          "x": -21.18,
-          "z": -6.6,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
+          "name": "Bay State Road brownstone 1",
+          "x": -20,
+          "z": 3.9,
+          "width": 3.1,
+          "depth": 4,
+          "height": 4.5,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "landmark tree",
-          "x": 21.380000000000003,
-          "z": -6.6,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
+          "name": "Bay State Road brownstone 2",
+          "x": -16.55,
+          "z": 3.9,
+          "width": 3.1,
+          "depth": 4,
+          "height": 5,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "learning: BU campus",
-          "x": -3.4,
-          "z": -5.5,
-          "width": 3.2,
-          "depth": 3,
-          "height": 2.8,
-          "y": 0.8500000000000001,
+          "name": "Bay State Road brownstone 3",
+          "x": -13.1,
+          "z": 3.9,
+          "width": 3.1,
+          "depth": 4,
+          "height": 4.5,
+          "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "learning: CMU campus",
-          "x": 3.4,
-          "z": -5.5,
-          "width": 3.2,
-          "depth": 3,
-          "height": 2.8,
-          "y": 0.8500000000000001,
+          "name": "static Green Line tram",
+          "x": -22,
+          "z": 10.2,
+          "width": 4.8,
+          "depth": 2.3,
+          "height": 2.1,
+          "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "learning: book sculpture",
+          "name": "Hamerschlag Hall rear wing",
+          "x": 12,
+          "z": -12.2,
+          "width": 11.8,
+          "depth": 3.3,
+          "height": 5.1,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Hamerschlag Hall rotunda",
+          "x": 12,
+          "z": -10,
+          "width": 5.6,
+          "depth": 5.6,
+          "height": 8.1,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Hamburg Hall / Heinz College",
+          "x": 16,
+          "z": 2,
+          "width": 8,
+          "depth": 4.2,
+          "height": 4.550000000000001,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "The Fence",
+          "x": 16,
+          "z": -3.8,
+          "width": 5.1,
+          "depth": 0.35,
+          "height": 1.45,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Boston University education display",
+          "x": -9,
+          "z": 5.9,
+          "width": 3.5,
+          "depth": 0.45,
+          "height": 2.36,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "Carnegie Mellon University education display",
+          "x": 9,
+          "z": 5.9,
+          "width": 3.5,
+          "depth": 0.45,
+          "height": 2.36,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "book sculpture",
           "x": 0,
-          "z": -0.20000000000000018,
+          "z": 1.5,
           "width": 2.1,
           "depth": 1.3,
-          "height": 0.6,
+          "height": 0.72,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "learning: navigation tower",
+          "name": "navigation tower",
           "x": 0,
-          "z": -7.5,
+          "z": -16,
           "width": 1.6,
           "depth": 1.6,
           "height": 5.2,
@@ -51527,162 +51587,232 @@
           "rotation": 0
         },
         {
-          "name": "learning: table",
-          "x": -5.8,
-          "z": -8.8,
-          "width": 1.6,
-          "depth": 0.6,
-          "height": 0.9,
+          "name": "Education welcome guide",
+          "x": -3.3,
+          "z": 14.1,
+          "width": 3.8,
+          "depth": 0.45,
+          "height": 2.9,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "learning: rest bench",
-          "x": -6.1,
-          "z": -0.20000000000000018,
-          "width": 1.95,
-          "depth": 0.8,
-          "height": 1.25,
+          "name": "campus bench bu-bench",
+          "x": -15.8,
+          "z": -2.4,
+          "width": 2,
+          "depth": 0.72,
+          "height": 1.24,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "learning: plaque learning:bu",
-          "x": -4.9,
-          "z": -2.7,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
+          "name": "campus bench cmu-bench",
+          "x": 19.2,
+          "z": -7,
+          "width": 2,
+          "depth": 0.72,
+          "height": 1.24,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "learning: plaque learning:cmu",
+          "name": "campus bench coast-bench",
+          "x": -4,
+          "z": -16.5,
+          "width": 2,
+          "depth": 0.72,
+          "height": 1.24,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus tree bu1",
+          "x": -23,
+          "z": -11,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 4.2,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus tree bu2",
+          "x": -22.8,
+          "z": 6.1,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 3.4,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus tree bu3",
+          "x": -5,
+          "z": -10.5,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 4,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus tree cmu1",
+          "x": 22,
+          "z": -3,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 4.2,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus tree cmu2",
+          "x": 21.4,
+          "z": -10.7,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 4.4,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus tree north",
           "x": 4.9,
-          "z": -2.7,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
+          "z": -16.7,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 3.6,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "learning: plaque learning:books",
-          "x": 1.8,
-          "z": -0.3999999999999999,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
+          "name": "campus planter",
+          "x": 21,
+          "z": 5.9,
+          "width": 2.2,
+          "depth": 0.85,
+          "height": 0.7,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "learning: plaque learning:lighthouse",
-          "x": 7.5,
-          "z": -8.4,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
+          "name": "campus planter",
+          "x": -2,
+          "z": -5,
+          "width": 2.2,
+          "depth": 0.85,
+          "height": 0.7,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": -18.701999999999998,
-          "z": 15.147,
-          "width": 0.5,
+          "name": "campus planter",
+          "x": 13,
+          "z": 10.8,
+          "width": 2.2,
+          "depth": 0.85,
+          "height": 0.7,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus planter",
+          "x": -2.8,
+          "z": 12.1,
+          "width": 2.2,
+          "depth": 0.85,
+          "height": 0.7,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus planter",
+          "x": 5,
+          "z": 12.3,
+          "width": 2.2,
+          "depth": 0.85,
+          "height": 0.7,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "campus bicycle rack",
+          "x": -17.4,
+          "z": 8.1,
+          "width": 2.5,
           "depth": 0.5,
-          "height": 4,
+          "height": 1.2,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": -23.7,
-          "z": 0.935,
-          "width": 0.5,
+          "name": "campus bicycle rack",
+          "x": 19.6,
+          "z": 6.2,
+          "width": 2.5,
           "depth": 0.5,
-          "height": 4,
+          "height": 1.2,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": 4.622,
-          "z": -18.325999999999997,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
+          "name": "campus lamp",
+          "x": -6.8,
+          "z": 18,
+          "width": 0.37,
+          "depth": 0.37,
+          "height": 3.25,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": 21.282000000000004,
-          "z": -11.968,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
+          "name": "campus lamp",
+          "x": 6.8,
+          "z": 18,
+          "width": 0.37,
+          "depth": 0.37,
+          "height": 3.25,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": 23.186,
-          "z": 7.854,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
+          "name": "campus lamp",
+          "x": -5.6,
+          "z": 12.7,
+          "width": 0.37,
+          "depth": 0.37,
+          "height": 3.25,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": 9.620000000000001,
-          "z": 17.951999999999998,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
+          "name": "campus lamp",
+          "x": 5.6,
+          "z": 12.7,
+          "width": 0.37,
+          "depth": 0.37,
+          "height": 3.25,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "promenade lamp",
-          "x": -15.4,
-          "z": 10.120000000000001,
-          "width": 0.3,
-          "depth": 0.3,
-          "height": 3,
+          "name": "campus lamp",
+          "x": -18,
+          "z": -11,
+          "width": 0.37,
+          "depth": 0.37,
+          "height": 3.25,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "promenade lamp",
-          "x": 18.2,
-          "z": 10.120000000000001,
-          "width": 0.3,
-          "depth": 0.3,
-          "height": 3,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "promenade lamp",
-          "x": -15.4,
-          "z": 14.96,
-          "width": 0.3,
-          "depth": 0.3,
-          "height": 3,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "promenade lamp",
-          "x": 18.2,
-          "z": 14.96,
-          "width": 0.3,
-          "depth": 0.3,
-          "height": 3,
+          "name": "campus lamp",
+          "x": 18,
+          "z": -15,
+          "width": 0.37,
+          "depth": 0.37,
+          "height": 3.25,
           "y": 0.85,
           "rotation": 0
         }
@@ -51694,147 +51824,115 @@
         ],
         [
           0,
-          14
+          18
         ],
         [
           0,
-          7
+          10
         ],
         [
-          -4,
-          7
+          -9,
+          10
         ],
         [
-          -4,
-          -1.5
+          -9,
+          8
         ],
         [
-          -2.5,
-          -1.5
+          -5.5,
+          8
         ],
         [
-          -2.5,
-          1.5
-        ],
-        [
-          5,
-          1.5
-        ],
-        [
-          5,
-          -1.5
-        ],
-        [
-          4,
-          -1.5
-        ],
-        [
-          4,
+          -5.5,
           1
         ],
         [
-          2.5,
+          -8,
+          -0.6
+        ],
+        [
+          -15.8,
+          -0.6
+        ],
+        [
+          -8,
+          -0.6
+        ],
+        [
+          -5.5,
           1
         ],
         [
-          7.5,
-          1
+          -7,
+          -1.5
         ],
         [
-          7.5,
+          -7,
+          -6
+        ],
+        [
+          -7,
+          -14
+        ],
+        [
+          -3,
+          -14
+        ],
+        [
+          0,
+          -13.8
+        ],
+        [
+          4.3,
+          -14
+        ],
+        [
+          4.3,
           -7
         ],
         [
           7,
-          -7
+          -5.8
         ],
         [
-          7,
-          -1.5
+          9,
+          -5.8
         ],
         [
-          4,
-          -1.5
+          9,
+          -2.35
         ],
         [
-          4,
-          1
+          16,
+          -2.35
         ],
         [
-          2.5,
-          1
+          9,
+          -2.35
         ],
         [
-          2.5,
-          1.5
+          5.5,
+          -2.35
         ],
         [
-          -6,
-          1.5
+          5.5,
+          8
         ],
         [
-          0,
-          1.5
+          9,
+          8
         ],
         [
-          0,
-          7
-        ],
-        [
-          14,
-          7
-        ],
-        [
-          14,
-          3
-        ],
-        [
-          17,
-          3
-        ],
-        [
-          17,
-          -9
-        ],
-        [
-          9.5,
-          -9
-        ],
-        [
-          9.5,
-          -10
+          9,
+          10
         ],
         [
           0,
-          -10
+          10
         ],
         [
           0,
-          -15
-        ],
-        [
-          -17,
-          -15
-        ],
-        [
-          -17,
-          -9
-        ],
-        [
-          -14,
-          -9
-        ],
-        [
-          -14,
-          3
-        ],
-        [
-          0,
-          3
-        ],
-        [
-          0,
-          14
+          18
         ],
         [
           0,
@@ -51843,77 +51941,217 @@
       ],
       "stations": [
         {
+          "id": "learning:fence",
+          "type": "action",
+          "contentId": "learning",
+          "action": "education-fence",
+          "label": "Paint The Fence",
+          "x": 16,
+          "z": -2.3499999999999996,
+          "y": 0.85
+        },
+        {
           "id": "learning:bu",
           "type": "read",
-          "label": "Boston University",
-          "x": -4.9,
-          "z": -1.8,
-          "y": 0.85,
-          "contentSection": "summary",
           "contentId": "learning",
-          "action": "learning"
+          "schoolId": "bu",
+          "label": "Boston University",
+          "primary": true,
+          "readFull": true,
+          "readLabel": "View education",
+          "cameraTarget": {
+            "x": -12,
+            "y": 3,
+            "z": -3
+          },
+          "camera": {
+            "distance": 30
+          },
+          "x": -9,
+          "z": 8,
+          "y": 0.85,
+          "hitArea": {
+            "x": -9,
+            "y": 2.12,
+            "z": 6.050000000000001,
+            "width": 3.6,
+            "height": 1.94,
+            "yaw": 0
+          }
         },
         {
           "id": "learning:cmu",
           "type": "read",
-          "label": "Carnegie Mellon",
-          "x": 4.9,
-          "z": -1.8,
-          "y": 0.85,
-          "contentSection": "contributions",
           "contentId": "learning",
-          "action": "learning"
+          "schoolId": "cmu",
+          "label": "Carnegie Mellon University",
+          "primary": true,
+          "readFull": true,
+          "readLabel": "View education",
+          "cameraTarget": {
+            "x": 13,
+            "y": 3,
+            "z": -1
+          },
+          "camera": {
+            "distance": 30
+          },
+          "x": 9,
+          "z": 8,
+          "y": 0.85,
+          "hitArea": {
+            "x": 9,
+            "y": 2.12,
+            "z": 6.050000000000001,
+            "width": 3.6,
+            "height": 1.94,
+            "yaw": 0
+          }
         },
         {
           "id": "learning:books",
           "type": "action",
-          "label": "Keep learning",
-          "x": 1.8,
-          "z": 0.5,
-          "y": 0.85,
+          "contentId": "learning",
           "action": "learning-book",
-          "contentId": "learning"
+          "label": "Keep learning",
+          "x": 0,
+          "z": 3.3,
+          "y": 0.85
         },
         {
           "id": "learning:lighthouse",
           "type": "challenge",
-          "label": "Lighthouse Link",
-          "x": 7.5,
-          "z": -7.5,
-          "y": 0.85,
+          "contentId": "learning",
           "action": "lighthouse",
-          "contentId": "learning"
+          "label": "Lighthouse Link",
+          "x": 0,
+          "z": -13.8,
+          "y": 0.85
+        },
+        {
+          "id": "education:overview",
+          "type": "read",
+          "contentId": "education",
+          "directoryOverview": true,
+          "readFull": true,
+          "readLabel": "Browse education",
+          "label": "Education overview",
+          "x": -3.3,
+          "z": 16.15,
+          "y": 0.85,
+          "hitArea": {
+            "x": -3.3,
+            "y": 3.16,
+            "z": 14.26,
+            "width": 3.8,
+            "height": 0.67,
+            "yaw": 0
+          }
+        },
+        {
+          "id": "education:directory-bu",
+          "type": "read",
+          "contentId": "learning",
+          "schoolId": "bu",
+          "directory": true,
+          "readFull": true,
+          "readLabel": "View education",
+          "label": "Boston University",
+          "x": -3.3,
+          "z": 16.15,
+          "y": 0.85,
+          "hitArea": {
+            "x": -3.3,
+            "y": 2.58,
+            "z": 14.27,
+            "width": 3.48,
+            "height": 0.41,
+            "yaw": 0
+          }
+        },
+        {
+          "id": "education:directory-cmu",
+          "type": "read",
+          "contentId": "learning",
+          "schoolId": "cmu",
+          "directory": true,
+          "readFull": true,
+          "readLabel": "View education",
+          "label": "Carnegie Mellon University",
+          "x": -3.3,
+          "z": 16.15,
+          "y": 0.85,
+          "hitArea": {
+            "x": -3.3,
+            "y": 2.04,
+            "z": 14.27,
+            "width": 3.48,
+            "height": 0.41,
+            "yaw": 0
+          }
         }
       ],
       "benches": [
         {
-          "x": -6.1,
-          "z": -0.20000000000000018,
-          "y": 1.4,
+          "id": "learning:bu-bench",
+          "contentId": "learning",
+          "action": "learning",
+          "x": -15.8,
+          "z": -2.4,
+          "y": 1.45,
+          "rotation": 0,
           "yaw": 0,
           "approach": {
-            "x": -6.1,
-            "z": 0.6999999999999997,
+            "x": -15.8,
+            "z": -1.2,
             "y": 0.85
-          },
-          "id": "learning:bench",
+          }
+        },
+        {
+          "id": "learning:cmu-bench",
           "contentId": "learning",
-          "action": "learning"
+          "action": "learning",
+          "x": 19.2,
+          "z": -7,
+          "y": 1.45,
+          "rotation": 0,
+          "yaw": 0,
+          "approach": {
+            "x": 19.2,
+            "z": -5.8,
+            "y": 0.85
+          }
+        },
+        {
+          "id": "learning:coast-bench",
+          "contentId": "learning",
+          "action": "learning",
+          "x": -4,
+          "z": -16.5,
+          "y": 1.45,
+          "rotation": 0,
+          "yaw": 0,
+          "approach": {
+            "x": -4,
+            "z": -15.3,
+            "y": 0.85
+          }
         }
       ],
       "bench": {
-        "x": -6.1,
-        "z": -0.20000000000000018,
-        "y": 1.4,
+        "id": "learning:bu-bench",
+        "contentId": "learning",
+        "action": "learning",
+        "x": -15.8,
+        "z": -2.4,
+        "y": 1.45,
+        "rotation": 0,
         "yaw": 0,
         "approach": {
-          "x": -6.1,
-          "z": 0.6999999999999997,
+          "x": -15.8,
+          "z": -1.2,
           "y": 0.85
-        },
-        "id": "learning:bench",
-        "contentId": "learning",
-        "action": "learning"
+        }
       },
       "berths": [
         {
@@ -51947,7 +52185,7 @@
         {
           "id": "learning",
           "x": 0,
-          "z": -3,
+          "z": 0,
           "rotation": 0,
           "group": "district_learning"
         }
@@ -51959,14 +52197,385 @@
         "startZ": 19.819999999999997,
         "endZ": 30
       },
-      "routeLength": 232,
-      "estimatedWalkingSeconds": 96.7,
-      "width": 2.05,
+      "campuses": [
+        {
+          "schoolId": "bu",
+          "label": "Boston University",
+          "shortLabel": "BU",
+          "color": "#a63842",
+          "x": -12,
+          "z": 1,
+          "bounds": {
+            "x": -16,
+            "z": -2,
+            "width": 19,
+            "depth": 28
+          },
+          "polygon": [
+            [
+              -25.5,
+              -16
+            ],
+            [
+              -6.5,
+              -16
+            ],
+            [
+              -6.5,
+              12
+            ],
+            [
+              -25.5,
+              12
+            ]
+          ]
+        },
+        {
+          "schoolId": "cmu",
+          "label": "Carnegie Mellon University",
+          "shortLabel": "CMU",
+          "color": "#b89b57",
+          "x": 12,
+          "z": 1,
+          "bounds": {
+            "x": 15,
+            "z": -2,
+            "width": 19,
+            "depth": 28
+          },
+          "polygon": [
+            [
+              5.5,
+              -16
+            ],
+            [
+              24.5,
+              -16
+            ],
+            [
+              24.5,
+              12
+            ],
+            [
+              5.5,
+              12
+            ]
+          ]
+        }
+      ],
+      "landmarks": [
+        {
+          "id": "marsh-chapel",
+          "schoolId": "bu",
+          "label": "Marsh Chapel",
+          "x": -12,
+          "z": -9,
+          "width": 6,
+          "depth": 8
+        },
+        {
+          "id": "cas",
+          "schoolId": "bu",
+          "label": "College of Arts & Sciences",
+          "x": -21,
+          "z": -5,
+          "width": 5.2,
+          "depth": 6
+        },
+        {
+          "id": "bay-state-0",
+          "schoolId": "bu",
+          "label": "Bay State Road",
+          "x": -20,
+          "z": 3.9,
+          "width": 3.1,
+          "depth": 4
+        },
+        {
+          "id": "bay-state-1",
+          "schoolId": "bu",
+          "label": "Bay State Road",
+          "x": -16.55,
+          "z": 3.9,
+          "width": 3.1,
+          "depth": 4
+        },
+        {
+          "id": "bay-state-2",
+          "schoolId": "bu",
+          "label": "Bay State Road",
+          "x": -13.1,
+          "z": 3.9,
+          "width": 3.1,
+          "depth": 4
+        },
+        {
+          "id": "green-line",
+          "schoolId": "bu",
+          "label": "Green Line",
+          "x": -22,
+          "z": 10.2,
+          "width": 4.8,
+          "depth": 2.3
+        },
+        {
+          "id": "hamerschlag",
+          "schoolId": "cmu",
+          "label": "Hamerschlag Hall",
+          "x": 12,
+          "z": -11,
+          "width": 12,
+          "depth": 7.8
+        },
+        {
+          "id": "hamburg",
+          "schoolId": "cmu",
+          "label": "Hamburg / Heinz",
+          "x": 16,
+          "z": 2,
+          "width": 8,
+          "depth": 4.2
+        },
+        {
+          "id": "the-fence",
+          "schoolId": "cmu",
+          "label": "The Fence",
+          "x": 16,
+          "z": -3.8,
+          "width": 5.1,
+          "depth": 0.6
+        }
+      ],
+      "paths": [
+        {
+          "id": "campus-loop",
+          "width": 2.6,
+          "points": [
+            [
+              0,
+              27.5
+            ],
+            [
+              0,
+              18
+            ],
+            [
+              0,
+              10
+            ],
+            [
+              -9,
+              10
+            ],
+            [
+              -9,
+              8
+            ],
+            [
+              -5.5,
+              8
+            ],
+            [
+              -5.5,
+              1
+            ],
+            [
+              -8,
+              -0.6
+            ],
+            [
+              -15.8,
+              -0.6
+            ],
+            [
+              -8,
+              -0.6
+            ],
+            [
+              -5.5,
+              1
+            ],
+            [
+              -7,
+              -1.5
+            ],
+            [
+              -7,
+              -6
+            ],
+            [
+              -7,
+              -14
+            ],
+            [
+              -3,
+              -14
+            ],
+            [
+              0,
+              -13.8
+            ],
+            [
+              4.3,
+              -14
+            ],
+            [
+              4.3,
+              -7
+            ],
+            [
+              7,
+              -5.8
+            ],
+            [
+              9,
+              -5.8
+            ],
+            [
+              9,
+              -2.35
+            ],
+            [
+              16,
+              -2.35
+            ],
+            [
+              9,
+              -2.35
+            ],
+            [
+              5.5,
+              -2.35
+            ],
+            [
+              5.5,
+              8
+            ],
+            [
+              9,
+              8
+            ],
+            [
+              9,
+              10
+            ],
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              18
+            ],
+            [
+              0,
+              27.5
+            ]
+          ]
+        },
+        {
+          "id": "central-learning-walk",
+          "width": 2.6,
+          "points": [
+            [
+              0,
+              10
+            ],
+            [
+              2.8,
+              6
+            ],
+            [
+              2.8,
+              0
+            ],
+            [
+              2.8,
+              -10
+            ],
+            [
+              4.3,
+              -14
+            ]
+          ]
+        },
+        {
+          "id": "bu-plaza",
+          "width": 2.6,
+          "points": [
+            [
+              -5.5,
+              1
+            ],
+            [
+              -8,
+              -0.6
+            ],
+            [
+              -15.8,
+              -0.6
+            ]
+          ]
+        },
+        {
+          "id": "cmu-courtyard",
+          "width": 2.6,
+          "points": [
+            [
+              16,
+              -2.35
+            ],
+            [
+              20.3,
+              -2.1
+            ],
+            [
+              20.3,
+              -5.3
+            ],
+            [
+              19.2,
+              -5.3
+            ]
+          ]
+        },
+        {
+          "id": "coastal-study-walk",
+          "width": 2.6,
+          "points": [
+            [
+              -7,
+              -14
+            ],
+            [
+              -4,
+              -14.8
+            ],
+            [
+              -3,
+              -14
+            ],
+            [
+              0,
+              -13.8
+            ],
+            [
+              4.3,
+              -14
+            ]
+          ]
+        }
+      ],
+      "routeLength": 162.52,
+      "estimatedWalkingSeconds": 67.7,
+      "width": 2.6,
       "validation": {
         "connectedFromDock": true,
-        "stationsReachable": 4,
-        "routeClearance": 0.8,
-        "pathWidth": 2.05
+        "stationsReachable": 8,
+        "routeClearance": 1.2,
+        "pathWidth": 2.6,
+        "campuses": 2,
+        "landmarks": 9
       }
     }
   ]

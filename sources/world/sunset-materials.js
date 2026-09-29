@@ -45,6 +45,10 @@ function contextFor(mesh, model) {
 function materialPlan(source, kind, context) {
   const name = source.name || '';
   const short = name.replace(/^detail_/, '');
+  // Campus stone, brick, slate and patinated copper carry landmark identity.
+  // Retain their authored surface colors even under a roof or canopy; sunset
+  // warmth comes from lighting, not the legacy learning island's purple roof.
+  if (short.startsWith('campus_')) return {role: short, roughness: source.roughness};
   if (short === 'sunsetLantern') return {role: 'lantern', color: '#f1d4a5', roughness: .45, emissive: '#ffc279', intensity: .65};
   if (short === 'warmWindow') return {role: 'window', color: '#d8c9b5', roughness: .25, emissive: '#ffc98d', intensity: .35};
 

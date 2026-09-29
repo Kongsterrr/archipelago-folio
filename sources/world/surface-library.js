@@ -15,6 +15,8 @@ const MATERIAL_SURFACES = Object.freeze({
   teak: 'wood', cognac: 'leather', upholstery: 'leather',
   wood: 'wood', darkWood: 'wood', stone: 'stone', sand: 'sand', sandEdge: 'sand',
   highlandsRock: 'stone', highlandsCliff: 'stone',
+  campus_limestone: 'stone', campus_sandstone: 'stone', campus_paving: 'stone',
+  campus_brick: 'stone', campus_brickDark: 'stone',
   Jack_CreamCanvas: 'canvas', Jack_NavyKnit: 'canvas',
   Jack_SweptHair: 'hair',
   v5_dock_wood: 'wood', v5_rope: 'rope', v5_stone: 'stone', v5_sand: 'sand',
@@ -89,10 +91,12 @@ export class SurfaceLibrary {
     material.normalScale.copy(record.normalScale);
     material.aoMapIntensity = record.ao;
     if (maps) {
-      if (maps.color) material.map = maps.color;
+      // Campus stone/brick retain their authored school-specific albedo.
+      if (maps.color && !material.name.startsWith('campus_')) material.map = maps.color;
       if (maps.normal && !(profile === 'hair' && material.userData.normalSource === 'strand-flow')) material.normalMap = maps.normal;
       if (maps.orm) material.aoMap = material.roughnessMap = material.metalnessMap = maps.orm;
       if (!(profile === 'hair' && material.userData.normalSource === 'strand-flow')) material.normalScale.setScalar(SURFACE_PROFILES[profile].normalScale);
+      if (material.name.startsWith('campus_')) material.normalScale.multiplyScalar(.45);
       material.aoMapIntensity = SURFACE_PROFILES[profile].ao;
     }
     material.needsUpdate = true;

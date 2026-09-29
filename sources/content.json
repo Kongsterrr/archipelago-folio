@@ -230,18 +230,10 @@
     "title": "Education",
     "eyebrow": "Carnegie Mellon University & Boston University",
     "category": "about",
-    "period": "CMU: Dec 2023 | BU: May 2022",
+    "period": "",
     "summary": "A foundation in information systems, computer science, and mathematics that connects software engineering with data analysis.",
-    "contributions": [
-      "Carnegie Mellon University: Master of Information Systems Management, completed December 2023.",
-      "Boston University: Bachelor of Arts in Computer Science and Mathematics, double major, completed May 2022.",
-      "At CMU, studied distributed systems, machine learning, database management, and web application development.",
-      "At BU, studied software engineering, database systems, full-stack development, and foundations of data science."
-    ],
-    "results": [
-      "Carnegie Mellon University GPA: 3.61 / 4.0.",
-      "Boston University GPA: 3.53 / 4.0."
-    ],
+    "contributions": [],
+    "results": [],
     "technologies": [
       "Java",
       "Python",
@@ -251,7 +243,41 @@
       "Data Science"
     ],
     "links": [],
-    "accent": "#F0CF69"
+    "accent": "#F0CF69",
+    "schools": [
+      {
+        "schoolId": "bu",
+        "title": "Boston University",
+        "shortName": "BU",
+        "degree": "Bachelor of Arts in Computer Science and Mathematics",
+        "degreeNote": "Double major",
+        "period": "May 2022",
+        "gpa": "3.53 / 4.0",
+        "topics": [
+          "Software engineering",
+          "Database systems",
+          "Full-stack development",
+          "Foundations of data science"
+        ],
+        "accent": "#A64043"
+      },
+      {
+        "schoolId": "cmu",
+        "title": "Carnegie Mellon University",
+        "shortName": "CMU",
+        "degree": "Master of Information Systems Management",
+        "degreeNote": "",
+        "period": "December 2023",
+        "gpa": "3.61 / 4.0",
+        "topics": [
+          "Distributed systems",
+          "Machine learning",
+          "Database management",
+          "Web application development"
+        ],
+        "accent": "#5D7D65"
+      }
+    ]
   },
   {
     "id": "connect",

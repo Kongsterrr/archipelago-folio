@@ -40,3 +40,16 @@ These programs are used to author or compress assets and are **not distributed i
 - **Blender 4.5.3 LTS / Cycles** — Blender Foundation and contributors, GNU GPL. Used for editable source scenes, offline inspection and tangent-normal baking. Source, binary downloads and licensing are available from [Blender](https://www.blender.org/download/lts/4-5/) and its [license documentation](https://www.blender.org/about/license/). The generated original artwork remains covered by this repository’s asset license; Blender executable code is not included.
 - **Khronos KTX-Software 4.4.2 (`toktx`)** — Khronos Group and contributors. Repository-specific code is generally Apache-2.0; bundled components retain their own licenses. Used to encode original maps to ETC1S or UASTC/Zstd KTX2. See the [upstream license inventory](https://github.com/KhronosGroup/KTX-Software/blob/main/LICENSE.md) and [4.4.2 source/release](https://github.com/KhronosGroup/KTX-Software/releases/tag/v4.4.2).
 - **NumPy and Pillow** — optional Python build dependencies for procedural material generation; respectively BSD-3-Clause and HPND/Pillow licensing. Installed packages carry their notices. Neither package is included in the browser bundle.
+
+## V14 campus architecture references
+
+Education campus meshes are original procedural interpretations made for this portfolio, not downloaded university models or photographic textures. The miniature compresses BU Charles River and CMU Pittsburgh landmarks into one fictional island. It does not imply that Jack studied in a specific pictured building. Reference photographs and university logos are not embedded in the models.
+
+- CMU Hamerschlag Hall photographic reference: https://www.ece.cmu.edu/news-and-events/story/2021/12/chi-sps-distinguished-lecturer.html
+- CMU Hamburg Hall / Heinz College building context: https://www.cmu.edu/cdfd/buildings/building-list.html
+- CMU The Fence tradition: https://www.cmu.edu/about/traditions
+- BU Marsh Chapel architecture: https://www.bu.edu/today/projects/marshchapel/
+- BU Bay State Road streetscape: https://www.bu.edu/realestate/our-neighborhoods/bay-state-road/
+- BU Green Line setting: https://www.bu.edu/chapel/about/directions-contact/
+
+Academic facts continue to come from Jack's existing resume-backed content. Campus brick/stone/copper colors are authored material values; masonry detail reuses this repository's original V5 stone normal/ORM texture pack without recoloring campus albedo.

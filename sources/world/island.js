@@ -2,13 +2,15 @@ import * as THREE from 'three';
 import {islandActions,toWorld} from '../config.js';
 
 export class IslandController {
- constructor(island,group){this.island=island;this.group=group;this.nodes=[];this.glowing=[];this.occluders=[];this.elapsed=99;this.duration=0;this.lastActive=false;this.model=null;}
+ constructor(island,group){this.island=island;this.group=group;this.nodes=[];this.glowing=[];this.occluders=[];this.elapsed=99;this.duration=0;this.lastActive=false;this.model=null;this.ownedMaterials=new Set();this.materialBindings=[];this.campusState={fencePattern:0,fenceElapsed:1,schoolId:null};this.campusWindows=[];this.campusPatterns=[];}
  bind(model){
+  this.release();
   this.model=model;this.nodes=[];this.glowing=[];this.occluders=[];this.children=[];
   for(const district of this.island.districts||[]){
    const root=model.getObjectByName('district_'+district.id);if(!root)continue;
    const position=toWorld(this.island,district.x,district.z);
    const child=new IslandController({...district,...position,rotation:this.island.rotation+(district.rotation||0)},root);
+   child.campusState=this.campusState;
    child.bind(root);this.children.push(child);
   }
   const glowMaterials=new Map();
@@ -17,25 +19,64 @@ export class IslandController {
    // Named batches inside an animated group inherit its transform; animate the group once.
    if(o.name.startsWith('anim_')&&!o.isMesh)this.nodes.push({object:o,name:o.name,position:o.position.clone(),rotation:o.rotation.clone(),scale:o.scale.clone()});
    if(o.isMesh){
+    const original=o.material;
+    let branch=o,occludes=false,campusWindow=false;while(branch&&branch!==model){if(branch.name.startsWith('occluder_')||branch.name.startsWith('station_')||branch.userData.occluder)occludes=true;if(branch.name==='anim_bu_windows')campusWindow=true;branch=branch.parent;}
     // Districts share source materials in a GLB, but their device feedback is independent.
-    const isolate=m=>{if(!m.emissive||!['glass','glassBlue','yellow','orange'].includes(m.name))return m;if(!glowMaterials.has(m))glowMaterials.set(m,m.clone());return glowMaterials.get(m);};
+    const isolate=m=>{if(!m.emissive||!['glass','glassBlue','yellow','orange'].includes(m.name))return m;if(!glowMaterials.has(m))glowMaterials.set(m,this.ownMaterial(m));return glowMaterials.get(m);};
     o.material=Array.isArray(o.material)?o.material.map(isolate):isolate(o.material);
-    const list=Array.isArray(o.material)?o.material:[o.material];
-    let branch=o,occludes=false;while(branch&&branch!==model){if(branch.name.startsWith('occluder_')||branch.name.startsWith('station_')||branch.userData.occluder)occludes=true;branch=branch.parent;}if(occludes){
-     o.material=Array.isArray(o.material)?o.material.map(m=>m.clone()):o.material.clone();
-     const mats=Array.isArray(o.material)?o.material:[o.material];for(const m of mats){m.userData.occlusionBaseOpacity=m.opacity;m.transparent=true;}
-     this.occluders.push(o);
+    if(occludes||campusWindow){
+     o.material=Array.isArray(o.material)?o.material.map(m=>this.ownMaterial(m)):this.ownMaterial(o.material);
+     const mats=Array.isArray(o.material)?o.material:[o.material];
+     if(occludes){for(const m of mats){m.userData.occlusionBaseOpacity=m.opacity;m.transparent=true;}this.occluders.push(o);}
+     if(campusWindow)for(const m of mats)if(m.emissive)this.campusWindows.push({material:m,emissive:m.emissive.clone(),intensity:m.emissiveIntensity});
     }
-    for(const m of Array.isArray(o.material)?o.material:[o.material])if(m.emissive&&['glass','glassBlue','yellow','orange'].includes(m.name))this.glowing.push(m);
+    if(o.material!==original)this.materialBindings.push({mesh:o,original,assigned:o.material});
+    for(const m of Array.isArray(o.material)?o.material:[o.material])if(!campusWindow&&m.emissive&&['glass','glassBlue','yellow','orange'].includes(m.name))this.glowing.push(m);
    }
   });
   this.glowing=[...new Set(this.glowing)];
+  this.campusPatterns=this.nodes.filter(n=>/^anim_campus_fence_pattern_[0-2]$/.test(n.name));
+  this.applyCampusFeedback(true);
   for(const child of this.children)this.occluders.push(...child.occluders);
+ }
+ ownMaterial(source){const material=source.clone();this.ownedMaterials.add(material);return material;}
+ // Release after SurfaceLibrary.release and before releaseSunsetMaterials. Only
+ // these per-controller material clones are owned here, never maps or geometry.
+ release(){
+  for(const child of this.children||[])child.release();
+  for(const {mesh,original,assigned} of this.materialBindings)if(mesh.material===assigned)mesh.material=original;
+  for(const material of this.ownedMaterials)material.dispose();
+  this.ownedMaterials.clear();this.materialBindings=[];this.children=[];this.nodes=[];this.glowing=[];this.occluders=[];this.campusWindows=[];this.campusPatterns=[];this.model=null;
+ }
+ campusController(){return this.island.id==='learning'?this:this.children?.find(child=>child.island.id==='learning');}
+ cycleCampusFence(reduced=false){
+  const controller=this.campusController();if(!controller)return null;
+  this.campusState.fencePattern=(this.campusState.fencePattern+1)%3;this.campusState.fenceElapsed=reduced?1:0;
+  controller.applyCampusFeedback(reduced);return this.campusState.fencePattern;
+ }
+ readSchool(schoolId){
+  const controller=this.campusController();if(!controller&&!['education','learning'].includes(this.island.id))return false;
+  this.campusState.schoolId=schoolId==='bu'||schoolId==='cmu'?schoolId:null;
+  // Reading freezes simulation time. Apply now rather than waiting for a tick.
+  controller?.applyCampusFeedback(true);return true;
+ }
+ applyCampusFeedback(reduced=false){
+  const state=this.campusState;
+  for(const node of this.campusPatterns){
+   node.object.visible=Number(node.name.at(-1))===state.fencePattern;
+   node.object.scale.copy(node.scale);
+   if(node.object.visible&&!reduced&&state.fenceElapsed<.65){const progress=Math.min(1,state.fenceElapsed/.65);node.object.scale.x*=.08+.92*(1-(1-progress)**3);}
+  }
+  for(const {material,emissive,intensity} of this.campusWindows){
+   material.emissive.copy(emissive);material.emissiveIntensity=intensity;
+   if(state.schoolId==='bu'){material.emissive.set('#ffd59a');material.emissiveIntensity=Math.max(intensity,.48);}
+  }
  }
  activate(actionId){if(this.children?.length){const child=actionId==null?this.children[0]:this.children.find(c=>c.island.id===actionId);if(!child)return;const result=child.activate();this.elapsed=0;this.duration=child.duration;return result;}this.elapsed=0;this.duration=this.island.id==='amtrak'?10:this.island.id==='learning'?10:6;return islandActions[this.island.id]?.[1];}
  update(dt,position,time,focused=false,reduced=false,focusedDistrict=null){
   if(this.children?.length){for(const child of this.children){child.pedestrian=this.pedestrian;child.update(dt,position,time,focused&&(!focusedDistrict||child.island.id===focusedDistrict),reduced);}this.elapsed+=dt;return;}
   const distance=Math.hypot(position.x-this.island.x,position.z-this.island.z);
+  if(this.island.id==='learning'){this.campusState.fenceElapsed=Math.min(1,this.campusState.fenceElapsed+Math.max(0,dt));this.applyCampusFeedback(reduced);}
   let advance=dt;if(this.island.id==='amtrak'&&this.pedestrian&&this.elapsed<this.duration){const tr=this.island.animation?.train,c=tr?.trackCentre||[0,0,-1.4],r=tr?.trackRadii||[8.8,5.8],p=this.pedestrian,dx=p.x-this.island.x,dz=p.z-this.island.z,co=Math.cos(this.island.rotation),si=Math.sin(this.island.rotation),px=dx*co-dz*si,pz=dx*si+dz*co;for(let n=0;n<=8;n++){const a=(this.elapsed+n*.06)/Math.max(1,this.duration)*Math.PI*2;if(Math.hypot(c[0]+Math.cos(a)*r[0]-px,c[2]+Math.sin(a)*r[1]-pz)<2.2){advance=0;break;}}}this.elapsed+=advance;const playing=this.elapsed<this.duration;
   if(distance>80&&!focused&&!playing)return;
   const t=this.elapsed,phase=Math.min(1,t/Math.max(1,this.duration)),envelope=playing?Math.sin(Math.min(1,t*2)*Math.PI/2)*Math.min(1,(this.duration-t)*2):0;
@@ -59,5 +100,6 @@ export class IslandController {
   }
   if(playing||focused||this.lastActive){for(const m of this.glowing){m.emissive.set('#ffd68a');m.emissiveIntensity=playing?.25+Math.sin(time*3)*.1:focused?.15:0;}}
   this.lastActive=playing||focused;
+  if(this.island.id==='learning')this.applyCampusFeedback(reduced);
  }
 }

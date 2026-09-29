@@ -22,9 +22,22 @@ export function exhibitEntry(station,islandId,content) {
 }
 
 export function exhibitTarget(station,islandId,content,islands) {
+  if(station?.schoolId)return schoolTarget(station.schoolId,content,islands,station.contentId||'learning');
   // Complete exhibits can open an island overview as well as a source story.
   // Section-only exhibits must still resolve a real story before reading it.
   if(station?.readFull)return portfolioTarget(station.contentId||islandId,content,islands);
   const entry=exhibitEntry(station,islandId,content);
   return entry?portfolioTarget(entry.id,content,islands):null;
+}
+
+// Schools are views of the existing education story, not extra islands or save IDs.
+export function educationSchools(content) {
+  return content.find(entry=>entry.id==='learning')?.schools||[];
+}
+
+export function schoolTarget(schoolId,content,islands,contentId='learning') {
+  if(contentId!=='learning')return null;
+  const school=educationSchools(content).find(school=>school.schoolId===schoolId);
+  const target=school&&portfolioTarget('learning',content,islands);
+  return target?{...target,school}:null;
 }
