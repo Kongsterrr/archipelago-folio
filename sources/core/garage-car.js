@@ -5,8 +5,8 @@ import {bicycleTireEnvelope} from './bicycle-surface.js';
 import {localToWorld} from './character.js';
 
 export const GARAGE_CARS=Object.freeze([
- {id:'911',label:'Porsche 911',bay:0,width:2.061,height:1.264,wheelRadius:.355,seatBack:.10,seatDrop:.015},
- {id:'g63',label:'Mercedes G63',bay:1,width:2.199,height:2.107,wheelRadius:.427,seatDrop:.035,seatBack:.05},
+ {id:'911',label:'Porsche 911',bay:0,width:2.061,height:1.264,wheelRadius:.355,seatBack:.13,seatDrop:.025,torsoLean:.16,headPitch:0},
+ {id:'g63',label:'Mercedes G63',bay:1,width:2.199,height:2.107,wheelRadius:.427,seatDrop:.035,seatBack:.08,torsoLean:.165,headPitch:-.02},
 ]);
 
 // A grounded signed speed with strong tire grip; no boat-like sideways drift.
@@ -57,7 +57,7 @@ export class GarageCarController extends QuadBikeController{
   const old=this.model;
   // Move the seated pelvis back inside each cabin, retaining the actual wheel
   // and foot contacts. The SUV drop keeps Jack below its complete roof.
-  this.visual.add(model);this.model=model;this.rig={...rig,pelvis:rig.pelvis.map((v,n)=>v+(n===2?(this.config.seatBack||0):0)-(n===1?(this.config.seatDrop||0):0))};this.quality=quality;this.wheelPivots=wheels;
+  this.visual.add(model);this.model=model;this.rig={...rig,torsoLean:this.config.torsoLean,headPitch:this.config.headPitch,pelvis:rig.pelvis.map((v,n)=>v+(n===2?(this.config.seatBack||0):0)-(n===1?(this.config.seatDrop||0):0))};this.quality=quality;this.wheelPivots=wheels;
   this.roof=[];const calibrated=new Set();
   model.traverse(o=>{
    if(o.name==='car-roof-cutaway')this.roof.push(o);
@@ -68,16 +68,16 @@ export class GarageCarController extends QuadBikeController{
     material.metalness=material.userData.garageOriginalMetalness*.3;material.envMapIntensity=.9;
    }
   });
-  // The imported roof and body share an atlas/material. Give only the roof
-  // its own charcoal finish, retaining seams/normals without recoloring glass or body.
+  // The atlas paints the source roof silver. Tint that panel to graphite while
+  // retaining the body's mapped roughness, metal response and environment strength.
+  // Dark paint plus a separate matte override made the previous roof look flat black.
   const roofMaterials=new Map();
   for(const roof of this.roof)roof.traverse(o=>{
    if(!o.isMesh)return;
    const finish=source=>{
     if(!roofMaterials.has(source)){
-     const material=source.clone();material.name='g63-charcoal-roof';
-     material.color.set('#35393c');material.roughness=.72;material.roughnessMap=null;
-     material.metalness=.2;material.envMapIntensity=.65;
+     const material=source.clone();material.name='g63-graphite-roof';
+     material.color.set('#71777b');
      roofMaterials.set(source,material);
     }
     return roofMaterials.get(source);

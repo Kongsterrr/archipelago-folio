@@ -21,11 +21,12 @@ export class CarRiderPose extends BicycleRiderPose {
     const frame = car.group, mount = car.mountPoint;
     const targets = car.contactTargets();
     const lean = targets.torsoLean ?? targets.pose?.lean ?? .08;
+    const headPitch = targets.headPitch ?? 0;
     const handPitch = targets.handPitch ?? targets.pose?.handPitch ?? 1.1;
     const footPitch = targets.footPitch ?? targets.pose?.footPitch ?? 0;
     const signature = JSON.stringify(rounded([
       targets.pelvis, targets.grips.Left, targets.grips.Right,
-      targets.feet.Left, targets.feet.Right, lean, handPitch, footPitch,
+      targets.feet.Left, targets.feet.Right, lean, headPitch, handPitch, footPitch,
     ]));
     if (this.root.parent !== mount) mount.add(this.root);
     this.root.quaternion.identity();
@@ -53,7 +54,7 @@ export class CarRiderPose extends BicycleRiderPose {
 
     // A shallow hip/torso hinge keeps the pelvis on the supplied cushion and
     // looks ahead; the car's seat controls the fit, not the bicycle's deep lean.
-    for (const [name, amount] of [['Hips', -lean * .5], ['Spine', -lean * .3], ['Chest', -lean * .2], ['Neck', lean * .9]]) {
+    for (const [name, amount] of [['Hips', -lean * .5], ['Spine', -lean * .3], ['Chest', -lean * .2], ['Neck', lean * .9 + headPitch]]) {
       const bone = this.bones[name];
       const delta = new THREE.Quaternion().setFromAxisAngle(axisX.clone().applyQuaternion(frameQ), amount);
       bone.quaternion.copy(worldRotation(bone.parent).invert().multiply(delta).multiply(worldRotation(bone))).normalize();

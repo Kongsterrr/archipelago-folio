@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {fileURLToPath} from 'node:url';
 import * as THREE from 'three';import {NodeIO} from '@gltf-transform/core';import {ALL_EXTENSIONS} from '@gltf-transform/extensions';import {MeshoptDecoder} from 'meshoptimizer';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {createG63RoofProbe} from './helpers/garage-roof-probe.js';
+import {createCarHeadrestProbe} from './helpers/garage-headrest-probe.js';
 import R from '@dimforge/rapier3d-compat/rapier.es.js';
 import {JackAvatar} from '../sources/world/jack.js';import {GarageCarController,GARAGE_CARS} from '../sources/core/garage-car.js';
 await MeshoptDecoder.ready;await R.init();const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.decoder':MeshoptDecoder});
@@ -17,25 +18,31 @@ for(const quality of['high','low'])for(const config of GARAGE_CARS)test(`${confi
   if(config.id==='g63'){
    const body=car.model.getObjectByName('car-body'),roof=car.roof[0];
    assert.notEqual(roof.material,body.material,'roof finish cannot recolor the shared body atlas');
-   assert.equal(roof.material.color.getHexString(),'35393c');
+   assert.equal(roof.material.color.getHexString(),'71777b');
+   for(const property of ['roughness','roughnessMap','metalness','metalnessMap','normalMap','envMapIntensity'])assert.equal(roof.material[property],body.material[property],`${property} follows body finish`);
    assert.equal(body.material.color.getHexString(),'ffffff','source body paint is unchanged');
    assert.equal(roof.material.opacity,1);assert.equal(roof.material.transparent,false);
   }
   const roofProbe=config.id==='g63'?createG63RoofProbe(car):null;
+  const headrestProbe=createCarHeadrestProbe(car);
   const state={player:{onLand:true,ridingCar:true,car},character:{position:{x:0,y:0,z:0}},alpha:1,reduced:true,frozen:false};
   for(const yaw of[0,Math.PI/2,Math.PI]){
    car.teleport({x:4,y:0,z:2,yaw});car.setOccupied(true);
    for(const steer of[-1,0,1])for(const phase of[0,.7,2.4,4.9]){
     car.steering=steer;car.wheelAngle=car.previousWheelAngle=phase;car.updateVisual(0,true);avatar.update(0,state);scene.updateMatrixWorld(true);for(const roof of car.roof)assert.equal(roof.visible,true);
     if(roofProbe){const fit=roofProbe(avatar.model);assert.ok(fit.headVertices>10000);assert.equal(fit.coveredVertices,fit.headVertices);assert.equal(fit.penetratingVertices,0);assert.ok(fit.clearance>=.01,`hair-to-roof clearance ${fit.clearance}`);}
+    const headrestFit=headrestProbe(avatar.model);
+    assert.ok(headrestFit.covered>(config.id==='g63'?7000:3000));
+    assert.equal(headrestFit.penetrating,0,'rearward pose must not intersect the headrest');
+    assert.ok(headrestFit.clearance>=(config.id==='g63'?.005:.05),`headrest clearance ${headrestFit.clearance}`);
     const contact=avatar.carPose.contactStatus(car);assert.ok(contact.pelvisError<1e-5);
     for(const side of['Left','Right']){assert.ok(contact.palms[side].error<1e-4);assert.ok(contact.palms[side].skinError<.012);assert.ok(contact.soles[side].surfaceError<.007);assert.ok(contact.palms[side].requested<contact.palms[side].reach);}
     for(const side of['Left','Right']){
      const joint=name=>avatar.carPose.bones[side+name].getWorldPosition(new THREE.Vector3());
      const elbow=joint('ForeArm'),upper=joint('Arm').sub(elbow),lower=joint('Hand').sub(elbow);
      const angle=THREE.MathUtils.radToDeg(upper.angleTo(lower));
-     assert.ok(angle>125&&angle<145,`relaxed, extended ${side} elbow: ${angle}`);
-     assert.ok(contact.palms[side].reach-contact.palms[side].requested>.02,'hands retain reach reserve without stretching');
+     assert.ok(angle>140&&angle<155,`extended but unlocked ${side} elbow: ${angle}`);
+     assert.ok(contact.palms[side].reach-contact.palms[side].requested>.008,'hands retain reach reserve without stretching');
     }
     for(const [name,rest]of avatar.carPose.bind)assert.ok(avatar.carPose.bones[name].position.distanceTo(rest.position)<1e-6);
     assert.deepEqual(avatar.root.scale.toArray(),[1,1,1]);
