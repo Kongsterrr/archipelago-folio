@@ -7,8 +7,8 @@ import {localToWorld} from './character.js';
 export const GARAGE_CARS=Object.freeze([
  {id:'911',label:'Porsche 911',bay:0,width:2.061,height:1.264,wheelRadius:.355,seatBack:.13,seatDrop:.025,torsoLean:.16,headPitch:0},
  {id:'g63',label:'Mercedes G63',bay:1,width:2.199,height:2.107,wheelRadius:.427,seatDrop:.035,seatBack:.08,torsoLean:.165,headPitch:-.02},
- {id:'ferrari',label:'Ferrari Purosangue',bay:2,width:2.320,height:1.599,length:4.7,wheelRadius:.38,assetVersion:'15.2'},
- {id:'raptor',label:'Ford Raptor',bay:3,width:2.430,height:2.180,length:5.2,wheelRadius:.46,assetVersion:'15.2'},
+ {id:'ferrari',label:'Ferrari Purosangue',bay:2,width:2.320,height:1.599,length:4.7,wheelRadius:.38,seatBack:.008,seatDrop:.007,torsoLean:0,headPitch:-.10,assetVersion:'15.2'},
+ {id:'raptor',label:'Ford Raptor',bay:3,width:2.430,height:2.180,length:5.2,wheelRadius:.46,seatBack:.005,torsoLean:-.20,headPitch:0,assetVersion:'15.2'},
 ]);
 
 // A grounded signed speed with strong tire grip; no boat-like sideways drift.
@@ -58,8 +58,8 @@ export class GarageCarController extends QuadBikeController{
   let rig=null;model.traverse(o=>{if(o.userData.carRig)rig=o.userData.carRig;});
   if(!rig?.pelvis||!rig.grips?.Left||!rig.feet?.Right)throw Error('Missing driver contact anchors.');
   const old=this.model;
-  // Move the seated pelvis back inside each cabin, retaining the actual wheel
-  // and foot contacts. The SUV drop keeps Jack below its complete roof.
+  // Calibrate pelvis and torso together: moving only the hips while leaning
+  // forward cancels the visible change. Keep the real wheel and foot contacts.
   this.visual.add(model);this.model=model;this.rig={...rig,torsoLean:this.config.torsoLean??rig.torsoLean,headPitch:this.config.headPitch??rig.headPitch,pelvis:rig.pelvis.map((v,n)=>v+(n===2?(this.config.seatBack||0):0)-(n===1?(this.config.seatDrop||0):0))};this.quality=quality;this.wheelPivots=wheels;
   this.roof=[];const calibrated=new Set();
   model.traverse(o=>{

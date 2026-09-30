@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V15.2 — Four-Car Garage** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V15.2.1 — Rearward Driving Posture** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -75,13 +75,18 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.1 — Garage Refinement** | G63 roof retained, seated head clearance, and corrected 911 rolling wheels with stationary brakes | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8bc807cd5a7379ac3902f6da4d902ba8d4d9fa37) |
 | **V15.1.2 — Relaxed Driving Pose** | Rearward driver placement, relaxed wheel reach and a charcoal G63 roof | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/a375409df896d102ea7b0b80c116f7bd382e2b52) |
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
-| **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
+| **V15.2.1 — Rearward Driving Posture** | Ferrari and Raptor upper bodies sit farther back with more extended arms; measured against the real seatbacks | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.1 — Campus Signage** | Removes redundant arrival signs and ground lettering; mounts landmark names on their own facades | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V15.2.1 — Rearward Driving Posture
+
+Jack sits farther back in the Ferrari and Raptor with less forward hunching and more extended arms. The actual shoulders and jacket move closer to each seatback, while hands stay on the existing steering wheel and feet stay supported. Character proportions, vehicle artwork, roof and wheel geometry are unchanged. The 911/G63 keep their previously calibrated poses: moving them farther back would nearly lock the elbows. Jack's short limbs still leave some space behind the torso; this update does not claim full contact with the original full-size backrests.
 
 ### V15.2 — Four-Car Garage
 

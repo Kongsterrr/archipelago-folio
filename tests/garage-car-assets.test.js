@@ -2,6 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {fil
 import * as THREE from 'three';import {NodeIO} from '@gltf-transform/core';import {ALL_EXTENSIONS} from '@gltf-transform/extensions';import {MeshoptDecoder} from 'meshoptimizer';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';import {clone} from 'three/addons/utils/SkeletonUtils.js';
 import {createCarRoofProbe} from './helpers/garage-roof-probe.js';
 import {createCarHeadrestProbe} from './helpers/garage-headrest-probe.js';
+import {createCarBackrestProbe} from './helpers/garage-backrest-probe.js';
 import R from '@dimforge/rapier3d-compat/rapier.es.js';
 import {JackAvatar} from '../sources/world/jack.js';import {GarageCarController,GARAGE_CARS} from '../sources/core/garage-car.js';
 await MeshoptDecoder.ready;await R.init();const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.decoder':MeshoptDecoder});
@@ -51,6 +52,23 @@ for(const quality of['high','low'])for(const config of GARAGE_CARS)test(`${confi
    }
   }
   const state={player:{onLand:true,ridingCar:true,car},character:{position:{x:0,y:0,z:0}},alpha:1,reduced:true,frozen:false};
+  if(['ferrari','raptor'].includes(config.id)){
+   const currentRig=car.rig;let originalRig;
+   car.model.traverse(node=>{if(node.userData.carRig)originalRig=node.userData.carRig;});
+   const backrest=createCarBackrestProbe(car);
+   const measure=()=>{
+    avatar.update(0,state);scene.updateMatrixWorld(true);
+    const joint=name=>car.group.worldToLocal(avatar.carPose.bones[name].getWorldPosition(new THREE.Vector3()));
+    return {hips:joint('Hips'),chest:joint('Chest'),shoulder:joint('LeftArm'),back:backrest(avatar)};
+   };
+   car.rig=originalRig;const before=measure();car.rig=currentRig;const after=measure();
+   assert.ok(after.hips.z>=before.hips.z,'pelvis cannot move toward the dashboard');
+   assert.ok(after.shoulder.z-before.shoulder.z>(config.id==='ferrari'?.045:.020),'upper body actually moves rearward, not cancelled by a forward lean');
+   assert.ok(after.chest.z-before.chest.z>.014,'the torso follows the rearward posture');
+   assert.ok(before.back.covered>100&&after.back.covered>100,'measure visible jacket against the actual backrest');
+   assert.equal(after.back.penetrating,0,'jacket must not intersect the seat');
+   assert.ok(after.back.median<before.back.median-.005,'back becomes closer to the seat, not just the pelvis anchor');
+  }
   for(const yaw of[0,Math.PI/2,Math.PI]){
    car.teleport({x:4,y:0,z:2,yaw});car.setOccupied(true);
    for(const steer of[-1,0,1])for(const phase of[0,.7,2.4,4.9]){
