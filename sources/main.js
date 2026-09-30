@@ -7,8 +7,8 @@ import {DiscoveryStore,SECRETS,VOYAGE_STAMP_TOTAL} from './core/discovery.js';
 import {portfolioGroups,islandIdFor} from './portfolio-groups.js';
 import {directoryGroups,portfolioTarget,exhibitTarget,educationSchools,schoolTarget} from './core/portfolio-navigation.js';
 import {educationCards,educationDetail} from './ui/education.js';
-import {campusLandmarks,getCampusLandmark} from './campus-landmarks.js';
-import {landmarkCards,landmarkDetail} from './ui/campus-landmarks.js';
+import {getCampusLandmark} from './campus-landmarks.js';
+import {landmarkDetail} from './ui/campus-landmarks.js';
 import {landPrimaryAction,exhibitReadLabel} from './core/project-exhibits.js';
 import {ZOOM_NAMES} from './core/camera.js';
 import {LIVERIES} from './world/boat-appearance.js';
@@ -54,7 +54,7 @@ function closePanel({resume=true,focusGame=false}={}){if(!$('#panel').open)retur
 
 function card(e){return `<button class="directory-card" data-open="${e.id}"><small>${esc(e.eyebrow)}</small><h3>${esc(e.title)}</h3><p>${esc(e.summary)}</p></button>`;}
 function linkButton(link){const opensNewTab=!link.url.startsWith('mailto:');return `<a class="primary-button" href="${esc(link.url)}" ${opensNewTab?'target="_blank" rel="noopener noreferrer"':''}>${esc(link.label)}${opensNewTab?'<span class="sr-only"> (opens in a new tab)</span>':''}</a>`;}
-function groupCards(groups,{educationDetails=false}={}){return groups.map(group=>`<section class="portfolio-group" data-portfolio-group="${group.id}"><div class="portfolio-group-heading"><div><span class="eyebrow">ISLAND ${String(group.n).padStart(2,'0')}</span><h3>${esc(group.label)}</h3></div><button class="text-link" data-open="${group.id}" aria-label="Explore ${esc(group.label)} island">Island overview</button></div><p class="group-summary">${esc(group.summary)}</p>${group.id==='education'?educationCards(educationSchools(content),{complete:educationDetails})+landmarkCards(campusLandmarks):group.entries.map(card).join('')}</section>`).join('');}
+function groupCards(groups,{educationDetails=false}={}){return groups.map(group=>`<section class="portfolio-group" data-portfolio-group="${group.id}"><div class="portfolio-group-heading"><div><span class="eyebrow">ISLAND ${String(group.n).padStart(2,'0')}</span><h3>${esc(group.label)}</h3></div><button class="text-link" data-open="${group.id}" aria-label="Explore ${esc(group.label)} island">Island overview</button></div><p class="group-summary">${esc(group.summary)}</p>${group.id==='education'?educationCards(educationSchools(content),{complete:educationDetails}):group.entries.map(card).join('')}</section>`).join('');}
 function openGroup(id,{dock=false}={}){
  const target=portfolioTarget(id,content,islands);if(!target)return;
  const {group,island,entries}=target;if(group.id==='education')return openEducation({dock});
@@ -69,12 +69,12 @@ function openEntry(id,{dock=false,exhibitFocus=null}={}){
 }
 function openEducation({dock=false,exhibitFocus=null}={}){
  const entry=content.find(e=>e.id==='learning');store.see('learning');
- showPanel(`<span class="eyebrow">ISLAND 04 / EDUCATION</span><h2 class="panel-hero" id="panel-title">Where I’ve learned.</h2><p class="panel-summary">${esc(entry.summary)}</p><div class="school-list">${educationCards(educationSchools(content),{complete:true})}</div>${landmarkCards(campusLandmarks)}<section class="panel-section"><h3>Tools &amp; foundations</h3><div class="tags">${entry.technologies.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></section><div class="panel-links">${game?'<button class="secondary-button" data-travel="education">Travel to Education</button>':''}<a class="primary-button" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Download résumé<span class="sr-only"> (opens in a new tab)</span></a></div>`,{id:'learning',focus:game?(exhibitFocus||contentFocus('learning')):null,dock,render:()=>openEducation({exhibitFocus})});
+ showPanel(`<span class="eyebrow">ISLAND 04 / EDUCATION</span><h2 class="panel-hero" id="panel-title">Where I’ve learned.</h2><p class="panel-summary">${esc(entry.summary)}</p><div class="school-list">${educationCards(educationSchools(content),{complete:true})}</div><section class="panel-section"><h3>Tools &amp; foundations</h3><div class="tags">${entry.technologies.map(t=>`<span class="tag">${esc(t)}</span>`).join('')}</div></section><div class="panel-links">${game?'<button class="secondary-button" data-travel="education">Travel to Education</button>':''}<a class="primary-button" href="/resume.pdf" target="_blank" rel="noopener noreferrer">Download résumé<span class="sr-only"> (opens in a new tab)</span></a></div>`,{id:'learning',focus:game?(exhibitFocus||contentFocus('learning')):null,dock,render:()=>openEducation({exhibitFocus})});
 }
 function openSchool(schoolId,{exhibitFocus=null}={}){
  const target=schoolTarget(schoolId,content,islands);if(!target)return;
  const {school}=target;store.see('learning');
- showPanel(`${educationDetail(school)}${landmarkCards(campusLandmarks.filter(l=>l.schoolId===schoolId))}<div class="panel-links">${game?'<button class="secondary-button" data-travel="education">Travel to Education</button>':''}<button class="text-link" data-open="learning">Both schools</button></div>`,{id:'school:'+schoolId,focus:game?(game.educationFocus?.(schoolId)||exhibitFocus||contentFocus('learning')):null,render:()=>openSchool(schoolId,{exhibitFocus})});
+ showPanel(`${educationDetail(school)}<div class="panel-links">${game?'<button class="secondary-button" data-travel="education">Travel to Education</button>':''}<button class="text-link" data-open="learning">Both schools</button></div>`,{id:'school:'+schoolId,focus:game?(game.educationFocus?.(schoolId)||exhibitFocus||contentFocus('learning')):null,render:()=>openSchool(schoolId,{exhibitFocus})});
  game?.readSchool?.(schoolId);
 }
 function openLandmark(id){
