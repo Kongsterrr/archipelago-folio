@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V15.1 — Garage Drives** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V15.1.1 — Garage Refinement** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -71,7 +71,8 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14.2.3 — Road Cycling Reach** | Moves palms slightly forward onto the original bar shoulders and opens the elbows for a road-bike posture | [42903d4](https://github.com/Kongsterrr/archipelago-folio/commit/42903d413b8d1999bc144b52541c3361acfebaad) |
 | **V14.3 — Walking to the Sky** | A silver inclined sculpture with six painted walkers on the CMU lawn, retained campus circulation and updated CMU framing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V15 — Jack’s Estate** | A walkable About estate, four garage bays, six-ball tennis and three-hole putting with session-only practice | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f9942b3d33d587b5e8cc876e7496921744d06ab0) |
-| **V15.1 — Garage Drives** | Owner-supplied 911/G63, fitted driver poses, rolling/steering wheels, grounded driving and safe parking | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V15.1 — Garage Drives** | Owner-supplied 911/G63, fitted driver poses, rolling/steering wheels, grounded driving and safe parking | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/90536fb29a77084691b3f61ebd6d4d78e7c1ffe2) |
+| **V15.1.1 — Garage Refinement** | G63 roof retained, seated head clearance, and corrected 911 rolling wheels with stationary brakes | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.1 — Campus Signage** | Removes redundant arrival signs and ground lettering; mounts landmark names on their own facades | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -79,13 +80,19 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 
+### V15.1.1 — Garage Refinement
+
+The G63 now retains its complete opaque roof while Jack drives. A 3.5 cm seated-height adjustment keeps his hair below the roof without resizing the character or changing the steering-wheel and foot contacts.
+
+The 911’s front/rear wheel centers and radii are calibrated individually. Complete circular rubber shells follow the supplied tire profile, while retaining the original alloy design. Brake calipers follow steering but do not spin, and wheel-arch edges stay attached to the body. Front steering is interpolated with the chassis, while tire rotation follows travelled distance using each wheel’s own radius. Small paving steps no longer add false wheel travel or acceleration. The supplied body, cabin, paint and interior design are retained.
+
 ### V15.1 — Garage Drives
 
 The supplied 911 and G63 occupy About Island garage bays 01 and 02. Approach either side of a car and press **E** to drive; use WASD/arrows, Shift for 2× speed, Space to brake, and E to park and step out safely. A nearby car takes priority over a reading sign. R returns the occupied car to an available garage bay. Cars retain their parked positions within the current visit and reset on refresh.
 
-Jack uses the existing imported character, fitted to each seat with both palms at the steering wheel and feet in the footwell. Four wheels roll, the front pair steers, and the vehicle uses ground grip instead of sailing inertia. The G63’s central roof is hidden while occupied so the overhead camera can see Jack; it returns when he leaves. Cars collide with buildings and each other, remain on About Island, and cannot enter the house or pier. Garden practice asks you to move a car if it blocks the player’s movement area or exit.
+Jack uses the existing imported character, fitted to each seat with both palms at the steering wheel and feet in the footwell. Four wheels roll, the front pair steers, and the vehicle uses ground grip instead of sailing inertia. The G63 keeps its complete roof while driving; Jack is seated below it and visible through the cabin windows. Cars collide with buildings and each other, remain on About Island, and cannot enter the house or pier. Garden practice asks you to move a car if it blocks the player’s movement area or exit.
 
-High/low variants load after the voyage is playable. Original paint/interior texture maps are retained, with moderated metallic response for the game’s lighting. The original ~61 MB files stay outside the repository; optimized files are about 3.64/1.12 MB (911) and 2.86/0.94 MB (G63). Rebuild on macOS (uses `sips` for low texture resizing):
+High/low variants load after the voyage is playable. Original paint/interior texture maps are retained, with moderated metallic response for the game’s lighting. The original ~61 MB files stay outside the repository; optimized files are about 3.58/1.08 MB (911) and 2.86/0.94 MB (G63). Rebuild on macOS (uses `sips` for low texture resizing):
 
 ```sh
 npm run models:garage-cars -- --911 "/path/to/911-grey.glb" --g63 "/path/to/g63.glb" --install true

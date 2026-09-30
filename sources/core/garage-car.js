@@ -6,7 +6,7 @@ import {localToWorld} from './character.js';
 
 export const GARAGE_CARS=Object.freeze([
  {id:'911',label:'Porsche 911',bay:0,width:2.061,height:1.264,wheelRadius:.355},
- {id:'g63',label:'Mercedes G63',bay:1,width:2.199,height:2.107,wheelRadius:.427},
+ {id:'g63',label:'Mercedes G63',bay:1,width:2.199,height:2.107,wheelRadius:.427,seatDrop:.035},
 ]);
 
 // A grounded signed speed with strong tire grip; no boat-like sideways drift.
@@ -21,7 +21,7 @@ export function integrateCarDrive(state,input,dt){
  const yaw=state.yaw+speed/2.7*Math.tan(steer*.72)/(1+Math.abs(speed)/40)*dt;
  return {yaw,vx:-Math.sin(yaw)*speed,vz:-Math.cos(yaw)*speed};
 }
-export function carSpec(config){return {modelScale:1,collisionHalfWidth:config.width/2,collisionHalfLength:2.35,collisionHalfHeight:config.height*.46,collisionY:config.height*.5,wheelRadius:config.wheelRadius,riderAnchor:[0,0,0],integrateDrive:integrateCarDrive};}
+export function carSpec(config){return {modelScale:1,planarDrive:true,collisionHalfWidth:config.width/2,collisionHalfLength:2.35,collisionHalfHeight:config.height*.46,collisionY:config.height*.5,wheelRadius:config.wheelRadius,riderAnchor:[0,0,0],integrateDrive:integrateCarDrive};}
 export function garageSpawn(walk,bay){const slot=walk.layout.garageBays[bay];const p=localToWorld(walk.island,{x:slot.x,z:slot.z,yaw:Math.PI});p.y=walk.groundAt(p);return p;}
 const dispose=model=>{const materials=new Set(),textures=new Set();model?.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material]){materials.add(m);for(const v of Object.values(m))if(v?.isTexture)textures.add(v);}}});for(const m of materials)m.dispose();for(const t of textures)t.dispose();};
 
@@ -29,7 +29,7 @@ export class GarageCarController extends QuadBikeController{
  constructor(R,world,walk,spawn,config){
   super(R,world,walk,spawn,carSpec(config));
   Object.assign(this,{id:config.id,label:config.label,config});this.group.name=config.label;this.mountPoint.name=config.id+'-driver';
-  (walk.vehicles??=new Set()).add(this);this.previousWheelAngle=0;
+  (walk.vehicles??=new Set()).add(this);this.previousWheelAngle=0;this.previousSteering=0;
  }
  allowsPose(point,yaw){
   // Cars stay on the island, outside the pedestrian house and off the pier.
@@ -55,15 +55,18 @@ export class GarageCarController extends QuadBikeController{
   let rig=null;model.traverse(o=>{if(o.userData.carRig)rig=o.userData.carRig;});
   if(!rig?.pelvis||!rig.grips?.Left||!rig.feet?.Right)throw Error('Missing driver contact anchors.');
   const old=this.model;
-  this.visual.add(model);this.model=model;this.rig=rig;this.quality=quality;this.wheelPivots=wheels;
+  // Fit Jack below the retained SUV roof without changing his scale or limb lengths.
+  this.visual.add(model);this.model=model;this.rig={...rig,pelvis:rig.pelvis.map((v,n)=>v-(n===1?(this.config.seatDrop||0):0))};this.quality=quality;this.wheelPivots=wheels;
   this.roof=[];const calibrated=new Set();model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;for(const material of Array.isArray(o.material)?o.material:[o.material])if(!calibrated.has(material)){calibrated.add(material);material.userData.garageOriginalMetalness??=material.metalness;material.metalness=material.userData.garageOriginalMetalness*.3;material.envMapIntensity=.9;}}if(o.name==='car-roof-cutaway')this.roof.push(o);});
   this.steeringNodes=['left','right'].map(side=>model.getObjectByName('car-steer-front-'+side));
   for(const node of this.steeringNodes)if(node)node.userData.restRotation=node.quaternion.clone();
-  this.tireEnvelopes=wheels.map(w=>bicycleTireEnvelope(w,rig.wheelRadius));
+  this.wheelRadii=wheels.map(w=>rig.wheelRadii?.[w.name]||rig.wheelRadius||this.spec.wheelRadius);
+  this.tireEnvelopes=wheels.map((w,n)=>bicycleTireEnvelope(w,this.wheelRadii[n]));
   this.tireCenters=wheels.map(w=>{model.updateWorldMatrix(true,true);return this.group.worldToLocal(w.getWorldPosition(new THREE.Vector3()));});
   if(old){this.visual.remove(old);dispose(old);}this.updateVisual(0,true);
  }
- setOccupied(value){this.occupied=value;for(const roof of this.roof||[])roof.visible=!value;}
+ // Occupancy changes the driver state only; the supplied G63 roof stays intact.
+ setOccupied(value){this.occupied=value;for(const roof of this.roof||[])roof.visible=true;}
  contactTargets(){return this.rig;}
  accessPoints(){
   const p=this.position,c=Math.cos(this.yaw),s=Math.sin(this.yaw),seatZ=this.rig?.pelvis?.[2]??0;
@@ -78,14 +81,17 @@ export class GarageCarController extends QuadBikeController{
   }
   return null;
  }
- step(input,dt){this.previousWheelAngle=this.wheelAngle||0;super.step(input,dt);}
- hold(){super.hold();this.previousWheelAngle=this.wheelAngle||0;}
+ step(input,dt){this.previousWheelAngle=this.wheelAngle||0;this.previousSteering=this.steering||0;super.step(input,dt);}
+ hold(){super.hold();this.previousWheelAngle=this.wheelAngle||0;this.previousSteering=this.steering||0;}
  updateVisual(dt,frozen=false,alpha=1){
   const wheels=this.wheelPivots;this.wheelPivots=[];super.updateVisual(dt,frozen,alpha);this.wheelPivots=wheels;
   if(!this.model)return;
   const t=frozen||this.parked?1:THREE.MathUtils.clamp(alpha,0,1),angle=THREE.MathUtils.lerp(this.previousWheelAngle||0,this.wheelAngle||0,t);
-  for(const w of wheels)w.rotation.x=-angle*this.spec.wheelRadius/(this.rig.wheelRadius||this.spec.wheelRadius);
-  for(const n of this.steeringNodes||[])if(n)n.quaternion.copy(n.userData.restRotation).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),(this.steering||0)*.60));
+  // The source 911 has smaller front tires. Each rolls through the same
+  // travelled distance using its own fitted rolling radius.
+  for(let n=0;n<wheels.length;n++)wheels[n].rotation.x=-angle*this.spec.wheelRadius/this.wheelRadii[n];
+  const steer=THREE.MathUtils.lerp(this.previousSteering||0,this.steering||0,t);
+  for(const n of this.steeringNodes||[])if(n)n.quaternion.copy(n.userData.restRotation).multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),steer*.60));
   // Finish surfaces share the exported navigation heights. Support all four
   // tires together, without per-frame spring motion or independent wheel drift.
   if(this.tireCenters?.length){

@@ -193,7 +193,7 @@ export class QuadBikeController {
   }
 
   get position() { return this.body.translation(); }
-  get speed() { return Math.hypot(this.velocity.x, this.velocity.y, this.velocity.z); }
+  get speed() { return Math.hypot(this.velocity.x, this.spec.planarDrive ? 0 : this.velocity.y, this.velocity.z); }
   get forwardSpeed() {
     const forward = { x: -Math.sin(this.yaw), z: -Math.cos(this.yaw) };
     const horizontal=Math.hypot(this.velocity.x,this.velocity.z);
@@ -254,7 +254,8 @@ export class QuadBikeController {
       this.teleport({...this.previous,yaw:this.previousYaw});return;
     }
     const horizontal=(current.x-this.previous.x)*-Math.sin(this.yaw)+(current.z-this.previous.z)*-Math.cos(this.yaw);
-    const distance=Math.sign(horizontal)*Math.hypot(horizontal,current.y-this.previous.y);
+    // Flat-island finish steps are support offsets, not extra road travel.
+    const distance=this.spec.planarDrive?horizontal:Math.sign(horizontal)*Math.hypot(horizontal,current.y-this.previous.y);
     this.wheelAngle=(this.wheelAngle||0)+distance/this.spec.wheelRadius;
     this.velocity={x:(current.x-this.previous.x)/(this.stepDt||1/60),y:(current.y-this.previous.y)/(this.stepDt||1/60),z:(current.z-this.previous.z)/(this.stepDt||1/60)};
     this.syncGroundCollider();

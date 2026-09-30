@@ -1,7 +1,7 @@
 {
-  "version": 1,
+  "version": 2,
   "coordinateSystem": "Meters; Y up, ground Y=0; forward -Z; driver -X.",
-  "sourceGeometry": "Every original triangle is assigned exactly once to a rig part before simplification; original opaque source materials and UVs retained; coincident source seam normals averaged before LOD reduction.",
+  "sourceGeometry": "Body/cabin and alloy geometry retain source positions, opaque materials and UVs. Only source rubber is replaced with complete circular shells fitted to measured source cross-sections. Calipers steer but do not roll. Coincident source seam normals averaged before LOD reduction.",
   "models": [
     {
       "id": "porsche-911",
@@ -24,7 +24,43 @@
           1.2639895159170127,
           4.7
         ],
-        "wheelRadius": 0.3538990471585614,
+        "wheelRadius": 0.347789077150069,
+        "wheelRadii": {
+          "car-wheel-front-left": 0.3360124094670336,
+          "car-wheel-front-right": 0.33748646968241575,
+          "car-wheel-rear-left": 0.3579723604975564,
+          "car-wheel-rear-right": 0.3572410809498733
+        },
+        "wheelRepair": {
+          "front": {
+            "tireCenter": [
+              0.0737,
+              0.2596
+            ],
+            "hub": [
+              0.07045,
+              0.25935
+            ],
+            "rimRadius": 0.0605,
+            "blendStart": 0.0605,
+            "blendEnd": 0.065,
+            "sourceOuterRadius": 0.0737
+          },
+          "rear": {
+            "tireCenter": [
+              0.0758,
+              -0.25825
+            ],
+            "hub": [
+              0.0747,
+              -0.2584
+            ],
+            "rimRadius": 0.0638,
+            "blendStart": 0.0638,
+            "blendEnd": 0.068,
+            "sourceOuterRadius": 0.0758
+          }
+        },
         "wheelRollAxis": [
           1,
           0,
@@ -49,45 +85,45 @@
         "wheelCenters": {
           "car-wheel-front-left": [
             -0.8026823344490053,
-            0.3536594404915617,
-            -1.2454754550644567
+            0.33698281646838235,
+            -1.2425043323936602
           ],
           "car-wheel-front-right": [
             0.8026823344490053,
-            0.3536594404915617,
-            -1.2454754550644567
+            0.3382766924701808,
+            -1.2431273097278592
           ],
           "car-wheel-rear-left": [
             -0.8065160411210005,
-            0.3541386538255611,
-            1.236849615052467
+            0.3579723604975564,
+            1.2382872550544655
           ],
           "car-wheel-rear-right": [
             0.8065160411210005,
-            0.3541386538255611,
-            1.236849615052467
+            0.3579723604975564,
+            1.2382872550544655
           ]
         },
         "wheelContactPoints": {
           "car-wheel-front-left": [
             -0.8026823344490053,
             0,
-            -1.2454754550644567
+            -1.2425043323936602
           ],
           "car-wheel-front-right": [
             0.8026823344490053,
             0,
-            -1.2454754550644567
+            -1.2431273097278592
           ],
           "car-wheel-rear-left": [
             -0.8065160411210005,
             0,
-            1.236849615052467
+            1.2382872550544655
           ],
           "car-wheel-rear-right": [
             0.8065160411210005,
             0,
-            1.236849615052467
+            1.2382872550544655
           ]
         },
         "seatSurface": [
@@ -169,22 +205,28 @@
         "sourceScale": 4.792133339994061,
         "roofCutawayNode": null,
         "roofCutawayDescription": null,
-        "sourceWheelSeparation": "Conservative cylindrical partition of fused source wheels. Every source triangle retained; inspect wheel turns for fender seam.",
+        "sourceWheelSeparation": "Fitted alloy-hub axles; original rims/spokes/textures retained; complete rubber shells follow source tire cross-sections; calipers under steering parents; fender/wheel-well source faces retained in body. Replaced source rubber triangles explicitly counted.",
         "sourceTriangleCount": 1916762,
+        "replacedRubberTriangles": 105442,
+        "rubberRepair": "Complete rotationally symmetric rubber shells following triangle-plane measured source tire profiles; original alloy rims and spokes retained.",
         "partitionTriangleCounts": {
-          "car-body": 1516856,
-          "car-wheel-front-left": 104870,
-          "car-wheel-front-right": 100295,
-          "car-wheel-rear-left": 97488,
-          "car-wheel-rear-right": 97253
+          "car-body": 1533487,
+          "car-wheel-front-left": 51286,
+          "car-brake-front-left": 16426,
+          "car-wheel-front-right": 50397,
+          "car-brake-front-right": 15477,
+          "car-wheel-rear-left": 58436,
+          "car-brake-rear-left": 13673,
+          "car-wheel-rear-right": 57670,
+          "car-brake-rear-right": 14468
         }
       },
       "variants": {
         "high": {
           "file": "car-911.glb",
-          "bytes": 3635188,
-          "triangles": 111994,
-          "vertices": 84149,
+          "bytes": 3584040,
+          "triangles": 111984,
+          "vertices": 81938,
           "textures": [
             {
               "name": "911-grey_normal",
@@ -217,16 +259,24 @@
           "meshNames": [
             "car-body",
             "car-wheel-front-left-surface",
+            "car-brake-front-left",
             "car-wheel-front-right-surface",
+            "car-brake-front-right",
             "car-wheel-rear-left-surface",
-            "car-wheel-rear-right-surface"
+            "car-brake-rear-left",
+            "car-wheel-rear-right-surface",
+            "car-brake-rear-right",
+            "car-tire-front-left-surface",
+            "car-tire-front-right-surface",
+            "car-tire-rear-left-surface",
+            "car-tire-rear-right-surface"
           ]
         },
         "low": {
           "file": "low/car-911.glb",
-          "bytes": 1115076,
-          "triangles": 41989,
-          "vertices": 36168,
+          "bytes": 1076544,
+          "triangles": 42048,
+          "vertices": 33387,
           "textures": [
             {
               "name": "911-grey_normal",
@@ -259,9 +309,17 @@
           "meshNames": [
             "car-body",
             "car-wheel-front-left-surface",
+            "car-brake-front-left",
             "car-wheel-front-right-surface",
+            "car-brake-front-right",
             "car-wheel-rear-left-surface",
-            "car-wheel-rear-right-surface"
+            "car-brake-rear-left",
+            "car-wheel-rear-right-surface",
+            "car-brake-rear-right",
+            "car-tire-front-left-surface",
+            "car-tire-front-right-surface",
+            "car-tire-rear-left-surface",
+            "car-tire-rear-right-surface"
           ]
         }
       },
@@ -432,7 +490,7 @@
         "sourceLength": 0.9795228242874146,
         "sourceScale": 4.798254704701921,
         "roofCutawayNode": "car-roof-cutaway",
-        "roofCutawayDescription": "Only central roof/ceiling panel above 1.72m; pillars, windscreen header and outer roof rim remain. Hide only while occupied for view cutaway.",
+        "roofCutawayDescription": "Legacy roof group name; complete original roof retained in all occupancy states.",
         "sourceWheelSeparation": "Four exact disconnected geometric components.",
         "sourceTriangleCount": 1869882,
         "partitionTriangleCounts": {

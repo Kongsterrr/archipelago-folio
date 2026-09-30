@@ -77,6 +77,8 @@ The CMU lawn sculpture is a miniature procedural interpretation of **Walking to 
 
 ## V15.1 owner-supplied garage vehicles
 
-The 911 and G63 runtime models derive from the owner-provided `911-grey.glb` and `g63.glb`. `static/models/garage-cars.json` records source hashes, original sizes, geometry partitions, rig anchors and optimized variants. The original files are not distributed. The pipeline retains their UVs and texture artwork, partitions four wheel pivots (plus a reversible G63 roof cutaway), and produces reduced high/low geometry. Runtime material response is calibrated to the scene lighting.
+The 911 and G63 runtime models derive from the owner-provided `911-grey.glb` and `g63.glb`. `static/models/garage-cars.json` records source hashes, original sizes, geometry partitions, rig anchors and optimized variants. The original files are not distributed. The pipeline retains their UVs and texture artwork, partitions four wheel pivots (plus a separate G63 roof group, retained during driving), and produces reduced high/low geometry. Runtime material response is calibrated to the scene lighting.
 
 These imported car meshes, textures and visible brand marks are **not relicensed under this repository’s MIT code license**. No upstream asset license or author attribution was supplied with the files; downstream reuse requires the appropriate original permissions. Porsche, Mercedes-Benz and AMG names/marks identify the depicted vehicles and do not imply affiliation. No third-party car controller or character animation was added.
+
+V15.1.1 corrects only the 911 wheel assemblies: fitted axle centers, circularized rubber profiles, stationary brake calipers, and wheel-arch faces reassigned to the body. The supplied alloy/spoke artwork and textures are retained. These geometry corrections do not change the imported assets’ licensing status.
