@@ -14,6 +14,13 @@ for(const quality of['high','low'])for(const config of GARAGE_CARS)test(`${confi
  try{
   assert.equal(car.wheelPivots.length,4);for(const wheel of car.wheelPivots){assert.equal(wheel.isMesh,undefined,'roll transform is a stable unquantized parent');assert.ok(wheel.children.some(n=>n.isMesh));}
   car.setOccupied(true);for(const roof of car.roof)assert.equal(roof.visible,true);
+  if(config.id==='g63'){
+   const body=car.model.getObjectByName('car-body'),roof=car.roof[0];
+   assert.notEqual(roof.material,body.material,'roof finish cannot recolor the shared body atlas');
+   assert.equal(roof.material.color.getHexString(),'35393c');
+   assert.equal(body.material.color.getHexString(),'ffffff','source body paint is unchanged');
+   assert.equal(roof.material.opacity,1);assert.equal(roof.material.transparent,false);
+  }
   const roofProbe=config.id==='g63'?createG63RoofProbe(car):null;
   const state={player:{onLand:true,ridingCar:true,car},character:{position:{x:0,y:0,z:0}},alpha:1,reduced:true,frozen:false};
   for(const yaw of[0,Math.PI/2,Math.PI]){
@@ -23,6 +30,13 @@ for(const quality of['high','low'])for(const config of GARAGE_CARS)test(`${confi
     if(roofProbe){const fit=roofProbe(avatar.model);assert.ok(fit.headVertices>10000);assert.equal(fit.coveredVertices,fit.headVertices);assert.equal(fit.penetratingVertices,0);assert.ok(fit.clearance>=.01,`hair-to-roof clearance ${fit.clearance}`);}
     const contact=avatar.carPose.contactStatus(car);assert.ok(contact.pelvisError<1e-5);
     for(const side of['Left','Right']){assert.ok(contact.palms[side].error<1e-4);assert.ok(contact.palms[side].skinError<.012);assert.ok(contact.soles[side].surfaceError<.007);assert.ok(contact.palms[side].requested<contact.palms[side].reach);}
+    for(const side of['Left','Right']){
+     const joint=name=>avatar.carPose.bones[side+name].getWorldPosition(new THREE.Vector3());
+     const elbow=joint('ForeArm'),upper=joint('Arm').sub(elbow),lower=joint('Hand').sub(elbow);
+     const angle=THREE.MathUtils.radToDeg(upper.angleTo(lower));
+     assert.ok(angle>125&&angle<145,`relaxed, extended ${side} elbow: ${angle}`);
+     assert.ok(contact.palms[side].reach-contact.palms[side].requested>.02,'hands retain reach reserve without stretching');
+    }
     for(const [name,rest]of avatar.carPose.bind)assert.ok(avatar.carPose.bones[name].position.distanceTo(rest.position)<1e-6);
     assert.deepEqual(avatar.root.scale.toArray(),[1,1,1]);
     for(const wheel of car.wheelPivots)wheel.traverse(mesh=>{if(!mesh.isMesh)return;const p=mesh.geometry.getAttribute('position'),v=new THREE.Vector3();for(let i=0;i<p.count;i++)assert.ok(v.fromBufferAttribute(p,i).applyMatrix4(mesh.matrixWorld).y>=-.001,`tire surface above ground: ${v.y}`);});

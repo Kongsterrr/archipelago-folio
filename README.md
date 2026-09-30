@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V15.1.1 — Garage Refinement** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V15.1.2 — Relaxed Driving Pose** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -72,13 +72,18 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14.3 — Walking to the Sky** | A silver inclined sculpture with six painted walkers on the CMU lawn, retained campus circulation and updated CMU framing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V15 — Jack’s Estate** | A walkable About estate, four garage bays, six-ball tennis and three-hole putting with session-only practice | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f9942b3d33d587b5e8cc876e7496921744d06ab0) |
 | **V15.1 — Garage Drives** | Owner-supplied 911/G63, fitted driver poses, rolling/steering wheels, grounded driving and safe parking | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/90536fb29a77084691b3f61ebd6d4d78e7c1ffe2) |
-| **V15.1.1 — Garage Refinement** | G63 roof retained, seated head clearance, and corrected 911 rolling wheels with stationary brakes | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V15.1.1 — Garage Refinement** | G63 roof retained, seated head clearance, and corrected 911 rolling wheels with stationary brakes | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8bc807cd5a7379ac3902f6da4d902ba8d4d9fa37) |
+| **V15.1.2 — Relaxed Driving Pose** | Rearward driver placement, relaxed wheel reach and a charcoal G63 roof | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.1 — Campus Signage** | Removes redundant arrival signs and ground lettering; mounts landmark names on their own facades | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V15.1.2 — Relaxed Driving Pose
+
+Jack sits 10 cm farther back in the 911 and 5 cm farther back in the G63. Both elbows retain a relaxed bend of about 132°, while palms stay on the original steering-wheel contacts and feet remain in the footwell. Original character dimensions and G63 roof clearance are preserved. The complete G63 roof uses a dedicated charcoal finish with softer reflections, retaining its surface detail without tinting the shared body or window materials. Vehicle geometry and driving behavior are unchanged.
 
 ### V15.1.1 — Garage Refinement
 

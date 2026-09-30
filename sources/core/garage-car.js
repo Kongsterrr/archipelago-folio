@@ -5,8 +5,8 @@ import {bicycleTireEnvelope} from './bicycle-surface.js';
 import {localToWorld} from './character.js';
 
 export const GARAGE_CARS=Object.freeze([
- {id:'911',label:'Porsche 911',bay:0,width:2.061,height:1.264,wheelRadius:.355},
- {id:'g63',label:'Mercedes G63',bay:1,width:2.199,height:2.107,wheelRadius:.427,seatDrop:.035},
+ {id:'911',label:'Porsche 911',bay:0,width:2.061,height:1.264,wheelRadius:.355,seatBack:.10,seatDrop:.015},
+ {id:'g63',label:'Mercedes G63',bay:1,width:2.199,height:2.107,wheelRadius:.427,seatDrop:.035,seatBack:.05},
 ]);
 
 // A grounded signed speed with strong tire grip; no boat-like sideways drift.
@@ -55,9 +55,35 @@ export class GarageCarController extends QuadBikeController{
   let rig=null;model.traverse(o=>{if(o.userData.carRig)rig=o.userData.carRig;});
   if(!rig?.pelvis||!rig.grips?.Left||!rig.feet?.Right)throw Error('Missing driver contact anchors.');
   const old=this.model;
-  // Fit Jack below the retained SUV roof without changing his scale or limb lengths.
-  this.visual.add(model);this.model=model;this.rig={...rig,pelvis:rig.pelvis.map((v,n)=>v-(n===1?(this.config.seatDrop||0):0))};this.quality=quality;this.wheelPivots=wheels;
-  this.roof=[];const calibrated=new Set();model.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;for(const material of Array.isArray(o.material)?o.material:[o.material])if(!calibrated.has(material)){calibrated.add(material);material.userData.garageOriginalMetalness??=material.metalness;material.metalness=material.userData.garageOriginalMetalness*.3;material.envMapIntensity=.9;}}if(o.name==='car-roof-cutaway')this.roof.push(o);});
+  // Move the seated pelvis back inside each cabin, retaining the actual wheel
+  // and foot contacts. The SUV drop keeps Jack below its complete roof.
+  this.visual.add(model);this.model=model;this.rig={...rig,pelvis:rig.pelvis.map((v,n)=>v+(n===2?(this.config.seatBack||0):0)-(n===1?(this.config.seatDrop||0):0))};this.quality=quality;this.wheelPivots=wheels;
+  this.roof=[];const calibrated=new Set();
+  model.traverse(o=>{
+   if(o.name==='car-roof-cutaway')this.roof.push(o);
+   if(!o.isMesh)return;
+   o.castShadow=true;o.receiveShadow=true;
+   for(const material of Array.isArray(o.material)?o.material:[o.material])if(!calibrated.has(material)){
+    calibrated.add(material);material.userData.garageOriginalMetalness??=material.metalness;
+    material.metalness=material.userData.garageOriginalMetalness*.3;material.envMapIntensity=.9;
+   }
+  });
+  // The imported roof and body share an atlas/material. Give only the roof
+  // its own charcoal finish, retaining seams/normals without recoloring glass or body.
+  const roofMaterials=new Map();
+  for(const roof of this.roof)roof.traverse(o=>{
+   if(!o.isMesh)return;
+   const finish=source=>{
+    if(!roofMaterials.has(source)){
+     const material=source.clone();material.name='g63-charcoal-roof';
+     material.color.set('#35393c');material.roughness=.72;material.roughnessMap=null;
+     material.metalness=.2;material.envMapIntensity=.65;
+     roofMaterials.set(source,material);
+    }
+    return roofMaterials.get(source);
+   };
+   o.material=Array.isArray(o.material)?o.material.map(finish):finish(o.material);
+  });
   this.steeringNodes=['left','right'].map(side=>model.getObjectByName('car-steer-front-'+side));
   for(const node of this.steeringNodes)if(node)node.userData.restRotation=node.quaternion.clone();
   this.wheelRadii=wheels.map(w=>rig.wheelRadii?.[w.name]||rig.wheelRadius||this.spec.wheelRadius);
