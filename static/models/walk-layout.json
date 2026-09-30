@@ -31,31 +31,31 @@
         ],
         [
           -25.2672,
-          -10.8288
+          -16.2432
         ],
         [
           -19.0848,
-          -19.3536
+          -29.0304
         ],
         [
           -7.7952,
-          -23.04
+          -34.56
         ],
         [
           5.1072,
-          -22.5792
+          -33.8688
         ],
         [
           16.128,
-          -20.2752
+          -30.4128
         ],
         [
           23.9232,
-          -14.7456
+          -22.1184
         ],
         [
           26.88,
-          -2.9952
+          -4.4928
         ],
         [
           26.0736,
@@ -81,6 +81,41 @@
           "width": 4,
           "depth": 10.260000000000002,
           "y": 0.85
+        },
+        {
+          "x": -4,
+          "z": -8,
+          "width": 20,
+          "depth": 14,
+          "y": 0.875
+        },
+        {
+          "x": -14,
+          "z": 9,
+          "width": 14,
+          "depth": 8,
+          "y": 0.875
+        },
+        {
+          "x": -4,
+          "z": -16.7,
+          "width": 21,
+          "depth": 3.4,
+          "y": 0.875
+        },
+        {
+          "x": 0,
+          "z": 18,
+          "width": 11,
+          "depth": 7,
+          "y": 0.875
+        },
+        {
+          "x": 16,
+          "z": -5,
+          "width": 12,
+          "depth": 24,
+          "y": 0.875
         }
       ],
       "obstacles": [
@@ -165,312 +200,722 @@
           "rotation": 0
         },
         {
-          "name": "arrival lamp",
-          "x": -5.8,
-          "z": 18.5,
-          "width": 0.4,
-          "depth": 0.4,
-          "height": 3.4,
+          "name": "house west wall",
+          "x": -13.84,
+          "z": -8,
+          "width": 0.32,
+          "depth": 13.7,
+          "height": 3,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "arrival lamp",
-          "x": 5.8,
-          "z": 18.5,
-          "width": 0.4,
-          "depth": 0.4,
-          "height": 3.4,
+          "name": "house east stone pier",
+          "x": 5.84,
+          "z": -12,
+          "width": 0.32,
+          "depth": 5.7,
+          "height": 3,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "landmark tree",
-          "x": -21.18,
-          "z": -14.879999999999999,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
+          "name": "house east glazing",
+          "x": 5.84,
+          "z": -5.1,
+          "width": 0.16,
+          "depth": 7.8,
+          "height": 2.8,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "landmark tree",
-          "x": 21.380000000000003,
-          "z": -14.879999999999999,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
+          "name": "house front west glass",
+          "x": -9.83,
+          "z": -1.13,
+          "width": 7.7,
+          "depth": 0.15,
+          "height": 2.8,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "harbor: lighthouse",
-          "x": -14.7,
-          "z": -4.8,
-          "width": 2.9,
-          "depth": 2.9,
-          "height": 8.5,
+          "name": "house front east glass",
+          "x": 1.83,
+          "z": -1.13,
+          "width": 7.7,
+          "depth": 0.15,
+          "height": 2.8,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "harbor: harbor office",
-          "x": -9.9,
-          "z": -5.6,
-          "width": 3.3,
-          "depth": 2.45,
-          "height": 2.2,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "harbor: bell frame",
-          "x": -18.1,
-          "z": -1,
-          "width": 1.3,
-          "depth": 0.2,
-          "height": 2.4,
+          "name": "house rear west glass",
+          "x": -9.83,
+          "z": -14.87,
+          "width": 7.7,
+          "depth": 0.15,
+          "height": 2.8,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "harbor: table",
-          "x": -7.9,
-          "z": -8.15,
-          "width": 1.8,
-          "depth": 0.7,
-          "height": 0.9,
+          "name": "house rear east glass",
+          "x": 1.83,
+          "z": -14.87,
+          "width": 7.7,
+          "depth": 0.15,
+          "height": 2.8,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "harbor: rest bench",
-          "x": -19,
-          "z": -7.2,
-          "width": 1.95,
-          "depth": 0.8,
-          "height": 1.25,
+          "name": "house door jamb",
+          "x": -5.73,
+          "z": -1.1,
+          "width": 0.18,
+          "depth": 0.25,
+          "height": 3.05,
           "y": 0.85,
-          "rotation": 0.25
+          "rotation": 0
         },
         {
-          "name": "harbor: plaque harbor:welcome",
+          "name": "house door jamb",
+          "x": -2.27,
+          "z": -1.1,
+          "width": 0.18,
+          "depth": 0.25,
+          "height": 3.05,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "house door jamb",
+          "x": -5.73,
+          "z": -14.9,
+          "width": 0.18,
+          "depth": 0.25,
+          "height": 3.05,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "house door jamb",
+          "x": -2.27,
+          "z": -14.9,
+          "width": 0.18,
+          "depth": 0.25,
+          "height": 3.05,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "living sofa back",
+          "x": -10.6,
+          "z": -11.6,
+          "width": 4.2,
+          "depth": 1.2,
+          "height": 1.15,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "living sofa side",
+          "x": -12.15,
+          "z": -10.3,
+          "width": 1.15,
+          "depth": 2.8,
+          "height": 1.15,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "living low table",
           "x": -10.2,
-          "z": -0.3999999999999999,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
+          "z": -8.75,
+          "width": 2.5,
+          "depth": 1.3,
+          "height": 0.5,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "harbor: plaque harbor:bell",
-          "x": -17.7,
-          "z": -0.19999999999999973,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
+          "name": "living lamp",
+          "x": -12.7,
+          "z": -6.4,
+          "width": 0.4,
+          "depth": 0.4,
+          "height": 2.25,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "harbor: plaque harbor:studio",
-          "x": -7.8,
-          "z": -7.5,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
+          "name": "estate table",
+          "x": 2,
+          "z": -11.8,
+          "width": 3.7,
+          "depth": 1.05,
+          "height": 1,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "connect: post office",
-          "x": 10.2,
-          "z": -5.7,
-          "width": 3.6,
-          "depth": 2.6,
-          "height": 2.15,
-          "y": 0.8499999999999999,
+          "name": "study chair",
+          "x": 2,
+          "z": -10.4,
+          "width": 1,
+          "depth": 0.95,
+          "height": 1.3,
+          "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "connect: table",
-          "x": 10.2,
-          "z": -3.7,
-          "width": 2.7,
-          "depth": 0.65,
+          "name": "study shelving",
+          "x": 2,
+          "z": -14.4,
+          "width": 4.8,
+          "depth": 0.53,
+          "height": 2.5,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "entry console",
+          "x": -1,
+          "z": -2.45,
+          "width": 1.45,
+          "depth": 0.45,
           "height": 0.9,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "connect: signal tower",
-          "x": 15.85,
-          "z": -5.8,
-          "width": 2.1,
-          "depth": 2.05,
-          "height": 7,
+          "name": "garage rear wall",
+          "x": -14,
+          "z": 5.12,
+          "width": 13.95,
+          "depth": 0.24,
+          "height": 3.1,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "connect: table",
-          "x": 9.6,
-          "z": -9,
-          "width": 2.2,
+          "name": "garage west wall",
+          "x": -20.87,
+          "z": 9,
+          "width": 0.26,
+          "depth": 7.8,
+          "height": 3.1,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "garage east wall",
+          "x": -7.13,
+          "z": 9,
+          "width": 0.26,
+          "depth": 7.8,
+          "height": 3.1,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "garage front pier 0",
+          "x": -21,
+          "z": 12.95,
+          "width": 0.3,
+          "depth": 0.35,
+          "height": 2.9,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "garage front pier 1",
+          "x": -17.5,
+          "z": 12.95,
+          "width": 0.3,
+          "depth": 0.35,
+          "height": 2.9,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "garage front pier 2",
+          "x": -14,
+          "z": 12.95,
+          "width": 0.3,
+          "depth": 0.35,
+          "height": 2.9,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "garage front pier 3",
+          "x": -10.5,
+          "z": 12.95,
+          "width": 0.3,
+          "depth": 0.35,
+          "height": 2.9,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "garage front pier 4",
+          "x": -7,
+          "z": 12.95,
+          "width": 0.3,
+          "depth": 0.35,
+          "height": 2.9,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "garage workbench",
+          "x": -14,
+          "z": 5.62,
+          "width": 5.4,
           "depth": 0.65,
-          "height": 0.9,
+          "height": 0.96,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "connect: rest bench",
-          "x": 17.6,
-          "z": -8.6,
-          "width": 1.95,
-          "depth": 0.8,
+          "name": "garage storage",
+          "x": -20.05,
+          "z": 5.6,
+          "width": 1.55,
+          "depth": 0.6,
+          "height": 1.7,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "covered link column",
+          "x": -10.22,
+          "z": -0.25,
+          "width": 0.13,
+          "depth": 0.13,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "covered link column",
+          "x": -7.35,
+          "z": -0.25,
+          "width": 0.13,
+          "depth": 0.13,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "covered link column",
+          "x": -10.22,
+          "z": 4.3,
+          "width": 0.13,
+          "depth": 0.13,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "covered link column",
+          "x": -7.35,
+          "z": 4.3,
+          "width": 0.13,
+          "depth": 0.13,
+          "height": 2.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "tennis net post",
+          "x": 10.9,
+          "z": -5,
+          "width": 0.18,
+          "depth": 0.18,
           "height": 1.25,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "connect: plaque connect:hello",
-          "x": 9.8,
-          "z": -1.4,
-          "width": 1.62,
-          "depth": 0.15,
+          "name": "tennis net post",
+          "x": 21.1,
+          "z": -5,
+          "width": 0.18,
+          "depth": 0.18,
+          "height": 1.25,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "tennis playing net",
+          "x": 16,
+          "z": -5,
+          "width": 10.2,
+          "depth": 0.06,
+          "height": 1.05,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "tennis perimeter fence",
+          "x": 22,
+          "z": -5,
+          "width": 0.1,
+          "depth": 24,
+          "height": 2.3,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "tennis perimeter fence",
+          "x": 16,
+          "z": -17,
+          "width": 12,
+          "depth": 0.1,
+          "height": 2.3,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "tennis perimeter fence",
+          "x": 10,
+          "z": -9,
+          "width": 0.1,
+          "depth": 16,
+          "height": 2.3,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "tennis perimeter fence",
+          "x": 16,
+          "z": 7,
+          "width": 12,
+          "depth": 0.1,
+          "height": 2.3,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "tennis ball machine",
+          "x": 16,
+          "z": -14,
+          "width": 1.15,
+          "depth": 1.1,
+          "height": 1.4,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "tennis ball basket",
+          "x": 20.9,
+          "z": 5.75,
+          "width": 0.74,
+          "depth": 0.74,
+          "height": 1,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate seat harbor:tennis-seat",
+          "x": 13,
+          "z": 9.5,
+          "width": 2,
+          "depth": 0.76,
+          "height": 1.22,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate planter",
+          "x": 19,
+          "z": 9.5,
+          "width": 2.4,
+          "depth": 0.8,
+          "height": 0.78,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "tennis entry sign",
+          "x": 11.8,
+          "z": 6.1,
+          "width": 1.4,
+          "depth": 0.2,
+          "height": 1.7,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "golf club rack",
+          "x": -11,
+          "z": -21,
+          "width": 1.8,
+          "depth": 0.43,
+          "height": 1.6,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "golf guide",
+          "x": 0,
+          "z": -18.8,
+          "width": 3.3,
+          "depth": 0.25,
           "height": 1.5,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "connect: plaque connect:repository",
+          "name": "estate lighthouse",
+          "x": -21,
+          "z": -10.5,
+          "width": 2.75,
+          "depth": 2.75,
+          "height": 8.7,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "harbor bell frame",
+          "x": -6,
+          "z": 18.8,
+          "width": 1.4,
+          "depth": 0.22,
+          "height": 2.3,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "MEET JACK display",
+          "x": -3.25,
+          "z": 17.7,
+          "width": 3.25,
+          "depth": 0.3,
+          "height": 2.05,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "SAY HELLO display",
+          "x": 3.25,
+          "z": 17.7,
+          "width": 3.25,
+          "depth": 0.3,
+          "height": 2.05,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate tree west1",
+          "x": -24,
+          "z": -1.7,
+          "width": 0.38,
+          "depth": 0.38,
+          "height": 4.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate tree west2",
+          "x": -22.8,
+          "z": -19.7,
+          "width": 0.38,
+          "depth": 0.38,
+          "height": 4.7,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate tree east1",
+          "x": 23.9,
+          "z": -8,
+          "width": 0.38,
+          "depth": 0.38,
+          "height": 4.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate tree east2",
+          "x": 23.2,
+          "z": 1.8,
+          "width": 0.38,
+          "depth": 0.38,
+          "height": 4,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate tree rear1",
+          "x": -15.5,
+          "z": -27.4,
+          "width": 0.38,
+          "depth": 0.38,
+          "height": 4.3,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate tree rear2",
+          "x": 15.2,
+          "z": -25.5,
+          "width": 0.38,
+          "depth": 0.38,
+          "height": 4.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate planter",
+          "x": -22.5,
+          "z": -16.8,
+          "width": 2.8,
+          "depth": 0.8,
+          "height": 0.78,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate planter",
+          "x": -0.8,
+          "z": 2.9,
+          "width": 2.8,
+          "depth": 0.8,
+          "height": 0.78,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate planter",
+          "x": 3.9,
+          "z": 2.9,
+          "width": 2.8,
+          "depth": 0.8,
+          "height": 0.78,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate planter",
+          "x": 4.6,
+          "z": -15.35,
+          "width": 2.2,
+          "depth": 0.8,
+          "height": 0.78,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate planter",
+          "x": -23.2,
+          "z": 14,
+          "width": 2.2,
+          "depth": 1,
+          "height": 0.78,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate seat harbor:terrace-seat",
+          "x": -10.3,
+          "z": -15.4,
+          "width": 2,
+          "depth": 0.76,
+          "height": 1.22,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate seat harbor:overlook-seat",
+          "x": 17.4,
+          "z": -26.7,
+          "width": 2,
+          "depth": 0.76,
+          "height": 1.22,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate garden light",
+          "x": -6.3,
+          "z": 22.2,
+          "width": 0.32,
+          "depth": 0.32,
+          "height": 1.5,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate garden light",
+          "x": 6.3,
+          "z": 22.2,
+          "width": 0.32,
+          "depth": 0.32,
+          "height": 1.5,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate garden light",
+          "x": 10,
+          "z": 11,
+          "width": 0.32,
+          "depth": 0.32,
+          "height": 1.5,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate garden light",
+          "x": -21.9,
+          "z": 16.7,
+          "width": 0.32,
+          "depth": 0.32,
+          "height": 1.5,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate garden light",
+          "x": -19,
+          "z": 2.7,
+          "width": 0.32,
+          "depth": 0.32,
+          "height": 1.5,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "estate garden light",
           "x": 6.6,
-          "z": -8.4,
-          "width": 1.62,
-          "depth": 0.15,
+          "z": -12.6,
+          "width": 0.32,
+          "depth": 0.32,
           "height": 1.5,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "connect: plaque connect:signal",
-          "x": 17.8,
-          "z": -2.9,
-          "width": 1.62,
-          "depth": 0.15,
+          "name": "estate garden light",
+          "x": -11.8,
+          "z": -15.2,
+          "width": 0.32,
+          "depth": 0.32,
           "height": 1.5,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": -18.701999999999998,
-          "z": 16.524,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "coast tree",
-          "x": -23.7,
-          "z": 1.02,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "coast tree",
-          "x": -16.798,
-          "z": -17.136,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "coast tree",
-          "x": 4.622,
-          "z": -19.992,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "coast tree",
-          "x": 21.282000000000004,
-          "z": -13.056,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "coast tree",
-          "x": 23.186,
-          "z": 8.568,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "coast tree",
-          "x": 9.620000000000001,
-          "z": 19.584,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "promenade lamp",
-          "x": -15.4,
-          "z": 11.040000000000001,
-          "width": 0.3,
-          "depth": 0.3,
-          "height": 3,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "promenade lamp",
-          "x": 18.2,
-          "z": 11.040000000000001,
-          "width": 0.3,
-          "depth": 0.3,
-          "height": 3,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "promenade lamp",
-          "x": -15.4,
-          "z": 16.32,
-          "width": 0.3,
-          "depth": 0.3,
-          "height": 3,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "promenade lamp",
-          "x": 18.2,
-          "z": 16.32,
-          "width": 0.3,
-          "depth": 0.3,
-          "height": 3,
+          "name": "estate garden light",
+          "x": 14,
+          "z": -21.2,
+          "width": 0.32,
+          "depth": 0.32,
+          "height": 1.5,
           "y": 0.85,
           "rotation": 0
         }
@@ -482,179 +927,75 @@
         ],
         [
           0,
-          16
-        ],
-        [
-          -13,
-          16
-        ],
-        [
-          -13,
-          7
-        ],
-        [
-          -10,
-          7
-        ],
-        [
-          -10,
-          1
-        ],
-        [
-          -17.5,
-          1
-        ],
-        [
-          -7,
-          1
-        ],
-        [
-          -7,
-          -6
-        ],
-        [
-          -7,
-          -3
-        ],
-        [
-          -12,
-          -3
-        ],
-        [
-          -12,
-          -2
-        ],
-        [
-          -15.5,
-          -2
-        ],
-        [
-          -15.5,
-          1
-        ],
-        [
-          -20,
-          1
-        ],
-        [
-          -20,
-          -2.5
-        ],
-        [
-          -19,
-          -2.5
-        ],
-        [
-          -19,
-          -5.5
-        ],
-        [
-          -19.5,
-          -5.5
-        ],
-        [
-          -19.5,
-          -5
-        ],
-        [
-          -20,
-          -5
-        ],
-        [
-          -20,
-          1
-        ],
-        [
-          -13,
-          1
-        ],
-        [
-          -13,
-          7
-        ],
-        [
-          13,
-          7
-        ],
-        [
-          10,
-          7
-        ],
-        [
-          10,
-          0
-        ],
-        [
-          6.5,
-          0
-        ],
-        [
-          6.5,
-          -7
-        ],
-        [
-          7,
-          -7
-        ],
-        [
-          7,
-          -3
-        ],
-        [
-          7.5,
-          -3
-        ],
-        [
-          7.5,
-          0
-        ],
-        [
-          18,
-          0
-        ],
-        [
-          18,
-          -1.5
-        ],
-        [
-          20,
-          -1.5
-        ],
-        [
-          20,
-          -4.5
-        ],
-        [
-          18,
-          -4.5
-        ],
-        [
-          18,
-          -7
-        ],
-        [
-          20,
-          -7
-        ],
-        [
-          20,
-          -1.5
-        ],
-        [
-          13,
-          -1.5
-        ],
-        [
-          13,
-          7
+          22
         ],
         [
           0,
-          7
+          15.6
+        ],
+        [
+          -4,
+          15.6
+        ],
+        [
+          -4,
+          2
+        ],
+        [
+          -4,
+          -3
+        ],
+        [
+          -4,
+          -13
+        ],
+        [
+          -4,
+          -17.1
+        ],
+        [
+          -13.4,
+          -17.1
+        ],
+        [
+          -13.4,
+          -24
+        ],
+        [
+          -13.4,
+          -30
+        ],
+        [
+          12.2,
+          -30
+        ],
+        [
+          12.2,
+          -20
+        ],
+        [
+          8,
+          -20
+        ],
+        [
+          8,
+          -8
+        ],
+        [
+          8,
+          0
+        ],
+        [
+          8,
+          11
         ],
         [
           0,
-          16
+          11
+        ],
+        [
+          0,
+          22
         ],
         [
           0,
@@ -663,112 +1004,212 @@
       ],
       "stations": [
         {
-          "id": "harbor:welcome",
+          "id": "harbor:study",
           "type": "read",
+          "contentId": "harbor",
           "label": "Meet Jack",
-          "x": -10.2,
-          "z": 0.5,
-          "y": 0.85,
-          "contentSection": "summary",
-          "contentId": "harbor",
-          "action": "harbor"
-        },
-        {
-          "id": "harbor:bell",
-          "type": "action",
-          "label": "Harbor bell",
-          "x": -17.7,
-          "z": 0.7000000000000002,
-          "y": 0.85,
-          "action": "harbor",
-          "contentId": "harbor"
-        },
-        {
-          "id": "harbor:studio",
-          "type": "studio",
-          "label": "Boat Studio",
-          "x": -7.8,
-          "z": -6.6,
-          "y": 0.85,
-          "contentId": "harbor",
-          "action": "harbor"
-        },
-        {
-          "id": "connect:hello",
-          "type": "read",
-          "label": "Say hello",
-          "x": 9.8,
-          "z": -0.5,
-          "y": 0.85,
-          "contentSection": "links",
-          "contentId": "connect",
-          "action": "connect"
+          "readFull": true,
+          "readLabel": "Meet Jack",
+          "x": 2,
+          "z": -8,
+          "y": 0.85
         },
         {
           "id": "connect:repository",
           "type": "read",
-          "label": "Explore the code",
-          "x": 6.6,
-          "z": -7.5,
-          "y": 0.85,
-          "contentSection": "links",
           "contentId": "connect",
-          "action": "connect"
+          "label": "Explore the code",
+          "contentSection": "links",
+          "readFull": true,
+          "x": 3.5,
+          "z": -8,
+          "y": 0.85
+        },
+        {
+          "id": "harbor:studio",
+          "type": "studio",
+          "contentId": "harbor",
+          "action": "harbor",
+          "label": "Boat Studio",
+          "x": -14,
+          "z": 6.75,
+          "y": 0.85
+        },
+        {
+          "id": "harbor:tennis",
+          "type": "practice",
+          "contentId": "harbor",
+          "action": "tennis",
+          "practiceId": "tennis",
+          "label": "Tennis practice",
+          "x": 8,
+          "z": 4,
+          "y": 0.85
+        },
+        {
+          "id": "harbor:golf",
+          "type": "practice",
+          "contentId": "harbor",
+          "action": "golf",
+          "practiceId": "golf",
+          "label": "Putting practice",
+          "x": 0,
+          "z": -17.1,
+          "y": 0.85
+        },
+        {
+          "id": "harbor:bell",
+          "type": "action",
+          "contentId": "harbor",
+          "action": "harbor",
+          "label": "Harbor bell",
+          "x": -6,
+          "z": 20,
+          "y": 0.85
         },
         {
           "id": "connect:signal",
           "type": "action",
-          "label": "Light up the bay",
-          "x": 17.8,
-          "z": -2,
-          "y": 0.85,
+          "contentId": "connect",
           "action": "connect",
-          "contentId": "connect"
+          "label": "Light up the garden",
+          "x": 5,
+          "z": 15,
+          "y": 0.85
+        },
+        {
+          "id": "harbor:welcome",
+          "type": "read",
+          "contentId": "harbor",
+          "label": "MEET JACK",
+          "primary": true,
+          "readFull": true,
+          "readLabel": "Read more",
+          "x": -3.25,
+          "z": 19.3,
+          "y": 0.85,
+          "cameraTarget": {
+            "x": -4,
+            "y": 2.8,
+            "z": -6
+          },
+          "camera": {
+            "distance": 28
+          },
+          "hitArea": {
+            "x": -3.25,
+            "y": 2.08,
+            "z": 17.845,
+            "width": 3.25,
+            "height": 1.55,
+            "yaw": 0
+          }
+        },
+        {
+          "id": "connect:hello",
+          "type": "read",
+          "contentId": "connect",
+          "label": "SAY HELLO",
+          "primary": true,
+          "readFull": true,
+          "readLabel": "Read more",
+          "x": 3.25,
+          "z": 19.3,
+          "y": 0.85,
+          "cameraTarget": {
+            "x": -4,
+            "y": 2.8,
+            "z": -6
+          },
+          "camera": {
+            "distance": 28
+          },
+          "hitArea": {
+            "x": 3.25,
+            "y": 2.08,
+            "z": 17.845,
+            "width": 3.25,
+            "height": 1.55,
+            "yaw": 0
+          }
         }
       ],
       "benches": [
         {
-          "x": -19,
-          "z": -7.2,
-          "y": 1.4,
-          "yaw": 0.25,
-          "approach": {
-            "x": -18.77733643667093,
-            "z": -6.3279788204604195,
-            "y": 0.85
-          },
-          "id": "harbor:bench",
+          "id": "harbor:living-seat",
           "contentId": "harbor",
-          "action": "harbor"
+          "action": "harbor",
+          "x": -10.4,
+          "z": -11.45,
+          "y": 1.4100000000000001,
+          "yaw": 0,
+          "rotation": 0,
+          "approach": {
+            "x": -10.4,
+            "z": -10.35,
+            "y": 0.85
+          }
         },
         {
-          "x": 17.6,
-          "z": -8.6,
-          "y": 1.4,
+          "id": "harbor:tennis-seat",
+          "contentId": "harbor",
+          "action": "harbor",
+          "x": 13,
+          "z": 9.5,
+          "y": 1.4100000000000001,
           "yaw": 0,
+          "rotation": 0,
           "approach": {
-            "x": 17.6,
-            "z": -7.699999999999999,
+            "x": 13,
+            "z": 10.8,
             "y": 0.85
-          },
-          "id": "connect:bench",
-          "contentId": "connect",
-          "action": "connect"
+          }
+        },
+        {
+          "id": "harbor:terrace-seat",
+          "contentId": "harbor",
+          "action": "harbor",
+          "x": -10.3,
+          "z": -15.4,
+          "y": 1.4100000000000001,
+          "yaw": 3.141592653589793,
+          "rotation": 3.141592653589793,
+          "approach": {
+            "x": -10.3,
+            "z": -16.7,
+            "y": 0.85
+          }
+        },
+        {
+          "id": "harbor:overlook-seat",
+          "contentId": "harbor",
+          "action": "harbor",
+          "x": 17.4,
+          "z": -26.7,
+          "y": 1.4100000000000001,
+          "yaw": 3.141592653589793,
+          "rotation": 3.141592653589793,
+          "approach": {
+            "x": 17.4,
+            "z": -28,
+            "y": 0.85
+          }
         }
       ],
       "bench": {
-        "x": -19,
-        "z": -7.2,
-        "y": 1.4,
-        "yaw": 0.25,
-        "approach": {
-          "x": -18.77733643667093,
-          "z": -6.3279788204604195,
-          "y": 0.85
-        },
-        "id": "harbor:bench",
+        "id": "harbor:living-seat",
         "contentId": "harbor",
-        "action": "harbor"
+        "action": "harbor",
+        "x": -10.4,
+        "z": -11.45,
+        "y": 1.4100000000000001,
+        "yaw": 0,
+        "rotation": 0,
+        "approach": {
+          "x": -10.4,
+          "z": -10.35,
+          "y": 0.85
+        }
       },
       "berths": [
         {
@@ -801,15 +1242,15 @@
       "districts": [
         {
           "id": "harbor",
-          "x": -13,
-          "z": -3,
+          "x": 0,
+          "z": 0,
           "rotation": 0,
           "group": "district_harbor"
         },
         {
           "id": "connect",
-          "x": 13,
-          "z": -3,
+          "x": 0,
+          "z": 0,
           "rotation": 0,
           "group": "district_connect"
         }
@@ -821,14 +1262,889 @@
         "startZ": 21.74,
         "endZ": 32
       },
-      "routeLength": 252,
-      "estimatedWalkingSeconds": 105,
-      "width": 2.05,
+      "landmarks": [
+        {
+          "id": "jack-house",
+          "label": "Jack's House",
+          "x": -4,
+          "z": -8,
+          "width": 20,
+          "depth": 14
+        },
+        {
+          "id": "garage",
+          "label": "Four-bay garage",
+          "x": -14,
+          "z": 9,
+          "width": 14,
+          "depth": 8
+        },
+        {
+          "id": "tennis",
+          "label": "Tennis practice",
+          "x": 16,
+          "z": -5,
+          "width": 12,
+          "depth": 24
+        },
+        {
+          "id": "golf",
+          "label": "Three putting greens",
+          "x": 0,
+          "z": -24,
+          "width": 20,
+          "depth": 10
+        },
+        {
+          "id": "lighthouse",
+          "label": "Lighthouse",
+          "x": -21,
+          "z": -10.5,
+          "width": 2.8,
+          "depth": 2.8
+        }
+      ],
+      "interiors": [
+        {
+          "landmarkId": "jack-house",
+          "floorY": 0.85,
+          "bounds": {
+            "x": -4,
+            "z": -8,
+            "width": 20,
+            "depth": 14
+          },
+          "entrances": [
+            {
+              "id": "front",
+              "x": -4,
+              "z": -1,
+              "width": 3.24,
+              "yaw": 0
+            },
+            {
+              "id": "rear",
+              "x": -4,
+              "z": -15,
+              "width": 3.24,
+              "yaw": 3.141592653589793
+            }
+          ],
+          "cutawayGroups": [
+            "occluder_estate_house_roof",
+            "occluder_estate_house_upper",
+            "occluder_estate_house_walls",
+            "occluder_estate_house_glazing"
+          ],
+          "walkRoute": [
+            [
+              -4,
+              2
+            ],
+            [
+              -4,
+              -3
+            ],
+            [
+              -4,
+              -12
+            ],
+            [
+              -4,
+              -17
+            ]
+          ],
+          "rooms": [
+            {
+              "id": "entry",
+              "x": -4,
+              "z": -3.2
+            },
+            {
+              "id": "living",
+              "x": -10,
+              "z": -6.3
+            },
+            {
+              "id": "study",
+              "x": 2,
+              "z": -8
+            }
+          ]
+        },
+        {
+          "landmarkId": "garage",
+          "floorY": 0.85,
+          "bounds": {
+            "x": -14,
+            "z": 9,
+            "width": 14,
+            "depth": 8
+          },
+          "entrances": [
+            {
+              "id": "bay-1",
+              "x": -19.25,
+              "z": 13,
+              "width": 3.16,
+              "yaw": 0
+            },
+            {
+              "id": "bay-2",
+              "x": -15.75,
+              "z": 13,
+              "width": 3.16,
+              "yaw": 0
+            },
+            {
+              "id": "bay-3",
+              "x": -12.25,
+              "z": 13,
+              "width": 3.16,
+              "yaw": 0
+            },
+            {
+              "id": "bay-4",
+              "x": -8.75,
+              "z": 13,
+              "width": 3.16,
+              "yaw": 0
+            }
+          ],
+          "cutawayGroups": [
+            "occluder_estate_garage_roof",
+            "occluder_estate_garage_walls"
+          ],
+          "walkRoute": [
+            [
+              -14,
+              15.5
+            ],
+            [
+              -12.25,
+              15.5
+            ],
+            [
+              -12.25,
+              9
+            ],
+            [
+              -12.25,
+              6.4
+            ]
+          ]
+        }
+      ],
+      "sports": {
+        "tennis": {
+          "id": "tennis",
+          "surfaceY": 0.89,
+          "bounds": {
+            "x": 16,
+            "z": -5,
+            "width": 12,
+            "depth": 24
+          },
+          "entry": {
+            "x": 8,
+            "z": 4,
+            "y": 0.85
+          },
+          "exit": {
+            "x": 8,
+            "z": 4,
+            "y": 0.85
+          },
+          "baseline": {
+            "x": 16,
+            "z": 4,
+            "y": 0.85,
+            "minX": 12,
+            "maxX": 20
+          },
+          "net": {
+            "z": -5,
+            "xMin": 10.9,
+            "xMax": 21.1,
+            "height": 1.02
+          },
+          "machine": {
+            "x": 16,
+            "z": -13.5,
+            "y": 1.9500000000000002
+          },
+          "targets": [
+            13,
+            16,
+            19
+          ],
+          "camera": {
+            "target": {
+              "x": 16,
+              "y": 1,
+              "z": -4
+            },
+            "distance": 44
+          }
+        },
+        "golf": {
+          "id": "golf",
+          "bounds": {
+            "x": 0,
+            "z": -24,
+            "width": 20,
+            "depth": 10
+          },
+          "entry": {
+            "x": 0,
+            "z": -17.1,
+            "y": 0.85
+          },
+          "exit": {
+            "x": 0,
+            "z": -17.1,
+            "y": 0.85
+          },
+          "holes": [
+            {
+              "id": 1,
+              "tee": {
+                "x": -7,
+                "z": -21
+              },
+              "cup": {
+                "x": -1,
+                "z": -21
+              },
+              "slopeX": 0,
+              "slopeZ": 0,
+              "undulation": 0,
+              "bounds": {
+                "minX": -9,
+                "maxX": 9,
+                "minZ": -22.3,
+                "maxZ": -19.7
+              },
+              "surface": {
+                "groundY": 0.85,
+                "baseOffset": 0.035,
+                "slopeX": 0,
+                "slopeZ": 0,
+                "undulation": 0,
+                "minX": -8.5,
+                "maxX": 8.5,
+                "halfWidth": 1.05
+              },
+              "length": 6
+            },
+            {
+              "id": 2,
+              "tee": {
+                "x": -7,
+                "z": -24
+              },
+              "cup": {
+                "x": 1,
+                "z": -24
+              },
+              "slopeX": 0,
+              "slopeZ": 0.012,
+              "undulation": 0.025,
+              "bounds": {
+                "minX": -9,
+                "maxX": 9,
+                "minZ": -25.3,
+                "maxZ": -22.7
+              },
+              "surface": {
+                "groundY": 0.85,
+                "baseOffset": 0.035,
+                "slopeX": 0,
+                "slopeZ": 0.012,
+                "undulation": 0.025,
+                "minX": -8.5,
+                "maxX": 8.5,
+                "halfWidth": 1.05
+              },
+              "length": 8
+            },
+            {
+              "id": 3,
+              "tee": {
+                "x": -7,
+                "z": -27
+              },
+              "cup": {
+                "x": 3,
+                "z": -27
+              },
+              "slopeX": 0,
+              "slopeZ": 0,
+              "undulation": 0.015,
+              "bounds": {
+                "minX": -9,
+                "maxX": 9,
+                "minZ": -28.3,
+                "maxZ": -25.7
+              },
+              "surface": {
+                "groundY": 0.85,
+                "baseOffset": 0.035,
+                "slopeX": 0,
+                "slopeZ": 0,
+                "undulation": 0.015,
+                "minX": -8.5,
+                "maxX": 8.5,
+                "halfWidth": 1.05
+              },
+              "length": 10,
+              "sand": {
+                "x": -2,
+                "z": -26.4,
+                "rx": 1.2,
+                "rz": 0.45
+              }
+            }
+          ],
+          "camera": {
+            "distance": 26
+          }
+        }
+      },
+      "garageBays": [
+        {
+          "id": "01",
+          "x": -19.25,
+          "z": 9,
+          "width": 3.15,
+          "depth": 7.35,
+          "entrance": {
+            "x": -19.25,
+            "z": 13,
+            "width": 3.16
+          },
+          "carEnvelope": {
+            "x": -19.25,
+            "z": 9,
+            "width": 2.3,
+            "depth": 5.2
+          }
+        },
+        {
+          "id": "02",
+          "x": -15.75,
+          "z": 9,
+          "width": 3.15,
+          "depth": 7.35,
+          "entrance": {
+            "x": -15.75,
+            "z": 13,
+            "width": 3.16
+          },
+          "carEnvelope": {
+            "x": -15.75,
+            "z": 9,
+            "width": 2.3,
+            "depth": 5.2
+          }
+        },
+        {
+          "id": "03",
+          "x": -12.25,
+          "z": 9,
+          "width": 3.15,
+          "depth": 7.35,
+          "entrance": {
+            "x": -12.25,
+            "z": 13,
+            "width": 3.16
+          },
+          "carEnvelope": {
+            "x": -12.25,
+            "z": 9,
+            "width": 2.3,
+            "depth": 5.2
+          }
+        },
+        {
+          "id": "04",
+          "x": -8.75,
+          "z": 9,
+          "width": 3.15,
+          "depth": 7.35,
+          "entrance": {
+            "x": -8.75,
+            "z": 13,
+            "width": 3.16
+          },
+          "carEnvelope": {
+            "x": -8.75,
+            "z": 9,
+            "width": 2.3,
+            "depth": 5.2
+          }
+        }
+      ],
+      "paths": [
+        {
+          "id": "estate-main-loop",
+          "width": 2.6,
+          "points": [
+            [
+              0,
+              29.5
+            ],
+            [
+              0,
+              22
+            ],
+            [
+              0,
+              15.6
+            ],
+            [
+              -4,
+              15.6
+            ],
+            [
+              -4,
+              2
+            ],
+            [
+              -4,
+              -3
+            ],
+            [
+              -4,
+              -13
+            ],
+            [
+              -4,
+              -17.1
+            ],
+            [
+              -13.4,
+              -17.1
+            ],
+            [
+              -13.4,
+              -24
+            ],
+            [
+              -13.4,
+              -30
+            ],
+            [
+              12.2,
+              -30
+            ],
+            [
+              12.2,
+              -20
+            ],
+            [
+              8,
+              -20
+            ],
+            [
+              8,
+              -8
+            ],
+            [
+              8,
+              0
+            ],
+            [
+              8,
+              11
+            ],
+            [
+              0,
+              11
+            ],
+            [
+              0,
+              22
+            ],
+            [
+              0,
+              29.5
+            ]
+          ]
+        },
+        {
+          "id": "garage-front",
+          "width": 2.6,
+          "points": [
+            [
+              -4,
+              15.6
+            ],
+            [
+              -19.2,
+              15.6
+            ]
+          ]
+        },
+        {
+          "id": "garage-entry",
+          "width": 2.6,
+          "points": [
+            [
+              -12.25,
+              15.6
+            ],
+            [
+              -12.25,
+              8
+            ]
+          ]
+        },
+        {
+          "id": "house-living",
+          "width": 2.6,
+          "points": [
+            [
+              -4,
+              -5
+            ],
+            [
+              -10,
+              -5
+            ],
+            [
+              -10,
+              -6.3
+            ]
+          ]
+        },
+        {
+          "id": "house-study",
+          "width": 2.6,
+          "points": [
+            [
+              -4,
+              -8
+            ],
+            [
+              2,
+              -8
+            ]
+          ]
+        },
+        {
+          "id": "golf-entry",
+          "width": 2.6,
+          "points": [
+            [
+              -4,
+              -17.1
+            ],
+            [
+              0,
+              -17.1
+            ],
+            [
+              8,
+              -17.1
+            ]
+          ]
+        },
+        {
+          "id": "tennis-entry",
+          "width": 2.6,
+          "points": [
+            [
+              8,
+              4.4
+            ],
+            [
+              12,
+              4.4
+            ]
+          ]
+        },
+        {
+          "id": "west-lighthouse",
+          "width": 2.6,
+          "points": [
+            [
+              -13.4,
+              -17.1
+            ],
+            [
+              -18,
+              -17.1
+            ],
+            [
+              -18,
+              -5
+            ],
+            [
+              -17,
+              2
+            ],
+            [
+              -4,
+              2
+            ]
+          ]
+        }
+      ],
+      "roads": [
+        {
+          "id": "estate-main-loop",
+          "width": 2.6,
+          "points": [
+            [
+              0,
+              0.85,
+              29.5
+            ],
+            [
+              0,
+              0.85,
+              22
+            ],
+            [
+              0,
+              0.85,
+              15.6
+            ],
+            [
+              -4,
+              0.85,
+              15.6
+            ],
+            [
+              -4,
+              0.85,
+              2
+            ],
+            [
+              -4,
+              0.85,
+              -3
+            ],
+            [
+              -4,
+              0.85,
+              -13
+            ],
+            [
+              -4,
+              0.85,
+              -17.1
+            ],
+            [
+              -13.4,
+              0.85,
+              -17.1
+            ],
+            [
+              -13.4,
+              0.85,
+              -24
+            ],
+            [
+              -13.4,
+              0.85,
+              -30
+            ],
+            [
+              12.2,
+              0.85,
+              -30
+            ],
+            [
+              12.2,
+              0.85,
+              -20
+            ],
+            [
+              8,
+              0.85,
+              -20
+            ],
+            [
+              8,
+              0.85,
+              -8
+            ],
+            [
+              8,
+              0.85,
+              0
+            ],
+            [
+              8,
+              0.85,
+              11
+            ],
+            [
+              0,
+              0.85,
+              11
+            ],
+            [
+              0,
+              0.85,
+              22
+            ],
+            [
+              0,
+              0.85,
+              29.5
+            ]
+          ]
+        },
+        {
+          "id": "garage-front",
+          "width": 2.6,
+          "points": [
+            [
+              -4,
+              0.85,
+              15.6
+            ],
+            [
+              -19.2,
+              0.85,
+              15.6
+            ]
+          ]
+        },
+        {
+          "id": "garage-entry",
+          "width": 2.6,
+          "points": [
+            [
+              -12.25,
+              0.85,
+              15.6
+            ],
+            [
+              -12.25,
+              0.85,
+              8
+            ]
+          ]
+        },
+        {
+          "id": "house-living",
+          "width": 2.6,
+          "points": [
+            [
+              -4,
+              0.85,
+              -5
+            ],
+            [
+              -10,
+              0.85,
+              -5
+            ],
+            [
+              -10,
+              0.85,
+              -6.3
+            ]
+          ]
+        },
+        {
+          "id": "house-study",
+          "width": 2.6,
+          "points": [
+            [
+              -4,
+              0.85,
+              -8
+            ],
+            [
+              2,
+              0.85,
+              -8
+            ]
+          ]
+        },
+        {
+          "id": "golf-entry",
+          "width": 2.6,
+          "points": [
+            [
+              -4,
+              0.85,
+              -17.1
+            ],
+            [
+              0,
+              0.85,
+              -17.1
+            ],
+            [
+              8,
+              0.85,
+              -17.1
+            ]
+          ]
+        },
+        {
+          "id": "tennis-entry",
+          "width": 2.6,
+          "points": [
+            [
+              8,
+              0.85,
+              4.4
+            ],
+            [
+              12,
+              0.85,
+              4.4
+            ]
+          ]
+        },
+        {
+          "id": "west-lighthouse",
+          "width": 2.6,
+          "points": [
+            [
+              -13.4,
+              0.85,
+              -17.1
+            ],
+            [
+              -18,
+              0.85,
+              -17.1
+            ],
+            [
+              -18,
+              0.85,
+              -5
+            ],
+            [
+              -17,
+              0.85,
+              2
+            ],
+            [
+              -4,
+              0.85,
+              2
+            ]
+          ]
+        }
+      ],
+      "routeLength": 170.2,
+      "estimatedWalkingSeconds": 70.9,
       "validation": {
         "connectedFromDock": true,
-        "stationsReachable": 6,
-        "routeClearance": 0.8,
-        "pathWidth": 2.05
+        "stationsReachable": 9,
+        "pathWidth": 2.6,
+        "routeClearance": 1.2,
+        "garageBays": 4,
+        "interiors": 2
       }
     },
     {

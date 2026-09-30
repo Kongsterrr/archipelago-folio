@@ -4,14 +4,16 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V14.3 — Walking to the Sky** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V15 — Jack’s Estate** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
 ## What’s in the bay
 
 - **Four connected exhibition islands:** About combines Harbor and Connect; Experience combines Amtrak, BeaconFire and VisionX; Projects combines Affirmation, Research and Catering; Education keeps BU and CMU together. Nine independent stories remain available through the directory.
-- **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, four walkable islands, 28 exhibit/action stops, nine benches and safe boarding transitions.
+- **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, four walkable islands, exhibit stops, benches and safe boarding transitions.
+- **Jack’s Estate:** About Island has a furnished house with a walkable ground floor, four empty garage bays, a garden circuit, a tennis court and three putting greens.
+- **Garden practice:** return six machine-fed tennis balls or putt across three greens, with animated racket and club contact, keyboard and touch controls, and results that last only for the current round.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
 - **A living sea:** one imported cruise ship, two imported luxury yachts, dolphins, sharks, tropical fish, turtles, and seabirds.
@@ -68,12 +70,27 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14.2.2 — Original Bars & Cycling Posture** | Restores the supplied bicycle’s original drop bars; Jack leans forward to grip the existing top bar | [403db21](https://github.com/Kongsterrr/archipelago-folio/commit/403db214e0ebb9de4b5d87751c5d860fe1d65086) |
 | **V14.2.3 — Road Cycling Reach** | Moves palms slightly forward onto the original bar shoulders and opens the elbows for a road-bike posture | [42903d4](https://github.com/Kongsterrr/archipelago-folio/commit/42903d413b8d1999bc144b52541c3361acfebaad) |
 | **V14.3 — Walking to the Sky** | A silver inclined sculpture with six painted walkers on the CMU lawn, retained campus circulation and updated CMU framing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V15 — Jack’s Estate** | A walkable About estate, four empty garage bays, six-ball tennis and three-hole putting with session-only practice | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.1 — Campus Signage** | Removes redundant arrival signs and ground lettering; mounts landmark names on their own facades | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V15 — Jack’s Estate
+
+About Island becomes a coastal estate with a furnished house, four empty garage bays, garden paths, a tennis court and three putting greens. Walk through the house’s front and rear doors, explore the living area and study, and enter each garage bay. The ground floor is playable; the upper floor is architectural scenery. The expanded rear shoreline makes room for the garden while retaining the harbor arrival.
+
+Approach the tennis or putting entrance and press **F** to open its practice instructions:
+
+- **Tennis:** return six balls from the practice machine. Use **A / D or left / right** to move along the baseline and **Space** to swing as the ball reaches the racket. The receiving marker shows the next position; both proximity and swing timing matter.
+- **Putting:** complete three holes at 6, 8 and 10 meters. Use **A / D or left / right** to aim, then **hold Space and release** to putt. Grass, rough, slopes and sand affect the roll. Misses return to the same tee; sinking a putt advances to the next green.
+- **Touch:** move the joystick sideways, tap **Hit** for tennis, or hold and release **Hold to charge** for putting. Use **Leave practice** or **Escape** to return to the garden, and **Again** to start a fresh round after finishing.
+
+Menus and backgrounding pause practice; play resumes after a two-second countdown once all panels and background pauses close. Travel, Reset, boarding or starting a sea challenge ends the current practice. Results and attempts stay in the session and do not add saved scores, challenge records or exploration stamps.
+
+The About menu, Meet Jack and Connect articles, résumé and contact links retain their existing content. Estate practice is reached in the 3D world; the portfolio remains fully readable without playing. Jack uses the existing character and skeleton with separate racket and club poses. See [validation notes](VALIDATION.md) for the recorded checks and remaining limits.
 
 ### V14.3 — Walking to the Sky
 
@@ -444,18 +461,22 @@ No API keys, backend, account setup, or environment variables are required to ru
 | Brake, then reverse | S / ↓ |
 | Steer | A / D or ← / → |
 | Boost / run | Hold Shift for 2× movement speed |
-| Quick brake | Space |
+| Quick brake while driving | Space |
 | Go ashore / read / board boat / mount or dismount a land vehicle | E / Enter |
 | Walk on land | WASD / arrows, relative to the screen |
 | Run on land | Hold Shift |
 | Operate a nearby device on foot / read while riding | F |
+| Tennis: move / swing | A / D or left / right; Space |
+| Putting: aim / charge and putt | A / D or left / right; hold and release Space |
 | Horn | H |
 | Map | M |
 | Reset to safe harbor / current island dock | R |
-| Close a panel | Escape |
+| Close a panel / leave practice when no panel is open | Escape |
 | Camera zoom | Mouse wheel or + / − controls |
 
 Touch devices have a camera-relative joystick and on-screen driving, horn, reading, and action buttons. Boat Studio is available from Jack’s Harbor and Settings. On land, the joystick moves Jack and Boost becomes Run; both Shift and the on-screen speed button double movement speed. Move to stand up from a bench; use Return to boat while on foot. While riding, that shortcut becomes Dismount, and the joystick steers the vehicle.
+
+During estate practice, the joystick moves sideways along the tennis baseline or adjusts putting aim. The dedicated Hit and Hold to charge buttons provide the corresponding Space actions. Practice overrides ordinary walking until the round is left.
 
 Opening a menu or switching away pauses simulation; an active challenge resumes after a short countdown. Going ashore, resetting, and traveling cancel an unfinished challenge. On land, the parked boat stays locked while sea life and traffic continue. Reading pauses the whole simulation. Sound starts off, and visual cues remain available while muted.
 
@@ -484,6 +505,8 @@ tests/                   Automated regression checks
 ```
 
 `PlayerController` separates locomotion from pause reasons; `BoardingController` commits one actor transition at the fade midpoint; `CharacterController` handles the kinematic capsule; `IslandWalkWorld` consumes `walk-layout.json` for shared high/low terrain and obstacles. `JackAvatar` reparents one skin between the boat and world. `CameraRig` manages framing; `ChallengeManager` owns challenge state and timing; `DiscoveryStore` persists local progress. `AmbientFleet`, `MarineLife`, `DockInteraction` and `BoatAppearance` provide the sea systems. `SurfaceLibrary` manages shared texture bindings and quality changes; `BayLighting` manages daylight and contact shading. V4 island details are integrated into the walkable models; legacy `IslandDetails` overlays are disabled to keep paths clear. Contact feedback uses a shared dispatch path.
+
+`EstatePracticeController` advances tennis and putting on the fixed simulation step, with separate pause, countdown and round state. `EstatePracticeView` renders the active ball and receiving marker; `EstateSportPose` applies racket and club poses to Jack’s existing rig. Practice keeps Jack in the walking locomotion mode and exposes transient status through the voyage tools without writing to `DiscoveryStore`.
 
 ## Customize the content
 
@@ -540,7 +563,7 @@ The review entry is excluded from Vite’s production build. Its **Save render**
 
 - **Rendering fallback:** WebGPU normally falls back to WebGL2, then to HTML reading mode if 3D fails. Use `?webgl` to request WebGL2 or `?no3d` for reading mode.
 - **Accessibility:** keyboard navigation, visible focus, panel focus restoration, reduced motion, optional sound, and direct access to all portfolio entries.
-- **Local storage only:** preferences, boat finish, exploration records, Sea Life observations, Island Walks, separate camera zoom preferences, and versioned challenge bests. Transient world positions are never saved; every refresh starts Jack aboard at the harbor. Blocked storage falls back to an in-memory session. There are no accounts, remote leaderboards, or application database.
+- **Local storage only:** preferences, boat finish, exploration records, Sea Life observations, Island Walks, separate camera zoom preferences, and versioned challenge bests. Estate practice results and attempts are session-only. Transient world positions are never saved; every refresh starts Jack aboard at the harbor. Blocked storage falls back to an in-memory session. There are no accounts, remote leaderboards, or application database.
 - **Recorded V5 verification:** 192 automated checks passed, and the production build passed. Browser samples cover desktop-hosted WebGL2 high/low with phone-sized viewports; these are not physical-phone results. See [`VALIDATION.md`](VALIDATION.md) for conditions, measurements, and remaining limits.
 
 Physical iPhone/Android performance, sustained mobile 30 FPS, controlled 20 Mbps cold-start timing, and long-duration thermal behavior have not yet been measured. Desktop viewport emulation does not establish those results.

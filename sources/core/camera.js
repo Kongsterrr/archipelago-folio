@@ -82,7 +82,8 @@ export class CameraRig {
       if(this.height>this.width)point.addScaledVector(this.flatForward,-4.5);
       const distance=this.width>=900?desktopDistance:this.height>this.width?24:16;desired={target:point,position:point.clone().addScaledVector(this.direction,distance)};
     } else if (focus?.camera?.fitBounds) {
-      desired=fitBoundsPose(focus.camera.fitBounds,{width:this.width,height:this.height,fov:FOV,azimuth,elevation:focus.camera.elevation??.66,near:this.camera.near});
+      desired=fitBoundsPose(focus.camera.fitBounds,{width:this.width,height:this.height,fov:FOV,azimuth,elevation:focus.camera.elevation??.66,near:this.camera.near,...(focus.camera.practice?{rect:{left:24,right:this.width-24,top:Math.min(190,this.height*.28),bottom:this.height-Math.min(170,this.height*.24)}}:{})});
+      if(focus.camera.practice)this.distance=desired.distance;
     } else if (focus) {
       const cfg = focus.camera || {};
       const az = azimuth;

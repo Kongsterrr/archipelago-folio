@@ -3,6 +3,7 @@ import {CHARACTER} from '../core/character.js';
 import {applyJackHairSurface} from './jack-hair-surface.js';
 import {JackExpression} from './jack-expression.js';
 import {JACK_ASSET_URL, JACK_CLIPS} from './jack-asset.js';
+import {EstateSportPose} from './estate-sport-pose.js';
 import {BicycleRiderPose} from './bicycle-rider-pose.js';
 import {QUAD_RIDER, QuadRiderPose} from './quad-rider-pose.js';
 
@@ -36,6 +37,7 @@ export class JackAvatar {
       this.model.traverse(o => { if (o.isBone) this.poseBones.push(o); });
       this.quadPose = new QuadRiderPose(this.model, this.root, this.spec);
       this.bicyclePose = new BicycleRiderPose(this.model, this.root, this.spec);
+      this.estatePose = new EstateSportPose(this.model, this.root, this.spec);
       this.mixer = new THREE.AnimationMixer(this.model);
       this.actions = new Map(gltf.animations.map(c => [c.name, this.mixer.clipAction(c)]));
       this.outlines = [];
@@ -108,6 +110,7 @@ export class JackAvatar {
 
   resetPose(name) {
     if (!this.ready) return;
+    this.estatePose?.reset();
     this.expression?.reset();
     this.mixer.stopAllAction();
     this.pose = null;
@@ -136,7 +139,7 @@ export class JackAvatar {
     if (this.pose === 'interact') this.actions.get('interact')?.reset().play();
   }
 
-  update(dt, {player, boatVisual, quadBike, bicycle, character, alpha, reduced, frozen, lookTarget}) {
+  update(dt, {player, boatVisual, quadBike, bicycle, character, alpha, reduced, frozen, lookTarget, practice}) {
     if (!this.ready) return;
     const land = player.onLand;
     const cycling = !!player.ridingBicycle;
@@ -158,6 +161,7 @@ export class JackAvatar {
     this.forceFrame = false;
     const step = frozen ? 0 : dt;
     this.expression?.restore();
+    this.estatePose?.restore();
     if (riding && vehicle) {
       // The dedicated quad pose is fitted after the animation mixer below.
       // Boat steering-wheel contacts cannot be reused for wider handlebars.
@@ -219,6 +223,7 @@ export class JackAvatar {
     this.normalizePose();
     if (cycling && bicycle) this.bicyclePose.apply(bicycle);
     else if (riding && quadBike) this.quadPose.apply(quadBike);
+    if(practice)this.estatePose.apply({...practice,phase:practice.swing>=0?'swing':'ready',reduced});else this.estatePose.reset();
     const expressionPosition = riding ? vehicle.position : character.position;
     this.expression?.update(step, {reduced, frozen, walking: land && !riding, moving: land && !riding && character.speed > .1, yaw: this.root.rotation.y, position: expressionPosition, lookTarget: land && !riding ? lookTarget : null, interacting: this.interactTime});
   }

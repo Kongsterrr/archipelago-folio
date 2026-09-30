@@ -22,6 +22,14 @@
     <section class="walking-hud" id="walking-hud" hidden><span class="eyebrow">ON FOOT WITH JACK</span><strong id="walking-island"></strong><button id="projects-guide" hidden>View 3 projects</button><button id="return-boat">Return to boat</button></section>
     <section class="challenge-hud" id="challenge-hud" aria-label="Current challenge" hidden><div class="challenge-heading"><span class="eyebrow" id="challenge-name">BUOY RUN</span><button id="challenge-exit" aria-label="End current challenge"><span class="ui-icon" data-icon="close"></span></button></div><div class="challenge-main"><strong id="challenge-time">00:00.00</strong><span id="challenge-progress">0 / 6 gates</span></div><div id="challenge-guide"></div><button class="hud-link" id="cargo-reset" hidden>Reset cargo</button></section>
     <div class="countdown" id="countdown" aria-live="polite" hidden></div>
+    <section class="practice-hud" id="practice-hud" aria-label="Garden practice" hidden>
+      <span class="eyebrow" id="practice-name">TENNIS PRACTICE</span>
+      <strong id="practice-progress" aria-live="polite"></strong>
+      <p id="practice-instructions"></p>
+      <label id="practice-power-label" hidden>Power <progress id="practice-power" max="1" value="0"></progress></label>
+      <div class="practice-options"><button id="practice-again" hidden>Again</button><button id="practice-leave">Leave practice</button></div>
+    </section>
+    <div class="practice-hit" id="practice-hit-controls" hidden><button id="practice-hit">Hit <kbd>SPACE</kbd></button><button id="practice-putt" data-hold="putt">Hold to charge <kbd>SPACE</kbd></button></div>
     <div class="toast" id="toast" role="status" hidden></div>
     <section class="fallback" id="fallback" hidden><h2>Explore my work</h2><p>Four islands. All nine stories, in one place.</p><button class="secondary-button" id="back-to-sea">Back to the sea</button><div id="fallback-cards"></div></section>
   </main>

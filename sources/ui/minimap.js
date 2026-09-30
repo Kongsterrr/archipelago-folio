@@ -83,6 +83,8 @@ export class VoyageMinimap {
    const schools=g.campuses.length?g.campuses:g.stations.filter(s=>s.schoolId&&s.primary);
    const duan=g.landmarks.find(l=>l.id==='duan-center');if(duan){const p=projection.project(duan);this.tag(w<190?'Duan':'Duan Center',p.x,p.y-7,w<190?8:9,w);}
    for(const school of schools){const p=projection.project(school);this.tag(school.schoolId==='bu'?'BU':'CMU',p.x,p.y-13,10,w);}
+  }else if(island.id==='about'){
+   for(const l of g.landmarks){const p=projection.project(l);this.tag(({ 'jack-house':'House',garage:'Garage',tennis:'Tennis',golf:'Golf',lighthouse:'Lighthouse'})[l.id]||l.label,p.x,p.y-5,w<190?8:9,w);}
   }else{
    for(const d of g.districts){const p=projection.project(d),primary=g.stations.find(s=>s.contentId===d.id&&s.primary);this.tag(`${primary?primary.number+' ':''}${NAMES[d.id]||d.id}`,p.x,p.y-16,w<190?9:10,w);}
   }

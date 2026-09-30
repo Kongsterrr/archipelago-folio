@@ -13,3 +13,10 @@ export function isDuanUpperOccluder(object){
  }
  return false;
 }
+
+export function isInteriorCutaway(object,interior){
+ if(!interior)return false;
+ if(interior.landmarkId==='duan-center')return isDuanUpperOccluder(object);
+ for(let node=object;node;node=node.parent)if(interior.cutawayGroups?.includes(node.name))return true;
+ return false;
+}

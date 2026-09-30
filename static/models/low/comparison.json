@@ -3,11 +3,11 @@
   "models": [
     {
       "id": "about",
-      "highTriangles": 39280,
-      "lowTriangles": 30808,
-      "highCompressedBytes": 689356,
-      "lowCompressedBytes": 582508,
-      "drawCalls": 97,
+      "highTriangles": 51830,
+      "lowTriangles": 33914,
+      "highCompressedBytes": 708512,
+      "lowCompressedBytes": 507600,
+      "drawCalls": 98,
       "animatedGeometry": "same named district and animation nodes",
       "dock": "same walkable footprint and collision metadata"
     },
@@ -52,6 +52,6 @@
       "dock": "same walkable footprint and collision metadata"
     }
   ],
-  "highTotalBytes": 4948064,
-  "lowTotalBytes": 3677556
+  "highTotalBytes": 4967220,
+  "lowTotalBytes": 3602648
 }

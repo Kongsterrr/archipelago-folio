@@ -1,12 +1,15 @@
-import {campusInteriorAt,isDuanUpperOccluder} from './core/campus-cutaway.js';
+import {campusInteriorAt,isInteriorCutaway} from './core/campus-cutaway.js';
 import {campusStationFocus} from './core/campus-focus.js';
+import {EstatePracticeController} from './core/estate-practice.js';
+import {EstatePracticeView,installEstateNet} from './world/estate-practice-view.js';
+import {dockLocal} from './core/dock.js';
 import {duanThemes} from './campus-landmarks.js';
 import * as THREE from 'three/webgpu';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import RAPIER from '@dimforge/rapier3d-compat/rapier.es.js';
 import { Events } from './core/Events.js';
-import {CharacterController,IslandWalkWorld,localToWorld,SEA_GROUP} from './core/character.js';
+import {CharacterController,IslandWalkWorld,localToWorld,SEA_GROUP,CHARACTER} from './core/character.js';
 import {PlayerController,BoardingController} from './core/player.js';
 import {QuadBikeController,QUAD_BIKE,quadFootprintClear} from './core/quad-bike.js';
 import {BicycleController,BICYCLE,bicycleFootprintClear} from './core/bicycle.js';
@@ -49,6 +52,7 @@ export class Game {
   this.time=0;this.accumulator=0;this.wakes=[];this.snapshot=null;this.pendingResume=null;this.focus=null;this.interactables=[];this.actionMarkers=[];this.loadedCount=0;this.quadBike=null;this.quadRideMarker=null;this.bicycle=null;this.bicycleRideMarker=null;
   this.loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
   this.challenges=new ChallengeManager({gates,berths:cargoBerths,onEvent:event=>this.challengeEvent(event)});
+  this.practice=new EstatePracticeController({onEvent:event=>this.practiceEvent(event)});
   this.race=this.challenges; // Retained public alias for existing portfolio integrations.
  }
  async init(){
@@ -72,13 +76,14 @@ export class Game {
   this.boarding=new BoardingController(this.player,{prepare:i=>this.prepareAshore(i),select:(i,w)=>this.selectBerth(i,w),onCommit:(kind,i,b,w)=>this.commitBoarding(kind,i,b,w),onError:e=>{this.events.trigger('message',[e.message]);this.inputs.setEnabled(!this.frozen);}});
   this.toys=this.props.items;this.createInteractables();this.createWake();this.resetCamera();this.bindPointer();
   this.world.step(this.queue);this.queue.clear();
-  await Promise.all([this.loadModel('boat'),this.loadModel('about'),this.jack.load(),this.loadWalkLayouts()]);
+  await Promise.all([this.loadModel('boat'),this.jack.load(),this.loadWalkLayouts()]);
   if(this.jack.model){applySunsetMaterials(this.jack.model,'jack');this.surfaces.bind(this.jack.model,'jack');}
   this.mode='exploring';this.last=performance.now();this.inputs.setEnabled(true);this.setQuality(this.settings.quality);
   window.addEventListener('resize',()=>{this.cameraRig.resize(innerWidth,innerHeight);this.renderer.setSize(innerWidth,innerHeight);});
   this.renderer.setAnimationLoop(()=>this.safeFrame());
   this.readyMs=Math.round(performance.now());this.events.trigger('ready',[this.renderer.backend.isWebGPUBackend?'WebGPU':'WebGL2']);
   this.surfaces.loadQuality(this.settings.quality);
+  this.loadModel('about');
   this.fleet.load().catch(e=>console.warn('Fleet unavailable',e.message));this.marine.load().catch(e=>console.warn('Sea life unavailable',e.message));
  }
  safeFrame(){try{this.frame();}catch(error){this.renderer.setAnimationLoop(null);this.events.trigger('failure',[error]);}}
@@ -103,7 +108,7 @@ export class Game {
  async loadModelNow(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='education'?'14.3':id==='projects'?'13.3':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='about'?'15':id==='education'?'14.3':id==='projects'?'13.3':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
     const materials=Array.isArray(o.material)?o.material:[o.material];
     const glazing=id==='boat'&&materials.some(m=>m.transparent);
     // The clear windscreen should reveal the helm, including in the shadow pass.
@@ -114,7 +119,7 @@ export class Game {
     this.boatVisual.clear();this.boatVisual.add(gltf.scene);this.boatModel=gltf.scene;prepareBoatMaterials(gltf.scene);applySunsetMaterials(gltf.scene,'boat');this.surfaces.bind(gltf.scene,'boat');this.appearance.bind(gltf.scene);
     this.boatOutline=gltf.scene.clone(true);this.boatOutline.traverse(o=>{if(o.isMesh){o.material=new THREE.MeshBasicMaterial({color:'#fff8da',depthTest:false,transparent:true,opacity:.35});o.castShadow=false;o.renderOrder=9;}});this.boatOutline.scale.setScalar(1.025);this.boatOutline.visible=false;this.boatVisual.add(this.boatOutline);
    }else{
-    const shore=item.group.children.filter(o=>o.userData.shore);if(item.model){this.surfaces.release(item.model);this.controllers.get(id)?.release();releaseSunsetMaterials(item.model);}if(item.model)item.model.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});item.group.clear();item.quality=quality;item.group.add(...shore,gltf.scene);item.model=gltf.scene;applySunsetMaterials(gltf.scene,id);this.controllers.get(id).bind(gltf.scene);this.surfaces.bind(gltf.scene,id);gltf.scene.traverse(o=>{if(o.isMesh&&(Array.isArray(o.material)?o.material:[o.material]).some(m=>['glass','campus_windowClear'].includes(m.userData.sunsetMaterial?.role)))o.castShadow=false;});
+    const shore=item.group.children.filter(o=>o.userData.shore);if(item.model){this.surfaces.release(item.model);this.controllers.get(id)?.release();releaseSunsetMaterials(item.model);}if(item.model)item.model.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});item.group.clear();item.quality=quality;item.group.add(...shore,gltf.scene);item.model=gltf.scene;applySunsetMaterials(gltf.scene,id);if(id==='about')installEstateNet(gltf.scene,this.walkLayouts?.get('about')||{groundY:.85});this.controllers.get(id).bind(gltf.scene);this.surfaces.bind(gltf.scene,id);gltf.scene.traverse(o=>{if(o.isMesh&&(Array.isArray(o.material)?o.material:[o.material]).some(m=>['glass','campus_windowClear','estate_clear'].includes(m.userData.sunsetMaterial?.role)))o.castShadow=false;});
    }
    if(id==='education'&&this.bicycle)this.bicycle.setSurfaceModel(item.model);
    if(id==='projects'&&this.walkLayouts?.has(id))this.installQuadBike(item.island,this.ensureWalkWorld(item.island)).catch(e=>console.warn(e));
@@ -144,7 +149,7 @@ export class Game {
   this.raycaster=new THREE.Raycaster();this.pointer=new THREE.Vector2();let down=null;
   this.canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY};});
   this.canvas.addEventListener('pointerup',e=>{
-   if(!down||Math.hypot(e.clientX-down.x,e.clientY-down.y)>8||this.mode!=='exploring'||this.challenges.frozen)return;down=null;
+   if(!down||Math.hypot(e.clientX-down.x,e.clientY-down.y)>8||this.mode!=='exploring'||this.challenges.frozen||this.practice?.active)return;down=null;
    this.pointer.set(e.clientX/innerWidth*2-1,1-e.clientY/innerHeight*2);this.raycaster.setFromCamera(this.pointer,this.camera);
    if(this.player.onLand){
     const p=this.activeActor.position,walk=this.character.walkWorld,actions=this.landActions.get(this.player.island.id)||[];
@@ -176,12 +181,13 @@ export class Game {
   if(cameraFade.finished)this.inputs.setEnabled(!this.frozen);
   this.events.trigger('boardingfade',[Math.max(cameraFade.opacity,this.player.transition?Math.sin(Math.min(1,this.player.transition.elapsed/.6)*Math.PI):0)]);
   if(this.mode==='exploring'&&!this.player.pauseReasons.size&&!this.player.transitioning&&!ridingVehicle(this.player)&&!this.cameraTransition.active)this.challenges.updateClock();
+  if(this.mode==='exploring'&&!this.player.pauseReasons.size&&!this.player.transitioning&&!this.cameraTransition.active)this.practice.advanceCountdown(dt);
   const frozen=this.frozen,input=this.player.walking?{}:this.inputs.read(this.activeActor.yaw,this.cameraRig.yaw);
   if(!frozen){this.accumulator+=dt;while(this.accumulator>=STEP){
     const before={...this.boat.position};this.prev.set(before.x,before.y,before.z);this.prevYaw=this.boat.yaw;this.simTime+=STEP;
     this.fleet?.beforeStep(STEP,this.boat);const actor=this.activeActor;this.marine?.step(STEP,{position:actor.position,velocity:actor.velocity,yaw:actor.yaw,canCompanion:!this.player.onLand});
     this.props.beforeStep(before);
-    if(this.player.walking)this.character.step(this.inputs.readWalking(this.cameraRig.yaw),STEP);else if(ridingVehicle(this.player))landVehicle(this)?.step(this.inputs.read(landVehicle(this).yaw,this.cameraRig.yaw,{groundVehicle:true,forwardSpeed:landVehicle(this).forwardSpeed}),STEP);else{this.boat.step(this.inputs.read(this.boat.yaw,this.cameraRig.yaw),STEP);this.enforceBoundary(before);}
+    if(this.practice?.active)this.stepPractice(STEP);else if(this.player.walking)this.character.step(this.inputs.readWalking(this.cameraRig.yaw),STEP);else if(ridingVehicle(this.player))landVehicle(this)?.step(this.inputs.read(landVehicle(this).yaw,this.cameraRig.yaw,{groundVehicle:true,forwardSpeed:landVehicle(this).forwardSpeed}),STEP);else{this.boat.step(this.inputs.read(this.boat.yaw,this.cameraRig.yaw),STEP);this.enforceBoundary(before);}
     this.world.step(this.queue);if(this.player.walking){this.character.afterStep();this.player.ashoreTime+=STEP;if(this.player.ashoreTime>=1)this.discovery?.land(this.player.island.id);}else if(ridingVehicle(this.player))landVehicle(this)?.afterStep();
     this.props.afterStep(this.queue,this.boat.collider,this.boat.position);if(!this.player.walking&&!ridingVehicle(this.player))this.challenges.tick(before,this.boat.position,STEP,this.challenges.kind==='cargo'?this.props.cargoData():[]);
     this.accumulator-=STEP;if(this.frozen)break;
@@ -194,7 +200,8 @@ export class Game {
   this.boatVisual.rotation.x=THREE.MathUtils.damp(this.boatVisual.rotation.x,this.settings.reduced||frozen?0:-Math.max(0,this.boat.forwardSpeed)*.0025,8,dt);
   this.props.update(alpha,this.simTime,this.settings.reduced);this.bottle.position.y=.25+(this.settings.reduced?0:Math.sin(this.simTime)*.07);
   for(const controller of this.controllers.values()){if(controller.island.id==='education')controller.setStudySeated(!!(this.player.walking&&this.player.island.id==='education'&&this.character.seated&&this.character.seatAction==='education-study'));controller.pedestrian=this.player.walking&&this.player.island.id===controller.island.id?this.character.position:null;controller.update(frozen?0:dt,p,this.simTime,this.focus?.id===controller.island.id,this.settings.reduced,this.focus?.contentId);}
-  this.quadBike?.updateVisual(dt,frozen,alpha);this.bicycle?.updateVisual(dt,frozen,alpha);this.appearance?.update(dt,input,this.boat.speed,this.settings.reduced,frozen);this.jack.update(dt,{player:this.player,boatVisual:this.boatVisual,quadBike:this.quadBike,bicycle:this.bicycle,character:this.character,alpha,input,reduced:this.settings.reduced,frozen,lookTarget:this.nearStation?.position});
+  this.quadBike?.updateVisual(dt,frozen,alpha);this.bicycle?.updateVisual(dt,frozen,alpha);this.appearance?.update(dt,input,this.boat.speed,this.settings.reduced,frozen);this.jack.update(dt,{player:this.player,boatVisual:this.boatVisual,quadBike:this.quadBike,bicycle:this.bicycle,character:this.character,alpha,input,reduced:this.settings.reduced,frozen,lookTarget:this.nearStation?.position,practice:this.practice.pose()});
+  this.practiceView?.update(this.practice);
   this.fleet?.update(alpha,p,this.settings.reduced?0:this.simTime);this.marine?.update(alpha,p,this.camera,this.settings.reduced?0:this.simTime,[...this.loaded.values()].map(i=>i.group).concat(this.fleet?.items.map(i=>i.group)||[]));this.details?.update(frozen?0:dt,p,this.simTime,this.settings.reduced?0:this.simTime,this.controllers);
   this.updateWake(frozen);this.feedback.update(frozen?0:dt);this.updateCamera(dt,cameraFade);this.updateNearby(dt,now,frozen);this.environment.update(this.challenges,this.simTime,p,this.nearAction);this.updateOcclusion(now);
   const lightTarget=this.focus?.boatStudio?this.boat.position:this.focus||p;
@@ -212,9 +219,9 @@ export class Game {
   const onLand=this.player?.onLand,riding=ridingVehicle(this.player);
   if(onLand){
    const list=this.landActions.get(this.player.island.id)||[],visible=a=>a.visible(this.camera)&&this.character.walkWorld.visible(p,a.position);
-   this.nearStation=frozen?null:selectLandExhibit(list,p,{riding,previous:this.lastStation,visible});this.lastStation=this.nearStation;
-   this.projectSign=frozen?null:selectProjectSign(list,p,visible);
-   if(!riding){
+   this.nearStation=frozen||this.practice?.active?null:selectLandExhibit(list,p,{riding,previous:this.lastStation,visible});this.lastStation=this.nearStation;
+   this.projectSign=frozen||this.practice?.active?null:selectProjectSign(list,p,visible);
+   if(!riding&&!this.practice?.active){
     this.canBoard=Math.hypot(p.x-this.player.berth.landing.x,p.z-this.player.berth.landing.z)<2;
     if(!frozen&&this.player.island.id==='projects'&&this.quadBike){const bike=this.quadBike.position;this.canRideQuad=Math.hypot(p.x-bike.x,p.z-bike.z)<2.8&&this.character.walkWorld.visible(p,bike);}
     if(!frozen&&this.player.island.id==='education'&&this.bicycle){const bike=this.bicycle.position;this.canRideBicycle=Math.hypot(p.x-bike.x,p.z-bike.z)<1.9&&this.character.walkWorld.visible(p,bike);}
@@ -233,12 +240,12 @@ export class Game {
   if(!frozen&&!this.player?.walking){if(Math.hypot(p.x-secretPlaces.arch.x,p.z-secretPlaces.arch.z)<3.2)this.findSecret('arch');if(Math.hypot(p.x-secretPlaces.cove.x,p.z-secretPlaces.cove.z)<5)this.findSecret('cove');}
  }
  get activeActor(){return this.player?.activeActor||this.boat;}
- get frozen(){return this.mode!=='exploring'||this.challenges.frozen||!!this.player?.pauseReasons.size||!!this.player?.transitioning||!!this.boarding?.pending||!!this.cameraTransition?.active;}
+ get frozen(){return this.mode!=='exploring'||this.challenges.frozen||!!this.practice?.frozen||!!this.player?.pauseReasons.size||!!this.player?.transitioning||!!this.boarding?.pending||!!this.cameraTransition?.active;}
  get zoom(){return this.player?.onLand?(this.settings.walkZoom??1):(this.settings.zoom??1);}
  cameraState({physical=false}={}){
   const actor=this.activeActor,onLand=!!this.player?.onLand;
   const position=this.focus?.boatStudio?(physical?this.boat.position:this.visualPosition):ridingVehicle(this.player)?landVehicle(this).mountPoint.getWorldPosition(vec()):physical?actor.position:onLand?this.jack.root.position:this.visualPosition;
-  let focus=this.focus;
+  let focus=this.focus||this.practiceFocus();
   const landAzimuth=onLand?this.player.island?.rotation:undefined;
   const focusIsland=focus?.islandId||focus?.id;
   if(onLand&&focus&&!focus.boatStudio&&focusIsland===this.player.island?.id){
@@ -260,7 +267,7 @@ export class Game {
   const probes=[vec(p.x,p.y+(this.player.walking?.7:1),p.z)];
   if(ridingVehicle(this.player)){const vehicle=landVehicle(this),yaw=vehicle.yaw,c=Math.cos(yaw),s=Math.sin(yaw),w=vehicle.spec?.collisionHalfWidth??.6,l=vehicle.spec?.collisionHalfLength??.8;for(const [x,z]of[[0,0],[-w,-l],[w,-l],[-w,l],[w,l]])probes.push(vec(p.x+x*c+z*s,p.y+.35,p.z-x*s+z*c));}
   this.scene.updateMatrixWorld();const hit=new Set(),interior=!this.focus&&this.player.onLand?campusInteriorAt(this.player.island,this.walkLayouts.get(this.player.island.id),p):null,cutaway=new Set();
-  if(interior?.landmarkId==='duan-center')for(const object of candidates)if(isDuanUpperOccluder(object)){hit.add(object);cutaway.add(object);}
+  if(interior)for(const object of candidates)if(isInteriorCutaway(object,interior)){hit.add(object);cutaway.add(object);}
   if(!this.focus)for(const target of probes){const direction=target.clone().sub(this.camera.position),distance=direction.length(),ray=new THREE.Raycaster(this.camera.position,direction.normalize(),0,distance-.15);for(const h of ray.intersectObjects(candidates,false)){hit.add(h.object);let group=h.object.parent;while(group&&!group.name.startsWith('occluder_'))group=group.parent;if(group)group.traverse(o=>{if(candidates.includes(o))hit.add(o);});}}
   for(const object of this.occluded||[])if(!hit.has(object))for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=m.userData.occlusionBaseOpacity??1;
   for(const object of hit)for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=(cutaway.has(object)?.025:.2)*(m.userData.occlusionBaseOpacity??1);
@@ -274,7 +281,7 @@ export class Game {
   if(id==='harbor')this.findSecret('bell');if(id==='connect')this.findSecret('signal');
   const texts=['One step is progress.','Start small.','Make room for a pause.'];const message=id==='affirmation'?texts[(this.affirmationIndex=(this.affirmationIndex??-1)+1)%texts.length]:islandActions[id][1];this.events.trigger('message',[message]);
  }
- interact(){if(!this.frozen)this.nearAction?.run();}
+ interact(){if(!this.frozen&&!this.practice?.active)this.nearAction?.run();}
  findSecret(id){if(this.discovery?.secret(id)){this.feedback.splash(this.boat.position,{celebrate:true,kind:'discover'});this.events.trigger('discovery',[id]);}}
  challengeEvent(event){
   if(event.type==='release'){
@@ -294,7 +301,7 @@ export class Game {
   if(focus&&this.loaded.has(focus.id))this.loadModel(focus.id);
   if(this.mode==='exploring'&&!this.snapshot)this.snapshot={boat:this.boat.snapshot(),props:this.props.snapshot(),epoch:this.challenges.epoch};
   const reason=kind==='hidden'?'hidden':kind==='travel'?'travel':'read';this.player?.pauseReasons.add(reason);
-  this.challenges.pause();this.mode=kind;if(kind!=='hidden')this.focus=focus;this.inputs.setEnabled(false);this.character?.hold();if(ridingVehicle(this.player))landVehicle(this)?.hold();this.accumulator=0;
+  this.challenges.pause();this.practice?.pause();this.mode=kind;if(kind!=='hidden')this.focus=focus;this.inputs.setEnabled(false);this.character?.hold();if(ridingVehicle(this.player))landVehicle(this)?.hold();this.accumulator=0;
   if(kind!=='hidden')this.syncCameraTransition();
  }
  dock(island){this.cancelChallenge();this.boat.hold();this.snapshot=null;this.pause('dock',island);this.snapshot=null;}
@@ -302,10 +309,11 @@ export class Game {
   if(this.player){this.player.pauseReasons.delete(reason);if(this.player.pauseReasons.size){this.mode=this.player.pauseReasons.has('hidden')?'hidden':'read';return;}}
   if(this.mode==='exploring'||this.recovery)return;
   if(this.snapshot&&this.challenges.active&&this.snapshot.epoch===this.challenges.epoch){this.pendingResume=this.snapshot;this.challenges.resume();}else this.boat.hold();
-  this.character?.hold();if(ridingVehicle(this.player))landVehicle(this)?.hold();this.snapshot=null;this.focus=null;this.mode='exploring';this.accumulator=0;this.syncCameraTransition();this.inputs.setEnabled(!this.frozen);this.last=performance.now();
+  this.practice?.resume();this.character?.hold();if(ridingVehicle(this.player))landVehicle(this)?.hold();this.snapshot=null;this.focus=null;this.mode='exploring';this.accumulator=0;this.syncCameraTransition();this.inputs.setEnabled(!this.frozen);this.last=performance.now();
  }
  cancelChallenge(){this.recovery=null;this.marine?.onTravel();this.challenges.cancel();this.snapshot=null;this.pendingResume=null;this.props?.resetCargo();}
  teleport(point){
+  this.cancelPractice(false);
   const wasHidden=this.player?.pauseReasons.has('hidden');this.boarding?.cancel();if(this.quadBike)this.quadBike.park(true);if(this.bicycle)this.bicycle.park(true);this.player?.toSailing();this.player?.pauseReasons.clear();this.boat.park?.(false);this.cancelChallenge();this.fleet?.onTravel();this.marine?.onTravel();this.docks?.reset();this.focus=null;this.mode='exploring';this.props.resetNear(point);point=this.safePoint(point);this.boat.teleport(point);this.accumulator=0;this.clearWake();this.feedback.clear();this.resetCamera();this.updateNearby(0,performance.now(),false);this.inputs.setEnabled(true);if(wasHidden)this.pause('hidden');this.last=performance.now();
  }
  safePoint(point){
@@ -315,11 +323,42 @@ export class Game {
   const free=candidates.find(p=>Math.hypot(p.x,p.z)<WORLD_RADIUS-5&&!this.world.intersectionWithShape({x:p.x,y:.35,z:p.z},q,shape,undefined,SEA_GROUP,this.boat.collider,this.boat.body));
   if(!free)throw new Error('No safe water at destination');return free;
  }
- reset(){this.boarding?.cancel();if(ridingVehicle(this.player)&&landVehicle(this)){const vehicle=landVehicle(this);vehicle.park(false);vehicle.teleport(vehicle.spawn);this.player.pauseReasons.clear();this.mode='exploring';this.focus=null;this.inputs.setEnabled(true);this.resetCamera();return this.player.island;}if(this.player?.walking){this.character.teleport(this.player.berth.landing);this.jack?.resetPose('idle');this.player.pauseReasons.clear();this.mode='exploring';this.focus=null;this.inputs.setEnabled(true);this.resetCamera();return this.player.island;}const i=nearestIsland(this.boat.position);this.teleport({...i.dock,yaw:i.yaw});return i;}
+ reset(){this.cancelPractice(false);this.snapshot=null;this.pendingResume=null;this.boarding?.cancel();if(ridingVehicle(this.player)&&landVehicle(this)){const vehicle=landVehicle(this);vehicle.park(false);vehicle.teleport(vehicle.spawn);this.player.pauseReasons.clear();this.mode='exploring';this.focus=null;this.inputs.setEnabled(true);this.resetCamera();return this.player.island;}if(this.player?.walking){this.character.teleport(this.player.berth.landing);this.jack?.resetPose('idle');this.player.pauseReasons.clear();this.mode='exploring';this.focus=null;this.inputs.setEnabled(true);this.resetCamera();return this.player.island;}const i=nearestIsland(this.boat.position);this.teleport({...i.dock,yaw:i.yaw});return i;}
  startChallenge(id){const config=challenges.find(c=>c.id===id);if(!config)return;this.teleport(config.spawn);this.challenges.start(id);this.inputs.setEnabled(!this.challenges.frozen);}
  startRace(){this.startChallenge('buoy');}
+ practiceEvent(event){
+  if(event.type==='release')this.inputs.setEnabled(!this.frozen);
+  if(event.type==='hit'){const p=localToWorld(this.player.island,this.practice.ball);this.spatialSound('wood',p,.35);}
+  if(event.type==='finish')this.events.trigger('practicefinish',[event]);
+ }
+ startPractice(kind){
+  if(!this.player.walking||this.player.island?.id!=='about'||this.player.pauseReasons.size||this.player.transitioning)return false;
+  const sports=this.walkLayouts.get('about')?.sports;if(!sports?.[kind])return false;
+  this.cancelPractice(false);this.cancelChallenge();this.character.hold();this.practice.configure(sports,this.character.walkWorld.layout.groundY);if(!this.practice.start(kind))return false;
+  this.practiceIsland=this.player.island;this.practiceView??=new EstatePracticeView(this.scene,this.practiceIsland);
+  const p=localToWorld(this.practiceIsland,this.practice.actor);p.y=Math.max(p.y,this.character.walkWorld.groundAt(p));this.character.teleport(p);this.jack.resetPose('idle');this.jack.forceFrame=true;this.inputs.setEnabled(false);this.resetCamera();return true;
+ }
+ cancelPractice(returnToEntry=true){
+  if(!this.practice?.active)return;const kind=this.practice.kind,config=this.practice.config?.[kind],island=this.practiceIsland;
+  this.practice.cancel();this.practiceView?.update(this.practice);this.jack?.estatePose?.reset();this.jack?.resetPose('idle');
+  if(returnToEntry&&this.player.walking&&this.player.island===island){const point=localToWorld(island,config.exit);point.y=this.character.walkWorld.groundAt(point);this.character.teleport(point);}
+  this.inputs.clear();if(this.mode==='exploring'){this.inputs.setEnabled(!this.frozen);this.resetCamera();}
+ }
+ stepPractice(dt){
+  const before=this.character.position;
+  this.practice.tick(dt,this.inputs.readPractice());
+  const p=localToWorld(this.practiceIsland,this.practice.actor);p.y=Math.max(p.y,this.character.walkWorld.groundAt(p));
+  this.character.previous={...before};this.character.body.setNextKinematicTranslation({x:p.x,y:p.y+CHARACTER.height/2+CHARACTER.offset,z:p.z});this.character.velocity={x:(p.x-before.x)/dt,y:0,z:(p.z-before.z)/dt};this.character.yaw=p.yaw;
+ }
+ practiceFocus(){
+  if(!this.practice?.active||!this.practiceIsland)return null;
+  const tennis=this.practice.kind==='tennis',hole=this.practice.config.golf?.holes[Math.min(this.practice.index,2)];
+  const local=tennis?{x:16,z:-4,y:1.1}:{x:(hole.tee.x+hole.cup.x)/2,z:hole.tee.z,y:1};
+  const fitBounds=tennis?{min:[10,.85,-15],max:[22,3,7]}:{min:[hole.tee.x-1.2,.85,hole.tee.z-1.8],max:[hole.cup.x+1.2,2.7,hole.cup.z+1.8]};
+  return campusStationFocus(this.practiceIsland,{...local,camera:{practice:true,azimuth:this.practiceIsland.rotation,elevation:.8,fitBounds}});
+ }
  setZoom(index){if(this.player?.onLand)this.settings.walkZoom=Math.max(0,Math.min(2,index));else this.cameraRig.setZoom(index);this.discovery?.save();this.events.trigger('zoom',[this.settings.zoom]);}
- async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=14.3');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
+ async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=15');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
  async prepareAshore(island){this.inputs.setEnabled(false);this.events.trigger('message',['Preparing '+island.name+' for a little walk…']);
   if(!this.walkLayouts?.size)await this.loadWalkLayouts();await Promise.all([this.loadModel(island.id),this.jack.load()]);const layout=this.walkLayouts.get(island.id);if(!layout||!this.loaded.get(island.id).model||!this.jack.ready)throw new Error('The island is still loading. You can read it now or try going ashore again.');
   const walk=this.ensureWalkWorld(island);if(island.id==='projects')await this.installQuadBike(island,walk);if(island.id==='education')await this.installBicycle(island,walk);return walk;
@@ -398,11 +437,11 @@ export class Game {
  this.clearWake();this.feedback.clear();this.prev.copy(vec(this.boat.position.x,this.boat.position.y,this.boat.position.z));this.prevYaw=this.boat.yaw;this.snapshot=null;this.pendingResume=null;this.resetCamera();this.events.trigger('message',[kind==='ashore'?'Welcome ashore. WASD to walk · E to read · F to interact.':'Back aboard. Your next island is waiting.']);
  }
  async goAshore(){if(!this.nearby||this.player.mode!=='sailing'||this.frozen)return false;this.cancelChallenge();this.boat.hold();this.inputs.setEnabled(false);const result=await this.boarding.disembark(this.nearby);if(!result&&!this.frozen)this.inputs.setEnabled(true);return result;}
- boardBoat(){if(this.frozen||!this.player.walking)return false;this.inputs.setEnabled(false);this.character.hold();return this.boarding.board();}
+ boardBoat(){if(this.practice?.active)this.cancelPractice();if(this.frozen||!this.player.walking)return false;this.inputs.setEnabled(false);this.character.hold();return this.boarding.board();}
  rideQuad(){if(this.frozen||!this.player.walking||!this.canRideQuad||!this.quadBike)return false;this.cancelChallenge();this.inputs.setEnabled(false);this.character.hold();this.quadBike.park(false);this.quadBike.hold();if(!this.player.rideQuad(this.quadBike)){this.quadBike.park(true);this.inputs.setEnabled(true);return false;}this.quadBike.hold();this.inputs.setEnabled(true);this.resetCamera();this.events.trigger('locomotion',['riding-quad']);this.events.trigger('message',['WASD to ride · Shift to boost · E to get off.']);return true;}
  dismountQuad(){if(this.frozen||!this.player.ridingQuad||!this.quadBike)return false;const point=this.quadBike.dismountPoint();if(!point){this.events.trigger('message',['There is no clear spot to get off. Move the quad bike onto an open path first.']);return false;}this.inputs.setEnabled(false);this.quadBike.park(true);if(!this.player.leaveQuad(point)){this.quadBike.park(false);this.inputs.setEnabled(true);return false;}this.jack.resetPose('idle');this.inputs.setEnabled(true);this.resetCamera();this.events.trigger('locomotion',['walking']);this.events.trigger('message',['Back on foot · Explore the island.']);return true;}
  primaryAction(){
-  if(this.frozen)return;
+  if(this.frozen||this.practice?.active)return;
   if(!this.player.walking&&!ridingVehicle(this.player))return this.goAshore();
   switch(landPrimaryAction(this)?.kind){
    case 'mount-bicycle':return this.rideBicycle();
@@ -417,7 +456,7 @@ export class Game {
   const point=localToWorld(island,station.type==='bench'?station.approach:{...station,y:station.y??layout.groundY??.85});const kind=station.type;
   const marker=label(kind==='read'?'E':'F',{width:64,height:64,worldWidth:.45,fontSize:32,background:'#fff5dd',color:'#254f62'});marker.position.set(point.x,point.y+1.65,point.z);marker.visible=false;this.scene.add(marker);
   const action=new Interactable({id:island.id+':'+station.id,label:station.label,position:point,range:1.8,object:marker,run:({direct=false}={})=>{if(this.frozen||(!this.player.walking&&!(ridingVehicle(this.player)&&kind==='read'&&station.readFull)))return;this.inputs.clear();this.activeActor.hold();if(!ridingVehicle(this.player))this.jack.interact();
-   if(kind==='read')this.events.trigger('exhibit',[{island:island.id,station:station.directory&&!direct?{...station,contentId:'projects'}:station,position:point}]);else if(kind==='studio')this.events.trigger('studio');else if(kind==='challenge')this.events.trigger('challengeopen',['lighthouse']);else if(kind==='bench'){this.character.teleport({...point,y:this.character.walkWorld.groundAt(point),yaw:(station.yaw||0)+island.rotation});const seat=localToWorld(island,station);this.character.seatYaw=(station.yaw||0)+island.rotation+Math.PI;this.character.seatVisual=this.jack.seatPosition(seat,station.y+.06,this.character.seatYaw);this.character.seated=true;this.character.seatAction=station.action||null;if(station.action==='education-study')this.controllers.get('education')?.setStudySeated(true);if(station.contentId==='affirmation')this.activateIsland('affirmation');}else{this.activateIsland(station.action||station.contentId);if(station.action==='rag')this.events.trigger('message',['Concept illustration · Retrieve, add context, and respond.']);}
+   if(kind==='read')this.events.trigger('exhibit',[{island:island.id,station:station.directory&&!direct?{...station,contentId:'projects'}:station,position:point}]);else if(kind==='practice')this.events.trigger('practiceopen',[station.practiceId]);else if(kind==='studio')this.events.trigger('studio');else if(kind==='challenge')this.events.trigger('challengeopen',['lighthouse']);else if(kind==='bench'){this.character.teleport({...point,y:this.character.walkWorld.groundAt(point),yaw:(station.yaw||0)+island.rotation});const seat=localToWorld(island,station);this.character.seatYaw=(station.yaw||0)+island.rotation+Math.PI;this.character.seatVisual=this.jack.seatPosition(seat,station.y+.06,this.character.seatYaw);this.character.seated=true;this.character.seatAction=station.action||null;if(station.action==='education-study')this.controllers.get('education')?.setStudySeated(true);if(station.contentId==='affirmation')this.activateIsland('affirmation');}else{this.activateIsland(station.action||station.contentId);if(station.action==='rag')this.events.trigger('message',['Concept illustration · Retrieve, add context, and respond.']);}
   }});action.kind=kind;action.station=station;
   if(station.hitArea){
    const h=station.hitArea,center=localToWorld(island,h);
@@ -446,5 +485,5 @@ export class Game {
  readSchool(schoolId){this.controllers.get('education')?.readSchool(schoolId);}
  endSchoolRead(){this.controllers.get('education')?.readSchool(null);}
  setLivery(id){const livery=this.appearance?.setLivery(id);this.discovery?.save();return livery;}
- status(){return{player:{mode:this.player.mode,position:{...this.activeActor.position},heading:this.activeActor.yaw,speed:this.activeActor.speed,island:this.player.island?.id||null,parkedBoat:this.boat.parked?{...this.boat.position}:null,quadBike:this.quadBike?{position:{...this.quadBike.position},parked:this.quadBike.parked,quality:this.quadBike.quality,heading:this.quadBike.yaw,wheelAngle:this.quadBike.wheelAngle||0,wheels:this.quadBike.wheelPivots.length,rider:this.player.ridingQuad?this.jack.quadContactStatus(this.quadBike):null,spawn:{...this.quadBikeSpawn}}:null,bicycle:this.bicycle?{...this.bicycle.status(),rider:this.player.ridingBicycle?this.jack.bicycleContactStatus(this.bicycle):null}:null,seated:this.character.seated,ashore:[...(this.discovery?.ashore||[])],transitionEpoch:this.player.transitionEpoch,pauseReasons:[...this.player.pauseReasons],jackReady:this.jack.ready,stations:this.player.island?(this.landActions.get(this.player.island.id)||[]).map(a=>({id:a.id,type:a.kind,label:a.label,position:a.position})):[],nearStation:this.nearStation?.id||null,canBoard:this.canBoard,canRideQuad:this.canRideQuad,canDismountQuad:this.canDismountQuad,canRideBicycle:this.canRideBicycle,canDismountBicycle:this.canDismountBicycle},performance:{frameTimeMs:this.frameTimes?.length?{p50:[...this.frameTimes].sort((a,b)=>a-b)[Math.floor(this.frameTimes.length*.5)],p95:[...this.frameTimes].sort((a,b)=>a-b)[Math.floor(this.frameTimes.length*.95)]}:null,surfaces:this.surfaces.stats(),contactShading:this.lighting.quality!=='low'&&!this.lighting.failed,fpsWindow:this.fpsHistory||[],drawCalls:this.renderer.info.render.drawCalls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,loadedIslands:[...this.loaded.values()].filter(i=>i.model).length,detailVariants:[...this.details.items.values()].reduce((n,i)=>n+i.cache.size,0)},livery:this.settings.livery,fleet:this.fleet?.status(),seaLife:{...this.marine?.status(),sightings:[...(this.discovery?.seaLife||[])]},simulationTime:this.simTime,available3D:true,renderer:this.renderer.backend.isWebGPUBackend?'WebGPU':'WebGL2',fps:this.fps,quality:this.settings.quality,cameraDistance:this.cameraRig.distance,cameraView:{azimuth:this.cameraRig.yaw,landAzimuth:this.player.onLand?this.player.island?.rotation:null,transitioning:!!this.cameraTransition?.active,fade:this.cameraTransition?.opacity||0},viewport:{width:innerWidth,height:innerHeight},mode:this.mode,position:{...this.boat.position},speed:this.boat.speed,heading:this.boat.yaw,nearby:this.nearby?.id||null,action:this.nearAction?{id:this.nearAction.id,label:this.nearAction.label}:null,challenge:{kind:this.challenges.kind,state:this.challenges.state,index:this.challenges.index,elapsed:this.challenges.elapsed},zoom:this.settings.zoom,readyMs:this.readyMs,stamps:this.discovery?.stamps||0};}
+ status(){return{practice:this.practice?.status(),player:{mode:this.player.mode,position:{...this.activeActor.position},heading:this.activeActor.yaw,speed:this.activeActor.speed,island:this.player.island?.id||null,parkedBoat:this.boat.parked?{...this.boat.position}:null,quadBike:this.quadBike?{position:{...this.quadBike.position},parked:this.quadBike.parked,quality:this.quadBike.quality,heading:this.quadBike.yaw,wheelAngle:this.quadBike.wheelAngle||0,wheels:this.quadBike.wheelPivots.length,rider:this.player.ridingQuad?this.jack.quadContactStatus(this.quadBike):null,spawn:{...this.quadBikeSpawn}}:null,bicycle:this.bicycle?{...this.bicycle.status(),rider:this.player.ridingBicycle?this.jack.bicycleContactStatus(this.bicycle):null}:null,seated:this.character.seated,ashore:[...(this.discovery?.ashore||[])],transitionEpoch:this.player.transitionEpoch,pauseReasons:[...this.player.pauseReasons],jackReady:this.jack.ready,stations:this.player.island?(this.landActions.get(this.player.island.id)||[]).map(a=>({id:a.id,type:a.kind,label:a.label,position:a.position})):[],nearStation:this.nearStation?.id||null,canBoard:this.canBoard,canRideQuad:this.canRideQuad,canDismountQuad:this.canDismountQuad,canRideBicycle:this.canRideBicycle,canDismountBicycle:this.canDismountBicycle},performance:{frameTimeMs:this.frameTimes?.length?{p50:[...this.frameTimes].sort((a,b)=>a-b)[Math.floor(this.frameTimes.length*.5)],p95:[...this.frameTimes].sort((a,b)=>a-b)[Math.floor(this.frameTimes.length*.95)]}:null,surfaces:this.surfaces.stats(),contactShading:this.lighting.quality!=='low'&&!this.lighting.failed,fpsWindow:this.fpsHistory||[],drawCalls:this.renderer.info.render.drawCalls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,loadedIslands:[...this.loaded.values()].filter(i=>i.model).length,detailVariants:[...this.details.items.values()].reduce((n,i)=>n+i.cache.size,0)},livery:this.settings.livery,fleet:this.fleet?.status(),seaLife:{...this.marine?.status(),sightings:[...(this.discovery?.seaLife||[])]},simulationTime:this.simTime,available3D:true,renderer:this.renderer.backend.isWebGPUBackend?'WebGPU':'WebGL2',fps:this.fps,quality:this.settings.quality,cameraDistance:this.cameraRig.distance,cameraView:{azimuth:this.cameraRig.yaw,landAzimuth:this.player.onLand?this.player.island?.rotation:null,transitioning:!!this.cameraTransition?.active,fade:this.cameraTransition?.opacity||0},viewport:{width:innerWidth,height:innerHeight},mode:this.mode,position:{...this.boat.position},speed:this.boat.speed,heading:this.boat.yaw,nearby:this.nearby?.id||null,action:this.nearAction?{id:this.nearAction.id,label:this.nearAction.label}:null,challenge:{kind:this.challenges.kind,state:this.challenges.state,index:this.challenges.index,elapsed:this.challenges.elapsed},zoom:this.settings.zoom,readyMs:this.readyMs,stamps:this.discovery?.stamps||0};}
 }
