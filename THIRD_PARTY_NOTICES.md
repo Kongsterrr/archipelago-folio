@@ -82,3 +82,10 @@ The 911 and G63 runtime models derive from the owner-provided `911-grey.glb` and
 These imported car meshes, textures and visible brand marks are **not relicensed under this repository’s MIT code license**. No upstream asset license or author attribution was supplied with the files; downstream reuse requires the appropriate original permissions. Porsche, Mercedes-Benz and AMG names/marks identify the depicted vehicles and do not imply affiliation. No third-party car controller or character animation was added.
 
 V15.1.1 corrects only the 911 wheel assemblies: fitted axle centers, circularized rubber profiles, stationary brake calipers, and wheel-arch faces reassigned to the body. The supplied alloy/spoke artwork and textures are retained. These geometry corrections do not change the imported assets’ licensing status.
+
+
+## V15.2 owner-supplied Ferrari and Ford vehicles
+
+Ferrari Purosangue and Ford Raptor derive from the owner-provided `ferrari.glb` and `Ford-raptor.glb`. Original uploads remain outside this repository. Their optimized runtime meshes retain source bodywork, full roofs, materials and UV artwork; four wheel rigs, seated-driver anchors and compact interior foot supports are added locally. The Raptor uses its four disconnected source wheel assemblies. Driver seats are locally lowered inside both cabins to accommodate the existing stylized character. Ferrari rubber is rebuilt as complete circular shells fitted to source cross-sections while original alloys are retained and brake components remain stationary. Source hashes, dimensions, partitions and variant budgets are recorded in `static/models/garage-cars.json`.
+
+These imported meshes, textures and visible marks are not relicensed under the MIT code license. No upstream asset license or attribution was supplied; downstream reuse requires the original permissions. Ferrari and Ford names/marks identify the depicted vehicles and imply no affiliation or endorsement.

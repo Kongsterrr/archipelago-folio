@@ -1,7 +1,7 @@
 {
   "version": 2,
   "coordinateSystem": "Meters; Y up, ground Y=0; forward -Z; driver -X.",
-  "sourceGeometry": "Body/cabin and alloy geometry retain source positions, opaque materials and UVs. Only source rubber is replaced with complete circular shells fitted to measured source cross-sections. Calipers steer but do not roll. Coincident source seam normals averaged before LOD reduction.",
+  "sourceGeometry": "Owner-supplied body, cabin, roof, UVs and textures retained. Wheel separation and source-profile rubber corrections are documented per model.",
   "models": [
     {
       "id": "porsche-911",
@@ -591,6 +591,1228 @@
         }
       },
       "sourceSHA256": "d2c488886e2b68c7c040d771f236a31f7bd744e4049c4f9ff05c66991afe17c6"
+    },
+    {
+      "id": "ferrari-purosangue",
+      "source": "ferrari.glb",
+      "sourceBytes": 60041052,
+      "sourceSHA256": "c9c4daef95a5dcdfeeda79cbdfa9603d8657ade612a09dc9c7c6a4151f76b89b",
+      "rig": {
+        "id": "ferrari-purosangue",
+        "forward": [
+          0,
+          0,
+          -1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "dimensions": [
+          2.3188198873079804,
+          1.5978709863368257,
+          4.7
+        ],
+        "wheelRadius": 0.3595171805411908,
+        "wheelRadii": {
+          "car-wheel-front-left": 0.34488706178667944,
+          "car-wheel-front-right": 0.3516025261330125,
+          "car-wheel-rear-left": 0.3698302150730596,
+          "car-wheel-rear-right": 0.37174891917201186
+        },
+        "wheelRollAxis": [
+          1,
+          0,
+          0
+        ],
+        "wheelRollSign": -1,
+        "steerAxis": [
+          0,
+          1,
+          0
+        ],
+        "steerNodes": [
+          "car-steer-front-left",
+          "car-steer-front-right"
+        ],
+        "wheelNodes": [
+          "car-wheel-front-left",
+          "car-wheel-front-right",
+          "car-wheel-rear-left",
+          "car-wheel-rear-right"
+        ],
+        "wheelCenters": {
+          "car-wheel-front-left": [
+            -0.8394330432916397,
+            0.34488706178667944,
+            -1.430393905768954
+          ],
+          "car-wheel-front-right": [
+            0.8394330432916397,
+            0.3516025261330125,
+            -1.429434553719478
+          ],
+          "car-wheel-rear-left": [
+            -0.8394330432916397,
+            0.3698302150730596,
+            1.437109370115287
+          ],
+          "car-wheel-rear-right": [
+            0.8394330432916397,
+            0.37174891917201186,
+            1.435670342041073
+          ]
+        },
+        "wheelContactPoints": {
+          "car-wheel-front-left": [
+            -0.8394330432916397,
+            0,
+            -1.430393905768954
+          ],
+          "car-wheel-front-right": [
+            0.8394330432916397,
+            0,
+            -1.429434553719478
+          ],
+          "car-wheel-rear-left": [
+            -0.8394330432916397,
+            0,
+            1.437109370115287
+          ],
+          "car-wheel-rear-right": [
+            0.8394330432916397,
+            0,
+            1.435670342041073
+          ]
+        },
+        "wheelbase": 2.8675032758842414,
+        "seatSurface": [
+          -0.40772450000000005,
+          0.5766318782055074,
+          -0.033
+        ],
+        "steeringCenter": [
+          -0.4077246210273679,
+          1.0648807749185372,
+          -0.15829308816356635
+        ],
+        "pelvis": [
+          -0.40772450000000005,
+          0.6,
+          -0.033
+        ],
+        "grips": {
+          "Left": [
+            -0.5660177091909342,
+            1.1032548568975837,
+            -0.15565487002750691
+          ],
+          "Right": [
+            -0.24943153286380151,
+            1.1032548568975837,
+            -0.15570283762998072
+          ]
+        },
+        "feet": {
+          "Left": [
+            -0.5177245,
+            0.485,
+            -0.337
+          ],
+          "Right": [
+            -0.2977245,
+            0.485,
+            -0.337
+          ]
+        },
+        "torsoLean": 0.2,
+        "headPitch": -0.05,
+        "handPitch": 1.1,
+        "footPitch": 0,
+        "contactTargets": {
+          "pelvis": [
+            -0.40772450000000005,
+            0.6,
+            -0.033
+          ],
+          "grips": {
+            "Left": [
+              -0.5660177091909342,
+              1.1032548568975837,
+              -0.15565487002750691
+            ],
+            "Right": [
+              -0.24943153286380151,
+              1.1032548568975837,
+              -0.15570283762998072
+            ]
+          },
+          "feet": {
+            "Left": [
+              -0.5177245,
+              0.485,
+              -0.337
+            ],
+            "Right": [
+              -0.2977245,
+              0.485,
+              -0.337
+            ]
+          },
+          "torsoLean": 0.2,
+          "headPitch": -0.05,
+          "handPitch": 1.1,
+          "footPitch": 0
+        },
+        "roofProbeBounds": {
+          "minY": 1.44,
+          "maxY": 1.64,
+          "minX": -0.78,
+          "maxX": -0.08,
+          "minZ": -0.3,
+          "maxZ": 0.65
+        },
+        "headrestProbeBounds": {
+          "lo": 0.26,
+          "hi": 0.56,
+          "top": 1.46
+        },
+        "driverSeatDrop": 0.03,
+        "driverSeatAdjustment": {
+          "node": "car-driver-seat",
+          "translation": [
+            0,
+            -0.03,
+            0
+          ],
+          "description": "Original driver cushion, backrest and headrest lowered together by 30 mm; original shape, material and all passenger/body/roof geometry retained."
+        },
+        "driverFootrest": {
+          "description": "Two compact graphite supports inside the existing front footwell, below and ahead of the lowered driver seat cushion; supports measured Jack soles without stretching the original skeleton.",
+          "originalFloorY": 0.432,
+          "topY": 0.4795,
+          "soleMarkerOffsetY": 0.0055,
+          "platforms": [
+            {
+              "side": "left",
+              "min": [
+                -0.579555,
+                0.425,
+                -0.409
+              ],
+              "max": [
+                -0.438737,
+                0.4795,
+                -0.256
+              ]
+            },
+            {
+              "side": "right",
+              "min": [
+                -0.373864,
+                0.425,
+                -0.409
+              ],
+              "max": [
+                -0.23666,
+                0.4795,
+                -0.256
+              ]
+            }
+          ]
+        },
+        "anchorConfidence": "Seat cushion and steering grips measured on original source triangles; actual Jack skin and unchanged skeleton verified in both LODs, with complete roof/headrest clearance and compact footrests supporting the soles.",
+        "sourceLength": 0.9798280000686646,
+        "sourceScale": 4.796760247380798,
+        "roofCutawayNode": null,
+        "roofCutawayDescription": "Complete supplied roof remains in car-body and visible in every occupancy state.",
+        "sourceWheelSeparation": "Geometric hub-cap fitted axles; original outer alloys retained, inner brake/caliper surfaces stationary; source-bottom-meridian profiles revolved into complete circular rubber shells.",
+        "sourceTriangleCount": 1860046,
+        "replacedRubberTriangles": 108786,
+        "rubberRepair": "Full circular tread and closed sidewall shells measured independently from each source wheel; original alloy design retained.",
+        "partitionTriangleCounts": {
+          "car-body": 1445687,
+          "car-driver-seat": 47582,
+          "car-wheel-front-left": 30936,
+          "car-brake-front-left": 33220,
+          "car-wheel-front-right": 29935,
+          "car-brake-front-right": 34451,
+          "car-wheel-rear-left": 33620,
+          "car-brake-rear-left": 32686,
+          "car-wheel-rear-right": 31008,
+          "car-brake-rear-right": 32135
+        },
+        "tireProfiles": {
+          "front-left": [
+            [
+              0.135,
+              0.054
+            ],
+            [
+              0.137,
+              0.05709603739073191
+            ],
+            [
+              0.139,
+              0.0611686910118662
+            ],
+            [
+              0.14100000000000001,
+              0.06375416877369922
+            ],
+            [
+              0.14500000000000002,
+              0.06612038647036583
+            ],
+            [
+              0.15100000000000002,
+              0.06792095038118753
+            ],
+            [
+              0.15500000000000003,
+              0.06840388145967694
+            ],
+            [
+              0.161,
+              0.07031118344722775
+            ],
+            [
+              0.165,
+              0.07094835950883496
+            ],
+            [
+              0.17500000000000002,
+              0.0716397164706159
+            ],
+            [
+              0.189,
+              0.07180039707677924
+            ],
+            [
+              0.193,
+              0.07049184010457868
+            ],
+            [
+              0.199,
+              0.0699946457498214
+            ],
+            [
+              0.20700000000000002,
+              0.06869961456527382
+            ],
+            [
+              0.20900000000000002,
+              0.06820927080329886
+            ],
+            [
+              0.21300000000000002,
+              0.06648549201588672
+            ],
+            [
+              0.2155,
+              0.062
+            ],
+            [
+              0.211,
+              0.057
+            ]
+          ],
+          "front-right": [
+            [
+              0.135,
+              0.054
+            ],
+            [
+              0.137,
+              0.059282180703449705
+            ],
+            [
+              0.139,
+              0.06336359518909518
+            ],
+            [
+              0.14100000000000001,
+              0.06539144827222065
+            ],
+            [
+              0.14700000000000002,
+              0.06835109114873972
+            ],
+            [
+              0.14900000000000002,
+              0.06862508135598802
+            ],
+            [
+              0.15500000000000003,
+              0.07019947747310878
+            ],
+            [
+              0.157,
+              0.07040212702978227
+            ],
+            [
+              0.161,
+              0.07169568256196523
+            ],
+            [
+              0.165,
+              0.07229383441011705
+            ],
+            [
+              0.171,
+              0.0728807137521757
+            ],
+            [
+              0.189,
+              0.07322307745924639
+            ],
+            [
+              0.195,
+              0.07149782647044334
+            ],
+            [
+              0.203,
+              0.07083996682808757
+            ],
+            [
+              0.20900000000000002,
+              0.06983529503231956
+            ],
+            [
+              0.21100000000000002,
+              0.06915436201391753
+            ],
+            [
+              0.21300000000000002,
+              0.06807779011413628
+            ],
+            [
+              0.21500000000000002,
+              0.06485223965174092
+            ],
+            [
+              0.2155,
+              0.0625
+            ],
+            [
+              0.211,
+              0.0575
+            ]
+          ],
+          "rear-left": [
+            [
+              0.135,
+              0.054
+            ],
+            [
+              0.137,
+              0.06175415547941973
+            ],
+            [
+              0.139,
+              0.06693859279900866
+            ],
+            [
+              0.14100000000000001,
+              0.06853648474231172
+            ],
+            [
+              0.14500000000000002,
+              0.07112025208765146
+            ],
+            [
+              0.14900000000000002,
+              0.0720525076944672
+            ],
+            [
+              0.15100000000000002,
+              0.07301784119897953
+            ],
+            [
+              0.157,
+              0.07423412093289647
+            ],
+            [
+              0.161,
+              0.07556650230079012
+            ],
+            [
+              0.165,
+              0.076328554767773
+            ],
+            [
+              0.17500000000000002,
+              0.07703484422825077
+            ],
+            [
+              0.189,
+              0.07701066599019726
+            ],
+            [
+              0.193,
+              0.07550269924864478
+            ],
+            [
+              0.201,
+              0.07461887205733733
+            ],
+            [
+              0.20900000000000002,
+              0.07303402487410982
+            ],
+            [
+              0.21300000000000002,
+              0.0711481166709848
+            ],
+            [
+              0.21500000000000002,
+              0.06734594940170105
+            ],
+            [
+              0.2155,
+              0.064
+            ],
+            [
+              0.211,
+              0.059000000000000004
+            ]
+          ],
+          "rear-right": [
+            [
+              0.135,
+              0.054
+            ],
+            [
+              0.137,
+              0.06342370898546985
+            ],
+            [
+              0.139,
+              0.06732879729836515
+            ],
+            [
+              0.14300000000000002,
+              0.07036958826749852
+            ],
+            [
+              0.14900000000000002,
+              0.07255563013170392
+            ],
+            [
+              0.15300000000000002,
+              0.07324176506725723
+            ],
+            [
+              0.157,
+              0.07435877890696556
+            ],
+            [
+              0.161,
+              0.07596112917313387
+            ],
+            [
+              0.165,
+              0.07665230858322773
+            ],
+            [
+              0.17300000000000001,
+              0.07719025381804619
+            ],
+            [
+              0.187,
+              0.0775
+            ],
+            [
+              0.189,
+              0.07732401008871011
+            ],
+            [
+              0.191,
+              0.0760555496004099
+            ],
+            [
+              0.193,
+              0.07563444432767054
+            ],
+            [
+              0.201,
+              0.07493146401168617
+            ],
+            [
+              0.21100000000000002,
+              0.07290943821806962
+            ],
+            [
+              0.21300000000000002,
+              0.07184467522254524
+            ],
+            [
+              0.21500000000000002,
+              0.06822941174880502
+            ],
+            [
+              0.2155,
+              0.064
+            ],
+            [
+              0.211,
+              0.059000000000000004
+            ]
+          ]
+        }
+      },
+      "variants": {
+        "high": {
+          "file": "car-ferrari.glb",
+          "bytes": 3026140,
+          "triangles": 111982,
+          "vertices": 81728,
+          "textures": [
+            {
+              "name": "ferrari_normal",
+              "bytes": 341301,
+              "mimeType": "image/jpeg",
+              "size": [
+                2048,
+                2048
+              ]
+            },
+            {
+              "name": "ferrari_basecolor",
+              "bytes": 1043061,
+              "mimeType": "image/jpeg",
+              "size": [
+                2048,
+                2048
+              ]
+            },
+            {
+              "name": "ferrari_rm",
+              "bytes": 772373,
+              "mimeType": "image/jpeg",
+              "size": [
+                2048,
+                2048
+              ]
+            }
+          ],
+          "meshNames": [
+            "car-body",
+            "car-driver-seat",
+            "car-wheel-front-left-surface",
+            "car-brake-front-left",
+            "car-wheel-front-right-surface",
+            "car-brake-front-right",
+            "car-wheel-rear-left-surface",
+            "car-brake-rear-left",
+            "car-wheel-rear-right-surface",
+            "car-brake-rear-right",
+            "car-driver-footrest-left",
+            "car-driver-footrest-right",
+            "car-tire-front-left",
+            "car-tire-front-right",
+            "car-tire-rear-left",
+            "car-tire-rear-right"
+          ]
+        },
+        "low": {
+          "file": "low/car-ferrari.glb",
+          "bytes": 946196,
+          "triangles": 41980,
+          "vertices": 33188,
+          "textures": [
+            {
+              "name": "ferrari_normal",
+              "bytes": 82684,
+              "mimeType": "image/jpeg",
+              "size": [
+                1024,
+                1024
+              ]
+            },
+            {
+              "name": "ferrari_basecolor",
+              "bytes": 287645,
+              "mimeType": "image/jpeg",
+              "size": [
+                1024,
+                1024
+              ]
+            },
+            {
+              "name": "ferrari_rm",
+              "bytes": 195330,
+              "mimeType": "image/jpeg",
+              "size": [
+                1024,
+                1024
+              ]
+            }
+          ],
+          "meshNames": [
+            "car-body",
+            "car-driver-seat",
+            "car-wheel-front-left-surface",
+            "car-brake-front-left",
+            "car-wheel-front-right-surface",
+            "car-brake-front-right",
+            "car-wheel-rear-left-surface",
+            "car-brake-rear-left",
+            "car-wheel-rear-right-surface",
+            "car-brake-rear-right",
+            "car-driver-footrest-left",
+            "car-driver-footrest-right",
+            "car-tire-front-left",
+            "car-tire-front-right",
+            "car-tire-rear-left",
+            "car-tire-rear-right"
+          ]
+        }
+      }
+    },
+    {
+      "id": "raptor",
+      "source": "Ford-raptor.glb",
+      "sourceSHA256": "d2a539475ad6446dd9f03154fd83579565ccb7549f9d46c459a3c815caa9c9b3",
+      "sourceBytes": 61084580,
+      "rig": {
+        "id": "raptor",
+        "label": "Ford Raptor",
+        "forward": [
+          0,
+          0,
+          -1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "dimensions": [
+          2.429358364444202,
+          2.1789477594389464,
+          5.2
+        ],
+        "sourceScale": 5.312679800684206,
+        "sourceLength": 0.9787904024124146,
+        "sourceTriangleCount": 1906729,
+        "partitionTriangleCounts": {
+          "car-body": 1329900,
+          "car-wheel-rear-left": 119534,
+          "car-wheel-front-left": 118768,
+          "car-wheel-front-right": 118760,
+          "car-wheel-rear-right": 117540,
+          "car-roof": 67872,
+          "car-driver-seat": 34355
+        },
+        "wheelNodes": [
+          "car-wheel-rear-left",
+          "car-wheel-front-left",
+          "car-wheel-front-right",
+          "car-wheel-rear-right"
+        ],
+        "steerNodes": [
+          "car-steer-front-left",
+          "car-steer-front-right"
+        ],
+        "wheelCenters": {
+          "car-wheel-rear-left": [
+            -1.003545232318506,
+            0.45821012097766706,
+            1.4081405927078716
+          ],
+          "car-wheel-front-left": [
+            -1.0036258223883527,
+            0.45688268061303994,
+            -1.7579772964242102
+          ],
+          "car-wheel-front-right": [
+            1.0036668299091587,
+            0.4568421480828223,
+            -1.7586660327775174
+          ],
+          "car-wheel-rear-right": [
+            1.0034232389023625,
+            0.45744000290353226,
+            1.4068033358710823
+          ]
+        },
+        "wheelRadii": {
+          "car-wheel-rear-left": 0.46006824018016523,
+          "car-wheel-front-left": 0.4587899045672831,
+          "car-wheel-front-right": 0.4578469300911429,
+          "car-wheel-rear-right": 0.45816042395261786
+        },
+        "wheelRadius": 0.46006824018016523,
+        "wheelEnvelopes": {
+          "car-wheel-rear-left": {
+            "radius": 0.46006824018016523,
+            "minRestY": 0.0012970409669639175,
+            "fullSpinMinY": -0.00185811920249814,
+            "sourceCenter": [
+              0.18889623880386353,
+              0.08624839782714844,
+              -0.26505278795957565
+            ],
+            "sourceBounds": {
+              "min": [
+                0.14915472269058228,
+                0.000244140625,
+                -0.3504180908203125
+              ],
+              "max": [
+                0.22863775491714478,
+                0.17225265502929688,
+                -0.1796874850988388
+              ],
+              "size": [
+                0.0794830322265625,
+                0.17200851440429688,
+                0.1707306057214737
+              ],
+              "center": [
+                0.18889623880386353,
+                0.08624839782714844,
+                -0.26505278795957565
+              ]
+            }
+          },
+          "car-wheel-front-left": {
+            "radius": 0.4587899045672831,
+            "minRestY": 0.00024319518130573454,
+            "fullSpinMinY": -0.0019072239542431214,
+            "sourceCenter": [
+              0.18891140818595886,
+              0.08599853515625,
+              0.33090217411518097
+            ],
+            "sourceBounds": {
+              "min": [
+                0.1492614448070526,
+                0.0000457763671875,
+                0.24565130472183228
+              ],
+              "max": [
+                0.2285613715648651,
+                0.1719512939453125,
+                0.41615304350852966
+              ],
+              "size": [
+                0.0792999267578125,
+                0.171905517578125,
+                0.1705017387866974
+              ],
+              "center": [
+                0.18891140818595886,
+                0.08599853515625,
+                0.33090217411518097
+              ]
+            }
+          },
+          "car-wheel-front-right": {
+            "radius": 0.4578469300911429,
+            "minRestY": 0,
+            "fullSpinMinY": -0.0010047820083206019,
+            "sourceCenter": [
+              -0.18891912698745728,
+              0.08599090576171875,
+              0.33103181421756744
+            ],
+            "sourceBounds": {
+              "min": [
+                -0.22863775491714478,
+                0,
+                0.245941162109375
+              ],
+              "max": [
+                -0.14920049905776978,
+                0.1719818115234375,
+                0.4161224663257599
+              ],
+              "size": [
+                0.079437255859375,
+                0.1719818115234375,
+                0.1701813042163849
+              ],
+              "center": [
+                -0.18891912698745728,
+                0.08599090576171875,
+                0.33103181421756744
+              ]
+            }
+          },
+          "car-wheel-rear-right": {
+            "radius": 0.45816042395261786,
+            "minRestY": 0.0013781060273991624,
+            "fullSpinMinY": -0.0007204210490856146,
+            "sourceCenter": [
+              -0.1888732761144638,
+              0.08610343933105469,
+              -0.2648010775446892
+            ],
+            "sourceBounds": {
+              "min": [
+                -0.228546142578125,
+                0.0002593994140625,
+                -0.3501740097999573
+              ],
+              "max": [
+                -0.1492004096508026,
+                0.17194747924804688,
+                -0.17942814528942108
+              ],
+              "size": [
+                0.07934573292732239,
+                0.17168807983398438,
+                0.1707458645105362
+              ],
+              "center": [
+                -0.1888732761144638,
+                0.08610343933105469,
+                -0.2648010775446892
+              ]
+            }
+          }
+        },
+        "wheelRollAxis": [
+          1,
+          0,
+          0
+        ],
+        "wheelRollSign": -1,
+        "steerAxis": [
+          0,
+          1,
+          0
+        ],
+        "wheelbase": 3.1661178891320816,
+        "trackWidth": 2.0072926522975116,
+        "wheelContactPoints": {
+          "car-wheel-rear-left": [
+            -1.003545232318506,
+            0,
+            1.4081405927078716
+          ],
+          "car-wheel-front-left": [
+            -1.0036258223883527,
+            0,
+            -1.7579772964242102
+          ],
+          "car-wheel-front-right": [
+            1.0036668299091587,
+            0,
+            -1.7586660327775174
+          ],
+          "car-wheel-rear-right": [
+            1.0034232389023625,
+            0,
+            1.4068033358710823
+          ]
+        },
+        "stableGroundLift": 0.0019072239542431214,
+        "wheelGrounding": "Use constant measured full-spin radius for chassis support; never follow individual tread lugs with per-frame vertical offsets.",
+        "seatSurface": [
+          -0.435,
+          0.9124615046076417,
+          -0.595
+        ],
+        "steeringCenter": [
+          -0.433,
+          1.416,
+          -0.79
+        ],
+        "pelvis": [
+          -0.435,
+          0.985,
+          -0.595
+        ],
+        "grips": {
+          "Left": [
+            -0.61,
+            1.43,
+            -0.782289755619242
+          ],
+          "Right": [
+            -0.255,
+            1.43,
+            -0.7833535812667115
+          ]
+        },
+        "feet": {
+          "Left": [
+            -0.545,
+            0.95,
+            -0.9
+          ],
+          "Right": [
+            -0.325,
+            0.95,
+            -0.9
+          ]
+        },
+        "torsoLean": -0.1,
+        "handPitch": 1.1,
+        "seatDrop": 0.15,
+        "roofNode": "car-roof",
+        "roofCutawayNode": null,
+        "roofRetained": true,
+        "driverSeatNode": "car-driver-seat",
+        "sourceDriverSeatBounds": {
+          "min": [
+            0.03000258095562458,
+            0.1820087432861328,
+            0.011415493674576283
+          ],
+          "max": [
+            0.1299896240234375,
+            0.3345794677734375,
+            0.1562347710132599
+          ],
+          "size": [
+            0.09998704306781292,
+            0.1525707244873047,
+            0.1448192773386836
+          ],
+          "center": [
+            0.07999610248953104,
+            0.25829410552978516,
+            0.08382513234391809
+          ]
+        },
+        "driverSeatBounds": {
+          "min": [
+            -0.6905932498478509,
+            0.8169541740041549,
+            -0.8300253121266682
+          ],
+          "max": [
+            -0.15939410581133936,
+            1.6275135801636138,
+            -0.06064686265975974
+          ]
+        },
+        "sourceRoofBounds": {
+          "min": [
+            -0.1354217827320099,
+            0.350006103515625,
+            -0.1461181938648224
+          ],
+          "max": [
+            0.1355743408203125,
+            0.3820648193359375,
+            0.1627197414636612
+          ],
+          "size": [
+            0.2709961235523224,
+            0.0320587158203125,
+            0.3088379353284836
+          ],
+          "center": [
+            0.00007627904415130615,
+            0.36603546142578125,
+            0.008300773799419403
+          ]
+        },
+        "roofSourceInteriorY": [
+          0.3536,
+          0.3569
+        ],
+        "windshield": "Original open aperture; no opaque glass faces cover the front or driver side window.",
+        "seatContourSource": {
+          "x": 0.09,
+          "yz": [
+            [
+              0.192297489,
+              -0.05
+            ],
+            [
+              0.20255125,
+              0
+            ],
+            [
+              0.259223727,
+              0.05
+            ],
+            [
+              0.197841571,
+              0.1
+            ],
+            [
+              0.203041716,
+              0.15
+            ]
+          ],
+          "order": "[sourceY,sourceZ]"
+        },
+        "fitStatus": "Actual original Jack, original bone lengths and scale, measured steering ring contacts; driver chair lowered 15cm, roof retained and small footwell rest added. Final high/low evidence in pose-validation.json.",
+        "headPitch": 0.1,
+        "footPitch": 0,
+        "roofBounds": {
+          "minY": 1.85,
+          "maxY": 2.05,
+          "minX": -0.85,
+          "maxX": -0.1,
+          "minZ": -0.85,
+          "maxZ": 0.18
+        },
+        "headrestBounds": {
+          "lo": -0.35,
+          "hi": -0.07,
+          "top": 1.64
+        },
+        "footrest": {
+          "name": "car-driver-footrest",
+          "min": [
+            -0.64,
+            0.856,
+            -1
+          ],
+          "max": [
+            -0.23,
+            0.95,
+            -0.84
+          ],
+          "material": "Dark rubber support entirely within the original driver footwell"
+        },
+        "seatPreservation": "34,355 original chair triangles relocated rigidly -0.15m Y; exterior, pillars, dashboard, steering wheel and roof remain fixed. Trim components excluded by connected surface classification.",
+        "gripEvidence": {
+          "Left": {
+            "sourceTriangle": 1217664,
+            "surface": "Driver-facing original outer steering ring"
+          },
+          "Right": {
+            "sourceTriangle": 1121936,
+            "surface": "Driver-facing original outer steering ring"
+          }
+        },
+        "footwellFloorY": 0.8554,
+        "cushionFrontZ": -0.84,
+        "driverSeatTranslation": [
+          0,
+          -0.15,
+          0
+        ],
+        "contactTargets": {
+          "pelvis": [
+            -0.435,
+            0.985,
+            -0.595
+          ],
+          "grips": {
+            "Left": [
+              -0.61,
+              1.43,
+              -0.782289755619242
+            ],
+            "Right": [
+              -0.255,
+              1.43,
+              -0.7833535812667115
+            ]
+          },
+          "feet": {
+            "Left": [
+              -0.545,
+              0.95,
+              -0.9
+            ],
+            "Right": [
+              -0.325,
+              0.95,
+              -0.9
+            ]
+          },
+          "torsoLean": -0.1,
+          "handPitch": 1.1,
+          "headPitch": 0.1,
+          "footPitch": 0
+        }
+      },
+      "variants": {
+        "high": {
+          "file": "car-raptor.glb",
+          "bytes": 3561504,
+          "triangles": 111986,
+          "textures": [
+            {
+              "name": "monster_pickup_truck_3d_model_normal",
+              "size": [
+                2048,
+                2048
+              ],
+              "bytes": 295232
+            },
+            {
+              "name": "monster_pickup_truck_3d_model_basecolor",
+              "size": [
+                2048,
+                2048
+              ],
+              "bytes": 1315326
+            },
+            {
+              "name": "monster_pickup_truck_3d_model_rm",
+              "size": [
+                2048,
+                2048
+              ],
+              "bytes": 993128
+            }
+          ],
+          "meshNames": [
+            "car-body",
+            "car-wheel-rear-left-surface",
+            "car-wheel-front-left-surface",
+            "car-wheel-front-right-surface",
+            "car-wheel-rear-right-surface",
+            "car-roof",
+            "car-driver-seat",
+            "car-driver-footrest"
+          ]
+        },
+        "low": {
+          "file": "low/car-raptor.glb",
+          "bytes": 1139064,
+          "triangles": 42002,
+          "textures": [
+            {
+              "name": "monster_pickup_truck_3d_model_normal",
+              "size": [
+                1024,
+                1024
+              ],
+              "bytes": 68608
+            },
+            {
+              "name": "monster_pickup_truck_3d_model_basecolor",
+              "size": [
+                1024,
+                1024
+              ],
+              "bytes": 360827
+            },
+            {
+              "name": "monster_pickup_truck_3d_model_rm",
+              "size": [
+                1024,
+                1024
+              ],
+              "bytes": 264840
+            }
+          ],
+          "meshNames": [
+            "car-body",
+            "car-wheel-rear-left-surface",
+            "car-wheel-front-left-surface",
+            "car-wheel-front-right-surface",
+            "car-wheel-rear-right-surface",
+            "car-roof",
+            "car-driver-seat",
+            "car-driver-footrest"
+          ]
+        }
+      }
     }
   ]
 }

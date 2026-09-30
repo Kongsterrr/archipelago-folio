@@ -7,6 +7,8 @@ import {localToWorld} from './character.js';
 export const GARAGE_CARS=Object.freeze([
  {id:'911',label:'Porsche 911',bay:0,width:2.061,height:1.264,wheelRadius:.355,seatBack:.13,seatDrop:.025,torsoLean:.16,headPitch:0},
  {id:'g63',label:'Mercedes G63',bay:1,width:2.199,height:2.107,wheelRadius:.427,seatDrop:.035,seatBack:.08,torsoLean:.165,headPitch:-.02},
+ {id:'ferrari',label:'Ferrari Purosangue',bay:2,width:2.320,height:1.599,length:4.7,wheelRadius:.38,assetVersion:'15.2'},
+ {id:'raptor',label:'Ford Raptor',bay:3,width:2.430,height:2.180,length:5.2,wheelRadius:.46,assetVersion:'15.2'},
 ]);
 
 // A grounded signed speed with strong tire grip; no boat-like sideways drift.
@@ -21,7 +23,8 @@ export function integrateCarDrive(state,input,dt){
  const yaw=state.yaw+speed/2.7*Math.tan(steer*.72)/(1+Math.abs(speed)/40)*dt;
  return {yaw,vx:-Math.sin(yaw)*speed,vz:-Math.cos(yaw)*speed};
 }
-export function carSpec(config){return {modelScale:1,planarDrive:true,collisionHalfWidth:config.width/2,collisionHalfLength:2.35,collisionHalfHeight:config.height*.46,collisionY:config.height*.5,wheelRadius:config.wheelRadius,riderAnchor:[0,0,0],integrateDrive:integrateCarDrive};}
+export function carSpec(config){return {modelScale:1,planarDrive:true,collisionHalfWidth:config.width/2,collisionHalfLength:(config.length??4.7)/2,collisionHalfHeight:config.height*.46,collisionY:config.height*.5,wheelRadius:config.wheelRadius,riderAnchor:[0,0,0],integrateDrive:integrateCarDrive};}
+export function garageCarAssetURL(id,quality='high'){const config=GARAGE_CARS.find(car=>car.id===id);return `/models/${quality==='low'?'low/':''}car-${id}.glb?v=${config?.assetVersion??'15.1.1'}`;}
 export function garageSpawn(walk,bay){const slot=walk.layout.garageBays[bay];const p=localToWorld(walk.island,{x:slot.x,z:slot.z,yaw:Math.PI});p.y=walk.groundAt(p);return p;}
 const dispose=model=>{const materials=new Set(),textures=new Set();model?.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material]){materials.add(m);for(const v of Object.values(m))if(v?.isTexture)textures.add(v);}}});for(const m of materials)m.dispose();for(const t of textures)t.dispose();};
 
@@ -57,10 +60,10 @@ export class GarageCarController extends QuadBikeController{
   const old=this.model;
   // Move the seated pelvis back inside each cabin, retaining the actual wheel
   // and foot contacts. The SUV drop keeps Jack below its complete roof.
-  this.visual.add(model);this.model=model;this.rig={...rig,torsoLean:this.config.torsoLean,headPitch:this.config.headPitch,pelvis:rig.pelvis.map((v,n)=>v+(n===2?(this.config.seatBack||0):0)-(n===1?(this.config.seatDrop||0):0))};this.quality=quality;this.wheelPivots=wheels;
+  this.visual.add(model);this.model=model;this.rig={...rig,torsoLean:this.config.torsoLean??rig.torsoLean,headPitch:this.config.headPitch??rig.headPitch,pelvis:rig.pelvis.map((v,n)=>v+(n===2?(this.config.seatBack||0):0)-(n===1?(this.config.seatDrop||0):0))};this.quality=quality;this.wheelPivots=wheels;
   this.roof=[];const calibrated=new Set();
   model.traverse(o=>{
-   if(o.name==='car-roof-cutaway')this.roof.push(o);
+   if(o.name==='car-roof-cutaway'||o.name==='car-roof')this.roof.push(o);
    if(!o.isMesh)return;
    o.castShadow=true;o.receiveShadow=true;
    for(const material of Array.isArray(o.material)?o.material:[o.material])if(!calibrated.has(material)){
@@ -72,7 +75,7 @@ export class GarageCarController extends QuadBikeController{
   // retaining the body's mapped roughness, metal response and environment strength.
   // Dark paint plus a separate matte override made the previous roof look flat black.
   const roofMaterials=new Map();
-  for(const roof of this.roof)roof.traverse(o=>{
+  for(const roof of this.id==='g63'?this.roof:[])roof.traverse(o=>{
    if(!o.isMesh)return;
    const finish=source=>{
     if(!roofMaterials.has(source)){
@@ -91,7 +94,7 @@ export class GarageCarController extends QuadBikeController{
   this.tireCenters=wheels.map(w=>{model.updateWorldMatrix(true,true);return this.group.worldToLocal(w.getWorldPosition(new THREE.Vector3()));});
   if(old){this.visual.remove(old);dispose(old);}this.updateVisual(0,true);
  }
- // Occupancy changes the driver state only; the supplied G63 roof stays intact.
+ // Occupancy changes the driver state only; every supplied roof stays intact.
  setOccupied(value){this.occupied=value;for(const roof of this.roof||[])roof.visible=true;}
  contactTargets(){return this.rig;}
  accessPoints(){

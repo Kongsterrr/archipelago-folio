@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V15.1.3 — Graphite Finish & Deeper Seating** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V15.2 — Four-Car Garage** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -12,7 +12,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 
 - **Four connected exhibition islands:** About combines Harbor and Connect; Experience combines Amtrak, BeaconFire and VisionX; Projects combines Affirmation, Research and Catering; Education keeps BU and CMU together. Nine independent stories remain available through the directory.
 - **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, four walkable islands, exhibit stops, benches and safe boarding transitions.
-- **Jack’s Estate:** About Island has a furnished house with a walkable ground floor, four garage bays with a drivable Porsche 911 and Mercedes G63, a garden circuit, a tennis court and three putting greens.
+- **Jack’s Estate:** About Island has a furnished house with a walkable ground floor, four garage bays with a drivable Porsche 911, Mercedes G63, Ferrari Purosangue and Ford Raptor, a garden circuit, a tennis court and three putting greens.
 - **Garden practice:** return six machine-fed tennis balls or putt across three greens, with animated racket and club contact, keyboard and touch controls, and results that last only for the current round.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
@@ -74,13 +74,28 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1 — Garage Drives** | Owner-supplied 911/G63, fitted driver poses, rolling/steering wheels, grounded driving and safe parking | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/90536fb29a77084691b3f61ebd6d4d78e7c1ffe2) |
 | **V15.1.1 — Garage Refinement** | G63 roof retained, seated head clearance, and corrected 911 rolling wheels with stationary brakes | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8bc807cd5a7379ac3902f6da4d902ba8d4d9fa37) |
 | **V15.1.2 — Relaxed Driving Pose** | Rearward driver placement, relaxed wheel reach and a charcoal G63 roof | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/a375409df896d102ea7b0b80c116f7bd382e2b52) |
-| **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
+| **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.1 — Campus Signage** | Removes redundant arrival signs and ground lettering; mounts landmark names on their own facades | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V15.2 — Four-Car Garage
+
+Ferrari Purosangue occupies bay **03**, and Ford Raptor occupies bay **04**. Both use the same E-to-enter/park controls, grounded driving, Shift boost, braking and safe reset as the 911 and G63. Their original bodies, complete roofs and texture artwork remain; driver contacts are fitted to each cabin using the existing Jack skeleton. Small dark foot supports inside the front footwells accommodate his short legs without stretching the rig. Raptor retains its longer pickup proportions. Driver seats are calibrated inside each cabin, including a 3 cm lowering in the Ferrari, to accommodate Jack below the original roofs. All four parked cars participate in collision and safe exit checks.
+
+The source files remain outside the repository. Rebuild the two new optimized high/low assets on macOS with:
+
+```sh
+npm run models:ferrari -- --source "/path/to/ferrari.glb"
+npm run models:raptor -- --source "/path/to/Ford-raptor.glb"
+node scripts/install-garage-assets.mjs .asset-build/ferrari/manifest.json .asset-build/raptor/manifest.json
+```
+
+The installer merges provenance by car ID, preserving the other bays. Models load with About Island's existing deferred vehicle loading; no record migration is required.
 
 ### V15.1.3 — Graphite Finish & Deeper Seating
 

@@ -1,12 +1,25 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {fileURLToPath} from 'node:url';
 import * as THREE from 'three';import {NodeIO} from '@gltf-transform/core';import {ALL_EXTENSIONS} from '@gltf-transform/extensions';import {MeshoptDecoder} from 'meshoptimizer';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';import {clone} from 'three/addons/utils/SkeletonUtils.js';
-import {createG63RoofProbe} from './helpers/garage-roof-probe.js';
+import {createCarRoofProbe} from './helpers/garage-roof-probe.js';
 import {createCarHeadrestProbe} from './helpers/garage-headrest-probe.js';
 import R from '@dimforge/rapier3d-compat/rapier.es.js';
 import {JackAvatar} from '../sources/world/jack.js';import {GarageCarController,GARAGE_CARS} from '../sources/core/garage-car.js';
 await MeshoptDecoder.ready;await R.init();const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.decoder':MeshoptDecoder});
 async function load(name){const d=await io.read(fileURLToPath(new URL('../static/models/'+name,import.meta.url)));for(const m of d.getRoot().listMaterials())m.setBaseColorTexture(null).setNormalTexture(null).setMetallicRoughnessTexture(null).setEmissiveTexture(null).setOcclusionTexture(null);for(const t of [...d.getRoot().listTextures()])t.dispose();for(const e of d.getRoot().listExtensionsUsed())if(e.extensionName==='EXT_meshopt_compression')e.dispose();const bytes=await io.writeBinary(d);return new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');}
 const jack=await load('jack-imported.glb');
+// Contact anchors must touch visible cabin geometry, rather than only agreeing
+// with the avatar's own IK target. New compact footrests are included here.
+function cabinSurfaceDistance(car,point){
+ const target=new THREE.Vector3(...point),inverse=car.group.matrixWorld.clone().invert(),triangle=new THREE.Triangle(),closest=new THREE.Vector3();let distance=Infinity;
+ car.model.traverse(mesh=>{
+  if(!mesh.isMesh||/wheel|tire|brake/.test(mesh.name))return;
+  const p=mesh.geometry.getAttribute('position'),index=mesh.geometry.index,matrix=inverse.clone().multiply(mesh.matrixWorld);
+  for(let n=0;n<(index?.count??p.count);n+=3){
+   for(const [offset,v]of [[0,triangle.a],[1,triangle.b],[2,triangle.c]])v.fromBufferAttribute(p,index?index.getX(n+offset):n+offset).applyMatrix4(matrix);
+   triangle.closestPointToPoint(target,closest);const gap=target.distanceTo(closest);if(Number.isFinite(gap))distance=Math.min(distance,gap);
+  }
+ });return distance;
+}
 for(const quality of['high','low'])for(const config of GARAGE_CARS)test(`${config.label} ${quality}: actual wheels, roof, seated Jack and quality-safe contacts`,async()=>{
  const gltf=await load(`${quality==='low'?'low/':''}car-${config.id}.glb`),scene=new THREE.Scene(),world=new R.World({x:0,y:0,z:0});
  const walk={vehicles:new Set(),handles:new Set(),groundAt:()=>0,contains:()=>true,clear:()=>true,visible:()=>true,island:{x:0,z:0,rotation:0,shore:[[-50,-50],[50,-50],[50,50],[-50,50]]},layout:{}};
@@ -23,25 +36,38 @@ for(const quality of['high','low'])for(const config of GARAGE_CARS)test(`${confi
    assert.equal(body.material.color.getHexString(),'ffffff','source body paint is unchanged');
    assert.equal(roof.material.opacity,1);assert.equal(roof.material.transparent,false);
   }
-  const roofProbe=config.id==='g63'?createG63RoofProbe(car):null;
-  const headrestProbe=createCarHeadrestProbe(car);
+  const roofBounds=car.rig.roofProbeBounds??car.rig.roofBounds,headrestBounds=car.rig.headrestProbeBounds??car.rig.headrestBounds;
+  const roofProbe=config.id==='g63'||roofBounds?createCarRoofProbe(car,roofBounds):null;
+  const headrestProbe=createCarHeadrestProbe(car,headrestBounds);
+  if(['ferrari','raptor'].includes(config.id)){
+   scene.updateMatrixWorld(true);
+   const supports=[];car.model.traverse(mesh=>{if(mesh.isMesh&&mesh.name.startsWith('car-driver-footrest'))supports.push(new THREE.Box3().setFromObject(mesh).applyMatrix4(car.group.matrixWorld.clone().invert()));});
+   assert.ok(supports.length,'short legs have a compact physical foot support');
+   for(const side of ['Left','Right']){
+    const gripDistance=cabinSurfaceDistance(car,car.rig.grips[side]),footDistance=cabinSurfaceDistance(car,car.rig.feet[side]);
+    assert.ok(gripDistance<.025,`${side} grip must be on the actual steering rim (${gripDistance})`);
+    assert.ok(footDistance<.012,`${side} foot must have a real supporting surface (${footDistance})`);
+    const [x,y,z]=car.rig.feet[side];assert.ok(supports.some(b=>x>=b.min.x&&x<=b.max.x&&z>=b.min.z&&z<=b.max.z&&Math.abs(y-b.max.y)<.012),`${side} sole lies over the top of a foot support`);
+   }
+  }
   const state={player:{onLand:true,ridingCar:true,car},character:{position:{x:0,y:0,z:0}},alpha:1,reduced:true,frozen:false};
   for(const yaw of[0,Math.PI/2,Math.PI]){
    car.teleport({x:4,y:0,z:2,yaw});car.setOccupied(true);
    for(const steer of[-1,0,1])for(const phase of[0,.7,2.4,4.9]){
     car.steering=steer;car.wheelAngle=car.previousWheelAngle=phase;car.updateVisual(0,true);avatar.update(0,state);scene.updateMatrixWorld(true);for(const roof of car.roof)assert.equal(roof.visible,true);
-    if(roofProbe){const fit=roofProbe(avatar.model);assert.ok(fit.headVertices>10000);assert.equal(fit.coveredVertices,fit.headVertices);assert.equal(fit.penetratingVertices,0);assert.ok(fit.clearance>=.01,`hair-to-roof clearance ${fit.clearance}`);}
+    if(roofProbe){const fit=roofProbe(avatar.model);assert.ok(fit.headVertices>10000);if(config.id==='g63')assert.equal(fit.coveredVertices,fit.headVertices);else assert.ok(fit.coveredVertices>(config.id==='ferrari'?2000:2500),'original windshield opening is not a roof surface');assert.equal(fit.penetratingVertices,0);assert.ok(fit.clearance>=.01,`hair-to-roof clearance ${fit.clearance}`);}
     const headrestFit=headrestProbe(avatar.model);
     assert.ok(headrestFit.covered>(config.id==='g63'?7000:3000));
     assert.equal(headrestFit.penetrating,0,'rearward pose must not intersect the headrest');
-    assert.ok(headrestFit.clearance>=(config.id==='g63'?.005:.05),`headrest clearance ${headrestFit.clearance}`);
+    assert.ok(headrestFit.clearance>=(config.id==='911'?.05:.005),`headrest clearance ${headrestFit.clearance}`);
     const contact=avatar.carPose.contactStatus(car);assert.ok(contact.pelvisError<1e-5);
     for(const side of['Left','Right']){assert.ok(contact.palms[side].error<1e-4);assert.ok(contact.palms[side].skinError<.012);assert.ok(contact.soles[side].surfaceError<.007);assert.ok(contact.palms[side].requested<contact.palms[side].reach);}
     for(const side of['Left','Right']){
      const joint=name=>avatar.carPose.bones[side+name].getWorldPosition(new THREE.Vector3());
      const elbow=joint('ForeArm'),upper=joint('Arm').sub(elbow),lower=joint('Hand').sub(elbow);
      const angle=THREE.MathUtils.radToDeg(upper.angleTo(lower));
-     assert.ok(angle>140&&angle<155,`extended but unlocked ${side} elbow: ${angle}`);
+     const newCabin=['ferrari','raptor'].includes(config.id);
+     assert.ok(angle>(newCabin?125:140)&&angle<(newCabin?165:155),`extended but unlocked ${side} elbow: ${angle}`);
      assert.ok(contact.palms[side].reach-contact.palms[side].requested>.008,'hands retain reach reserve without stretching');
     }
     for(const [name,rest]of avatar.carPose.bind)assert.ok(avatar.carPose.bones[name].position.distanceTo(rest.position)<1e-6);
@@ -57,6 +83,6 @@ for(const quality of['high','low'])for(const config of GARAGE_CARS)test(`${confi
   const pose=[...avatar.carPose.bind.keys()].map(n=>avatar.carPose.bones[n].quaternion.toArray());
   for(let n=0;n<6;n++)avatar.update(.1,{...state,frozen:true});assert.deepEqual([...avatar.carPose.bind.keys()].map(n=>avatar.carPose.bones[n].quaternion.toArray()),pose);
   car.setOccupied(false);for(const roof of car.roof)assert.equal(roof.visible,true);
-  assert.ok(car.roof.length===(config.id==='g63'?1:0));
+  assert.equal(car.roof.length,['g63','raptor'].includes(config.id)?1:0);
  }finally{car.dispose();world.free();}
 });

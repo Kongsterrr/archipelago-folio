@@ -2,19 +2,18 @@
 // after model replacement; the returned probe supports arbitrary vehicle yaw,
 // position and steering. Hidden Jack outline duplicates are excluded.
 // Usage: const probe=createCarHeadrestProbe(car); probe(avatar.model).
-export function createCarHeadrestProbe(car) {
+export function createCarHeadrestProbe(car, measuredBounds = {}) {
   const kind=car.id;
   car.group.updateWorldMatrix(true,true);
   const inverse=car.group.matrixWorld.clone().invert();
   const model=car.model;
   // Source seats are merged into the body mesh. These local bands exclude
   // the dashboard, rear bench and roof while retaining the driver headrest.
-  const lo = kind === '911' ? .18 : -.005;
-  const hi = kind === '911' ? .60 : .33;
-  const top = kind === '911' ? 1.13 : 1.735;
+  const {lo,hi,top} = {...(kind === '911' ? {lo:.18,hi:.60,top:1.13} : {lo:-.005,hi:.33,top:1.735}),...measuredBounds};
+  if (![lo,hi,top].every(Number.isFinite) || lo >= hi) throw new Error('Invalid car headrest bounds');
   const grid = new Map(), cell = .03;
   model.traverse(mesh => {
-    if (!mesh.isMesh || !mesh.name.startsWith('car-body')) return;
+    if (!mesh.isMesh || !(mesh.name.startsWith('car-body') || mesh.name.startsWith('car-driver-seat'))) return;
     const p = mesh.geometry.getAttribute('position'), ix = mesh.geometry.index;
     const m = inverse.clone().multiply(mesh.matrixWorld).elements;
     const point = i => {

@@ -38,7 +38,7 @@ test('High→Low→High while the second car loads reconciles every car to the l
  }
  assert.ok(complete,'quality reconciliation must finish');
  await Promise.all([first,repeated]);
- assert.deepEqual(cars.map(car=>car.quality),['high','high']);
+ assert.deepEqual(cars.map(car=>car.quality),GARAGE_CARS.map(()=>'high'));
  assert.equal(!!game.carReloading,false);
  assert.ok(requests.some(url=>/models\/car-911/.test(url)),'the first car must be revisited after the late setting change');
 });
@@ -103,7 +103,7 @@ for(const scenario of blockedCases)test(`practice preflight rejects a parked car
  }finally{f.dispose();}
 });
 
-for(const hidden of[false,true])test(`Travel from a car reader ${hidden?'with a background pause ':''}parks both cars and closing the old reader cannot resume driving`,()=>{
+for(const hidden of[false,true])test(`Travel from a car reader ${hidden?'with a background pause ':''}parks all cars and closing the old reader cannot resume driving`,()=>{
  const f=gameFixture();try{
   const car=f.cars[0];assert.ok(f.game.player.rideCar(car));car.park(false);car.setOccupied(true);
   for(let n=0;n<30;n++){car.step({throttle:1,steer:0},STEP);f.world.step();car.afterStep();}
@@ -121,5 +121,23 @@ for(const hidden of[false,true])test(`Travel from a car reader ${hidden?'with a 
   for(let n=0;n<10;n++){for(const vehicle of f.cars)vehicle.step({throttle:0,steer:0},STEP);f.world.step();for(const vehicle of f.cars)vehicle.afterStep();}
   assert.deepEqual(f.cars.map(vehicle=>({...vehicle.position})),positions);
   assert.deepEqual(f.game.boat.position,destination);
+ }finally{f.dispose();}
+});
+
+for(const config of GARAGE_CARS)test(`${config.label}: mount, drive, nested pause and dismount leave all four vehicles stable`,()=>{
+ const f=gameFixture();try{
+  const car=f.cars.find(c=>c.id===config.id);f.game.nearCar=car;
+  assert.ok(f.game.rideCar());assert.equal(f.game.activeActor,car);assert.equal(f.game.inputs.keys.size,0);
+  assert.equal(car.occupied,true);assert.equal(f.cars.filter(c=>!c.parked).length,1);
+  for(let n=0;n<66;n++){car.step({throttle:1,steer:0},STEP);f.world.step();car.afterStep();}
+  assert.ok(car.speed>0);const parked=f.cars.filter(c=>c!==car).map(c=>({...c.position}));
+  f.game.pause('read',{id:'about'});f.game.pause('hidden');f.game.resume('read');
+  assert.equal(f.game.dismountCar(),false);assert.equal(car.speed,0);
+  f.game.resume('hidden');assert.equal(car.speed,0);assert.equal(f.game.player.car,car);
+  assert.ok(f.game.dismountCar());assert.equal(f.game.player.mode,'walking');assert.ok(f.walk.clear(f.character.position,.24));
+  const position={...car.position},yaw=car.yaw,wheelAngle=car.wheelAngle;
+  for(let n=0;n<120;n++){for(const c of f.cars)c.step({throttle:0,steer:0},STEP);f.world.step();for(const c of f.cars)c.afterStep();}
+  assert.deepEqual({...car.position},position);assert.equal(car.yaw,yaw);assert.equal(car.wheelAngle,wheelAngle);
+  assert.ok(f.cars.every(c=>c.parked&&!c.occupied));assert.deepEqual(f.cars.filter(c=>c!==car).map(c=>({...c.position})),parked);
  }finally{f.dispose();}
 });

@@ -76,8 +76,7 @@ const textureJPEG=path.join(output,'911-source-basecolor.jpg'),textureBMP=path.j
 console.log('Finished',path.join(output,'manifest.json'));
 
 if(args.get('--install')==='true'){
- const target=path.join(project,'static/models');await fs.mkdir(path.join(target,'low'),{recursive:true});
- for(const entry of manifest.models)for(const variant of Object.values(entry.variants))await fs.copyFile(path.join(output,variant.file),path.join(target,variant.file));
- await fs.copyFile(path.join(output,'manifest.json'),path.join(target,'garage-cars.json'));
+ const {installGarageAssets}=await import('./install-garage-assets.mjs');
+ await installGarageAssets(project,[path.join(output,'manifest.json')]);
  console.log('Installed runtime cars; uncompressed rig sources stay outside static/.');
 }

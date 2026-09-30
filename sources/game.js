@@ -12,7 +12,7 @@ import { Events } from './core/Events.js';
 import {CharacterController,IslandWalkWorld,localToWorld,SEA_GROUP,CHARACTER} from './core/character.js';
 import {PlayerController,BoardingController} from './core/player.js';
 import {QuadBikeController,QUAD_BIKE,quadFootprintClear,overlaps} from './core/quad-bike.js';
-import {GarageCarController,GARAGE_CARS,garageSpawn,carSpec} from './core/garage-car.js';
+import {GarageCarController,GARAGE_CARS,garageSpawn,carSpec,garageCarAssetURL} from './core/garage-car.js';
 import {BicycleController,BICYCLE,bicycleFootprintClear} from './core/bicycle.js';
 import {JackAvatar} from './world/jack.js';
 import { BoatController } from './core/boat.js';
@@ -390,8 +390,8 @@ export class Game {
     let car;
     try{
      let quality=this.settings.quality==='low'?'low':'high';
-     let gltf=await this.loader.loadAsync(`/models/${quality==='low'?'low/':''}car-${config.id}.glb?v=15.1.1`);
-     if(quality!==(this.settings.quality==='low'?'low':'high')){quality=this.settings.quality==='low'?'low':'high';gltf=await this.loader.loadAsync(`/models/${quality==='low'?'low/':''}car-${config.id}.glb?v=15.1.1`);}
+     let gltf=await this.loader.loadAsync(garageCarAssetURL(config.id,quality));
+     if(quality!==(this.settings.quality==='low'?'low':'high')){quality=this.settings.quality==='low'?'low':'high';gltf=await this.loader.loadAsync(garageCarAssetURL(config.id,quality));}
      const spawn=garageSpawn(walk,config.bay),spec=carSpec(config);
      if(!quadFootprintClear(walk,spawn,spawn.yaw,spec.collisionHalfWidth,spec.collisionHalfLength))throw Error('Garage bay is occupied.');
      car=new GarageCarController(RAPIER,this.world,walk,spawn,config);car.setModel(gltf.scene,quality);this.scene.add(car.group);
@@ -410,7 +410,7 @@ export class Game {
    while(true){
     const quality=this.settings.quality==='low'?'low':'high';
     const car=(this.garageCars||[]).find(c=>c.quality!==quality&&failed.get(c)!==quality);if(!car)break;
-    try{const gltf=await this.loader.loadAsync(`/models/${quality==='low'?'low/':''}car-${car.id}.glb?v=15.1.1`);car.setModel(gltf.scene,quality);if(this.jack)this.jack.forceFrame=true;}
+    try{const gltf=await this.loader.loadAsync(garageCarAssetURL(car.id,quality));car.setModel(gltf.scene,quality);if(this.jack)this.jack.forceFrame=true;}
     catch(error){failed.set(car,quality);console.warn('Car quality switch failed',error.message);}
    }
   })().finally(()=>{this.carReloading=null;});return this.carReloading;

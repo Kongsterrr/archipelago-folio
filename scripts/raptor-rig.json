@@ -1,0 +1,87 @@
+{
+  "seatDrop": 0.15,
+  "pelvis": [
+    -0.435,
+    0.985,
+    -0.595
+  ],
+  "seatSurface": [
+    -0.435,
+    0.9124615046076417,
+    -0.595
+  ],
+  "steeringCenter": [
+    -0.433,
+    1.416,
+    -0.79
+  ],
+  "grips": {
+    "Left": [
+      -0.61,
+      1.43,
+      -0.782289755619242
+    ],
+    "Right": [
+      -0.255,
+      1.43,
+      -0.7833535812667115
+    ]
+  },
+  "feet": {
+    "Left": [
+      -0.545,
+      0.95,
+      -0.9
+    ],
+    "Right": [
+      -0.325,
+      0.95,
+      -0.9
+    ]
+  },
+  "torsoLean": -0.1,
+  "headPitch": 0.1,
+  "handPitch": 1.1,
+  "footPitch": 0,
+  "roofBounds": {
+    "minY": 1.85,
+    "maxY": 2.05,
+    "minX": -0.85,
+    "maxX": -0.1,
+    "minZ": -0.85,
+    "maxZ": 0.18
+  },
+  "headrestBounds": {
+    "lo": -0.35,
+    "hi": -0.07,
+    "top": 1.64
+  },
+  "footrest": {
+    "name": "car-driver-footrest",
+    "min": [
+      -0.64,
+      0.856,
+      -1.0
+    ],
+    "max": [
+      -0.23,
+      0.95,
+      -0.84
+    ],
+    "material": "Dark rubber support entirely within the original driver footwell"
+  },
+  "fitStatus": "Actual original Jack, original bone lengths and scale, measured steering ring contacts; driver chair lowered 15cm, roof retained and small footwell rest added. Final high/low evidence in pose-validation.json.",
+  "seatPreservation": "34,355 original chair triangles relocated rigidly -0.15m Y; exterior, pillars, dashboard, steering wheel and roof remain fixed. Trim components excluded by connected surface classification.",
+  "gripEvidence": {
+    "Left": {
+      "sourceTriangle": 1217664,
+      "surface": "Driver-facing original outer steering ring"
+    },
+    "Right": {
+      "sourceTriangle": 1121936,
+      "surface": "Driver-facing original outer steering ring"
+    }
+  },
+  "footwellFloorY": 0.8554,
+  "cushionFrontZ": -0.84
+}
