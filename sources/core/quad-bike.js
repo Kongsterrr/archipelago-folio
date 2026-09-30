@@ -41,13 +41,16 @@ export function quadGroundPose(walk,point,yaw){
 }
 
 // Full oriented rectangles catch even thin posts inside the vehicle footprint.
-function overlaps(a, b) {
+export function overlaps(a, b) {
   const axes = [a.yaw, b.yaw].flatMap(yaw => [{x:Math.cos(yaw),z:-Math.sin(yaw)}, {x:Math.sin(yaw),z:Math.cos(yaw)}]);
   const extent = (r,axis) => r.w*Math.abs(axis.x*Math.cos(r.yaw)-axis.z*Math.sin(r.yaw)) + r.l*Math.abs(axis.x*Math.sin(r.yaw)+axis.z*Math.cos(r.yaw));
   return axes.every(axis => Math.abs((a.x-b.x)*axis.x+(a.z-b.z)*axis.z) < extent(a,axis)+extent(b,axis));
 }
 
-export function quadFootprintClear(walkWorld, point, yaw, halfWidth = QUAD_BIKE.collisionHalfWidth, halfLength = QUAD_BIKE.collisionHalfLength) {
+export function quadFootprintClear(walkWorld, point, yaw, halfWidth = QUAD_BIKE.collisionHalfWidth, halfLength = QUAD_BIKE.collisionHalfLength, excludeVehicle = null) {
+  const footprint={x:point.x,z:point.z,yaw,w:halfWidth+.04,l:halfLength+.04};
+  for(const other of walkWorld.vehicles||[])if(other!==excludeVehicle&&overlaps(footprint,{...other.position,yaw:other.yaw,w:other.spec.collisionHalfWidth,l:other.spec.collisionHalfLength}))return false;
+  if(excludeVehicle?.allowsPose&&!excludeVehicle.allowsPose(point,yaw))return false;
   const c=Math.cos(yaw),s=Math.sin(yaw);
   // Sample the entire perimeter, not only corners: concave shorelines and
   // narrow bridges can cut through the middle of an otherwise valid footprint.
@@ -75,14 +78,14 @@ export function quadFootprintClear(walkWorld, point, yaw, halfWidth = QUAD_BIKE.
 
 // Advance only through clear poses. Translational AND rotational sweeps avoid
 // corner penetration when turning beside a wall. Contact never respawns a rider.
-function sweepPose(walk, start, end, spec = QUAD_BIKE) {
+function sweepPose(walk, start, end, spec = QUAD_BIKE, vehicle = null) {
   const turn=Math.atan2(Math.sin(end.yaw-start.yaw),Math.cos(end.yaw-start.yaw));
   const steps=Math.max(1,Math.ceil(Math.hypot(end.x-start.x,end.z-start.z)/.045),Math.ceil(Math.abs(turn)/.018));
   let safe={...start};
   for(let n=1;n<=steps;n++){
     const t=n/steps,p={x:THREE.MathUtils.lerp(start.x,end.x,t),z:THREE.MathUtils.lerp(start.z,end.z,t),yaw:start.yaw+turn*t};
     p.y=walk.terrain?quadGroundPose(walk,p,p.yaw).height:walk.groundAt(p);
-    if(Math.abs(p.y-safe.y)>.19||!quadFootprintClear(walk,p,p.yaw,spec.collisionHalfWidth,spec.collisionHalfLength))break;
+    if(Math.abs(p.y-safe.y)>.19||!quadFootprintClear(walk,p,p.yaw,spec.collisionHalfWidth,spec.collisionHalfLength,vehicle))break;
     safe=p;
   }
   return safe;
@@ -159,8 +162,8 @@ export class QuadBikeController {
       .setCcdEnabled(true)
       .setLinearDamping(0)
       .setAngularDamping(5));
-    this.collider = world.createCollider(R.ColliderDesc.cuboid(this.spec.collisionHalfWidth, .29, this.spec.collisionHalfLength)
-      .setTranslation(0, .38, 0)
+    this.collider = world.createCollider(R.ColliderDesc.cuboid(this.spec.collisionHalfWidth, this.spec.collisionHalfHeight??.29, this.spec.collisionHalfLength)
+      .setTranslation(0, this.spec.collisionY??.38, 0)
       .setCollisionGroups(0x00020002)
       .setFriction(.65)
       .setRestitution(.06)
@@ -221,21 +224,21 @@ export class QuadBikeController {
         target={x:current.x+state.vx*dt*lo,z:current.z+state.vz*dt*lo,yaw:state.yaw};
       }
     }
-    let next=sweepPose(this.walkWorld,start,target,this.spec);
+    let next=sweepPose(this.walkWorld,start,target,this.spec,this);
     // A turn can swing a front corner into a steep bank even while the rear is
     // moving away. Let translation escape at the last clear heading first;
     // otherwise the blocked rotation also traps an otherwise safe reverse.
     const progress=p=>(p.x-current.x)*(target.x-current.x)+(p.z-current.z)*(target.z-current.z);
     if(progress(next)<progress(target)-1e-10){
-      const straight=sweepPose(this.walkWorld,start,{...target,yaw:start.yaw},this.spec);
+      const straight=sweepPose(this.walkWorld,start,{...target,yaw:start.yaw},this.spec,this);
       if(progress(straight)>progress(next)+1e-10)next=straight;
     }
     // Test the remaining horizontal components separately to slide along edges.
     for(const axis of ['x','z']){
-      const candidate=sweepPose(this.walkWorld,next,{...next,[axis]:target[axis]},this.spec);
+      const candidate=sweepPose(this.walkWorld,next,{...next,[axis]:target[axis]},this.spec,this);
       next=candidate;
     }
-    const rotated=sweepPose(this.walkWorld,next,{...next,yaw:state.yaw},this.spec);
+    const rotated=sweepPose(this.walkWorld,next,{...next,yaw:state.yaw},this.spec,this);
     next=rotated;this.yaw=next.yaw;
     this.steering=THREE.MathUtils.damp(this.steering||0,input.steer||0,8,dt);
     this.velocity={x:(next.x-current.x)/dt,y:(next.y-current.y)/dt,z:(next.z-current.z)/dt};
@@ -247,7 +250,7 @@ export class QuadBikeController {
     if(this.parked)return;
     const current=this.position;
     // Numeric safety restores the immediately previous clear pose, never spawn.
-    if(!Number.isFinite(current.x)||!Number.isFinite(current.z)||!quadFootprintClear(this.walkWorld,current,this.yaw,this.spec.collisionHalfWidth,this.spec.collisionHalfLength)){
+    if(!Number.isFinite(current.x)||!Number.isFinite(current.z)||!quadFootprintClear(this.walkWorld,current,this.yaw,this.spec.collisionHalfWidth,this.spec.collisionHalfLength,this)){
       this.teleport({...this.previous,yaw:this.previousYaw});return;
     }
     const horizontal=(current.x-this.previous.x)*-Math.sin(this.yaw)+(current.z-this.previous.z)*-Math.cos(this.yaw);

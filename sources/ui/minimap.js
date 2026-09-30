@@ -53,6 +53,7 @@ export class VoyageMinimap {
   if(island&&game?.player.onLand&&game.boat){this.vehicle(projection.project(game.boat.position),game.boat.yaw,'boat');}
   if(island?.id==='education'&&game?.bicycle?.parked){this.vehicle(projection.project(game.bicycle.position),game.bicycle.yaw,'bicycle');}
   if(island?.id==='projects'&&game?.quadBike?.parked){this.vehicle(projection.project(game.quadBike.position),game.quadBike.yaw,'quad');}
+  if(island?.id==='about')for(const car of game?.garageCars||[])if(car.parked)this.vehicle(projection.project(car.position),car.yaw,'car');
   this.player(projection.project(position),yaw,w,h);
   this.compass(w);
  }

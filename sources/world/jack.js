@@ -4,6 +4,7 @@ import {applyJackHairSurface} from './jack-hair-surface.js';
 import {JackExpression} from './jack-expression.js';
 import {JACK_ASSET_URL, JACK_CLIPS} from './jack-asset.js';
 import {EstateSportPose} from './estate-sport-pose.js';
+import {CarRiderPose} from './car-rider-pose.js';
 import {BicycleRiderPose} from './bicycle-rider-pose.js';
 import {QUAD_RIDER, QuadRiderPose} from './quad-rider-pose.js';
 
@@ -37,6 +38,7 @@ export class JackAvatar {
       this.model.traverse(o => { if (o.isBone) this.poseBones.push(o); });
       this.quadPose = new QuadRiderPose(this.model, this.root, this.spec);
       this.bicyclePose = new BicycleRiderPose(this.model, this.root, this.spec);
+      this.carPose = new CarRiderPose(this.model, this.root, this.spec);
       this.estatePose = new EstateSportPose(this.model, this.root, this.spec);
       this.mixer = new THREE.AnimationMixer(this.model);
       this.actions = new Map(gltf.animations.map(c => [c.name, this.mixer.clipAction(c)]));
@@ -143,9 +145,10 @@ export class JackAvatar {
     if (!this.ready) return;
     const land = player.onLand;
     const cycling = !!player.ridingBicycle;
-    const riding = player.ridingQuad || cycling;
-    const vehicle = cycling ? bicycle : quadBike;
-    const actorMode = cycling ? 'bicycle' : riding ? 'quad' : land ? 'land' : 'boat';
+    const driving = !!player.ridingCar;
+    const riding = player.ridingQuad || cycling || driving;
+    const vehicle = driving ? player.car : cycling ? bicycle : quadBike;
+    const actorMode = driving ? 'car-'+player.car.id : cycling ? 'bicycle' : riding ? 'quad' : land ? 'land' : 'boat';
     const modeChanged = this.actorMode !== actorMode;
     this.actorMode = actorMode;
     this.onLand = land;
@@ -155,7 +158,8 @@ export class JackAvatar {
     if (frozen && !modeChanged && !this.forceFrame) {
       // Holding physics commits its interpolated crank. Keep the same frozen
       // rider attached to those final pedal contacts without advancing a clip.
-      if (cycling && bicycle) this.bicyclePose.apply(bicycle);
+      if (driving && vehicle) this.carPose.apply(vehicle);
+      else if (cycling && bicycle) this.bicyclePose.apply(bicycle);
       return;
     }
     this.forceFrame = false;
@@ -221,7 +225,8 @@ export class JackAvatar {
     this.advanceBlend(step);
     this.mixer.update(step);
     this.normalizePose();
-    if (cycling && bicycle) this.bicyclePose.apply(bicycle);
+    if (driving && vehicle) this.carPose.apply(vehicle);
+      else if (cycling && bicycle) this.bicyclePose.apply(bicycle);
     else if (riding && quadBike) this.quadPose.apply(quadBike);
     if(practice)this.estatePose.apply({...practice,phase:practice.swing>=0?'swing':'ready',reduced});else this.estatePose.reset();
     const expressionPosition = riding ? vehicle.position : character.position;

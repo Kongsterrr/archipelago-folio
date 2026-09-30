@@ -1,0 +1,538 @@
+{
+  "version": 1,
+  "coordinateSystem": "Meters; Y up, ground Y=0; forward -Z; driver -X.",
+  "sourceGeometry": "Every original triangle is assigned exactly once to a rig part before simplification; original opaque source materials and UVs retained; coincident source seam normals averaged before LOD reduction.",
+  "models": [
+    {
+      "id": "porsche-911",
+      "source": "911-grey.glb",
+      "sourceBytes": 61687104,
+      "rig": {
+        "id": "porsche-911",
+        "forward": [
+          0,
+          0,
+          -1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "dimensions": [
+          2.0608018896533733,
+          1.2639895159170127,
+          4.7
+        ],
+        "wheelRadius": 0.3538990471585614,
+        "wheelRollAxis": [
+          1,
+          0,
+          0
+        ],
+        "wheelRollSign": -1,
+        "steerAxis": [
+          0,
+          1,
+          0
+        ],
+        "steerNodes": [
+          "car-steer-front-left",
+          "car-steer-front-right"
+        ],
+        "wheelNodes": [
+          "car-wheel-front-left",
+          "car-wheel-front-right",
+          "car-wheel-rear-left",
+          "car-wheel-rear-right"
+        ],
+        "wheelCenters": {
+          "car-wheel-front-left": [
+            -0.8026823344490053,
+            0.3536594404915617,
+            -1.2454754550644567
+          ],
+          "car-wheel-front-right": [
+            0.8026823344490053,
+            0.3536594404915617,
+            -1.2454754550644567
+          ],
+          "car-wheel-rear-left": [
+            -0.8065160411210005,
+            0.3541386538255611,
+            1.236849615052467
+          ],
+          "car-wheel-rear-right": [
+            0.8065160411210005,
+            0.3541386538255611,
+            1.236849615052467
+          ]
+        },
+        "wheelContactPoints": {
+          "car-wheel-front-left": [
+            -0.8026823344490053,
+            0,
+            -1.2454754550644567
+          ],
+          "car-wheel-front-right": [
+            0.8026823344490053,
+            0,
+            -1.2454754550644567
+          ],
+          "car-wheel-rear-left": [
+            -0.8065160411210005,
+            0,
+            1.236849615052467
+          ],
+          "car-wheel-rear-right": [
+            0.8065160411210005,
+            0,
+            1.236849615052467
+          ]
+        },
+        "seatSurface": [
+          -0.4073313338994952,
+          0.3910380805435154,
+          -0.07188200009991091
+        ],
+        "steeringCenter": [
+          -0.4073313338994952,
+          0.704443600979127,
+          -0.2923201337396377
+        ],
+        "pelvis": [
+          -0.4073313338994952,
+          0.47603808054351543,
+          -0.07188200009991091
+        ],
+        "grips": {
+          "Left": [
+            -0.5573313338994952,
+            0.704443600979127,
+            -0.2923201337396377
+          ],
+          "Right": [
+            -0.25733133389949525,
+            0.704443600979127,
+            -0.2923201337396377
+          ]
+        },
+        "feet": {
+          "Left": [
+            -0.5173313338994953,
+            0.285,
+            -0.2218820000999109
+          ],
+          "Right": [
+            -0.29733133389949523,
+            0.285,
+            -0.2218820000999109
+          ]
+        },
+        "torsoLean": 0.08,
+        "handPitch": 1.1,
+        "contactTargets": {
+          "pelvis": [
+            -0.4073313338994952,
+            0.47603808054351543,
+            -0.07188200009991091
+          ],
+          "grips": {
+            "Left": [
+              -0.5573313338994952,
+              0.704443600979127,
+              -0.2923201337396377
+            ],
+            "Right": [
+              -0.25733133389949525,
+              0.704443600979127,
+              -0.2923201337396377
+            ]
+          },
+          "feet": {
+            "Left": [
+              -0.5173313338994953,
+              0.285,
+              -0.2218820000999109
+            ],
+            "Right": [
+              -0.29733133389949523,
+              0.285,
+              -0.2218820000999109
+            ]
+          },
+          "torsoLean": 0.08,
+          "handPitch": 1.1
+        },
+        "anchorConfidence": "Seat surface measured by source triangle rays; pelvis/grips/feet are anatomical starting points requiring final avatar pose visual verification.",
+        "sourceLength": 0.9807740449905396,
+        "sourceScale": 4.792133339994061,
+        "roofCutawayNode": null,
+        "roofCutawayDescription": null,
+        "sourceWheelSeparation": "Conservative cylindrical partition of fused source wheels. Every source triangle retained; inspect wheel turns for fender seam.",
+        "sourceTriangleCount": 1916762,
+        "partitionTriangleCounts": {
+          "car-body": 1516856,
+          "car-wheel-front-left": 104870,
+          "car-wheel-front-right": 100295,
+          "car-wheel-rear-left": 97488,
+          "car-wheel-rear-right": 97253
+        }
+      },
+      "variants": {
+        "high": {
+          "file": "car-911.glb",
+          "bytes": 3635188,
+          "triangles": 111994,
+          "vertices": 84149,
+          "textures": [
+            {
+              "name": "911-grey_normal",
+              "bytes": 454811,
+              "mimeType": "image/jpeg",
+              "size": [
+                2048,
+                2048
+              ]
+            },
+            {
+              "name": "911-grey_basecolor",
+              "bytes": 1375202,
+              "mimeType": "image/jpeg",
+              "size": [
+                2048,
+                2048
+              ]
+            },
+            {
+              "name": "911-grey_rm",
+              "bytes": 897434,
+              "mimeType": "image/jpeg",
+              "size": [
+                2048,
+                2048
+              ]
+            }
+          ],
+          "meshNames": [
+            "car-body",
+            "car-wheel-front-left-surface",
+            "car-wheel-front-right-surface",
+            "car-wheel-rear-left-surface",
+            "car-wheel-rear-right-surface"
+          ]
+        },
+        "low": {
+          "file": "low/car-911.glb",
+          "bytes": 1115076,
+          "triangles": 41989,
+          "vertices": 36168,
+          "textures": [
+            {
+              "name": "911-grey_normal",
+              "bytes": 109510,
+              "mimeType": "image/jpeg",
+              "size": [
+                1024,
+                1024
+              ]
+            },
+            {
+              "name": "911-grey_basecolor",
+              "bytes": 370088,
+              "mimeType": "image/jpeg",
+              "size": [
+                1024,
+                1024
+              ]
+            },
+            {
+              "name": "911-grey_rm",
+              "bytes": 226641,
+              "mimeType": "image/jpeg",
+              "size": [
+                1024,
+                1024
+              ]
+            }
+          ],
+          "meshNames": [
+            "car-body",
+            "car-wheel-front-left-surface",
+            "car-wheel-front-right-surface",
+            "car-wheel-rear-left-surface",
+            "car-wheel-rear-right-surface"
+          ]
+        }
+      },
+      "sourceSHA256": "511259908c597c18e8c9e70681c2ff9e2b94e7d5e9a3a100eb7d070a922acc11"
+    },
+    {
+      "id": "mercedes-g63",
+      "source": "g63.glb",
+      "sourceBytes": 60436968,
+      "rig": {
+        "id": "mercedes-g63",
+        "forward": [
+          0,
+          0,
+          -1
+        ],
+        "up": [
+          0,
+          1,
+          0
+        ],
+        "dimensions": [
+          2.1988098760191424,
+          2.10655798894781,
+          4.7
+        ],
+        "wheelRadius": 0.38505994005232913,
+        "wheelRollAxis": [
+          1,
+          0,
+          0
+        ],
+        "wheelRollSign": -1,
+        "steerAxis": [
+          0,
+          1,
+          0
+        ],
+        "steerNodes": [
+          "car-steer-front-left",
+          "car-steer-front-right"
+        ],
+        "wheelNodes": [
+          "car-wheel-front-right",
+          "car-wheel-rear-right",
+          "car-wheel-front-left",
+          "car-wheel-rear-left"
+        ],
+        "wheelCenters": {
+          "car-wheel-front-right": [
+            0.8875192250164996,
+            0.3846104697515454,
+            -1.4609432840487326
+          ],
+          "car-wheel-rear-right": [
+            0.8875188317688822,
+            0.3854982083729826,
+            1.3506076550417905
+          ],
+          "car-wheel-front-left": [
+            -0.8946940635461375,
+            0.3848758761435215,
+            -1.4606873155995745
+          ],
+          "car-wheel-rear-left": [
+            -0.8939989090078866,
+            0.38537923309382094,
+            1.3505707612653195
+          ]
+        },
+        "wheelContactPoints": {
+          "car-wheel-front-right": [
+            0.8875192250164996,
+            0,
+            -1.4609432840487326
+          ],
+          "car-wheel-rear-right": [
+            0.8875188317688822,
+            0,
+            1.3506076550417905
+          ],
+          "car-wheel-front-left": [
+            -0.8946940635461375,
+            0,
+            -1.4606873155995745
+          ],
+          "car-wheel-rear-left": [
+            -0.8939989090078866,
+            0,
+            1.3505707612653195
+          ]
+        },
+        "seatSurface": [
+          -0.4078516498996633,
+          0.8013085356852209,
+          -0.19193018818807683
+        ],
+        "steeringCenter": [
+          -0.4078516498996633,
+          1.1899671667660763,
+          -0.44623768753727866
+        ],
+        "pelvis": [
+          -0.4078516498996633,
+          0.8863085356852208,
+          -0.19193018818807683
+        ],
+        "grips": {
+          "Left": [
+            -0.5848516498996633,
+            1.1899671667660763,
+            -0.44623768753727866
+          ],
+          "Right": [
+            -0.23085164989966334,
+            1.1899671667660763,
+            -0.44623768753727866
+          ]
+        },
+        "feet": {
+          "Left": [
+            -0.5178516498996634,
+            0.675,
+            -0.33193018818807685
+          ],
+          "Right": [
+            -0.29785164989966334,
+            0.675,
+            -0.33193018818807685
+          ]
+        },
+        "torsoLean": 0.08,
+        "handPitch": 1.1,
+        "contactTargets": {
+          "pelvis": [
+            -0.4078516498996633,
+            0.8863085356852208,
+            -0.19193018818807683
+          ],
+          "grips": {
+            "Left": [
+              -0.5848516498996633,
+              1.1899671667660763,
+              -0.44623768753727866
+            ],
+            "Right": [
+              -0.23085164989966334,
+              1.1899671667660763,
+              -0.44623768753727866
+            ]
+          },
+          "feet": {
+            "Left": [
+              -0.5178516498996634,
+              0.675,
+              -0.33193018818807685
+            ],
+            "Right": [
+              -0.29785164989966334,
+              0.675,
+              -0.33193018818807685
+            ]
+          },
+          "torsoLean": 0.08,
+          "handPitch": 1.1
+        },
+        "anchorConfidence": "Seat surface measured by source triangle rays; pelvis/grips/feet are anatomical starting points requiring final avatar pose visual verification.",
+        "sourceLength": 0.9795228242874146,
+        "sourceScale": 4.798254704701921,
+        "roofCutawayNode": "car-roof-cutaway",
+        "roofCutawayDescription": "Only central roof/ceiling panel above 1.72m; pillars, windscreen header and outer roof rim remain. Hide only while occupied for view cutaway.",
+        "sourceWheelSeparation": "Four exact disconnected geometric components.",
+        "sourceTriangleCount": 1869882,
+        "partitionTriangleCounts": {
+          "car-body": 1320908,
+          "car-wheel-front-right": 107524,
+          "car-wheel-rear-right": 107020,
+          "car-wheel-front-left": 106204,
+          "car-wheel-rear-left": 105822,
+          "car-roof-cutaway": 122404
+        }
+      },
+      "variants": {
+        "high": {
+          "file": "car-g63.glb",
+          "bytes": 2860000,
+          "triangles": 111995,
+          "vertices": 86532,
+          "textures": [
+            {
+              "name": "g63_normal",
+              "bytes": 216097,
+              "mimeType": "image/jpeg",
+              "size": [
+                2048,
+                2048
+              ]
+            },
+            {
+              "name": "g63_basecolor",
+              "bytes": 1136083,
+              "mimeType": "image/jpeg",
+              "size": [
+                2048,
+                2048
+              ]
+            },
+            {
+              "name": "g63_rm",
+              "bytes": 571196,
+              "mimeType": "image/jpeg",
+              "size": [
+                2048,
+                2048
+              ]
+            }
+          ],
+          "meshNames": [
+            "car-body",
+            "car-wheel-front-right-surface",
+            "car-wheel-rear-right-surface",
+            "car-wheel-front-left-surface",
+            "car-wheel-rear-left-surface",
+            "car-roof-cutaway"
+          ]
+        },
+        "low": {
+          "file": "low/car-g63.glb",
+          "bytes": 934356,
+          "triangles": 41988,
+          "vertices": 37065,
+          "textures": [
+            {
+              "name": "g63_normal",
+              "bytes": 47203,
+              "mimeType": "image/jpeg",
+              "size": [
+                1024,
+                1024
+              ]
+            },
+            {
+              "name": "g63_basecolor",
+              "bytes": 315977,
+              "mimeType": "image/jpeg",
+              "size": [
+                1024,
+                1024
+              ]
+            },
+            {
+              "name": "g63_rm",
+              "bytes": 148456,
+              "mimeType": "image/jpeg",
+              "size": [
+                1024,
+                1024
+              ]
+            }
+          ],
+          "meshNames": [
+            "car-body",
+            "car-wheel-front-right-surface",
+            "car-wheel-rear-right-surface",
+            "car-wheel-front-left-surface",
+            "car-wheel-rear-left-surface",
+            "car-roof-cutaway"
+          ]
+        }
+      },
+      "sourceSHA256": "d2c488886e2b68c7c040d771f236a31f7bd744e4049c4f9ff05c66991afe17c6"
+    }
+  ]
+}

@@ -10,7 +10,7 @@ function inRect(p,r,margin=0){const c=Math.cos(r.rotation||0),s=Math.sin(r.rotat
 
 // The two physics layers share one fixed clock, but never share false-height floors.
 export class IslandWalkWorld{
- constructor(R,world,island,layout){Object.assign(this,{R,world,island,layout});this.colliders=[];this.handles=new Set();this.obstacles=[];
+ constructor(R,world,island,layout){Object.assign(this,{R,world,island,layout});this.colliders=[];this.handles=new Set();this.obstacles=[];this.vehicles=new Set();
   const body=world.createRigidBody(R.RigidBodyDesc.fixed().setTranslation(island.x,0,island.z).setRotation({x:0,y:Math.sin(island.rotation/2),z:0,w:Math.cos(island.rotation/2)}));this.body=body;
   const add=(desc,obstacle=false)=>{const c=world.createCollider(desc.setCollisionGroups(WALK_GROUP).setFriction(0),body);this.colliders.push(c);this.handles.add(c.handle);if(obstacle)this.obstacles.push(c);return c;};
   const points=(layout.shore||island.shore).map(([x,z])=>new Vector2(x,z)),y=layout.groundY??.85;
@@ -52,7 +52,7 @@ export class IslandWalkWorld{
   for(let i=0;i<8;i++){const a=i*Math.PI/4,p={x:point.x+Math.cos(a)*radius,z:point.z+Math.sin(a)*radius},sample=this.groundSample(p);if(sample.slope>maxSlope+.004||Math.abs(sample.height-center.height)>radius*Math.tan(maxSlope)+.07)return false;}
   return center.slope<=maxSlope+.004;
  }
- clear(point,radius=CHARACTER.radius){if(!this.contains(point,radius))return false;const p=dockLocal(point,this.island);return !(this.layout.obstacles||[]).some(o=>inRect(p,o,radius+.03));}
+ clear(point,radius=CHARACTER.radius){if(!this.contains(point,radius))return false;for(const car of this.vehicles||[]){const c=Math.cos(car.yaw),s=Math.sin(car.yaw),dx=point.x-car.position.x,dz=point.z-car.position.z;if(Math.abs(dx*c-dz*s)<car.spec.collisionHalfWidth+radius+.03&&Math.abs(dx*s+dz*c)<car.spec.collisionHalfLength+radius+.03)return false;}const p=dockLocal(point,this.island);return !(this.layout.obstacles||[]).some(o=>inRect(p,o,radius+.03));}
  visible(a,b){const ray=new this.R.Ray({x:a.x,y:a.y+.65,z:a.z},{x:b.x-a.x,y:(b.y??a.y)+.6-(a.y+.65),z:b.z-a.z});return !this.world.castRay(ray,1,true,undefined,WALK_GROUP,undefined,undefined,c=>this.obstacles.includes(c)||(!!this.terrain&&c.handle===this.terrainCollider.handle));}
  dispose(){this.world.removeRigidBody(this.body);}
 }

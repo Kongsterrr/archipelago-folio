@@ -73,3 +73,10 @@ The landmark article is original concise prose, distinct from Jack’s resume-ba
 The CMU lawn sculpture is a miniature procedural interpretation of **Walking to the Sky** by **Jonathan Borofsky**, based on the owner's supplied reference photograph and CMU's public-art catalog. The six static figures follow the owner's requested miniature composition; this is not an exact survey or claim about the original sculpture's figure count. No photograph, downloaded university mesh, or third-party texture is bundled. The original artwork remains attributed to its artist; the repository's MIT license does not grant rights to the underlying artwork.
 
 - CMU Public Art — Walking to the Sky: https://publicart.cmu.edu/objects/1086/walking-to-the-sky
+
+
+## V15.1 owner-supplied garage vehicles
+
+The 911 and G63 runtime models derive from the owner-provided `911-grey.glb` and `g63.glb`. `static/models/garage-cars.json` records source hashes, original sizes, geometry partitions, rig anchors and optimized variants. The original files are not distributed. The pipeline retains their UVs and texture artwork, partitions four wheel pivots (plus a reversible G63 roof cutaway), and produces reduced high/low geometry. Runtime material response is calibrated to the scene lighting.
+
+These imported car meshes, textures and visible brand marks are **not relicensed under this repository’s MIT code license**. No upstream asset license or author attribution was supplied with the files; downstream reuse requires the appropriate original permissions. Porsche, Mercedes-Benz and AMG names/marks identify the depicted vehicles and do not imply affiliation. No third-party car controller or character animation was added.

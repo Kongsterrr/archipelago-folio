@@ -14,7 +14,7 @@ const groundForward = azimuth => new THREE.Vector3(-Math.sin(azimuth), 0, -Math.
 export function cameraAzimuth({focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH} = {}) {
   if (focus?.boatStudio) return AZIMUTH;
   if (focus) return focus.camera?.azimuth ?? AZIMUTH;
-  return locomotion === 'walking' || locomotion === 'quad' || locomotion === 'bicycle' ? landAzimuth : AZIMUTH;
+  return locomotion === 'walking' || locomotion === 'quad' || locomotion === 'bicycle' || locomotion === 'car' ? landAzimuth : AZIMUTH;
 }
 
 export class CameraRig {
@@ -93,13 +93,18 @@ export class CameraRig {
       const target = new THREE.Vector3(focus.x, cfg.height || 3, focus.z);
       if (this.width >= 900) target.addScaledVector(right, focus.exhibit?460/this.height*distance*Math.tan(THREE.MathUtils.degToRad(FOV/2)):7.4);
       desired = {target, position: target.clone().add(new THREE.Vector3(Math.sin(az)*Math.cos(el), Math.sin(el), Math.cos(az)*Math.cos(el)).multiplyScalar(distance))};
-    } else if (locomotion === 'quad' || locomotion === 'bicycle') {
-      const base=Math.max(locomotion==='bicycle'?15:17,(locomotion==='bicycle'?28:32)*(this.height/this.width)/(844/390));
+    } else if (locomotion === 'quad' || locomotion === 'bicycle' || locomotion === 'car') {
+      const base=Math.max(locomotion==='car'?23:locomotion==='bicycle'?15:17,(locomotion==='car'?42:locomotion==='bicycle'?28:32)*(this.height/this.width)/(844/390));
       const desiredDistance=base*ZOOM_LEVELS[this.settings.walkZoom??1]+(this.settings.reduced?10:Math.min(10,speed*.5));
       this.distance=snap?desiredDistance:THREE.MathUtils.damp(this.distance,desiredDistance,4,dt);
       const direction=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
       this.heading.lerp(direction,snap?1:1-Math.exp(-5*dt)).normalize();
       desired=this.pose(this.distance,{x:position.x,y:position.y+.3,z:position.z},this.heading,this.settings.reduced?0:Math.min(4,speed*.28),azimuth);
+      if(locomotion==='car'&&this.portrait){
+        // Keep the wider car silhouette above the expanded phone minimap.
+        const offset=groundForward(azimuth).multiplyScalar(-this.distance*Math.tan(THREE.MathUtils.degToRad(FOV/2))*.36/Math.sin(ELEVATION));
+        desired.position.add(offset);desired.target.add(offset);
+      }
     } else if (locomotion === 'walking') {
       const base = Math.max(12.6, 24 * (this.height / this.width) / (844 / 390));
       const distance = base * ZOOM_LEVELS[this.settings.walkZoom ?? 1];

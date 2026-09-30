@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V15 — Jack’s Estate** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V15.1 — Garage Drives** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -12,7 +12,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 
 - **Four connected exhibition islands:** About combines Harbor and Connect; Experience combines Amtrak, BeaconFire and VisionX; Projects combines Affirmation, Research and Catering; Education keeps BU and CMU together. Nine independent stories remain available through the directory.
 - **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, four walkable islands, exhibit stops, benches and safe boarding transitions.
-- **Jack’s Estate:** About Island has a furnished house with a walkable ground floor, four empty garage bays, a garden circuit, a tennis court and three putting greens.
+- **Jack’s Estate:** About Island has a furnished house with a walkable ground floor, four garage bays with a drivable Porsche 911 and Mercedes G63, a garden circuit, a tennis court and three putting greens.
 - **Garden practice:** return six machine-fed tennis balls or putt across three greens, with animated racket and club contact, keyboard and touch controls, and results that last only for the current round.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
@@ -70,13 +70,28 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14.2.2 — Original Bars & Cycling Posture** | Restores the supplied bicycle’s original drop bars; Jack leans forward to grip the existing top bar | [403db21](https://github.com/Kongsterrr/archipelago-folio/commit/403db214e0ebb9de4b5d87751c5d860fe1d65086) |
 | **V14.2.3 — Road Cycling Reach** | Moves palms slightly forward onto the original bar shoulders and opens the elbows for a road-bike posture | [42903d4](https://github.com/Kongsterrr/archipelago-folio/commit/42903d413b8d1999bc144b52541c3361acfebaad) |
 | **V14.3 — Walking to the Sky** | A silver inclined sculpture with six painted walkers on the CMU lawn, retained campus circulation and updated CMU framing | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
-| **V15 — Jack’s Estate** | A walkable About estate, four empty garage bays, six-ball tennis and three-hole putting with session-only practice | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V15 — Jack’s Estate** | A walkable About estate, four garage bays, six-ball tennis and three-hole putting with session-only practice | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f9942b3d33d587b5e8cc876e7496921744d06ab0) |
+| **V15.1 — Garage Drives** | Owner-supplied 911/G63, fitted driver poses, rolling/steering wheels, grounded driving and safe parking | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.1 — Campus Signage** | Removes redundant arrival signs and ground lettering; mounts landmark names on their own facades | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V15.1 — Garage Drives
+
+The supplied 911 and G63 occupy About Island garage bays 01 and 02. Approach either side of a car and press **E** to drive; use WASD/arrows, Shift for 2× speed, Space to brake, and E to park and step out safely. A nearby car takes priority over a reading sign. R returns the occupied car to an available garage bay. Cars retain their parked positions within the current visit and reset on refresh.
+
+Jack uses the existing imported character, fitted to each seat with both palms at the steering wheel and feet in the footwell. Four wheels roll, the front pair steers, and the vehicle uses ground grip instead of sailing inertia. The G63’s central roof is hidden while occupied so the overhead camera can see Jack; it returns when he leaves. Cars collide with buildings and each other, remain on About Island, and cannot enter the house or pier. Garden practice asks you to move a car if it blocks the player’s movement area or exit.
+
+High/low variants load after the voyage is playable. Original paint/interior texture maps are retained, with moderated metallic response for the game’s lighting. The original ~61 MB files stay outside the repository; optimized files are about 3.64/1.12 MB (911) and 2.86/0.94 MB (G63). Rebuild on macOS (uses `sips` for low texture resizing):
+
+```sh
+npm run models:garage-cars -- --911 "/path/to/911-grey.glb" --g63 "/path/to/g63.glb" --install true
+```
+
+Intermediate full-detail rigs stay in ignored `.asset-build/garage-cars/`. Only runtime models and their provenance manifest are installed. No save migration or new gameplay dependency is required.
 
 ### V15 — Jack’s Estate
 

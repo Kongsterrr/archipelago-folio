@@ -1,0 +1,33 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {fileURLToPath} from 'node:url';
+import * as THREE from 'three';import {NodeIO} from '@gltf-transform/core';import {ALL_EXTENSIONS} from '@gltf-transform/extensions';import {MeshoptDecoder} from 'meshoptimizer';import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';import {clone} from 'three/addons/utils/SkeletonUtils.js';
+import R from '@dimforge/rapier3d-compat/rapier.es.js';
+import {JackAvatar} from '../sources/world/jack.js';import {GarageCarController,GARAGE_CARS} from '../sources/core/garage-car.js';
+await MeshoptDecoder.ready;await R.init();const io=new NodeIO().registerExtensions(ALL_EXTENSIONS).registerDependencies({'meshopt.decoder':MeshoptDecoder});
+async function load(name){const d=await io.read(fileURLToPath(new URL('../static/models/'+name,import.meta.url)));for(const m of d.getRoot().listMaterials())m.setBaseColorTexture(null).setNormalTexture(null).setMetallicRoughnessTexture(null).setEmissiveTexture(null).setOcclusionTexture(null);for(const t of [...d.getRoot().listTextures()])t.dispose();for(const e of d.getRoot().listExtensionsUsed())if(e.extensionName==='EXT_meshopt_compression')e.dispose();const bytes=await io.writeBinary(d);return new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'');}
+const jack=await load('jack-imported.glb');
+for(const quality of['high','low'])for(const config of GARAGE_CARS)test(`${config.label} ${quality}: actual wheels, roof, seated Jack and quality-safe contacts`,async()=>{
+ const gltf=await load(`${quality==='low'?'low/':''}car-${config.id}.glb`),scene=new THREE.Scene(),world=new R.World({x:0,y:0,z:0});
+ const walk={vehicles:new Set(),handles:new Set(),groundAt:()=>0,contains:()=>true,clear:()=>true,visible:()=>true,island:{x:0,z:0,rotation:0,shore:[[-50,-50],[50,-50],[50,50],[-50,50]]},layout:{}};
+ const car=new GarageCarController(R,world,walk,{x:0,y:0,z:0,yaw:0},config);car.setModel(gltf.scene,quality);scene.add(car.group);
+ const avatar=new JackAvatar(scene,{loadAsync:async()=>({scene:clone(jack.scene),animations:jack.animations})});await avatar.load();
+ try{
+  assert.equal(car.wheelPivots.length,4);for(const wheel of car.wheelPivots){assert.equal(wheel.isMesh,undefined,'roll transform is a stable unquantized parent');assert.ok(wheel.children.some(n=>n.isMesh));}
+  car.setOccupied(true);for(const roof of car.roof)assert.equal(roof.visible,false);
+  const state={player:{onLand:true,ridingCar:true,car},character:{position:{x:0,y:0,z:0}},alpha:1,reduced:true,frozen:false};
+  for(const yaw of[0,Math.PI/2,Math.PI]){
+   car.teleport({x:4,y:0,z:2,yaw});car.setOccupied(true);
+   for(const steer of[-1,0,1])for(const phase of[0,.7,2.4,4.9]){
+    car.steering=steer;car.wheelAngle=car.previousWheelAngle=phase;car.updateVisual(0,true);avatar.update(0,state);scene.updateMatrixWorld(true);
+    const contact=avatar.carPose.contactStatus(car);assert.ok(contact.pelvisError<1e-5);
+    for(const side of['Left','Right']){assert.ok(contact.palms[side].error<1e-4);assert.ok(contact.palms[side].skinError<.012);assert.ok(contact.soles[side].surfaceError<.007);assert.ok(contact.palms[side].requested<contact.palms[side].reach);}
+    for(const [name,rest]of avatar.carPose.bind)assert.ok(avatar.carPose.bones[name].position.distanceTo(rest.position)<1e-6);
+    assert.deepEqual(avatar.root.scale.toArray(),[1,1,1]);
+    for(const wheel of car.wheelPivots)wheel.traverse(mesh=>{if(!mesh.isMesh)return;const p=mesh.geometry.getAttribute('position'),v=new THREE.Vector3();for(let i=0;i<p.count;i++)assert.ok(v.fromBufferAttribute(p,i).applyMatrix4(mesh.matrixWorld).y>=-.001,`tire surface above ground: ${v.y}`);});
+   }
+  }
+  const pose=[...avatar.carPose.bind.keys()].map(n=>avatar.carPose.bones[n].quaternion.toArray());
+  for(let n=0;n<6;n++)avatar.update(.1,{...state,frozen:true});assert.deepEqual([...avatar.carPose.bind.keys()].map(n=>avatar.carPose.bones[n].quaternion.toArray()),pose);
+  car.setOccupied(false);for(const roof of car.roof)assert.equal(roof.visible,true);
+  assert.ok(car.roof.length===(config.id==='g63'?1:0));
+ }finally{car.dispose();world.free();}
+});

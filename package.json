@@ -1,6 +1,6 @@
 {
   "name": "archipelago-folio",
-  "version": "15.0.0",
+  "version": "15.1.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
@@ -12,7 +12,8 @@
     "models": "node scripts/build-jack.mjs && node scripts/build-walk-islands.mjs",
     "models:imported-jack": "node scripts/build-imported-jack.mjs",
     "models:quad-bike": "node scripts/build-quad-bike.mjs",
-    "models:bicycle": "node scripts/build-bicycle.mjs"
+    "models:bicycle": "node scripts/build-bicycle.mjs",
+    "models:garage-cars": "node scripts/build-garage-cars.mjs"
   },
   "author": "",
   "license": "MIT",
