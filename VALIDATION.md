@@ -1,3 +1,8 @@
+# V15.3.1 — Quicker Island Arrival · 2026-10-01
+
+- Normal first-landing overview hold shortened from 1.6s to **0.8s**. The existing smooth approach remains **2.4s**, giving **3.2s** total before free exploration. Reduced-motion static timing, skipping, per-island session history and travel behavior are unchanged.
+- **67/67 focused arrival, framing and travel regression tests passed**, including the updated dwell/approach/completion checks at 30/60/120 FPS, pause/skip behavior, actual island framing and request cancellation. Production Vite build passed. No model, layout or rendering changes; no new device/performance measurement was needed for this timing adjustment.
+
 # V15.3 — Welcome Ashore · 2026-10-01
 
 - **Behavior:** menu/map travel commits a verified clear bridge landing and parked boat directly into walking mode. Existing land vehicles park where they were left. Asset preparation is guarded by a travel epoch, so late completions cannot override Reset, a sea challenge or a newer destination. Failed preparation preserves the current stable actor and exposes a retry/read message. Only the travel pause is released; a newly opened reader or background pause remains active.

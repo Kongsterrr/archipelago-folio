@@ -9,11 +9,13 @@ const island={id:'projects'},bounds={min:[0,0,0],max:[30,11,30]};
 test('arrival holds its full view, approaches, and unlocks at the same time across frame rates',()=>{
  for(const fps of[30,60,120]){
   const arrival=new IslandArrival();arrival.start(island,bounds);
-  for(let n=0;n<fps;n++)arrival.tick(1/fps);
+  for(let n=0;n<fps*.5;n++)arrival.tick(1/fps);
   assert.equal(arrival.progress,0);
   for(let n=0;n<fps*2;n++)arrival.tick(1/fps);
-  assert.ok(Math.abs(arrival.progress-1.4/2.4)<1e-9);
-  for(let n=0;n<fps+1;n++)arrival.tick(1/fps);
+  assert.ok(Math.abs(arrival.progress-1.7/2.4)<1e-9);
+  while(arrival.elapsed+1/fps<3.2-1e-9)arrival.tick(1/fps);
+  assert.equal(arrival.active,true);
+  for(let n=0;n<2;n++)arrival.tick(1/fps);
   assert.equal(arrival.active,false);assert.equal(arrival.start(island,bounds),false);
  }
 });
