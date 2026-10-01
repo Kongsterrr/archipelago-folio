@@ -46,7 +46,7 @@ function fixture(island = islands[0]) {
     boat, character, player, settings, mode:'exploring', focus:null,
     cameraRig:new CameraRig(new PerspectiveCamera(28, 1440 / 900, .2, 600), settings, 1440, 900),
     visualPosition:new Vector3().copy(boat.position), prev:new Vector3().copy(boat.position), prevYaw:boat.yaw,
-    jack:{root:{position:new Vector3().copy(character.position)}},
+    jack:{resetPose(){},root:{position:new Vector3().copy(character.position)}},
     world:{propagateModifiedBodyPositionsToColliders() {},updateSceneQueries() {},intersectionWithShape:() => null},
     inputs:inputsFixture(), challenges:{frozen:false}, feedback:{clear() {}},
     events:{trigger() {}}, landActions:new Map(), clearWake() {},

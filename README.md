@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V15.2.1 — Rearward Driving Posture** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V15.3 — Welcome Ashore** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -76,6 +76,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.2 — Relaxed Driving Pose** | Rearward driver placement, relaxed wheel reach and a charcoal G63 roof | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/a375409df896d102ea7b0b80c116f7bd382e2b52) |
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
 | **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
+| **V15.3 — Welcome Ashore** | Travel directly onto each island’s bridge; a skippable first-landing panorama smoothly approaches Jack | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V15.2.1 — Rearward Driving Posture** | Ferrari and Raptor upper bodies sit farther back with more extended arms; measured against the real seatbacks | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.1 — Campus Landmark** | Duan Center’s cantilevered tower and walkable learning floor, campus life details, independent landmark reading and responsive architectural views | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V14.0.2 — Clear Campus Paths** | Removes the four decorative campus bicycles and their two collision barriers from both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -83,6 +84,13 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V15.3 — Welcome Ashore
+
+- Every menu/map `Travel here` now prepares the destination, parks the boat at a clear berth, and places Jack **on foot on its bridge**, facing inland. Cars, the quad and bicycle remain safely parked at their existing positions; ongoing challenges/practice and old input are cleared.
+- The first successful landing on **each island per page session**, including manual E disembarkation, shows its complete outline and landmarks for 1.6 seconds, then approaches Jack over 2.4 seconds. The same fixed island direction continues into walking. Repeat visits go directly to the walking camera.
+- A compact destination guide names the island’s main places. `Skip overview` or Escape starts exploring immediately. Reduced motion shows a static 2.5-second overview with `Start exploring`, followed by the normal camera without an animated zoom.
+- Overview framing includes the actual high/low island model and shoreline, reserves room for the header and guide, and temporarily extends distant fog/clipping on narrow screens. Menus and background pauses freeze the introduction; Travel and Reset invalidate it. No new assets or saved-data migration.
 
 ### V15.2.1 — Rearward Driving Posture
 

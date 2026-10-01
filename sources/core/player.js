@@ -13,7 +13,7 @@ export class PlayerController{
  invalidate(){this.transitionEpoch++;this.transition=null;return this.transitionEpoch;}
  begin(mode,commit){if(this.transitioning)return false;const epoch=this.invalidate();this.stableMode=this.mode;this.mode=mode;this.transition={epoch,elapsed:0,commit,committed:false};return true;}
  tick(dt){const t=this.transition;if(!t||this.pauseReasons.size)return;if(t.epoch!==this.transitionEpoch)return; t.elapsed+=dt;
-  if(t.elapsed>=.3&&!t.committed){t.committed=true;t.commit();}
+  if(t.elapsed>=.3&&!t.committed){t.committed=true;t.commit();if(this.transition!==t||t.epoch!==this.transitionEpoch)return;}
   if(t.elapsed>=.6){this.mode=t.destination||this.mode;this.transition=null;}
  }
  rideQuad(quad){if(!this.walking||!quad||this.pauseReasons.size||this.transitioning)return false;this.quad=quad;this.character.enable(false);this.character.seated=false;this.mode='riding-quad';this.ashoreTime=0;return true;}
@@ -29,9 +29,9 @@ export class BoardingController{
  constructor(player,{prepare,select,onCommit,onError}={}){Object.assign(this,{player,prepare,select,onCommit,onError});this.pending=false;}
  async disembark(island){const p=this.player;if(p.mode!=='sailing'||this.pending||p.pauseReasons.size)return false;const epoch=p.invalidate();this.pending=true;this.pendingEpoch=epoch;p.boat.hold();
   try{const prepared=await this.prepare(island);if(epoch!==p.transitionEpoch)return false;const berth=this.select(island,prepared);if(!berth)throw new Error('This berth is busy. Read the island or try again in a moment.');
-   p.begin('disembarking',()=>{this.onCommit('ashore',island,berth,prepared);p.transition.destination='walking';});return true;
+   p.begin('disembarking',()=>{p.transition.destination='walking';this.onCommit('ashore',island,berth,prepared);});return true;
   }catch(e){if(epoch===p.transitionEpoch)this.onError(e);return false;}finally{if(this.pendingEpoch===epoch)this.pending=false;}
  }
- board(){const p=this.player;if(!p.walking||p.pauseReasons.size)return false;return p.begin('boarding',()=>{this.onCommit('aboard',p.island,p.berth);p.transition.destination='sailing';});}
+ board(){const p=this.player;if(!p.walking||p.pauseReasons.size)return false;return p.begin('boarding',()=>{p.transition.destination='sailing';this.onCommit('aboard',p.island,p.berth);});}
  cancel(){this.pending=false;const p=this.player;if(p.transitioning){p.mode=p.transition?.committed?(p.transition.destination||p.stableMode):p.stableMode;}p.invalidate();}
 }
