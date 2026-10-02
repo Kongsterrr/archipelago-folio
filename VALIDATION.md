@@ -1,3 +1,9 @@
+# V15.3.2 — Every Island Arrival · 2026-10-02
+
+- Every successful manual E disembarkation and menu/map Travel now starts a fresh island overview, including repeat visits after completion or skipping. Removed only the session-level introduction gate; persistent visit and discovery records retain their meanings.
+- Normal panorama hold is **0.5s**, followed by a **1.8s** smooth approach (**2.3s total**). Reduced-motion static timing, skip/Escape and pause handling are unchanged.
+- **67/67 focused arrival, framing and travel regression tests passed**, Node 20.20.1. They cover repeated Travel, manual re-entry after Travel, Travel after a completed manual introduction, cancelled/failed preparation, late-request isolation, input freezing, 30/60/120 FPS timing, all island envelopes and the existing four viewport sizes. Production Vite build passed; local dev preview returned HTTP 200. No assets, framing or rendering changes and no new manual-device or performance measurements.
+
 # V15.3.1 — Quicker Island Arrival · 2026-10-01
 
 - Normal first-landing overview hold shortened from 1.6s to **0.8s**. The existing smooth approach remains **2.4s**, giving **3.2s** total before free exploration. Reduced-motion static timing, skipping, per-island session history and travel behavior are unchanged.

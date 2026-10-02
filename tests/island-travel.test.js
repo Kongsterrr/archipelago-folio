@@ -118,7 +118,7 @@ test('beginTravel ends old practice, challenge, snapshots and a boarding transit
 });
 
 for(const oldFinishesFirst of [true,false])test(`only the newest Travel can commit when ${oldFinishesFirst?'A':'B'} finishes loading first`,async t=>{
- const f=fixture(t),a=deferred(),b=deferred();
+ const f=fixture(t),arrival=enableArrival(f,t),a=deferred(),b=deferred();
  f.game.prepareAshore=island=>island===experience?a.promise:b.promise;
  const original={...f.character.position};
  const firstEpoch=f.game.beginTravel(),first=f.game.travelToIsland(experience,firstEpoch);
@@ -128,12 +128,15 @@ for(const oldFinishesFirst of [true,false])test(`only the newest Travel can comm
   f.game.finishTravel(firstEpoch);
   assert.deepEqual(f.character.position,original);assert.equal(f.player.island,about);
   assert.equal(f.player.pauseReasons.has('travel'),true);assert.equal(f.game.inputs.enabled,false);
+  assert.equal(arrival.active,false,'a superseded request cannot start an overview');
  }
  b.resolve(f.walkFor(projects));assert.equal(await second,true);f.game.finishTravel(secondEpoch);
  assertAtLanding(f,projects);
+ assert.equal(arrival.active,true);assert.equal(arrival.island,projects);arrival.tick(1);
  const latestPosition={...f.character.position},latestBerth=f.player.berth;
  if(!oldFinishesFirst){a.resolve(f.walkFor(experience));assert.equal(await first,false);f.game.finishTravel(firstEpoch);}
  assert.deepEqual(f.character.position,latestPosition);assert.equal(f.player.berth,latestBerth);
+ assert.equal(arrival.island,projects);assert.equal(arrival.elapsed,1,'a late request must not restart or replace the current overview');
  assert.equal(f.player.island,projects);assert.equal(f.player.pauseReasons.has('travel'),false);
  assert.equal(f.game.inputs.enabled,!f.game.frozen);
 });
@@ -231,10 +234,15 @@ function enableArrival(f,t){
  return f.game.arrival;
 }
 
-test('direct arrival starts its introduction once; skipping lets E board the same safely parked boat',async t=>{
+test('repeated Travel restarts the overview; skipping and returning manually replays it at the same parked boat',async t=>{
  const f=fixture(t),arrival=enableArrival(f,t);
  const epoch=f.game.beginTravel();assert.equal(await f.game.travelToIsland(experience,epoch),true);f.game.finishTravel(epoch);
- assert.equal(arrival.active,true);assert.equal(arrival.island,experience);assert.deepEqual([...arrival.seen],['experience']);
+ assert.equal(arrival.active,true);assert.equal(arrival.island,experience);
+ assert.equal(f.game.frozen,true);assert.equal(f.game.inputs.enabled,false);
+ arrival.tick(1);assert.ok(arrival.progress>0,'the first overview has begun approaching Jack');
+ const repeat=f.game.beginTravel();assert.equal(arrival.active,false);
+ assert.equal(await f.game.travelToIsland(experience,repeat),true);f.game.finishTravel(repeat);
+ assert.equal(arrival.active,true);assert.equal(arrival.island,experience);assert.equal(arrival.elapsed,0);assert.equal(arrival.progress,0);
  assert.equal(f.game.frozen,true);assert.equal(f.game.inputs.enabled,false);
  const berth=f.player.berth,boatPosition={...f.boat.position},boatYaw=f.boat.yaw;
  assert.equal(f.game.skipArrival(),true);assert.equal(f.game.skipArrival(),false);assert.equal(f.game.inputs.enabled,true);
@@ -243,33 +251,41 @@ test('direct arrival starts its introduction once; skipping lets E board the sam
  assert.deepEqual({...f.boat.position},boatPosition);assert.equal(f.boat.yaw,boatYaw);
  assert.equal(await f.game.boarding.disembark(experience),true);f.player.tick(.61);
  assert.equal(f.player.mode,'walking');assert.deepEqual(f.player.berth,berth);
- assert.equal(arrival.active,false,'manual E on a previously introduced island does not replay the introduction');
- assert.deepEqual([...arrival.seen],['experience']);
+ assert.equal(arrival.active,true,'manual E replays the overview even after a prior Travel to the same island');
+ assert.equal(arrival.island,experience);assert.equal(arrival.elapsed,0);assert.equal(arrival.progress,0);
+ assert.equal(f.game.frozen,true);assert.equal(f.game.inputs.enabled,false);
 });
 
-test('manual E records first arrival only at its ashore commit, and subsequent Travel does not replay it',async t=>{
+test('manual E starts the overview only at its ashore commit, and Travel replays it after completion',async t=>{
  const f=fixture(t,{origin:'sailing'}),arrival=enableArrival(f,t),loading=deferred();
  f.game.prepareAshore=()=>loading.promise;
  const pending=f.game.boarding.disembark(about);
- assert.equal(arrival.seen.size,0);loading.resolve(f.walkFor(about));assert.equal(await pending,true);
- f.player.tick(.2);assert.equal(arrival.seen.size,0);
+ assert.equal(arrival.active,false);loading.resolve(f.walkFor(about));assert.equal(await pending,true);
+ f.player.tick(.2);assert.equal(arrival.active,false);
  f.player.tick(.11);assert.equal(arrival.active,true);assert.equal(arrival.island,about);assert.equal(f.player.transitioning,true);
  f.player.tick(.3);assert.equal(f.player.mode,'walking','the overview must not deadlock the remaining boarding transition');
+ assert.equal(arrival.tick(10),true);assert.equal(arrival.active,false);
  f.game.prepareAshore=async island=>f.walkFor(island);
  const epoch=f.game.beginTravel();assert.equal(arrival.active,false);
  assert.equal(await f.game.travelToIsland(about,epoch),true);f.game.finishTravel(epoch);
- assert.equal(arrival.active,false);assert.deepEqual([...arrival.seen],['about']);
+ assert.equal(arrival.active,true);assert.equal(arrival.island,about);assert.equal(arrival.elapsed,0);assert.equal(arrival.progress,0);
+ assert.equal(f.game.frozen,true);assert.equal(f.game.inputs.enabled,false);
 });
 
-test('a failed or superseded preparation does not consume an island introduction',async t=>{
+test('failed or superseded preparations never start an overview, and a successful retry does',async t=>{
  const f=fixture(t),arrival=enableArrival(f,t),loading=deferred();
+ const starts=[],start=arrival.start.bind(arrival);arrival.start=(...args)=>{starts.push(args[0]);return start(...args);};
  f.game.prepareAshore=()=>loading.promise;
  const epoch=f.game.beginTravel(),pending=f.game.travelToIsland(experience,epoch);
  f.game.reset();loading.resolve(f.walkFor(experience));assert.equal(await pending,false);f.game.finishTravel(epoch);
- assert.equal(arrival.seen.size,0);assert.equal(arrival.active,false);
+ assert.deepEqual(starts,[]);assert.equal(arrival.active,false);
  f.game.prepareAshore=async()=>{throw new Error('Island failed to load');};
  const failed=f.game.beginTravel();assert.equal(await f.game.travelToIsland(experience,failed),false);f.game.finishTravel(failed);
- assert.equal(arrival.seen.size,0);assert.equal(arrival.active,false);
+ assert.deepEqual(starts,[]);assert.equal(arrival.active,false);
+ f.game.prepareAshore=async island=>f.walkFor(island);
+ const retry=f.game.beginTravel();assert.equal(await f.game.travelToIsland(experience,retry),true);f.game.finishTravel(retry);
+ assert.deepEqual(starts,[experience]);assert.equal(arrival.active,true);assert.equal(arrival.island,experience);
+ assert.equal(arrival.elapsed,0);assert.equal(arrival.progress,0);
 });
 
 test('Travel chooses the other real berth when the nearer boat space is occupied',async t=>{

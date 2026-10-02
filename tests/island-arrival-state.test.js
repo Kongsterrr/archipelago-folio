@@ -9,14 +9,15 @@ const island={id:'projects'},bounds={min:[0,0,0],max:[30,11,30]};
 test('arrival holds its full view, approaches, and unlocks at the same time across frame rates',()=>{
  for(const fps of[30,60,120]){
   const arrival=new IslandArrival();arrival.start(island,bounds);
-  for(let n=0;n<fps*.5;n++)arrival.tick(1/fps);
+  for(let n=0;n<fps*.2;n++)arrival.tick(1/fps);
   assert.equal(arrival.progress,0);
-  for(let n=0;n<fps*2;n++)arrival.tick(1/fps);
-  assert.ok(Math.abs(arrival.progress-1.7/2.4)<1e-9);
-  while(arrival.elapsed+1/fps<3.2-1e-9)arrival.tick(1/fps);
+  for(let n=0;n<fps;n++)arrival.tick(1/fps);
+  assert.ok(Math.abs(arrival.progress-.7/1.8)<1e-9);
+  while(arrival.elapsed+1/fps<2.3-1e-9)arrival.tick(1/fps);
   assert.equal(arrival.active,true);
   for(let n=0;n<2;n++)arrival.tick(1/fps);
-  assert.equal(arrival.active,false);assert.equal(arrival.start(island,bounds),false);
+  assert.equal(arrival.active,false);assert.equal(arrival.start(island,bounds),true);
+  assert.equal(arrival.active,true);assert.equal(arrival.elapsed,0);assert.equal(arrival.progress,0);
  }
 });
 test('paused arrival keeps its exact overview/zoom progress and reduced motion stays static',()=>{
@@ -25,9 +26,13 @@ test('paused arrival keeps its exact overview/zoom progress and reduced motion s
  assert.deepEqual(arrival.view(),before);assert.equal(arrival.view(true).progress,0);
  assert.equal(arrival.tick(.5,{reduced:true}),true);assert.equal(arrival.active,false);
 });
-test('skip/cancel prevents late motion without losing first-visit history, new session starts fresh',()=>{
+test('skip/cancel prevents late motion and a revisit starts a fresh overview',()=>{
  const arrival=new IslandArrival();arrival.start(island,bounds);arrival.cancel();arrival.tick(20);
- assert.equal(arrival.active,false);assert.equal(arrival.start(island,bounds),false);
+ assert.equal(arrival.active,false);assert.equal(arrival.start(island,bounds),true);
+ assert.equal(arrival.elapsed,0);assert.equal(arrival.progress,0);
+ arrival.tick(1);const nextBounds={min:[0,0,0],max:[40,14,40]};
+ assert.equal(arrival.start(island,nextBounds),true);
+ assert.deepEqual(arrival.view(),{bounds:nextBounds,progress:0});
  assert.equal(arrival.start({id:'education'},bounds),true);
  assert.equal(new IslandArrival().start(island,bounds),true);
 });
