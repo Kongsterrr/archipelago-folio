@@ -3,10 +3,10 @@ import {box,cylinder,mesh,ring,label,material} from './geometry.js';
 import {cargoStarts,cargoBerths,cargoBay,WORLD_RADIUS} from '../config.js';
 
 export const TOY_PLACEMENTS={
- buoy:[[-19,39],[22,31],[-31,26],[35,-7],[-37,-25],[-92,-55],[94,-54],[39,77]],
- crate:[[-28,-24],[-91,-65],[42,66],[71,-48],[-41,68]],
+ buoy:[[-19,39],[22,31],[-31,26],[35,-7],[-37,-25],[-92,-55],[94,-54],[54,79]],
+ crate:[[-28,-24],[-91,-65],[55,67],[71,-48],[-55,70]],
  ball:[[10,37],[17,15],[-35,45],[34,33],[-91,-75],[89,-50]],
- duck:[[-11,38],[39,57]],
+ duck:[[-11,38],[50,57]],
 };
 
 export class PropManager {

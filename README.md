@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V15.3.2 — Every Island Arrival** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V16 — Coastal Drive** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -76,6 +76,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.2 — Relaxed Driving Pose** | Rearward driver placement, relaxed wheel reach and a charcoal G63 roof | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/a375409df896d102ea7b0b80c116f7bd382e2b52) |
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
 | **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
+| **V16 — Coastal Drive** | Expands About to a 90 × 80 estate with a 6.5 m coastal driving loop, roomy garage forecourt and sunset parking | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V15.3.2 — Every Island Arrival** | Replays the panorama on every landing with a 0.5s hold and 1.8s smooth approach | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V15.3.1 — Quicker Island Arrival** | Halves the initial panorama hold to 0.8s while retaining the smooth 2.4s approach | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V15.3 — Welcome Ashore** | Travel directly onto each island’s bridge; a skippable first-landing panorama smoothly approaches Jack | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -86,6 +87,15 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V16 — Coastal Drive
+
+- About now has a **90 × 80** coast (about **2.5×** its former land area), while the original dock, boat berths and other three islands stay in place.
+- A **6.5 m** warm-gray coastal drive forms a roughly **246 m** loop, with rounded corners and flush stone shoulders. Separate **3.2 m** pedestrian shortcuts connect the entrance, house and gardens.
+- The **19 × 10** garage has four **4.3 × 8.5** clear bays, **4 m** doorways and a **26 × 14** open forecourt. An **18 × 18** drop-off court and two sunset-view parking spaces make room for full-size vehicles; car models, speeds and calibrated driver poses are retained.
+- House, tennis, putting garden and lighthouse are relocated as complete zones, including furniture, collisions, reading points, practice logic and cameras. Port profile/contact signs remain directly accessible.
+- The island map distinguishes vehicle roads, walking paths and parking. Every arrival retains its **0.5 s** overview hold and **1.8 s** approach, fitted to the expanded island; large About reading views also extend camera clipping and fog correctly.
+- Nearby reefs, sea-life ranges and toys move clear of the expanded coast. Buoy Run begins at **(-60, 146)** with the six gates retained; **buoy-v16** records are separate from preserved historical **buoy-v2** bests.
 
 ### V15.3.2 — Every Island Arrival
 

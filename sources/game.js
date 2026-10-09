@@ -111,7 +111,7 @@ export class Game {
  async loadModelNow(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='about'?'15':id==='education'?'14.3':id==='projects'?'13.3':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='about'?'16':id==='education'?'14.3':id==='projects'?'13.3':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
     const materials=Array.isArray(o.material)?o.material:[o.material];
     const glazing=id==='boat'&&materials.some(m=>m.transparent);
     // The clear windscreen should reveal the helm, including in the shadow pass.
@@ -270,7 +270,7 @@ export class Game {
  }
  updateCamera(dt,fade={}){if(!fade.hold)this.cameraRig.update(dt,this.cameraState(),!!fade.snap);this.updateArrivalAtmosphere();}
  updateArrivalAtmosphere(){
-  const overview=this.arrival?.active&&!this.focus;
+  const overview=(this.arrival?.active&&!this.focus)||!!this.focus?.camera?.fitBounds;
   if(overview&&!this.arrivalAtmosphere)this.arrivalAtmosphere={near:this.scene.fog.near,far:this.scene.fog.far,clip:this.camera.far};
   const saved=this.arrivalAtmosphere;if(!saved)return;
   // A reader may open while the overview camera is still far away. Fade fog
@@ -408,17 +408,19 @@ export class Game {
  practiceFocus(){
   if(!this.practice?.active||!this.practiceIsland)return null;
   const tennis=this.practice.kind==='tennis',hole=this.practice.config.golf?.holes[Math.min(this.practice.index,2)];
-  const local=tennis?{x:16,z:-4,y:1.1}:{x:(hole.tee.x+hole.cup.x)/2,z:hole.tee.z,y:1};
-  const fitBounds=tennis?{min:[10,.85,-15],max:[22,3,7]}:{min:[hole.tee.x-1.2,.85,hole.tee.z-1.8],max:[hole.cup.x+1.2,2.7,hole.cup.z+1.8]};
+  const court=this.practice.tennisConfig;
+  const local=tennis?{x:(court.courtMinX+court.courtMaxX)/2,z:(court.machineZ+court.baselineZ+1.5)/2,y:1.1}:{x:(hole.tee.x+hole.cup.x)/2,z:hole.tee.z,y:1};
+  const fitBounds=tennis?{min:[court.courtMinX,.85,court.machineZ-1.5],max:[court.courtMaxX,3,court.baselineZ+3]}:{min:[hole.tee.x-1.2,.85,hole.tee.z-1.8],max:[hole.cup.x+1.2,2.7,hole.cup.z+1.8]};
   return campusStationFocus(this.practiceIsland,{...local,camera:{practice:true,azimuth:this.practiceIsland.rotation,elevation:.8,fitBounds}});
  }
  setZoom(index){if(this.player?.onLand)this.settings.walkZoom=Math.max(0,Math.min(2,index));else this.cameraRig.setZoom(index);this.discovery?.save();this.events.trigger('zoom',[this.settings.zoom]);}
- async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=15');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
+ async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=16');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
  async prepareAshore(island){this.inputs.setEnabled(false);this.events.trigger('message',['Preparing '+island.name+' for a little walk…']);
   if(!this.walkLayouts?.size)await this.loadWalkLayouts();await Promise.all([this.loadModel(island.id),this.jack.load()]);const layout=this.walkLayouts.get(island.id);if(!layout||!this.loaded.get(island.id).model||!this.jack.ready)throw new Error('The island is still loading. You can read it now or try going ashore again.');
   const walk=this.ensureWalkWorld(island);if(island.id==='projects')await this.installQuadBike(island,walk);if(island.id==='education')await this.installBicycle(island,walk);if(island.id==='about')await this.installGarageCars(island,walk);return walk;
  }
  ensureWalkWorld(island){
+  if(island.id==='about'&&this.loaded.get(island.id)?.model)installEstateNet(this.loaded.get(island.id).model,this.walkLayouts.get(island.id));
   if(!this.walkWorlds.has(island.id)){const walk=new IslandWalkWorld(RAPIER,this.world,island,this.walkLayouts.get(island.id));this.walkWorlds.set(island.id,walk);this.createLandActions(island,walk.layout);this.world.propagateModifiedBodyPositionsToColliders();this.world.updateSceneQueries();}
   return this.walkWorlds.get(island.id);
  }

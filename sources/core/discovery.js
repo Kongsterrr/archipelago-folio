@@ -11,7 +11,9 @@ export const SECRETS = [
   {id:'signal',title:'Across the bay',hint:'A little signal from the About island.'}
 ];
 export const CHALLENGE_IDS = ['buoy','cargo','lighthouse'];
-export const COURSE_KEYS = {buoy:'buoy-v2',cargo:'cargo-v2'};
+export const COURSE_KEYS = {buoy:'buoy-v16',cargo:'cargo-v2'};
+// Keep the previous course's record as history without ranking new runs against it.
+const SAVED_COURSE_KEYS=[...Object.values(COURSE_KEYS),'buoy-v2'];
 const SEA_IDS=['dolphin','shark','fish','turtle'];
 const clean=(list,allowed)=>new Set(Array.isArray(list)?list.filter(id=>allowed.includes(id)):[]);
 const physical=list=>new Set((Array.isArray(list)?list:[]).map(islandIdFor).filter(Boolean));
@@ -35,7 +37,7 @@ export class DiscoveryStore {
     this.secrets=clean(saved.secrets,SECRETS.map(s=>s.id));
     this.completed=clean(saved.completed,CHALLENGE_IDS);
     this.bests={};
-    for(const record of current.version===11?[current]:legacy)for(const key of Object.values(COURSE_KEYS)){const time=record.bests?.[key];if(Number.isFinite(time)&&time>0&&(!this.bests[key]||time<this.bests[key]))this.bests[key]=time;}
+    for(const record of current.version===11?[current]:legacy)for(const key of SAVED_COURSE_KEYS){const time=record.bests?.[key];if(Number.isFinite(time)&&time>0&&(!this.bests[key]||time<this.bests[key]))this.bests[key]=time;}
     this.dwell=new Map();
     this.save();
   }

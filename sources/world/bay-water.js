@@ -14,6 +14,13 @@ export function shoreDistance(x,z,coasts,reefs=[]){
  return distance;
 }
 export function coastlineData(islands){return islands.map(i=>({x:i.x,z:i.z,radius:Math.max(...i.shore.map(([x,z])=>Math.hypot(x,z))),polygon:i.shore.map(([x,z])=>[i.x+x*Math.cos(i.rotation)+z*Math.sin(i.rotation),i.z-x*Math.sin(i.rotation)+z*Math.cos(i.rotation)])}));}
+export function coastalDetailRegion(coast){
+ const xs=coast.polygon.map(([x])=>x),zs=coast.polygon.map(([,z])=>z);
+ const minX=Math.min(...xs),maxX=Math.max(...xs),minZ=Math.min(...zs),maxZ=Math.max(...zs);
+ // Centre the detail map on the full coast, including an asymmetric rear expansion.
+ // Thirty metres of span padding keep the coast inside the unblended detail area.
+ return{center:{x:(minX+maxX)/2,z:(minZ+maxZ)/2},span:Math.max(72,maxX-minX+30,maxZ-minZ+30)};
+}
 function depthTexture(coasts,reefs,center,span,size){
  const data=new Uint8Array(size*size);
  for(let y=0;y<size;y++)for(let x=0;x<size;x++)data[y*size+x]=Math.round(Math.min(1,shoreDistance(center.x+(x/(size-1)-.5)*span,center.z+(y/(size-1)-.5)*span,coasts,reefs)/24)*255);
@@ -42,9 +49,9 @@ function seabedTexture(){
 export class BayWater {
  constructor(scene,islands,reefs,settings){
   this.settings=settings;this.time=uniform(0);this.detail=uniform(settings.quality==='low'?.4:1);
-  const coasts=coastlineData(islands),harbor=islands.find(i=>i.id==='about')||islands[0];
-  this.depth=depthTexture(coasts,reefs,{x:0,z:0},400,512);this.harborDepth=depthTexture(coasts,reefs,harbor,72,256);this.bed=seabedTexture();
-  const p=positionWorld,t=this.time,localUV=p.xz.sub(vec2(harbor.x,harbor.z)).div(72).add(.5);
+  const coasts=coastlineData(islands),harborIndex=Math.max(0,islands.findIndex(i=>i.id==='about')),detail=coastalDetailRegion(coasts[harborIndex]);
+  this.depth=depthTexture(coasts,reefs,{x:0,z:0},400,512);this.harborDepth=depthTexture(coasts,reefs,detail.center,detail.span,256);this.bed=seabedTexture();
+  const p=positionWorld,t=this.time,localUV=p.xz.sub(vec2(detail.center.x,detail.center.z)).div(detail.span).add(.5);
   const localMask=smoothstep(.42,.47,localUV.x.sub(.5).abs().max(localUV.y.sub(.5).abs())).oneMinus();
   const d=mix(texture(this.depth,p.xz.div(400).add(.5)).r,texture(this.harborDepth,localUV).r,localMask).mul(24);
   const shallows=smoothstep(1,22,d).oneMinus(),shore=smoothstep(0,2.5,d).oneMinus();

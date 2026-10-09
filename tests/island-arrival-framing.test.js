@@ -8,6 +8,7 @@ import {MeshoptDecoder} from 'meshoptimizer';
 import {islands, toWorld} from '../sources/config.js';
 import layouts from '../static/models/walk-layout.json' with {type:'json'};
 import {CameraRig} from '../sources/core/camera.js';
+import {Game} from '../sources/game.js';
 import {arrivalFrameRect, arrivalBounds, arrivalOverviewPose, arrivalApproachPose} from '../sources/core/island-arrival-framing.js';
 
 await MeshoptDecoder.ready;
@@ -22,6 +23,7 @@ function cameraFor(pose,width,height) {
   const camera = new THREE.PerspectiveCamera(28,width/height,.2,600);
   camera.position.copy(pose.position);
   camera.lookAt(pose.target);
+  Game.prototype.updateArrivalAtmosphere.call({arrival:{active:true},cameraRig:pose,scene:{fog:new THREE.Fog('white',145,330)},camera});
   camera.updateMatrixWorld();
   return camera;
 }

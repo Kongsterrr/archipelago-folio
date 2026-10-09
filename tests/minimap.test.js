@@ -123,7 +123,7 @@ test('geometry can render config shoreline, pier and districts while walk data i
   assert.deepEqual(geometry.stations,[]);
   assert.deepEqual(geometry.obstacles,[]);
  }
- assert.deepEqual(islandMapGeometry(null),{shore:[],dock:[],approach:[],route:[],stations:[],districts:[],campuses:[],landmarks:[],obstacles:[],roads:[],terrain:[]});
+ assert.deepEqual(islandMapGeometry(null),{shore:[],dock:[],approach:[],route:[],stations:[],districts:[],campuses:[],landmarks:[],obstacles:[],roads:[],parkingAreas:[],terrain:[]});
 });
 
 test('Duan map footprint includes the full open podium without turning it into a walking obstacle',()=>{

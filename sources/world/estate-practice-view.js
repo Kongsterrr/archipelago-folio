@@ -11,8 +11,13 @@ export class EstatePracticeView{
 // One shared alpha-cutout weave stays readable without hundreds of thin wires.
 let weave;
 export function installEstateNet(model,layout){
+ if(!layout.sports?.tennis?.net)return;
  const net=model.getObjectByName('occluder_estate_tennis_net');if(!net||net.userData.fineNet)return;
  if(!weave){const bytes=new Uint8Array(16*16*4);for(let y=0;y<16;y++)for(let x=0;x<16;x++){const i=(y*16+x)*4;bytes[i]=bytes[i+1]=bytes[i+2]=x<2||y<2?255:0;bytes[i+3]=255;}weave=new THREE.DataTexture(bytes,16,16);weave.wrapS=weave.wrapT=THREE.RepeatWrapping;weave.repeat.set(42,4);weave.magFilter=THREE.LinearFilter;weave.minFilter=THREE.LinearMipmapLinearFilter;weave.generateMipmaps=true;weave.needsUpdate=true;}
  const material=new THREE.MeshStandardMaterial({color:'#354e50',alphaMap:weave,alphaTest:.35,side:THREE.DoubleSide,roughness:1});
- const face=new THREE.Mesh(new THREE.PlaneGeometry(10,.80),material);face.position.set(16,layout.groundY+.53,-4.985);face.name='estate-net-weave';net.add(face);net.userData.fineNet=true;
+ const config=layout.sports.tennis.net;
+ const face=new THREE.Mesh(new THREE.PlaneGeometry(config.xMax-config.xMin-.2,.80),material);
+ model.updateMatrixWorld(true);
+ face.position.copy(net.worldToLocal(model.localToWorld(new THREE.Vector3((config.xMin+config.xMax)/2,layout.groundY+.53,config.z+.015))));
+ face.name='estate-net-weave';net.add(face);net.userData.fineNet=true;
 }

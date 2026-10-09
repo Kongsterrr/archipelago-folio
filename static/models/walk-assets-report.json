@@ -4,31 +4,33 @@
     {
       "id": "about",
       "quality": "high",
-      "bytes": 708512,
-      "triangles": 51830,
-      "drawCalls": 98,
-      "routeSeconds": 70.9,
+      "bytes": 795572,
+      "triangles": 60408,
+      "drawCalls": 101,
+      "routeSeconds": 125.6,
       "connectedFromDock": true,
       "stationsReachable": 9,
-      "pathWidth": 2.6,
-      "routeClearance": 1.2,
+      "pathWidth": 3.2,
+      "driveWidth": 6.5,
+      "routeClearance": 1.5,
       "garageBays": 4,
       "interiors": 2
     },
     {
       "id": "about",
       "quality": "low",
-      "bytes": 507600,
-      "triangles": 33914,
-      "drawCalls": 96,
-      "routeSeconds": 70.9,
+      "bytes": 598552,
+      "triangles": 43686,
+      "drawCalls": 99,
+      "routeSeconds": 125.6,
       "connectedFromDock": true,
       "stationsReachable": 9,
-      "pathWidth": 2.6,
-      "routeClearance": 1.2,
+      "pathWidth": 3.2,
+      "driveWidth": 6.5,
+      "routeClearance": 1.5,
       "garageBays": 4,
       "interiors": 2
     }
   ],
-  "totalBytes": 1216112
+  "totalBytes": 1394124
 }

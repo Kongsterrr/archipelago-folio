@@ -36,6 +36,12 @@ test('skip/cancel prevents late motion and a revisit starts a fresh overview',()
  assert.equal(arrival.start({id:'education'},bounds),true);
  assert.equal(new IslandArrival().start(island,bounds),true);
 });
+test('a large island reader extends atmosphere even when no arrival is running',()=>{
+ const game=Object.assign(Object.create(Game.prototype),{arrival:{active:false},focus:{id:'about',camera:{fitBounds:{min:[-53,-1,32],max:[53,9,140]}}},cameraRig:{distance:704},scene:{fog:new Fog('white',145,330)},camera:new PerspectiveCamera(28,1,.2,600)});
+ game.updateArrivalAtmosphere();assert.equal(game.scene.fog.near,769);assert.equal(game.camera.far,854);
+ game.focus=null;game.cameraRig.distance=20;game.updateArrivalAtmosphere();assert.equal(game.scene.fog.near,145);assert.equal(game.camera.far,600);assert.equal(game.arrivalAtmosphere,null);
+});
+
 test('portrait overview extends fog and far clipping, then restores them for reading and walking',()=>{
  const game=Object.assign(Object.create(Game.prototype),{arrival:{active:true},cameraRig:{distance:530},scene:{fog:new Fog('white',145,330)},camera:new PerspectiveCamera(28,1,.2,600)});
  game.updateArrivalAtmosphere();assert.equal(game.scene.fog.near,595);assert.equal(game.scene.fog.far,780);assert.equal(game.camera.far,680);

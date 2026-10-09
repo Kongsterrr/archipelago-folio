@@ -4,7 +4,7 @@ import {WakePool} from './wake-pool.js';
 import {islands,toWorld} from '../config.js';
 import {waterClear,clearSegment,oceanHeight} from './water-space.js';
 export const SEA_LIFE=[{id:'dolphin',name:'Bottlenose dolphins',hint:'Watch the open water east of the welcome channel.'},{id:'shark',name:'Ocean neighbours',hint:'A dorsal fin sometimes breaks the surface of the outer sea.'},{id:'fish',name:'Shoals of colour',hint:'Slow down near shallow coastal water.'},{id:'turtle',name:'Unhurried travellers',hint:'Look around the garden coast and the quiet cove.'}];
-export const HABITATS=[{kind:'dolphin',x:25,z:35,rx:10,rz:6,count:3},{kind:'shark',x:147,z:0,rx:4,rz:20,count:1},{kind:'shark',x:-147,z:-10,rx:4,rz:18,count:1},{kind:'turtle',x:39,z:57,rx:3,rz:3,count:1},{kind:'turtle',x:-35,z:63,rx:2.5,rz:3,count:1}];
+export const HABITATS=[{kind:'dolphin',x:25,z:35,rx:10,rz:6,count:3},{kind:'shark',x:147,z:0,rx:4,rz:20,count:1},{kind:'shark',x:-147,z:-10,rx:4,rz:18,count:1},{kind:'turtle',x:50,z:57,rx:3,rz:3,count:1},{kind:'turtle',x:-51,z:62,rx:2.5,rz:3,count:1}];
 export const SHOALS=[{x:12,z:43},{x:-37,z:30},{x:38,z:43}];
 export function birdPose(index,time,reduced=false){
  const island=islands[index%islands.length],pier=island.pier||{width:3,startZ:7.9,endZ:15.8,deckY:.85},perchedCount=Math.min(8,islands.length*2),fly=index>=perchedCount&&!reduced;

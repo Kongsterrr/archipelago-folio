@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import R from '@dimforge/rapier3d-compat/rapier.es.js';
 import {PerspectiveCamera,Vector3} from 'three';
 import {Game} from '../sources/game.js';
-import {EstatePracticeController} from '../sources/core/estate-practice.js';
+import {EstatePracticeController,TENNIS_CONTACT} from '../sources/core/estate-practice.js';
 import {PlayerController,BoardingController} from '../sources/core/player.js';
 import {ChallengeManager} from '../sources/core/challenges.js';
 import {CharacterController,IslandWalkWorld,localToWorld,SEA_GROUP} from '../sources/core/character.js';
@@ -46,7 +46,8 @@ test('practice completion is transient and never writes results, challenge bests
 const viewports=[[1440,900],[1920,1080],[390,844],[844,390]];
 for(const [width,height]of viewports)for(const [kind,index]of [['tennis',0],['golf',0],['golf',1],['golf',2]])test(`${width}x${height} ${kind} ${index+1}: actual Game focus transforms the full practice bounds and fits all corners`,()=>{
  const {g}=fixture(kind);g.practice.index=index;const focus=g.practiceFocus();assert.equal(focus.camera.practice,true);assert.equal(focus.islandId,'about');
- const local=kind==='tennis'?{min:[10,.85,-15],max:[22,3,7]}:(()=>{const h=layout.sports.golf.holes[index];return{min:[h.tee.x-1.2,.85,h.tee.z-1.8],max:[h.cup.x+1.2,2.7,h.cup.z+1.8]};})();
+ const court=layout.sports.tennis,bounds=court.bounds;
+ const local=kind==='tennis'?{min:[bounds.x-bounds.width/2,layout.groundY,court.machine.z-1.5],max:[bounds.x+bounds.width/2,3,bounds.z+bounds.depth/2]}:(()=>{const h=layout.sports.golf.holes[index];return{min:[h.tee.x-1.2,.85,h.tee.z-1.8],max:[h.cup.x+1.2,2.7,h.cup.z+1.8]};})();
  const vertices=[];for(const x of[local.min[0],local.max[0]])for(const y of[local.min[1],local.max[1]])for(const z of[local.min[2],local.max[2]]){const p=localToWorld(island,{x,y,z});vertices.push(new Vector3(p.x,p.y,p.z));}
  for(const [axis,n]of [['x',0],['y',1],['z',2]]){assert.ok(Math.abs(focus.camera.fitBounds.min[n]-Math.min(...vertices.map(v=>v[axis])))<1e-8);assert.ok(Math.abs(focus.camera.fitBounds.max[n]-Math.max(...vertices.map(v=>v[axis])))<1e-8);}
  const camera=new PerspectiveCamera(28,width/height,.2,600),rig=new CameraRig(camera,{zoom:1,walkZoom:1,reduced:false},width,height),state={position:g.character.position,velocity:{x:0,y:0,z:0},yaw:island.rotation,speed:0,input:{},focus,locomotion:'walking',landAzimuth:island.rotation};rig.update(0,state,true);camera.updateMatrixWorld(true);
@@ -59,8 +60,30 @@ function traverse(f,route){for(const [x,z]of route){const target=localToWorld(is
 for(const [index,berth]of layout.berths.entries())test(`About landing ${index+1}: real Rapier actor traverses estate ground floor, scenic loop and all four empty garage bays`,()=>{
  const f=physicsFixture(berth);try{
   traverse(f,layout.route);
-  traverse(f,[[0,22],[0,15.6],[-4,15.6],[-4,2],[-4,-3],[-4,-6.3],[-10,-6.3],[-4,-6.3],[-4,-8],[2,-8],[-4,-8],[-4,-12],[-4,-17],[-4,-12],[-4,-3],[-4,2],[-4,15.6]]);
-  assert.equal(layout.garageBays.length,4);for(const bay of layout.garageBays)traverse(f,[[bay.x,15.6],[bay.x,13],[bay.x,9],[bay.x,6.4],[bay.x,9],[bay.x,13],[bay.x,15.6]]);
+  const house=layout.interiors.find(i=>i.landmarkId==='jack-house'),entry=house.walkRoute[0],entryIndex=layout.route.findIndex(([x,z])=>Math.hypot(x-entry[0],z-entry[1])<.01);
+  assert.ok(entryIndex>=0,'the authored touring route connects the house entrance');
+  traverse(f,layout.route.slice(0,entryIndex+1));
+  for(const room of house.rooms)traverse(f,[[house.bounds.x,room.z],[room.x,room.z],[house.bounds.x,room.z]]);
+  traverse(f,[...house.walkRoute].reverse());
+  const frontPath=layout.paths.find(p=>p.id==='garage-front');
+  assert.ok(frontPath,'the garage has an authored approach');
+  traverse(f,[entry,[entry[0],frontPath.points[0][1]],frontPath.points[0]]);
+  assert.equal(layout.garageBays.length,4);for(const bay of layout.garageBays){const frontZ=frontPath.points[0][1];traverse(f,[[bay.x,frontZ],[bay.entrance.x,bay.entrance.z],[bay.x,bay.z],[bay.x,bay.z-bay.depth/2+1.1],[bay.x,bay.z],[bay.entrance.x,bay.entrance.z],[bay.x,frontZ]]);}
   assert.equal(f.rescues,0,'no route was repaired by a silent teleport');
  }finally{f.world.free();}
+});
+
+
+test('the exported relocated tennis court completes six actual returns inside its own sidelines',()=>{
+ const events=[],practice=new EstatePracticeController({onEvent:event=>events.push({...event,ball:practice.ball?{...practice.ball}:null})});
+ practice.configure(layout.sports,layout.groundY);assert.equal(practice.start('tennis'),true);practice.advanceCountdown(2);
+ const court=layout.sports.tennis;assert.equal(practice.actor.x,(court.baseline.minX+court.baseline.maxX)/2);
+ for(let frame=0;frame<90/STEP&&practice.state!=='finished';frame++){
+  const gap=practice.targetX-TENNIS_CONTACT.x-practice.actor.x;
+  if(practice.ball&&!practice.ball.returned&&practice.swing<0&&(practice.actor.z+TENNIS_CONTACT.z-practice.ball.z)/practice.ball.vz<.275)practice.hit();
+  practice.tick(STEP,{right:Math.abs(gap)<.02?0:Math.sign(gap)});
+ }
+ assert.equal(practice.state,'finished');assert.equal(practice.index,6);assert.equal(practice.score,6,'a successful shot is judged against the new court, not the old x=11..21 strip');
+ const returns=events.filter(event=>event.type==='ball');assert.equal(returns.length,6);
+ for(const event of returns){assert.equal(event.success,true);assert.ok(event.ball.z<court.net.z&&event.ball.z>court.machine.z-1);assert.ok(event.ball.x>=court.bounds.x-court.bounds.width/2+1&&event.ball.x<=court.bounds.x+court.bounds.width/2-1);}
 });

@@ -15,7 +15,7 @@ const MATERIAL_SURFACES = Object.freeze({
   teak: 'wood', cognac: 'leather', upholstery: 'leather',
   wood: 'wood', darkWood: 'wood', stone: 'stone', sand: 'sand', sandEdge: 'sand',
   highlandsRock: 'stone', highlandsCliff: 'stone',
-  estate_stone:'stone',estate_paving:'stone',estate_wood:'wood',estate_woodDark:'wood',
+  estate_stone:'stone',estate_paving:'stone',estate_asphalt:'stone',estate_wood:'wood',estate_woodDark:'wood',
   campus_limestone: 'stone', campus_sandstone: 'stone', campus_paving: 'stone',
   campus_brick: 'stone', campus_brickDark: 'stone',
   Jack_CreamCanvas: 'canvas', Jack_NavyKnit: 'canvas',

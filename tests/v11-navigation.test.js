@@ -39,19 +39,19 @@ test('V4 migration merges nine physical records into four while preserving nine 
  const store=new DiscoveryStore({storage});
  for(const kind of ['discovered','visited','ashore'])assert.deepEqual(new Set(store[kind]),new Set(PHYSICAL_ISLAND_IDS));
  assert.deepEqual(store.viewed,new Set(CONTENT_IDS));assert.deepEqual(store.viewedGroups,new Set(PHYSICAL_ISLAND_IDS));assert.equal(store.stamps,13);
- assert.deepEqual(store.settings,{livery:'graphite',quality:'low',sound:true,reduced:true,zoom:2,walkZoom:0});assert.deepEqual(store.seaLife,new Set(['shark','fish']));assert.equal(store.best('buoy'),45000);assert.equal(store.best('cargo'),78000);
+ assert.deepEqual(store.settings,{livery:'graphite',quality:'low',sound:true,reduced:true,zoom:2,walkZoom:0});assert.deepEqual(store.seaLife,new Set(['shark','fish']));assert.equal(store.best('buoy'),0);assert.equal(store.bests['buoy-v2'],45000);assert.equal(store.best('cargo'),78000);
  const saved=JSON.parse(data.get(DISCOVERY_STORAGE_KEY));assert.equal(saved.version,11);assert.deepEqual(new Set(saved.visited),new Set(PHYSICAL_ISLAND_IDS));assert.equal(saved.viewed.length,9);assert.equal(saved.bests['buoy-v1'],undefined);
 });
 
 test('V11 migration is idempotent and clearing records cannot revive old V2/V3/V4 history',()=>{
  const {storage,data}=memory({'jack-archipelago-v4':{visited:['amtrak','beaconfire','visionx'],ashore:['harbor','learning'],viewed:['research'],seaLife:['shark'],secrets:['bell'],completed:['buoy'],bests:{'buoy-v2':51000}}});
  const first=new DiscoveryStore({storage});const snapshot=data.get(DISCOVERY_STORAGE_KEY);const second=new DiscoveryStore({storage});assert.equal(data.get(DISCOVERY_STORAGE_KEY),snapshot);assert.equal(second.visited.size,1);
- first.clearLogbook();first.clearWalks();first.clearSeaLife();const third=new DiscoveryStore({storage});assert.equal(third.stamps,0);assert.equal(third.ashore.size,0);assert.equal(third.seaLife.size,0);assert.equal(third.viewed.size,0);assert.equal(third.best('buoy'),51000);
+ first.clearLogbook();first.clearWalks();first.clearSeaLife();const third=new DiscoveryStore({storage});assert.equal(third.stamps,0);assert.equal(third.ashore.size,0);assert.equal(third.seaLife.size,0);assert.equal(third.viewed.size,0);assert.equal(third.best('buoy'),0);assert.equal(third.bests['buoy-v2'],51000);
 });
 
 test('partial old schemas inherit missing settings and valid bests without undoing an explicit newer clear',()=>{
  const {storage}=memory({'jack-archipelago-v2':{settings:{sound:true,zoom:2,quality:'low'},viewed:['research'],visited:['harbor'],bests:{'cargo-v2':80000,'buoy-v2':50000}},'jack-archipelago-v3':{settings:{livery:'sunset'},seaLife:['turtle'],bests:{'buoy-v2':47000}},'jack-archipelago-v4':{settings:{walkZoom:0},visited:[],ashore:['amtrak']}});
- const store=new DiscoveryStore({storage});assert.equal(store.settings.sound,true);assert.equal(store.settings.zoom,2);assert.equal(store.settings.quality,'low');assert.equal(store.settings.livery,'sunset');assert.equal(store.settings.walkZoom,0);assert.equal(store.visited.size,0);assert.deepEqual([...store.ashore],['experience']);assert.ok(store.viewed.has('research'));assert.ok(store.seaLife.has('turtle'));assert.equal(store.best('buoy'),47000);assert.equal(store.best('cargo'),80000);
+ const store=new DiscoveryStore({storage});assert.equal(store.settings.sound,true);assert.equal(store.settings.zoom,2);assert.equal(store.settings.quality,'low');assert.equal(store.settings.livery,'sunset');assert.equal(store.settings.walkZoom,0);assert.equal(store.visited.size,0);assert.deepEqual([...store.ashore],['experience']);assert.ok(store.viewed.has('research'));assert.ok(store.seaLife.has('turtle'));assert.equal(store.best('buoy'),0);assert.equal(store.bests['buoy-v2'],47000);assert.equal(store.best('cargo'),80000);
 });
 
 test('reading one story marks only that story and derives a group viewed state without granting a visit',()=>{

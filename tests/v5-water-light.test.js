@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as THREE from 'three';
-import {shoreDistance,coastlineData} from '../sources/world/bay-water.js';
+import {shoreDistance,coastlineData,coastalDetailRegion} from '../sources/world/bay-water.js';
 import {daylightEnvironment,BayLighting} from '../sources/world/bay-lighting.js';
 import {prepareBoatMaterials,BoatAppearance} from '../sources/world/boat-appearance.js';
 import {SUN_DIRECTION} from '../sources/world/sunset-theme.js';
@@ -12,6 +12,15 @@ test('shallow-water depth follows rotated real shoreline and reef margins',()=>{
  assert.ok(Math.abs(shoreDistance(14,-3,coasts)-3)<1e-8);
  assert.equal(shoreDistance(50,50,coasts),40);
  assert.equal(shoreDistance(22,0,coasts,[{x:22,z:0,r:3}]),0);
+});
+test('high-detail shallows cover the full expanded coast around its transformed bounds centre',()=>{
+ const island={x:0,z:76,rotation:Math.PI,shore:[[-45,-54],[45,-54],[45,26],[-45,26]]};
+ const [coast]=coastlineData([island]),region=coastalDetailRegion(coast);
+ assert.ok(Math.abs(region.center.x)<1e-8);assert.equal(region.center.z,90);assert.ok(Math.abs(region.span-120)<1e-8);
+ for(const[x,z]of coast.polygon){
+  assert.ok(Math.abs(x-region.center.x)/region.span<.42,'coast stays inside the unblended detail region');
+  assert.ok(Math.abs(z-region.center.z)/region.span<.42,'rear coast retains the same detail as the front');
+ }
 });
 test('sunset environment has finite radiance and its brightest source aligns with the world sun',()=>{
  const width=256,height=128,t=daylightEnvironment(width,height),data=t.image.data;

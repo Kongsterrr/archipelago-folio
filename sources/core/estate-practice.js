@@ -8,10 +8,10 @@ export function segmentDistance(a,b,p){const dx=b.x-a.x,dz=b.z-a.z,t=clamp(((p.x
 // All coordinates are island-local and all clocks advance only through tick().
 export class EstatePracticeController{
  constructor({onEvent=()=>{}}={}){this.onEvent=onEvent;this.epoch=0;this.cancel();}
- configure(sports,groundY=.85){this.config=sports;this.groundY=groundY;const c=sports.tennis;this.tennisConfig=c?{...c,minX:c.minX??c.baseline?.minX??12,maxX:c.maxX??c.baseline?.maxX??20,baselineZ:c.baselineZ??c.baseline?.z??4,machineZ:c.machineZ??c.machine?.z??-13.5,machineX:c.machine?.x??16,machineY:c.machine?.y??groundY+1.1,surfaceY:c.surfaceY??groundY+.04,netZ:c.netZ??c.net?.z??-5,netHeight:c.net?.height??1.02}:null;}
+ configure(sports,groundY=.85){this.config=sports;this.groundY=groundY;const c=sports.tennis;this.tennisConfig=c?{...c,minX:c.minX??c.baseline?.minX??12,maxX:c.maxX??c.baseline?.maxX??20,baselineZ:c.baselineZ??c.baseline?.z??4,machineZ:c.machineZ??c.machine?.z??-13.5,machineX:c.machine?.x??16,courtMinX:c.bounds?.minX??(c.bounds?c.bounds.x-c.bounds.width/2:(c.baseline?.minX??12)-2),courtMaxX:c.bounds?.maxX??(c.bounds?c.bounds.x+c.bounds.width/2:(c.baseline?.maxX??20)+2),machineY:c.machine?.y??groundY+1.1,surfaceY:c.surfaceY??groundY+.04,netZ:c.netZ??c.net?.z??-5,netHeight:c.net?.height??1.02}:null;}
  get active(){return this.state!=='idle';}
  get frozen(){return ['paused','countdown','resuming','finished'].includes(this.state);}
- start(kind){if(!['tennis','golf'].includes(kind)||!this.config?.[kind])return false;this.cancel();this.kind=kind;this.state='countdown';this.remaining=2;this.index=0;this.score=0;this.attempts=0;this.elapsed=0;this.actor={x:16,z:4,y:this.groundY,yaw:0};this.setupRound();this.onEvent({type:'start',kind});return true;}
+ start(kind){if(!['tennis','golf'].includes(kind)||!this.config?.[kind])return false;this.cancel();this.kind=kind;this.state='countdown';this.remaining=2;this.index=0;this.score=0;this.attempts=0;this.elapsed=0;this.actor={x:this.tennisConfig?(this.tennisConfig.minX+this.tennisConfig.maxX)/2:0,z:this.tennisConfig?.baselineZ??0,y:this.groundY,yaw:0};this.setupRound();this.onEvent({type:'start',kind});return true;}
  setupRound(){this.swing=-1;this.charge=0;this.holding=false;this.hitQueued=false;this.ball=null;this.stage='ready';this.stageTime=0;this.shot=false;
   if(this.kind==='tennis'){const c=this.tennisConfig;this.targetX=(c.targets||[13,16,19])[[1,0,2,0,2,1][this.index]];this.actor={x:clamp(this.actor.x,c.minX??12,c.maxX??20),z:c.baselineZ??4,y:c.surfaceY,yaw:0};this.stage='waiting';this.stageTime=.8;}
   else{const h=this.config.golf.holes[this.index];this.aim=0;this.positionGolfer();this.ball={...h.tee,y:golfHeight(h,h.tee.x,h.tee.z,this.groundY)+.07,vx:0,vz:0};}
@@ -36,10 +36,10 @@ export class EstatePracticeController{
   const contact={x:this.actor.x+TENNIS_CONTACT.x,y:this.actor.y+TENNIS_CONTACT.y,z:this.actor.z+TENNIS_CONTACT.z};
   if(!b.returned&&b.bounces===1&&this.swing>=.38&&this.swing<=.62&&segmentDistance3D(before,b,contact)<.34){b.returned=true;b.vz=-9;b.vy=2.8;b.vx=(c.machineX-b.x)/1.55;this.onEvent({type:'hit',kind:'tennis'});}
   if(b.y<=c.surfaceY+.095&&b.vy<0){b.y=c.surfaceY+.095;
-   if(b.returned){this.resolveTennis(b.z<netZ&&b.z> (c.machineZ??-13.5)-1&&b.x>=11&&b.x<=21);return;}
+   if(b.returned){this.resolveTennis(b.z<netZ&&b.z> (c.machineZ??-13.5)-1&&b.x>=c.courtMinX+1&&b.x<=c.courtMaxX-1);return;}
    b.bounces++;if(b.bounces>1){this.resolveTennis(false);return;}b.vy=-b.vy*.40;
   }
-  if(b.z>(c.baselineZ??4)+2.5||b.x<10||b.x>22)this.resolveTennis(false);
+  if(b.z>(c.baselineZ??4)+2.5||b.x<c.courtMinX||b.x>c.courtMaxX)this.resolveTennis(false);
  }
  resolveTennis(success){if(success)this.score++;this.index++;this.onEvent({type:'ball',success,index:this.index});if(this.index>=6){this.finish();return;}this.setupRound();this.stageTime=1.2;}
  golf(dt,right,held){const h=this.config.golf.holes[this.index];

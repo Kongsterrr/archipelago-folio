@@ -72,9 +72,10 @@ function golfStance(index){
  const practice=new EstatePracticeController();practice.configure(layout.sports,layout.groundY);practice.start('golf');
  practice.index=index;practice.setupRound();return{...practice.actor};
 }
+const baseline=layout.sports.tennis.baseline;
 const blockedCases=[
- {label:'tennis starting position',kind:'tennis',point:{x:16,z:4}},
- {label:'tennis sideways movement away from its starting position',kind:'tennis',point:{x:18,z:4},clearStart:true},
+ {label:'tennis starting position',kind:'tennis',point:{x:baseline.x,z:baseline.z}},
+ {label:'tennis sideways movement away from its starting position',kind:'tennis',point:{x:baseline.x+2,z:baseline.z},clearStart:true},
  {label:'first golf stance',kind:'golf',point:golfStance(0)},
  {label:'a later golf hole',kind:'golf',point:golfStance(2),clearStart:true},
  {label:'tennis exit',kind:'tennis',point:layout.sports.tennis.exit,clearStart:true},
@@ -87,7 +88,7 @@ for(const scenario of blockedCases)test(`practice preflight rejects a parked car
   car.teleport(point);
   assert.equal(f.walk.clear(point,.24),false,'the real parked car blocks a capsule at this location');
   if(scenario.clearStart){
-   const start=localToWorld(island,scenario.kind==='tennis'?{x:16,z:4}:golfStance(0));
+   const start=localToWorld(island,scenario.kind==='tennis'?{x:baseline.x,z:baseline.z}:golfStance(0));
    assert.ok(f.walk.clear(start,.24),'checking only the initial actor position would miss this obstruction');
   }
   const before={position:{...f.character.position},epoch:f.game.practice.epoch,challengeEpoch:f.game.challenges.epoch};
