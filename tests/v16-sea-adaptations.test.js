@@ -26,7 +26,7 @@ test('About directory framing includes the full model and coast while story came
   const story=contentFocus(id),expected=toWorld(island,...local);assert.equal(story.x,expected.x);assert.equal(story.z,expected.z);
  }
  assert.ok(island.districts.every(d=>d.x===0&&d.z===0),'camera framing does not move animation roots');
- for(const id of['experience','projects','education'])assert.equal(contentFocus(id).camera.fitBounds,undefined);
+ for(const id of['projects','education'])assert.equal(contentFocus(id).camera.fitBounds,undefined);
 });
 
 test('expanded About coast and its water halo leave the complete first race corridor open',()=>{

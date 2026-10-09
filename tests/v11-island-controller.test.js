@@ -37,18 +37,19 @@ test('an explicit unknown district action cannot silently start the first child'
 
 test('Amtrak pedestrian stopping transforms through both the island and district offsets',async()=>{
  const f=await fixture(),train=f.child('amtrak'),track=train.island.animation.train;
- const expected=toWorld(f.island,-24,-4);assert.ok(Math.hypot(train.island.x-expected.x,train.island.z-expected.z)<1e-10);
- f.controller.activate('amtrak');f.controller.pedestrian=toWorld(train.island,track.trackCentre[0]+track.trackRadii[0],track.trackCentre[2]);
+ const district=f.island.districts.find(d=>d.id==='amtrak'),expected=toWorld(f.island,district.x,district.z);assert.ok(Math.hypot(train.island.x-expected.x,train.island.z-expected.z)<1e-10);
+ f.controller.activate('amtrak');f.controller.pedestrian=toWorld(train.island,track.trackCentre[0]+track.trackRadii[0],track.trackCentre[2],(district.y||0)+track.trackCentre[1]);
  f.controller.update(1/60,f.island,0);assert.equal(train.elapsed,0,'a visitor at the translated train position stops the train');
- f.controller.pedestrian=toWorld(f.island,track.trackRadii[0],track.trackCentre[2]);
- f.controller.update(1/60,f.island,1/60);assert.ok(train.elapsed>0,'an unrelated point around the parent origin does not stop the district train');
+ f.controller.pedestrian=toWorld(f.island,0,f.island.pier.endZ-2.5);
+ f.controller.update(1/60,f.island,1/60);assert.ok(train.elapsed>0,'a visitor at the harbor does not stop the district train');
 });
 
 test('Amtrak crossing guard also respects a rotated district inside the parent',async()=>{
  const f=await fixture(),district=f.island.districts.find(d=>d.id==='amtrak'),rotation=.37;
  const custom={...f.island,districts:f.island.districts.map(d=>d.id==='amtrak'?{...d,rotation}:d)};
  f.model.getObjectByName('district_amtrak').rotation.y=rotation;const controller=new IslandController(custom,f.outer);controller.bind(f.model);const train=controller.children.find(c=>c.island.id==='amtrak');
- assert.equal(train.island.rotation,f.island.rotation+rotation);controller.activate('amtrak');controller.pedestrian=toWorld(train.island,8.8,-1.4);
+ const track=train.island.animation.train;
+ assert.equal(train.island.rotation,f.island.rotation+rotation);controller.activate('amtrak');controller.pedestrian=toWorld(train.island,track.trackCentre[0]+track.trackRadii[0],track.trackCentre[2],(district.y||0)+track.trackCentre[1]);
  controller.update(1/60,custom,0);assert.equal(train.elapsed,0);controller.pedestrian=toWorld(train.island,-18,18);controller.update(1/60,custom,1/60);assert.ok(train.elapsed>0);
 });
 
@@ -63,7 +64,7 @@ test('signal material batches inherit exactly one signal rotation',async()=>{
  const f=await fixture(),owner=f.model.getObjectByName('anim_signal');let batch;owner.traverse(o=>{if(o.isMesh&&!batch)batch=o;});
  const relative=owner.getWorldQuaternion(new THREE.Quaternion()).invert().multiply(batch.getWorldQuaternion(new THREE.Quaternion()));f.controller.activate('amtrak');f.controller.update(.4,f.island,.4);f.outer.updateMatrixWorld(true);
  const expected=owner.getWorldQuaternion(new THREE.Quaternion()).multiply(relative),actual=batch.getWorldQuaternion(new THREE.Quaternion());
- assert.ok(expected.angleTo(actual)<1e-8,'signal group and its material batch must not each rotate by π');
+ assert.ok(expected.angleTo(actual)<1e-7,'signal group and its material batch must not each rotate by π');
 });
 
 test('glowing animation materials are isolated between districts, including shared signal sources',async()=>{

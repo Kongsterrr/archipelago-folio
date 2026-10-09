@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {PerspectiveCamera, Vector3} from 'three';
+import {Fog, PerspectiveCamera, Vector3} from 'three';
 import {Game} from '../sources/game.js';
 import {CameraRig} from '../sources/core/camera.js';
 import {CameraTransition} from '../sources/core/camera-transition.js';
@@ -40,11 +40,13 @@ function fixture(island = islands[0]) {
   const boat = actor({x:island.dock.x,y:.35,z:island.dock.z}, island.yaw);
   const character = actor({x:island.x,y:.85,z:island.z}, island.rotation);
   const settings = {zoom:1,walkZoom:1,reduced:false};
+  const camera = new PerspectiveCamera(28,1440/900,.2,600);
   const player = new PlayerController(boat, character);
   const walk = {layout:layouts.find(layout => layout.id === island.id),clear:() => true};
   Object.assign(game, {
     boat, character, player, settings, mode:'exploring', focus:null,
-    cameraRig:new CameraRig(new PerspectiveCamera(28, 1440 / 900, .2, 600), settings, 1440, 900),
+    camera,scene:{fog:new Fog('white',145,330)},
+    cameraRig:new CameraRig(camera, settings, 1440, 900),
     visualPosition:new Vector3().copy(boat.position), prev:new Vector3().copy(boat.position), prevYaw:boat.yaw,
     jack:{resetPose(){},root:{position:new Vector3().copy(character.position)}},
     world:{propagateModifiedBodyPositionsToColliders() {},updateSceneQueries() {},intersectionWithShape:() => null},

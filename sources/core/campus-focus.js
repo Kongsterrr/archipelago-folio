@@ -11,5 +11,5 @@ export function campusStationFocus(island,station){
   for(const x of[at(b.min,'x',0),at(b.max,'x',0)])for(const y of[at(b.min,'y',1),at(b.max,'y',1)])for(const z of[at(b.min,'z',2),at(b.max,'z',2)])points.push(world({x,y,z}));
   camera.fitBounds={min:['x','y','z'].map(k=>Math.min(...points.map(p=>p[k]))),max:['x','y','z'].map(k=>Math.max(...points.map(p=>p[k])))};
  }
- return{...point,id:island.id,islandId:island.id,contentId:'learning',landmarkId:station.landmarkId,exhibit:true,camera};
+ return{...point,id:island.id,islandId:island.id,contentId:station.contentId||'learning',landmarkId:station.landmarkId,exhibit:true,camera};
 }

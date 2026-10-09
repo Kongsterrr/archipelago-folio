@@ -8,7 +8,7 @@ export class IslandController {
   this.model=model;this.nodes=[];this.glowing=[];this.occluders=[];this.children=[];
   for(const district of this.island.districts||[]){
    const root=model.getObjectByName('district_'+district.id);if(!root)continue;
-   const position=toWorld(this.island,district.x,district.z);
+   const position=toWorld(this.island,district.x,district.z,(this.island.y||0)+(district.y||0));
    const child=new IslandController({...district,...position,rotation:this.island.rotation+(district.rotation||0)},root);
    child.campusState=this.campusState;
    child.bind(root);this.children.push(child);
@@ -22,7 +22,7 @@ export class IslandController {
     const original=o.material;
     let branch=o,occludes=false,campusWindow=false,studyLight=false;while(branch&&branch!==model){if(branch.name.startsWith('occluder_')||branch.name.startsWith('station_')||branch.userData.occluder)occludes=true;if(branch.name==='anim_bu_windows')campusWindow=true;if(branch.name==='anim_campus_study_lights')studyLight=true;branch=branch.parent;}
     // Districts share source materials in a GLB, but their device feedback is independent.
-    const isolate=m=>{if(!m.emissive||!['glass','glassBlue','yellow','orange'].includes(m.name))return m;if(!glowMaterials.has(m))glowMaterials.set(m,this.ownMaterial(m));return glowMaterials.get(m);};
+    const isolate=m=>{if(!m.emissive||!['glass','glassBlue','yellow','orange','junction_glass','junction_clear'].includes(m.name))return m;if(!glowMaterials.has(m))glowMaterials.set(m,this.ownMaterial(m));return glowMaterials.get(m);};
     o.material=Array.isArray(o.material)?o.material.map(isolate):isolate(o.material);
     if(occludes||campusWindow||studyLight){
      o.material=Array.isArray(o.material)?o.material.map(m=>this.ownMaterial(m)):this.ownMaterial(o.material);
@@ -32,7 +32,7 @@ export class IslandController {
      if(campusWindow)for(const m of mats)if(m.emissive)this.campusWindows.push({material:m,emissive:m.emissive.clone(),intensity:m.emissiveIntensity});
     }
     if(o.material!==original)this.materialBindings.push({mesh:o,original,assigned:o.material});
-    for(const m of Array.isArray(o.material)?o.material:[o.material])if(!campusWindow&&!studyLight&&m.emissive&&['glass','glassBlue','yellow','orange'].includes(m.name))this.glowing.push(m);
+    for(const m of Array.isArray(o.material)?o.material:[o.material])if(!campusWindow&&!studyLight&&m.emissive&&['glass','glassBlue','yellow','orange','junction_glass','junction_clear'].includes(m.name))this.glowing.push(m);
    }
   });
   this.glowing=[...new Set(this.glowing)];
@@ -107,20 +107,23 @@ export class IslandController {
    if(state.schoolId==='bu'){material.emissive.set('#ffd59a');material.emissiveIntensity=Math.max(intensity,.48);}
   }
  }
- activate(actionId){if(this.children?.length){const child=actionId==null?this.children[0]:this.children.find(c=>c.island.id===actionId);if(!child)return;const result=child.activate();this.elapsed=0;this.duration=child.duration;return result;}this.elapsed=0;this.duration=this.island.id==='amtrak'?10:this.island.id==='learning'?10:6;return islandActions[this.island.id]?.[1];}
+ activate(actionId){if(this.children?.length){const child=actionId==null?this.children[0]:this.children.find(c=>c.island.id===actionId);if(!child)return;const result=child.activate();this.elapsed=0;this.duration=child.duration;return result;}this.elapsed=0;this.duration=this.island.id==='amtrak'?(this.island.animation?.train?.duration||10):this.island.id==='learning'?10:6;return islandActions[this.island.id]?.[1];}
  update(dt,position,time,focused=false,reduced=false,focusedDistrict=null){
   if(this.children?.length){for(const child of this.children){child.pedestrian=this.pedestrian;child.update(dt,position,time,focused&&(!focusedDistrict||child.island.id===focusedDistrict),reduced);}this.elapsed+=dt;return;}
   const distance=Math.hypot(position.x-this.island.x,position.z-this.island.z);
   if(this.island.id==='learning'){this.campusState.fenceElapsed=Math.min(1,this.campusState.fenceElapsed+Math.max(0,dt));this.campusState.duanElapsed=Math.min(5,this.campusState.duanElapsed+Math.max(0,dt));this.campusState.studyElapsed=Math.min(2,this.campusState.studyElapsed+Math.max(0,dt));this.applyCampusFeedback(reduced);}
-  let advance=dt;if(this.island.id==='amtrak'&&this.pedestrian&&this.elapsed<this.duration){const tr=this.island.animation?.train,c=tr?.trackCentre||[0,0,-1.4],r=tr?.trackRadii||[8.8,5.8],p=this.pedestrian,dx=p.x-this.island.x,dz=p.z-this.island.z,co=Math.cos(this.island.rotation),si=Math.sin(this.island.rotation),px=dx*co-dz*si,pz=dx*si+dz*co;for(let n=0;n<=8;n++){const a=(this.elapsed+n*.06)/Math.max(1,this.duration)*Math.PI*2;if(Math.hypot(c[0]+Math.cos(a)*r[0]-px,c[2]+Math.sin(a)*r[1]-pz)<2.2){advance=0;break;}}}this.elapsed+=advance;const playing=this.elapsed<this.duration;
+  let advance=dt;if(this.island.id==='amtrak'&&this.pedestrian&&this.elapsed<this.duration){const tr=this.island.animation?.train,c=tr?.trackCentre||[0,0,-1.4],r=tr?.trackRadii||[8.8,5.8],p=this.pedestrian,dx=p.x-this.island.x,dz=p.z-this.island.z,co=Math.cos(this.island.rotation),si=Math.sin(this.island.rotation),px=dx*co-dz*si,pz=dx*si+dz*co,trackY=(this.island.y||0)+(tr?.surfaceY??c[1]);
+   const sameLevel=!Number.isFinite(p.y)||!Number.isFinite(tr?.surfaceY)||Math.abs(p.y-trackY)<1.4;
+   if(sameLevel)for(let n=0;n<=8;n++){const a=(tr?.initialAngle||0)+(this.elapsed+n*.06)/Math.max(1,this.duration)*Math.PI*2;if(Math.hypot(c[0]+Math.cos(a)*r[0]-px,c[2]+Math.sin(a)*r[1]-pz)<2.2){advance=0;break;}}
+  }this.elapsed+=advance;const playing=this.elapsed<this.duration;
   if(distance>80&&!focused&&!playing)return;
   const t=this.elapsed,phase=Math.min(1,t/Math.max(1,this.duration)),envelope=playing?Math.sin(Math.min(1,t*2)*Math.PI/2)*Math.min(1,(this.duration-t)*2):0;
   for(const node of this.nodes){
    const o=node.object,n=node.name;if(n.startsWith('anim_duan_')||n.startsWith('anim_campus_study_'))continue;o.position.copy(node.position);o.rotation.copy(node.rotation);o.scale.copy(node.scale);
    if(!playing||reduced)continue;
    if(n==='anim_train'){
-    const track=this.island.animation?.train,c=track?.trackCentre||[0,0,-1.4],r=track?.trackRadii||[8.8,5.8],a=phase*Math.PI*2;
-    o.position.set(c[0]+Math.cos(a)*r[0],node.position.y,c[2]+Math.sin(a)*r[1]);o.rotation.y=Math.atan2(Math.sin(a)*r[0],-Math.cos(a)*r[1]);
+    const track=this.island.animation?.train,c=track?.trackCentre||[0,0,-1.4],r=track?.trackRadii||[8.8,5.8],a=(track?.initialAngle||0)+phase*Math.PI*2;
+    o.position.set(c[0]+Math.cos(a)*r[0],track?.rootY??node.position.y,c[2]+Math.sin(a)*r[1]);o.rotation.y=Math.atan2(Math.sin(a)*r[0],-Math.cos(a)*r[1]);
    }else if(n.includes('bell'))o.rotation.z+=Math.sin(t*13)*.3*envelope;
    else if(n.includes('flag'))o.rotation.y+=Math.sin(t*6)*.12;
    else if(n.includes('packet')||n.includes('data')){const index=Number(n.split('_').at(-1))||0,stage=Math.max(0,Math.min(1,(t-index*1.5)/1.2));o.position.x+=stage*1.1;o.position.y+=Math.sin(stage*Math.PI)*.45;o.scale.multiplyScalar(.75+stage*.4);}

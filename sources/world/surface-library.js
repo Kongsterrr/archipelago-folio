@@ -18,6 +18,8 @@ const MATERIAL_SURFACES = Object.freeze({
   estate_stone:'stone',estate_paving:'stone',estate_asphalt:'stone',estate_wood:'wood',estate_woodDark:'wood',
   campus_limestone: 'stone', campus_sandstone: 'stone', campus_paving: 'stone',
   campus_brick: 'stone', campus_brickDark: 'stone',
+  junction_sandstone: 'stone', junction_stone: 'stone', junction_joint: 'stone', junction_paving: 'stone',
+  junction_brick: 'stone', junction_brickJoint: 'stone', junction_wood: 'wood', junction_woodDark: 'wood',
   Jack_CreamCanvas: 'canvas', Jack_NavyKnit: 'canvas',
   Jack_SweptHair: 'hair',
   v5_dock_wood: 'wood', v5_rope: 'rope', v5_stone: 'stone', v5_sand: 'sand',
@@ -92,12 +94,12 @@ export class SurfaceLibrary {
     material.normalScale.copy(record.normalScale);
     material.aoMapIntensity = record.ao;
     if (maps) {
-      // Campus stone/brick retain their authored school-specific albedo.
-      if (maps.color && !/^(campus_|estate_)/.test(material.name)) material.map = maps.color;
+      // Architectural palettes retain their authored albedo under shared detail maps.
+      if (maps.color && !/^(campus_|estate_|junction_)/.test(material.name)) material.map = maps.color;
       if (maps.normal && !(profile === 'hair' && material.userData.normalSource === 'strand-flow')) material.normalMap = maps.normal;
       if (maps.orm) material.aoMap = material.roughnessMap = material.metalnessMap = maps.orm;
       if (!(profile === 'hair' && material.userData.normalSource === 'strand-flow')) material.normalScale.setScalar(SURFACE_PROFILES[profile].normalScale);
-      if (/^(campus_|estate_)/.test(material.name)) material.normalScale.multiplyScalar(.45);
+      if (/^(campus_|estate_|junction_)/.test(material.name)) material.normalScale.multiplyScalar(.45);
       material.aoMapIntensity = SURFACE_PROFILES[profile].ao;
     }
     material.needsUpdate = true;

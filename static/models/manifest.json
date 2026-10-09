@@ -927,14 +927,14 @@
       "id": "experience",
       "name": "experience",
       "file": "experience.glb",
-      "bytes": 1126480,
-      "rawBytes": 3668728,
-      "revision": "v11-four-isles",
-      "sourceMeshes": 1503,
-      "drawCalls": 124,
-      "staticDrawCalls": 14,
-      "vertices": 98710,
-      "triangles": 63210,
+      "bytes": 1375480,
+      "rawBytes": 5872432,
+      "revision": "v17-career-junction",
+      "sourceMeshes": 2310,
+      "drawCalls": 156,
+      "staticDrawCalls": 8,
+      "vertices": 156531,
+      "triangles": 116268,
       "bounds": {
         "min": [
           -39,
@@ -943,22 +943,70 @@
         ],
         "max": [
           39,
-          5.960000038146973,
+          10.675000190734863,
           38
         ]
       },
       "dimensions": [
         78,
-        6.64000004529953,
+        11.35500019788742,
         68
       ],
       "animationNodes": [
         {
+          "name": "anim_signal",
+          "position": [
+            4.1,
+            5.4,
+            9.2
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_order",
+          "position": [
+            7.7,
+            4.8,
+            9.25
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
           "name": "anim_train",
           "position": [
-            8.8,
-            0,
-            -1.4000000000000004
+            12.8,
+            3.15,
+            0
           ],
           "rotation": [
             -3.141592653589793,
@@ -978,11 +1026,11 @@
           ]
         },
         {
-          "name": "anim_signal",
+          "name": "anim_rotor",
           "position": [
-            4,
-            2.2,
-            2.5
+            -5.100000000000001,
+            8.63,
+            -1.7000000000000002
           ],
           "rotation": [
             0,
@@ -1004,9 +1052,9 @@
         {
           "name": "anim_packet_0",
           "position": [
-            -3.6,
-            1.8,
-            -6
+            -8.3,
+            3.73,
+            8.55
           ],
           "rotation": [
             0,
@@ -1028,9 +1076,9 @@
         {
           "name": "anim_packet_1",
           "position": [
-            0,
-            1.8,
-            -6
+            -5.75,
+            3.73,
+            8.55
           ],
           "rotation": [
             0,
@@ -1052,33 +1100,9 @@
         {
           "name": "anim_packet_2",
           "position": [
-            3.6,
-            1.8,
-            -6
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "quaternion": [
-            0,
-            0,
-            0,
-            1
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ]
-        },
-        {
-          "name": "anim_rotor",
-          "position": [
-            -2.1,
-            4.55,
-            -3.3
+            -3.1999999999999993,
+            3.73,
+            8.55
           ],
           "rotation": [
             0,
@@ -1100,9 +1124,9 @@
         {
           "name": "anim_plant_0",
           "position": [
-            -2.1000000000000014,
-            1.91,
-            -4
+            -3.8500000000000014,
+            3.19,
+            -2.7
           ],
           "rotation": [
             0,
@@ -1124,9 +1148,9 @@
         {
           "name": "anim_plant_1",
           "position": [
-            -2.1000000000000014,
-            1.91,
-            -3
+            -3.8500000000000014,
+            3.19,
+            -0.9500000000000002
           ],
           "rotation": [
             0,
@@ -1148,9 +1172,9 @@
         {
           "name": "anim_plant_2",
           "position": [
-            -2.1000000000000014,
-            1.91,
-            -2
+            -3.8500000000000014,
+            3.19,
+            0.7999999999999998
           ],
           "rotation": [
             0,
@@ -1172,9 +1196,9 @@
         {
           "name": "anim_plant_3",
           "position": [
-            -2.1000000000000014,
-            1.91,
-            -1
+            -3.8500000000000014,
+            3.19,
+            2.55
           ],
           "rotation": [
             0,
@@ -1196,9 +1220,9 @@
         {
           "name": "anim_plant_4",
           "position": [
-            2.1000000000000014,
-            1.91,
-            -4
+            3.8500000000000014,
+            3.19,
+            -2.7
           ],
           "rotation": [
             0,
@@ -1220,9 +1244,9 @@
         {
           "name": "anim_plant_5",
           "position": [
-            2.1000000000000014,
-            1.91,
-            -3
+            3.8500000000000014,
+            3.19,
+            -0.9500000000000002
           ],
           "rotation": [
             0,
@@ -1244,9 +1268,9 @@
         {
           "name": "anim_plant_6",
           "position": [
-            2.1000000000000014,
-            1.91,
-            -2
+            3.8500000000000014,
+            3.19,
+            0.7999999999999998
           ],
           "rotation": [
             0,
@@ -1268,9 +1292,9 @@
         {
           "name": "anim_plant_7",
           "position": [
-            2.1000000000000014,
-            1.91,
-            -1
+            3.8500000000000014,
+            3.19,
+            2.55
           ],
           "rotation": [
             0,
@@ -1292,9 +1316,9 @@
         {
           "name": "anim_sprinkler",
           "position": [
-            4.800000000000001,
-            1.75,
-            -4.1
+            6.199999999999999,
+            3.48,
+            8.3
           ],
           "rotation": [
             0,
@@ -1316,11 +1340,59 @@
       ],
       "nodes": [
         {
+          "name": "anim_signal",
+          "position": [
+            4.1,
+            5.4,
+            9.2
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_order",
+          "position": [
+            7.7,
+            4.8,
+            9.25
+          ],
+          "rotation": [
+            0,
+            0,
+            0
+          ],
+          "quaternion": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
           "name": "anim_train",
           "position": [
-            8.8,
-            0,
-            -1.4000000000000004
+            12.8,
+            3.15,
+            0
           ],
           "rotation": [
             -3.141592653589793,
@@ -1340,11 +1412,11 @@
           ]
         },
         {
-          "name": "anim_signal",
+          "name": "anim_rotor",
           "position": [
-            4,
-            2.2,
-            2.5
+            -5.100000000000001,
+            8.63,
+            -1.7000000000000002
           ],
           "rotation": [
             0,
@@ -1366,9 +1438,9 @@
         {
           "name": "anim_packet_0",
           "position": [
-            -3.6,
-            1.8,
-            -6
+            -8.3,
+            3.73,
+            8.55
           ],
           "rotation": [
             0,
@@ -1390,9 +1462,9 @@
         {
           "name": "anim_packet_1",
           "position": [
-            0,
-            1.8,
-            -6
+            -5.75,
+            3.73,
+            8.55
           ],
           "rotation": [
             0,
@@ -1414,33 +1486,9 @@
         {
           "name": "anim_packet_2",
           "position": [
-            3.6,
-            1.8,
-            -6
-          ],
-          "rotation": [
-            0,
-            0,
-            0
-          ],
-          "quaternion": [
-            0,
-            0,
-            0,
-            1
-          ],
-          "scale": [
-            1,
-            1,
-            1
-          ]
-        },
-        {
-          "name": "anim_rotor",
-          "position": [
-            -2.1,
-            4.55,
-            -3.3
+            -3.1999999999999993,
+            3.73,
+            8.55
           ],
           "rotation": [
             0,
@@ -1462,9 +1510,9 @@
         {
           "name": "anim_plant_0",
           "position": [
-            -2.1000000000000014,
-            1.91,
-            -4
+            -3.8500000000000014,
+            3.19,
+            -2.7
           ],
           "rotation": [
             0,
@@ -1486,9 +1534,9 @@
         {
           "name": "anim_plant_1",
           "position": [
-            -2.1000000000000014,
-            1.91,
-            -3
+            -3.8500000000000014,
+            3.19,
+            -0.9500000000000002
           ],
           "rotation": [
             0,
@@ -1510,9 +1558,9 @@
         {
           "name": "anim_plant_2",
           "position": [
-            -2.1000000000000014,
-            1.91,
-            -2
+            -3.8500000000000014,
+            3.19,
+            0.7999999999999998
           ],
           "rotation": [
             0,
@@ -1534,9 +1582,9 @@
         {
           "name": "anim_plant_3",
           "position": [
-            -2.1000000000000014,
-            1.91,
-            -1
+            -3.8500000000000014,
+            3.19,
+            2.55
           ],
           "rotation": [
             0,
@@ -1558,9 +1606,9 @@
         {
           "name": "anim_plant_4",
           "position": [
-            2.1000000000000014,
-            1.91,
-            -4
+            3.8500000000000014,
+            3.19,
+            -2.7
           ],
           "rotation": [
             0,
@@ -1582,9 +1630,9 @@
         {
           "name": "anim_plant_5",
           "position": [
-            2.1000000000000014,
-            1.91,
-            -3
+            3.8500000000000014,
+            3.19,
+            -0.9500000000000002
           ],
           "rotation": [
             0,
@@ -1606,9 +1654,9 @@
         {
           "name": "anim_plant_6",
           "position": [
-            2.1000000000000014,
-            1.91,
-            -2
+            3.8500000000000014,
+            3.19,
+            0.7999999999999998
           ],
           "rotation": [
             0,
@@ -1630,9 +1678,9 @@
         {
           "name": "anim_plant_7",
           "position": [
-            2.1000000000000014,
-            1.91,
-            -1
+            3.8500000000000014,
+            3.19,
+            2.55
           ],
           "rotation": [
             0,
@@ -1654,9 +1702,9 @@
         {
           "name": "anim_sprinkler",
           "position": [
-            4.800000000000001,
-            1.75,
-            -4.1
+            6.199999999999999,
+            3.48,
+            8.3
           ],
           "rotation": [
             0,
@@ -1836,56 +1884,131 @@
       "districts": [
         {
           "id": "amtrak",
-          "x": -24,
-          "z": -4,
+          "x": 0,
+          "y": 0,
+          "z": -14,
           "rotation": 0,
           "group": "district_amtrak",
+          "cameraTarget": {
+            "x": 0,
+            "y": 6.65,
+            "z": -14
+          },
+          "camera": {
+            "distance": 43,
+            "fitBounds": {
+              "min": {
+                "x": -15,
+                "y": 0.85,
+                "z": -23.1
+              },
+              "max": {
+                "x": 15,
+                "y": 10.8,
+                "z": -4
+              }
+            }
+          },
           "crossing": {
-            "x": -24,
-            "z": 0.40000000000000036,
-            "width": 3,
-            "depth": 2.5,
+            "contentId": "amtrak",
+            "x": 0,
+            "z": -6.4,
+            "y": 3.15,
+            "width": 4,
+            "depth": 2.8,
             "trackCenter": [
-              -24,
-              -5.4
+              0,
+              -14
             ],
             "trackRadii": [
-              8.8,
-              5.8
-            ],
-            "contentId": "amtrak"
+              12.8,
+              7.6
+            ]
           },
           "animation": {
             "train": {
               "trackCentre": [
                 0,
-                0,
-                -1.4
+                3.15,
+                0
               ],
               "trackRadii": [
-                8.8,
-                5.8
+                12.8,
+                7.6
               ],
               "initialAngle": 0,
-              "rootY": 0,
+              "rootY": 3.15,
+              "surfaceY": 3.15,
               "forward": "-Z",
-              "duration": 10
+              "duration": 18
             }
           }
         },
         {
           "id": "beaconfire",
-          "x": 0,
-          "z": -4,
+          "x": -23,
+          "y": 0,
+          "z": -2,
           "rotation": 0,
-          "group": "district_beaconfire"
+          "group": "district_beaconfire",
+          "cameraTarget": {
+            "x": -23,
+            "y": 4.550000000000001,
+            "z": -2
+          },
+          "camera": {
+            "distance": 36,
+            "fitBounds": {
+              "min": {
+                "x": -34,
+                "y": 0.85,
+                "z": -10.5
+              },
+              "max": {
+                "x": -12,
+                "y": 9.75,
+                "z": 12.5
+              }
+            }
+          }
         },
         {
           "id": "visionx",
-          "x": 24,
-          "z": -4,
+          "x": 23,
+          "y": 0,
+          "z": -3,
           "rotation": 0,
-          "group": "district_visionx"
+          "group": "district_visionx",
+          "cameraTarget": {
+            "x": 23,
+            "y": 4.65,
+            "z": -3
+          },
+          "camera": {
+            "distance": 36,
+            "fitBounds": {
+              "min": {
+                "x": 12,
+                "y": 0.85,
+                "z": -12
+              },
+              "max": {
+                "x": 34,
+                "y": 8.25,
+                "z": 12
+              }
+            }
+          },
+          "animation": {
+            "sprinkler": {
+              "position": [
+                6.2,
+                3.48,
+                8.3
+              ],
+              "surfaceY": 2.25
+            }
+          }
         }
       ],
       "camera": {
@@ -1898,18 +2021,20 @@
       },
       "quality": "high",
       "occluders": [
-        "occluder_experience_avenue_-29.64",
-        "occluder_experience_avenue_29.64",
-        "occluder_amtrak_roof",
-        "occluder_amtrak_canopy",
-        "occluder_beaconfire_roof",
-        "occluder_visionx_roof",
-        "occluder_experience_coast_4",
-        "occluder_experience_coast_6",
-        "occluder_experience_coast_8",
-        "occluder_experience_coast_10",
-        "occluder_experience_coast_12",
-        "occluder_experience_coast_14"
+        "occluder_junction_terminal_walls",
+        "occluder_junction_terminal_roof",
+        "occluder_junction_terminal_vault",
+        "occluder_junction_tree_harbor-west",
+        "occluder_junction_tree_harbor-east",
+        "occluder_junction_workshop_walls",
+        "occluder_junction_workshop_roof",
+        "occluder_junction_tree_bf-front",
+        "occluder_junction_tree_bf-back",
+        "occluder_junction_conservatory_frame",
+        "occluder_junction_conservatory_glazing",
+        "occluder_junction_conservatory_roof",
+        "occluder_junction_tree_vx-front",
+        "occluder_junction_tree_vx-back"
       ]
     },
     {
@@ -3766,8 +3891,8 @@
       ]
     }
   ],
-  "totalBytes": 5054280,
-  "totalTriangles": 329468,
+  "totalBytes": 5303280,
+  "totalTriangles": 382526,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }

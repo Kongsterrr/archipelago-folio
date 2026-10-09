@@ -2,35 +2,39 @@
   "version": 11,
   "assets": [
     {
-      "id": "about",
+      "id": "experience",
       "quality": "high",
-      "bytes": 795572,
-      "triangles": 60408,
-      "drawCalls": 101,
-      "routeSeconds": 125.6,
+      "bytes": 1375480,
+      "triangles": 116268,
+      "drawCalls": 156,
+      "routeSeconds": 134.5,
       "connectedFromDock": true,
-      "stationsReachable": 9,
+      "routeClearance": 1.3,
       "pathWidth": 3.2,
-      "driveWidth": 6.5,
-      "routeClearance": 1.5,
-      "garageBays": 4,
-      "interiors": 2
+      "mainPathWidth": 3.2,
+      "terraces": 3,
+      "stationsReachable": 9,
+      "primaryExperienceEntries": 3,
+      "openInteriors": 3,
+      "stepFreeRamps": 5
     },
     {
-      "id": "about",
+      "id": "experience",
       "quality": "low",
-      "bytes": 598552,
-      "triangles": 43686,
-      "drawCalls": 99,
-      "routeSeconds": 125.6,
+      "bytes": 973208,
+      "triangles": 71380,
+      "drawCalls": 149,
+      "routeSeconds": 134.5,
       "connectedFromDock": true,
-      "stationsReachable": 9,
+      "routeClearance": 1.3,
       "pathWidth": 3.2,
-      "driveWidth": 6.5,
-      "routeClearance": 1.5,
-      "garageBays": 4,
-      "interiors": 2
+      "mainPathWidth": 3.2,
+      "terraces": 3,
+      "stationsReachable": 9,
+      "primaryExperienceEntries": 3,
+      "openInteriors": 3,
+      "stepFreeRamps": 5
     }
   ],
-  "totalBytes": 1394124
+  "totalBytes": 2348688
 }

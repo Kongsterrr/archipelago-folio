@@ -23,7 +23,14 @@ export class IslandWalkWorld{
   this.terrain=layout.terrain?new TerrainSurface(layout.terrain):null;
   this.terrainCollider=add(R.ColliderDesc.trimesh(this.terrain?new Float32Array(layout.terrain.vertices):vertices,this.terrain?new Uint32Array(layout.terrain.indices):indices,R.TriMeshFlags.FIX_INTERNAL_EDGES));
   this.surfaces=layout.surfaces?.length?layout.surfaces:[{x:0,z:11.85,width:3,depth:7.9,y:.85}];
-  for(const f of this.surfaces){const pitch=-Math.atan(f.slope||0),cy=Math.cos((f.rotation||0)/2),sy=Math.sin((f.rotation||0)/2),cx=Math.cos(pitch/2),sx=Math.sin(pitch/2);add(R.ColliderDesc.cuboid(f.width/2,.1,f.depth/2/Math.cos(pitch)).setTranslation(f.x,f.y-.1/Math.cos(pitch),f.z).setRotation({x:sx*cy,y:cx*sy,z:-sx*sy,w:cx*cy}));}
+  for(const f of this.surfaces){
+   const angle=f.rotation||0,pitch=-Math.atan(f.slope||0),cy=Math.cos(angle/2),sy=Math.sin(angle/2),cx=Math.cos(pitch/2),sx=Math.sin(pitch/2),c=Math.cos(angle),s=Math.sin(angle);
+   // Broad cuboid faces can miss a capsule's downward sweep at floating-point
+   // boundaries, just like the base mesh. Tile flat support without moving its
+   // plane or changing the authored ramp colliders.
+   const nx=f.slope?1:Math.ceil(f.width/8),nz=f.slope?1:Math.ceil(f.depth/8),width=f.width/nx,depth=f.depth/nz;
+   for(let ix=0;ix<nx;ix++)for(let iz=0;iz<nz;iz++){const x=(ix+.5)*width-f.width/2,z=(iz+.5)*depth-f.depth/2;add(R.ColliderDesc.cuboid(width/2,.1,depth/2/Math.cos(pitch)).setTranslation(f.x+x*c+z*s,f.y-.1/Math.cos(pitch),f.z-x*s+z*c).setRotation({x:sx*cy,y:cx*sy,z:-sx*sy,w:cx*cy}));}
+  }
   for(const o of layout.obstacles||[]){add(R.ColliderDesc.cuboid(o.width/2,o.height/2,o.depth/2).setTranslation(o.x,(o.y??y)+o.height/2,o.z).setRotation({x:0,y:Math.sin((o.rotation||0)/2),z:0,w:Math.cos((o.rotation||0)/2)}),true);}
  }
  contains(point,radius=CHARACTER.radius){const p=dockLocal(point,this.island),shore=this.layout.shore||this.island.shore;

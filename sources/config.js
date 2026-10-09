@@ -2,6 +2,7 @@ export {inDockZone} from './core/dock.js';
 import modelManifest from '../static/models/manifest.json' with {type:'json'};
 export const WORLD_RADIUS=174;
 import {portfolioGroups, islandIdFor} from './portfolio-groups.js';
+import {campusStationFocus} from './core/campus-focus.js';
 const placements={about:{x:0,z:76,rotation:Math.PI},experience:{x:-76,z:8,rotation:Math.PI/2},projects:{x:76,z:8,rotation:-Math.PI/2},education:{x:0,z:-76,rotation:0}};
 function overviewBounds(island,model){
  const points=[];
@@ -14,7 +15,7 @@ export const islands=portfolioGroups.map(group=>{
  if(!model)throw new Error('Build the V11 four-island assets before starting the world: '+group.id);
  const i={...group,...placements[group.id],kind:group.id,shore:model.shorePolygon,pier:model.dock,approach:model.clearApproach,districts:model.districts||[]};
  const spawn=model.clearApproach.spawn,p=toWorld(i,spawn[0],spawn[2]);
- return {...i,r:Math.max(...i.shore.map(([x,z])=>Math.hypot(x,z))),dock:{x:p.x,z:p.z},yaw:i.rotation+Math.PI,camera:{distance:145,azimuth:Math.PI/4,elevation:.68,height:2.5,...(i.id==='about'?{fitBounds:overviewBounds(i,model)}:{})},action:toWorld(i,5,model.dock.endZ+6)};
+ return {...i,r:Math.max(...i.shore.map(([x,z])=>Math.hypot(x,z))),dock:{x:p.x,z:p.z},yaw:i.rotation+Math.PI,camera:{distance:145,azimuth:Math.PI/4,elevation:.68,height:2.5,...(['about','experience'].includes(i.id)?{fitBounds:overviewBounds(i,model)}:{})},action:toWorld(i,5,model.dock.endZ+6)};
 });
 export function resolveIsland(id){return islands.find(i=>i.id===islandIdFor(id));}
 export function contentFocus(id){
@@ -25,7 +26,8 @@ export function contentFocus(id){
   return{...toWorld(island,...point),id:island.id,contentId:id,exhibit:true,camera:{distance:48,height:3,azimuth:Math.PI/4,elevation:.68}};
  }
  const district=island.districts.find(d=>d.id===id);
- return district?{...toWorld(island,district.x,district.z),id:island.id,contentId:id,exhibit:true,camera:{distance:48,height:(district.y||0)+3,azimuth:Math.PI/4,elevation:.68}}:island;
+ if(district&&(district.cameraTarget||district.camera))return campusStationFocus(island,{...district,contentId:id});
+ return district?{...toWorld(island,district.x,district.z,district.y||0),id:island.id,contentId:id,exhibit:true,camera:{distance:48,height:(district.y||0)+3,azimuth:Math.PI/4,elevation:.68}}:island;
 }
 export const raceStart={x:-60,z:146,yaw:.491809};
 export const gates=[{x:-75,z:118,r:11},{x:-128,z:40,r:11},{x:-117,z:-80,r:10},{x:0,z:-139,r:9},{x:117,z:-70,r:11},{x:119,z:70,r:11}].map((g,n,all)=>{const p=n?all[n-1]:raceStart;const d=Math.hypot(g.x-p.x,g.z-p.z);return {...g,nx:(g.x-p.x)/d,nz:(g.z-p.z)/d};});

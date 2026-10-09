@@ -1,3 +1,4 @@
+import {campusStationFocus} from './core/campus-focus.js';
 import './style.css';
 import content from './content.json';
 import {islands,gates,challenges,lamps,WORLD_RADIUS,toWorld,contentFocus,boatSpawn} from './config.js';
@@ -83,7 +84,7 @@ function openLandmark(id){
 }
 function openExhibit({island,station,position}){
  const destination=exhibitTarget(station,island,content,islands);if(!destination)return;
- const exhibitFocus={...position,islandId:island,exhibit:true,camera:{distance:16,height:position.y+1,azimuth:Math.PI/4,elevation:.66}};
+ const exhibitFocus=(station.cameraTarget||station.camera?campusStationFocus(islands.find(i=>i.id===island),station):null)||{...position,id:island,islandId:island,contentId:station.contentId,exhibit:true,camera:{distance:16,height:position.y+1,azimuth:Math.PI/4,elevation:.66}};
  if(destination.landmark)return openLandmark(destination.landmark.id);
  if(destination.school)return openSchool(destination.school.schoolId,{exhibitFocus});
  if(!destination.entry)return openGroup(destination.group.id);
@@ -91,7 +92,7 @@ function openExhibit({island,station,position}){
  if(station.readFull)return openEntry(entry.id,{exhibitFocus});
  const target=portfolioTarget(entry.id,content,islands),section=station.contentSection||'summary',value=entry[section]||entry.summary;
  const body=section==='links'?`<div class="panel-links">${entry.links.map(linkButton).join('')}</div>`:Array.isArray(value)?`<ul>${value.map(v=>`<li>${esc(v)}</li>`).join('')}</ul>`:`<p>${esc(value)}</p>`;
- store.see(entry.id);showPanel(`<span class="eyebrow">ON THE ISLAND / ${esc(target.group.name)}</span><h2 class="panel-hero" id="panel-title">${esc(station.label)}</h2><div class="exhibit-copy">${body}</div><button class="primary-button" data-open="${entry.id}">Read the full story</button><p class="panel-footnote">Concept illustration · The island brings the story to life. Career details come from my résumé.</p>`,{id:'exhibit-'+station.id,render:()=>openExhibit({island,station,position}),focus:{...position,islandId:island,exhibit:true,camera:{distance:16,height:position.y+1,azimuth:Math.PI/4,elevation:.66}}});
+ store.see(entry.id);showPanel(`<span class="eyebrow">ON THE ISLAND / ${esc(target.group.name)}</span><h2 class="panel-hero" id="panel-title">${esc(station.label)}</h2><div class="exhibit-copy">${body}</div><button class="primary-button" data-open="${entry.id}">Read the full story</button><p class="panel-footnote">Concept illustration · The island brings the story to life. Career details come from my résumé.</p>`,{id:'exhibit-'+station.id,render:()=>openExhibit({island,station,position}),focus:exhibitFocus});
 }
 function openDirectory(category='all'){
  const selected=category==='project'?'projects':category,groups=directoryGroups(content,selected);

@@ -17,6 +17,7 @@ import {createHighlands,highlandsHeight,highlandsVisibleTerrain,highlandsRockStr
 import {buildEducationCampus,campusPalette} from './lib/education-campus.mjs';
 import {buildAboutEstate,estatePalette} from './lib/about-estate.mjs';
 import {aboutCoast} from './lib/coastal-drive.mjs';
+import {buildExperienceJunction,experiencePalette} from './lib/experience-junction.mjs';
 const font = new FontLoader().parse(JSON.parse(await fs.readFile(new URL('../node_modules/three/examples/fonts/helvetiker_bold.typeface.json', import.meta.url),'utf8')));
 const campusSchools=JSON.parse(await fs.readFile(new URL('../sources/content.json',import.meta.url),'utf8')).find(item=>item.id==='learning').schools;
 const OUT = process.env.ARCHIPELAGO_OUTPUT || fileURLToPath(new URL('../static/models/', import.meta.url));
@@ -53,6 +54,7 @@ mats.highlandsStrataLight=new THREE.MeshStandardMaterial({name:'highlandsStrataL
 for(const[name,color]of Object.entries(campusPalette))mats[name]=new THREE.MeshStandardMaterial({name,color,roughness:/glass|windowClear|reflection/.test(name)?.25:name==='campus_silver'?.34:.80,metalness:/silver|bronze|reflection/.test(name)?.38:name==='campus_copper'?.16:0,transparent:name==='campus_windowClear',opacity:name==='campus_windowClear'?.24:1,depthWrite:name!=='campus_windowClear'});
 Object.assign(mats.campus_sculptureSteel,{roughness:.27,metalness:.55});
 for(const[name,color]of Object.entries(estatePalette))mats[name]=new THREE.MeshStandardMaterial({name,color,roughness:/glass|clear/.test(name)?.25:.8,metalness:/glass|frame|copper/.test(name)?.15:0,transparent:name==='estate_clear',opacity:name==='estate_clear'?.22:1,depthWrite:name!=='estate_clear'});
+for(const[name,color]of Object.entries(experiencePalette))mats[name]=new THREE.MeshStandardMaterial({name,color,roughness:/glass|clear/.test(name)?.23:/copper|metal/.test(name)?.38:.80,metalness:/copper|metal/.test(name)?.38:0,transparent:/clear/.test(name),opacity:/clear/.test(name)?.24:1,depthWrite:!/clear/.test(name)});
 const harborMaterials=new Map();
 let root, seed, layout, low=false,currentIsland='',highlandsBuild=false;
 function authoredUV(geometry,material){
@@ -82,7 +84,7 @@ function group(pos=[0,0,0], rot=[0,0,0], parent=root) { const g=new THREE.Group(
 function box(w,h,d,x,y,z,mat='ivory',rot=[0,0,0],parent=root) { return mesh(new THREE.BoxGeometry(w,h,d),mat,[x,y,z],rot,parent); }
 const bevelCache = new Map();
 function bevel(w,h,d,x,y,z,mat='ivory',b=.06,rot=[0,0,0],parent=root) {
-  b=Math.min(b,w/4,h/4,d/4); const bevelSegments=low&&currentIsland==='education'?1:2;const key=[w,h,d,b,bevelSegments].join(','); let g=bevelCache.get(key);
+  b=Math.min(b,w/4,h/4,d/4); const bevelSegments=low&&['education','experience'].includes(currentIsland)?1:2;const key=[w,h,d,b,bevelSegments].join(','); let g=bevelCache.get(key);
   if(!g) { const s=new THREE.Shape();const a=w/2-b,c=h/2-b;s.moveTo(-a,-c);s.lineTo(a,-c);s.lineTo(a,c);s.lineTo(-a,c);s.closePath();
     g=new THREE.ExtrudeGeometry(s,{depth:d-2*b,bevelEnabled:true,bevelThickness:b,bevelSize:b,bevelSegments,steps:1});g.translate(0,0,-d/2+b);bevelCache.set(key,g); }
   return mesh(g,mat,[x,y,z],rot,parent);
@@ -166,7 +168,7 @@ function animatedFlag(x,y,z,h,name){
   custom(pts,[0,1,5,1,4,5,1,2,4,2,3,4,5,1,0,5,4,1,4,2,1,4,3,2],'orange',g);
 }
 function text3D(label,size,x,y,z,mat='navy',depth=.07,parent=root){
-  const geo=new TextGeometry(label,{font,size,depth,curveSegments:low&&(highlandsBuild||currentIsland==='education')?1:2,bevelEnabled:false});
+  const geo=new TextGeometry(label,{font,size,depth,curveSegments:low&&(highlandsBuild||['education','experience'].includes(currentIsland))?1:2,bevelEnabled:false});
   geo.computeBoundingBox();geo.translate(-(geo.boundingBox.max.x+geo.boundingBox.min.x)/2,0,0);
   return mesh(geo,mat,[x,y,z],[0,0,0],parent);
 }
@@ -568,8 +570,8 @@ async function exportIsland(name){
   for(const[mat,geometries]of bins){const geo=mergeVertices(mergeGeometries(geometries,false),1e-6);geo.normalizeNormals();const m=new THREE.Mesh(geo,mat);m.name=(owner===root?'static':owner.name)+'_'+mat.name;m.castShadow=true;m.receiveShadow=true;group.add(m);triangles+=geo.index.count/3;vertices+=geo.attributes.position.count;drawCalls++;}
  }
  output.userData={originalProceduralAsset:true,version:11,author:'Archipelago-folio original walkable island builder',walkable:true,seaLevel:0,animationNodes:animationNodes.map(n=>n.name)};
- const bounds=new THREE.Box3().setFromObject(output);const raw=await new GLTFExporter().parseAsync(output,{binary:true,onlyVisible:true,trs:true});if(name==='harbor'&&!low&&process.env.ARCHIPELAGO_SOURCE_OUT){await fs.mkdir(process.env.ARCHIPELAGO_SOURCE_OUT,{recursive:true});root.traverse(o=>{if(o.isMesh&&!o.name)o.name='part_'+o.material.name+'_'+o.id;});const source=await new GLTFExporter().parseAsync(root,{binary:true,onlyVisible:true,trs:true});await fs.writeFile(path.join(process.env.ARCHIPELAGO_SOURCE_OUT,'harbor.glb'),Buffer.from(source));}const doc=await io.readBinary(new Uint8Array(raw));await doc.transform(dedup(),prune({keepAttributes:true}),meshopt({encoder:MeshoptEncoder,level:['projects','education','about'].includes(name)&&low?'high':'medium'}));const file=path.join(OUT,low?'low':'',name+'.glb');await io.write(file,doc);const bytes=(await fs.stat(file)).size;
- const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:name==='about'?'v16-coastal-drive':name==='education'?'v143-campus-sculpture':name==='projects'?'v133-readable-project-arrival':'v11-four-isles',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{...layout.dock},clearApproach:{min:[-7,0,layout.dock.endZ+2],max:[7,0,layout.dock.endZ+18],spawn:[0,0,layout.dock.endZ+8]},districts:layout.districts,camera:{target:[0,2,0],distance:Math.max(PARENTS[name].width,PARENTS[name].depth)*1.18},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
+ const bounds=new THREE.Box3().setFromObject(output);const raw=await new GLTFExporter().parseAsync(output,{binary:true,onlyVisible:true,trs:true});if(name==='harbor'&&!low&&process.env.ARCHIPELAGO_SOURCE_OUT){await fs.mkdir(process.env.ARCHIPELAGO_SOURCE_OUT,{recursive:true});root.traverse(o=>{if(o.isMesh&&!o.name)o.name='part_'+o.material.name+'_'+o.id;});const source=await new GLTFExporter().parseAsync(root,{binary:true,onlyVisible:true,trs:true});await fs.writeFile(path.join(process.env.ARCHIPELAGO_SOURCE_OUT,'harbor.glb'),Buffer.from(source));}const doc=await io.readBinary(new Uint8Array(raw));await doc.transform(dedup(),prune({keepAttributes:true}),meshopt({encoder:MeshoptEncoder,level:name==='experience'||['projects','education','about'].includes(name)&&low?'high':'medium'}));const file=path.join(OUT,low?'low':'',name+'.glb');await io.write(file,doc);const bytes=(await fs.stat(file)).size;
+ const data={id:name,name,file:name+'.glb',bytes,rawBytes:raw.byteLength,revision:name==='experience'?'v17-career-junction':name==='about'?'v16-coastal-drive':name==='education'?'v143-campus-sculpture':name==='projects'?'v133-readable-project-arrival':'v11-four-isles',sourceMeshes,drawCalls,staticDrawCalls:batches.get(root).size,vertices,triangles,bounds:{min:bounds.min.toArray(),max:bounds.max.toArray()},dimensions:bounds.getSize(new THREE.Vector3()).toArray(),animationNodes,nodes:animationNodes,shorePolygon:SHORELINES[name],shorelineXZ:SHORELINES[name],shorelineWinding:'CCW viewed in xz coordinate plane',walkwayY:Y,dock:{...layout.dock},clearApproach:{min:[-7,0,layout.dock.endZ+2],max:[7,0,layout.dock.endZ+18],spawn:[0,0,layout.dock.endZ+8]},districts:layout.districts,camera:{target:[0,2,0],distance:Math.max(PARENTS[name].width,PARENTS[name].depth)*1.18},quality:low?'low':'high',occluders:kept.filter(n=>n.name.startsWith('occluder_')).map(n=>n.name)};
  if(name==='amtrak'){data.animation={train:{trackCentre:[0,0,-1.4],trackRadii:[8.8,5.8],initialAngle:0,rootY:0,forward:'-Z',duration:10}};data.trainTrack={...TRACK,points:Array.from({length:64},(_,i)=>{const a=i*Math.PI*2/64;return[TRACK.radiusX*Math.cos(a),0,TRACK.center[2]+TRACK.radiusZ*Math.sin(a)];}),trainForward:'-Z',rootY:0,railY:Y+.07};}
  return data;
 }
@@ -577,7 +579,7 @@ async function exportIsland(name){
 // animation controllers can work without baking the offset into their key poses.
 const PARENTS={
  about:{label:'JACK KONG',width:90,depth:80,pierFront:24,districts:[['harbor',-13,-3],['connect',13,-3]]},
- experience:{label:'EXPERIENCE',width:78,depth:60,districts:[['amtrak',-24,-4],['beaconfire',0,-4],['visionx',24,-4]]},
+ experience:{label:'EXPERIENCE',width:78,depth:60,districts:[['amtrak',0,-14],['beaconfire',-23,-2],['visionx',23,-3]]},
  projects:{label:'PROJECTS',width:78,depth:60,districts:[['affirmation',-24,-4],['research',0,-4],['catering',24,-4]]},
  education:{label:'EDUCATION',width:56,depth:44,districts:[['learning',0,-3]]},
 };
@@ -606,7 +608,7 @@ function parentTerrain(name,index){
  shapePrism(shore.map(([x,z])=>[x*.96,z*.96]),Y-.08,Y,'grass');
  layout={id:name,groundY:Y,shore:shore.map(([x,z])=>[+(x*.96).toFixed(5),+(z*.96).toFixed(5)]),surfaces:[],obstacles:[],route:[],stations:[],benches:[],bench:null,berths:[],districts:[],crossings:[]};
  parentPier(spec.pierFront??spec.depth/2);
- if(name==='education'||name==='about')return;
+ if(name==='education'||name==='about'||name==='experience')return;
  const headingZ=spec.depth*.5-5.5;
  // Entry identity is readable from the sea; the broad path passes to both sides.
  for(const x of[-5.8,5.8]){lamp(x,headingZ,'teal',2.4);solid(x,headingZ,.4,.4,3.4,Y,0,'arrival lamp');}
@@ -806,14 +808,14 @@ await fs.mkdir(path.join(OUT,'low'),{recursive:true});
 const prior=JSON.parse(await fs.readFile(path.join(OUT,'manifest.json'),'utf8').catch(()=>'{"models":[]}'));
 const priorLow=JSON.parse(await fs.readFile(path.join(OUT,'low/manifest.json'),'utf8').catch(()=>JSON.stringify(prior)));
 const only=process.argv.find(a=>a.startsWith('--only='))?.slice(7),previousLayouts=JSON.parse(await fs.readFile(path.join(OUT,'walk-layout.json'),'utf8')).islands;
-if(only&&!['projects','education','about'].includes(only))throw Error('Supported selective build: --only=projects, --only=education or --only=about');
+if(only&&!['projects','education','about','experience'].includes(only))throw Error('Supported selective build: --only=projects, --only=education, --only=about or --only=experience');
 const layouts=[],reports=[];
 for(const quality of['high','low']){
  low=quality==='low';const models=[];
  for(const[i,[name,spec]]of Object.entries(PARENTS).entries()){
   if(only&&name!==only){models.push((low?priorLow:prior).models.find(m=>m.id===name));if(!low)layouts.push(previousLayouts.find(l=>l.id===name));continue;}
   if(name==='about'){parentTerrain(name,i);buildAboutEstate({root,layout,low,Y,box,bevel,cyl,cone,mesh,rod,torus,text3D,group,solid,slatBench,lamp,books,harborPath,inside});}
-  else if(name==='education'){parentTerrain(name,i);buildEducationCampus({root,layout,low,Y,schools:campusSchools,box,bevel,cyl,cone,mesh,rod,torus,text3D,group,solid,pitchedRoof,slatBench,lamp,books,harborPath,inside});validateCampus();}else if(name==='projects')highlandsIsland();else{parentTerrain(name,i);const districts=spec.districts.map(([contentId,x,z])=>assembleDistrict(name,contentId,x,z));parentPaths(districts);arrivalGarden(name);}
+  else if(name==='education'){parentTerrain(name,i);buildEducationCampus({root,layout,low,Y,schools:campusSchools,box,bevel,cyl,cone,mesh,rod,torus,text3D,group,solid,pitchedRoof,slatBench,lamp,books,harborPath,inside});validateCampus();}else if(name==='experience'){parentTerrain(name,i);buildExperienceJunction({root,layout,low,Y,box,bevel,cyl,cone,mesh,rod,torus,text3D,group,solid,pitchedRoof,slatBench,lamp,books,harborPath,custom,inside});}else if(name==='projects')highlandsIsland();else{parentTerrain(name,i);const districts=spec.districts.map(([contentId,x,z])=>assembleDistrict(name,contentId,x,z));parentPaths(districts);arrivalGarden(name);}
   const asset=await exportIsland(name);models.push(asset);
   if(!low)layouts.push(structuredClone(layout));else if(JSON.stringify(layout)!==JSON.stringify(layouts.find(l=>l.id===name)))throw Error('High/low walk data differs: '+name);
   reports.push({id:name,quality,bytes:asset.bytes,triangles:asset.triangles,drawCalls:asset.drawCalls,routeSeconds:layout.estimatedWalkingSeconds,...layout.validation});

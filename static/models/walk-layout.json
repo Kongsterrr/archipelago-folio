@@ -4040,6 +4040,80 @@
           "width": 4,
           "depth": 10.500000000000004,
           "y": 0.85
+        },
+        {
+          "id": "amtrak-terrace",
+          "x": 0,
+          "z": -13.55,
+          "width": 30,
+          "depth": 19.1,
+          "y": 3.15
+        },
+        {
+          "id": "beaconfire-terrace",
+          "x": -23,
+          "z": 1,
+          "width": 22,
+          "depth": 23,
+          "y": 1.85
+        },
+        {
+          "id": "visionx-terrace",
+          "x": 23,
+          "z": 0,
+          "width": 22,
+          "depth": 24,
+          "y": 2.25
+        },
+        {
+          "id": "amtrak-arrival-ramp",
+          "x": 0,
+          "z": 3,
+          "width": 4.2,
+          "depth": 14,
+          "y": 2,
+          "slope": -0.16428571428571428,
+          "rotation": 0
+        },
+        {
+          "id": "beaconfire-front-ramp",
+          "x": -23,
+          "z": 16.5,
+          "width": 4,
+          "depth": 8,
+          "y": 1.35,
+          "slope": -0.125,
+          "rotation": 0
+        },
+        {
+          "id": "beaconfire-rear-ramp",
+          "x": -23,
+          "z": -14.5,
+          "width": 4,
+          "depth": 8,
+          "y": 1.35,
+          "slope": 0.125,
+          "rotation": 0
+        },
+        {
+          "id": "visionx-front-ramp",
+          "x": 23,
+          "z": 16,
+          "width": 4,
+          "depth": 8,
+          "y": 1.55,
+          "slope": -0.175,
+          "rotation": 0
+        },
+        {
+          "id": "visionx-rear-ramp",
+          "x": 23,
+          "z": -16.7,
+          "width": 4,
+          "depth": 9.4,
+          "y": 1.55,
+          "slope": 0.14893617021276595,
+          "rotation": 0
         }
       ],
       "obstacles": [
@@ -4144,582 +4218,2982 @@
           "rotation": 0
         },
         {
-          "name": "arrival lamp",
-          "x": -5.8,
-          "z": 24.5,
-          "width": 0.4,
-          "depth": 0.4,
-          "height": 3.4,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 0",
+          "x": -2.19,
+          "z": -3.747,
+          "width": 0.12,
+          "depth": 0.5059999999999998,
+          "height": 3.2099999999999995,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "arrival lamp",
-          "x": 5.8,
-          "z": 24.5,
-          "width": 0.4,
-          "depth": 0.4,
-          "height": 3.4,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 1",
+          "x": -2.19,
+          "z": -3.25,
+          "width": 0.12,
+          "depth": 0.5119999999999996,
+          "height": 3.1288428571428573,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "landmark tree",
-          "x": -29.54,
-          "z": -18.6,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 2",
+          "x": -2.19,
+          "z": -2.75,
+          "width": 0.12,
+          "depth": 0.5119999999999996,
+          "height": 3.0467,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "landmark tree",
-          "x": 29.740000000000002,
-          "z": -18.6,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 3",
+          "x": -2.19,
+          "z": -2.25,
+          "width": 0.12,
+          "depth": 0.5119999999999998,
+          "height": 2.9645571428571427,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "amtrak: station",
-          "x": -24,
-          "z": -6.5,
-          "width": 5.2,
-          "depth": 2.7,
-          "height": 2.45,
-          "y": 0.8500000000000001,
+          "name": "ramp side amtrak-arrival-ramp -1 4",
+          "x": -2.19,
+          "z": -1.75,
+          "width": 0.12,
+          "depth": 0.5119999999999998,
+          "height": 2.882414285714286,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "amtrak: canopy post",
-          "x": -26.5,
-          "z": -4.1,
-          "width": 0.14,
-          "depth": 0.14,
-          "height": 2,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 5",
+          "x": -2.19,
+          "z": -1.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.8002714285714285,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "amtrak: canopy post",
-          "x": -21.5,
-          "z": -4.1,
-          "width": 0.14,
-          "depth": 0.14,
-          "height": 2,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 6",
+          "x": -2.19,
+          "z": -0.75,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.7181285714285717,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "amtrak: signal",
-          "x": -20,
-          "z": -1.5,
-          "width": 0.25,
-          "depth": 0.25,
-          "height": 2,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 7",
+          "x": -2.19,
+          "z": -0.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.6359857142857144,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "amtrak: crossing rail",
-          "x": -26,
-          "z": 0.40000000000000036,
-          "width": 0.1,
-          "depth": 2,
-          "height": 0.8,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 8",
+          "x": -2.19,
+          "z": 0.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.553842857142857,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "amtrak: crossing rail",
-          "x": -22,
-          "z": 0.40000000000000036,
-          "width": 0.1,
-          "depth": 2,
-          "height": 0.8,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 9",
+          "x": -2.19,
+          "z": 0.75,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.4717,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "amtrak: rest bench",
-          "x": -28.8,
-          "z": -8.3,
-          "width": 1.95,
-          "depth": 0.8,
-          "height": 1.25,
-          "y": 0.85,
+          "name": "ramp side amtrak-arrival-ramp -1 10",
+          "x": -2.19,
+          "z": 1.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.389557142857143,
+          "y": 0.8099999999999999,
           "rotation": 0
         },
         {
-          "name": "amtrak: table",
-          "x": -27.8,
-          "z": -4.5,
-          "width": 1.2,
-          "depth": 0.6,
+          "name": "ramp side amtrak-arrival-ramp -1 11",
+          "x": -2.19,
+          "z": 1.75,
+          "width": 0.12,
+          "depth": 0.5119999999999998,
+          "height": 2.3074142857142856,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 12",
+          "x": -2.19,
+          "z": 2.25,
+          "width": 0.12,
+          "depth": 0.5119999999999998,
+          "height": 2.225271428571429,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 13",
+          "x": -2.19,
+          "z": 2.75,
+          "width": 0.12,
+          "depth": 0.5119999999999996,
+          "height": 2.1431285714285715,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 14",
+          "x": -2.19,
+          "z": 3.25,
+          "width": 0.12,
+          "depth": 0.5119999999999996,
+          "height": 2.060985714285714,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 15",
+          "x": -2.19,
+          "z": 3.75,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 1.978842857142857,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 16",
+          "x": -2.19,
+          "z": 4.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 1.8967,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 17",
+          "x": -2.19,
+          "z": 4.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.8145571428571428,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 18",
+          "x": -2.19,
+          "z": 5.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7324142857142855,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 19",
+          "x": -2.19,
+          "z": 5.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.6502714285714286,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 20",
+          "x": -2.19,
+          "z": 6.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5681285714285713,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 21",
+          "x": -2.19,
+          "z": 6.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.485985714285714,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 22",
+          "x": -2.19,
+          "z": 7.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4038428571428572,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 23",
+          "x": -2.19,
+          "z": 7.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.3216999999999999,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 24",
+          "x": -2.19,
+          "z": 8.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2395571428571426,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 25",
+          "x": -2.19,
+          "z": 8.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.1574142857142857,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 26",
+          "x": -2.19,
+          "z": 9.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0752714285714284,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp -1 27",
+          "x": -2.19,
+          "z": 9.747,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 0.9931285714285717,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 0",
+          "x": 2.19,
+          "z": -3.747,
+          "width": 0.12,
+          "depth": 0.5059999999999998,
+          "height": 3.2099999999999995,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 1",
+          "x": 2.19,
+          "z": -3.25,
+          "width": 0.12,
+          "depth": 0.5119999999999996,
+          "height": 3.1288428571428573,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 2",
+          "x": 2.19,
+          "z": -2.75,
+          "width": 0.12,
+          "depth": 0.5119999999999996,
+          "height": 3.0467,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 3",
+          "x": 2.19,
+          "z": -2.25,
+          "width": 0.12,
+          "depth": 0.5119999999999998,
+          "height": 2.9645571428571427,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 4",
+          "x": 2.19,
+          "z": -1.75,
+          "width": 0.12,
+          "depth": 0.5119999999999998,
+          "height": 2.882414285714286,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 5",
+          "x": 2.19,
+          "z": -1.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.8002714285714285,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 6",
+          "x": 2.19,
+          "z": -0.75,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.7181285714285717,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 7",
+          "x": 2.19,
+          "z": -0.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.6359857142857144,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 8",
+          "x": 2.19,
+          "z": 0.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.553842857142857,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 9",
+          "x": 2.19,
+          "z": 0.75,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.4717,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 10",
+          "x": 2.19,
+          "z": 1.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 2.389557142857143,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 11",
+          "x": 2.19,
+          "z": 1.75,
+          "width": 0.12,
+          "depth": 0.5119999999999998,
+          "height": 2.3074142857142856,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 12",
+          "x": 2.19,
+          "z": 2.25,
+          "width": 0.12,
+          "depth": 0.5119999999999998,
+          "height": 2.225271428571429,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 13",
+          "x": 2.19,
+          "z": 2.75,
+          "width": 0.12,
+          "depth": 0.5119999999999996,
+          "height": 2.1431285714285715,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 14",
+          "x": 2.19,
+          "z": 3.25,
+          "width": 0.12,
+          "depth": 0.5119999999999996,
+          "height": 2.060985714285714,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 15",
+          "x": 2.19,
+          "z": 3.75,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 1.978842857142857,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 16",
+          "x": 2.19,
+          "z": 4.25,
+          "width": 0.12,
+          "depth": 0.512,
+          "height": 1.8967,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 17",
+          "x": 2.19,
+          "z": 4.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.8145571428571428,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 18",
+          "x": 2.19,
+          "z": 5.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7324142857142855,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 19",
+          "x": 2.19,
+          "z": 5.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.6502714285714286,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 20",
+          "x": 2.19,
+          "z": 6.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5681285714285713,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 21",
+          "x": 2.19,
+          "z": 6.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.485985714285714,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 22",
+          "x": 2.19,
+          "z": 7.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4038428571428572,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 23",
+          "x": 2.19,
+          "z": 7.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.3216999999999999,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 24",
+          "x": 2.19,
+          "z": 8.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2395571428571426,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 25",
+          "x": 2.19,
+          "z": 8.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.1574142857142857,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 26",
+          "x": 2.19,
+          "z": 9.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0752714285714284,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side amtrak-arrival-ramp 1 27",
+          "x": 2.19,
+          "z": 9.747,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 0.9931285714285717,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 0",
+          "x": -25.09,
+          "z": 12.753,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 1.9100000000000001,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 1",
+          "x": -25.09,
+          "z": 13.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.8482500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 2",
+          "x": -25.09,
+          "z": 13.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7857500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 3",
+          "x": -25.09,
+          "z": 14.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7232500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 4",
+          "x": -25.09,
+          "z": 14.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.6607500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 5",
+          "x": -25.09,
+          "z": 15.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5982500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 6",
+          "x": -25.09,
+          "z": 15.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5357500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 7",
+          "x": -25.09,
+          "z": 16.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4732500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 8",
+          "x": -25.09,
+          "z": 16.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4107500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 9",
+          "x": -25.09,
+          "z": 17.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.3482500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 10",
+          "x": -25.09,
+          "z": 17.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2857500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 11",
+          "x": -25.09,
+          "z": 18.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2232500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 12",
+          "x": -25.09,
+          "z": 18.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.1607500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 13",
+          "x": -25.09,
+          "z": 19.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0982500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 14",
+          "x": -25.09,
+          "z": 19.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0357500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp -1 15",
+          "x": -25.09,
+          "z": 20.247,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 0.9732500000000003,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 0",
+          "x": -20.91,
+          "z": 12.753,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 1.9100000000000001,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 1",
+          "x": -20.91,
+          "z": 13.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.8482500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 2",
+          "x": -20.91,
+          "z": 13.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7857500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 3",
+          "x": -20.91,
+          "z": 14.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7232500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 4",
+          "x": -20.91,
+          "z": 14.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.6607500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 5",
+          "x": -20.91,
+          "z": 15.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5982500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 6",
+          "x": -20.91,
+          "z": 15.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5357500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 7",
+          "x": -20.91,
+          "z": 16.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4732500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 8",
+          "x": -20.91,
+          "z": 16.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4107500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 9",
+          "x": -20.91,
+          "z": 17.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.3482500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 10",
+          "x": -20.91,
+          "z": 17.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2857500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 11",
+          "x": -20.91,
+          "z": 18.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2232500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 12",
+          "x": -20.91,
+          "z": 18.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.1607500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 13",
+          "x": -20.91,
+          "z": 19.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0982500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 14",
+          "x": -20.91,
+          "z": 19.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0357500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-front-ramp 1 15",
+          "x": -20.91,
+          "z": 20.247,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 0.9732500000000003,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 0",
+          "x": -25.09,
+          "z": -18.247,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 0.9732500000000001,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 1",
+          "x": -25.09,
+          "z": -17.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0357500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 2",
+          "x": -25.09,
+          "z": -17.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0982500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 3",
+          "x": -25.09,
+          "z": -16.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.1607500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 4",
+          "x": -25.09,
+          "z": -16.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2232500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 5",
+          "x": -25.09,
+          "z": -15.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2857500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 6",
+          "x": -25.09,
+          "z": -15.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.3482500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 7",
+          "x": -25.09,
+          "z": -14.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4107500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 8",
+          "x": -25.09,
+          "z": -14.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4732500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 9",
+          "x": -25.09,
+          "z": -13.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5357500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 10",
+          "x": -25.09,
+          "z": -13.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5982500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 11",
+          "x": -25.09,
+          "z": -12.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.6607500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 12",
+          "x": -25.09,
+          "z": -12.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7232500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 13",
+          "x": -25.09,
+          "z": -11.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7857500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 14",
+          "x": -25.09,
+          "z": -11.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.8482500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp -1 15",
+          "x": -25.09,
+          "z": -10.753,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 1.9100000000000001,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 0",
+          "x": -20.91,
+          "z": -18.247,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 0.9732500000000001,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 1",
+          "x": -20.91,
+          "z": -17.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0357500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 2",
+          "x": -20.91,
+          "z": -17.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0982500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 3",
+          "x": -20.91,
+          "z": -16.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.1607500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 4",
+          "x": -20.91,
+          "z": -16.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2232500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 5",
+          "x": -20.91,
+          "z": -15.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.2857500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 6",
+          "x": -20.91,
+          "z": -15.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.3482500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 7",
+          "x": -20.91,
+          "z": -14.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4107500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 8",
+          "x": -20.91,
+          "z": -14.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4732500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 9",
+          "x": -20.91,
+          "z": -13.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5357500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 10",
+          "x": -20.91,
+          "z": -13.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5982500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 11",
+          "x": -20.91,
+          "z": -12.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.6607500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 12",
+          "x": -20.91,
+          "z": -12.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7232500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 13",
+          "x": -20.91,
+          "z": -11.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.7857500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 14",
+          "x": -20.91,
+          "z": -11.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.8482500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side beaconfire-rear-ramp 1 15",
+          "x": -20.91,
+          "z": -10.753,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 1.9100000000000001,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 0",
+          "x": 20.91,
+          "z": 12.253,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 2.31,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 1",
+          "x": 20.91,
+          "z": 12.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 2.22355,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 2",
+          "x": 20.91,
+          "z": 13.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 2.13605,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 3",
+          "x": 20.91,
+          "z": 13.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 2.04855,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 4",
+          "x": 20.91,
+          "z": 14.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.9610500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 5",
+          "x": 20.91,
+          "z": 14.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.8735499999999998,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 6",
+          "x": 20.91,
+          "z": 15.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.78605,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 7",
+          "x": 20.91,
+          "z": 15.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.69855,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 8",
+          "x": 20.91,
+          "z": 16.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.61105,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 9",
+          "x": 20.91,
+          "z": 16.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5235500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 10",
+          "x": 20.91,
+          "z": 17.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4360500000000003,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 11",
+          "x": 20.91,
+          "z": 17.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.34855,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 12",
+          "x": 20.91,
+          "z": 18.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.26105,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 13",
+          "x": 20.91,
+          "z": 18.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.17355,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 14",
+          "x": 20.91,
+          "z": 19.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0860500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp -1 15",
+          "x": 20.91,
+          "z": 19.747,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 0.9985500000000004,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 0",
+          "x": 25.09,
+          "z": 12.253,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 2.31,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 1",
+          "x": 25.09,
+          "z": 12.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 2.22355,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 2",
+          "x": 25.09,
+          "z": 13.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 2.13605,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 3",
+          "x": 25.09,
+          "z": 13.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 2.04855,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 4",
+          "x": 25.09,
+          "z": 14.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.9610500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 5",
+          "x": 25.09,
+          "z": 14.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.8735499999999998,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 6",
+          "x": 25.09,
+          "z": 15.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.78605,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 7",
+          "x": 25.09,
+          "z": 15.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.69855,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 8",
+          "x": 25.09,
+          "z": 16.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.61105,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 9",
+          "x": 25.09,
+          "z": 16.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.5235500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 10",
+          "x": 25.09,
+          "z": 17.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.4360500000000003,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 11",
+          "x": 25.09,
+          "z": 17.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.34855,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 12",
+          "x": 25.09,
+          "z": 18.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.26105,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 13",
+          "x": 25.09,
+          "z": 18.75,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.17355,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 14",
+          "x": 25.09,
+          "z": 19.25,
+          "width": 0.12,
+          "depth": 0.5120000000000005,
+          "height": 1.0860500000000002,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-front-ramp 1 15",
+          "x": 25.09,
+          "z": 19.747,
+          "width": 0.12,
+          "depth": 0.5060000000000002,
+          "height": 0.9985500000000004,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 0",
+          "x": 20.91,
+          "z": -21.149631578947368,
+          "width": 0.12,
+          "depth": 0.5007368421052618,
+          "height": 0.9845778275475922,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 1",
+          "x": 20.91,
+          "z": -20.657894736842103,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.058262038073908,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 2",
+          "x": 20.91,
+          "z": -20.16315789473684,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.1319462486002236,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 3",
+          "x": 20.91,
+          "z": -19.66842105263158,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.2056304591265397,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 4",
+          "x": 20.91,
+          "z": -19.173684210526314,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.2793146696528552,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 5",
+          "x": 20.91,
+          "z": -18.67894736842105,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.3529988801791717,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 6",
+          "x": 20.91,
+          "z": -18.184210526315788,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.4266830907054873,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 7",
+          "x": 20.91,
+          "z": -17.689473684210526,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.5003673012318033,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 8",
+          "x": 20.91,
+          "z": -17.19473684210526,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.5740515117581189,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 9",
+          "x": 20.91,
+          "z": -16.7,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.6477357222844344,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 10",
+          "x": 20.91,
+          "z": -16.205263157894734,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.7214199328107505,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 11",
+          "x": 20.91,
+          "z": -15.710526315789473,
+          "width": 0.12,
+          "depth": 0.5067368421052638,
+          "height": 1.795104143337066,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 12",
+          "x": 20.91,
+          "z": -15.215789473684207,
+          "width": 0.12,
+          "depth": 0.5067368421052638,
+          "height": 1.868788353863382,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 13",
+          "x": 20.91,
+          "z": -14.721052631578946,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.9424725643896976,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 14",
+          "x": 20.91,
+          "z": -14.226315789473682,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 2.0161567749160136,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 15",
+          "x": 20.91,
+          "z": -13.731578947368419,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 2.089840985442329,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 16",
+          "x": 20.91,
+          "z": -13.236842105263158,
+          "width": 0.12,
+          "depth": 0.5067368421052638,
+          "height": 2.1635251959686452,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 17",
+          "x": 20.91,
+          "z": -12.742105263157892,
+          "width": 0.12,
+          "depth": 0.5067368421052638,
+          "height": 2.237209406494961,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp -1 18",
+          "x": 20.91,
+          "z": -12.250368421052631,
+          "width": 0.12,
+          "depth": 0.5007368421052618,
+          "height": 2.3099999999999996,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 0",
+          "x": 25.09,
+          "z": -21.149631578947368,
+          "width": 0.12,
+          "depth": 0.5007368421052618,
+          "height": 0.9845778275475922,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 1",
+          "x": 25.09,
+          "z": -20.657894736842103,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.058262038073908,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 2",
+          "x": 25.09,
+          "z": -20.16315789473684,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.1319462486002236,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 3",
+          "x": 25.09,
+          "z": -19.66842105263158,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.2056304591265397,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 4",
+          "x": 25.09,
+          "z": -19.173684210526314,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.2793146696528552,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 5",
+          "x": 25.09,
+          "z": -18.67894736842105,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.3529988801791717,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 6",
+          "x": 25.09,
+          "z": -18.184210526315788,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.4266830907054873,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 7",
+          "x": 25.09,
+          "z": -17.689473684210526,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.5003673012318033,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 8",
+          "x": 25.09,
+          "z": -17.19473684210526,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.5740515117581189,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 9",
+          "x": 25.09,
+          "z": -16.7,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.6477357222844344,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 10",
+          "x": 25.09,
+          "z": -16.205263157894734,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 1.7214199328107505,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 11",
+          "x": 25.09,
+          "z": -15.710526315789473,
+          "width": 0.12,
+          "depth": 0.5067368421052638,
+          "height": 1.795104143337066,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 12",
+          "x": 25.09,
+          "z": -15.215789473684207,
+          "width": 0.12,
+          "depth": 0.5067368421052638,
+          "height": 1.868788353863382,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 13",
+          "x": 25.09,
+          "z": -14.721052631578946,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 1.9424725643896976,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 14",
+          "x": 25.09,
+          "z": -14.226315789473682,
+          "width": 0.12,
+          "depth": 0.5067368421052656,
+          "height": 2.0161567749160136,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 15",
+          "x": 25.09,
+          "z": -13.731578947368419,
+          "width": 0.12,
+          "depth": 0.506736842105262,
+          "height": 2.089840985442329,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 16",
+          "x": 25.09,
+          "z": -13.236842105263158,
+          "width": 0.12,
+          "depth": 0.5067368421052638,
+          "height": 2.1635251959686452,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 17",
+          "x": 25.09,
+          "z": -12.742105263157892,
+          "width": 0.12,
+          "depth": 0.5067368421052638,
+          "height": 2.237209406494961,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "ramp side visionx-rear-ramp 1 18",
+          "x": 25.09,
+          "z": -12.250368421052631,
+          "width": 0.12,
+          "depth": 0.5007368421052618,
+          "height": 2.3099999999999996,
+          "y": 0.8099999999999999,
+          "rotation": 0
+        },
+        {
+          "name": "terrace edge amtrak west",
+          "x": -15,
+          "z": -13.55,
+          "width": 0.12,
+          "depth": 19.1,
           "height": 0.9,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "retaining wall amtrak west",
+          "x": -15,
+          "z": -13.55,
+          "width": 0.12,
+          "depth": 19.1,
+          "height": 2.3,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "amtrak: plaque amtrak:experience",
-          "x": -28.4,
-          "z": -3.8,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "amtrak: plaque amtrak:dispatch",
-          "x": -19.3,
-          "z": -3.9,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "amtrak: plaque amtrak:workflow",
-          "x": -19.2,
-          "z": -9.100000000000001,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: workshop column",
-          "x": -3,
-          "z": -8.7,
-          "width": 0.18,
-          "depth": 0.18,
-          "height": 3.3,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: workshop column",
-          "x": -3,
-          "z": -3.5,
-          "width": 0.18,
-          "depth": 0.18,
-          "height": 3.3,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: workshop column",
-          "x": 3,
-          "z": -8.7,
-          "width": 0.18,
-          "depth": 0.18,
-          "height": 3.3,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: workshop column",
-          "x": 3,
-          "z": -3.5,
-          "width": 0.18,
-          "depth": 0.18,
-          "height": 3.3,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: table",
-          "x": -2.2,
-          "z": -6.2,
-          "width": 1.2,
-          "depth": 3.5,
-          "height": 0.9,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: table",
-          "x": 2.2,
-          "z": -6.2,
-          "width": 1.2,
-          "depth": 3.5,
-          "height": 0.9,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: pipeline node",
-          "x": -3.6,
-          "z": -10,
-          "width": 0.7,
-          "depth": 0.6,
-          "height": 0.8,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: pipeline node",
-          "x": 0,
-          "z": -10,
-          "width": 0.7,
-          "depth": 0.6,
-          "height": 0.8,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: pipeline node",
-          "x": 3.6,
-          "z": -10,
-          "width": 0.7,
-          "depth": 0.6,
-          "height": 0.8,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: barrel",
-          "x": -10.2,
-          "z": -11.1,
-          "width": 0.64,
-          "depth": 0.64,
-          "height": 0.7,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: barrel",
-          "x": 10.2,
-          "z": -11.1,
-          "width": 0.64,
-          "depth": 0.64,
-          "height": 0.7,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: rest bench",
-          "x": -5.3,
-          "z": -2,
-          "width": 1.95,
-          "depth": 0.8,
-          "height": 1.25,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: plaque beaconfire:fullstack",
-          "x": 4.6,
-          "z": -1.6,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: plaque beaconfire:pipeline",
-          "x": 5.7,
-          "z": -8.4,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "beaconfire: plaque beaconfire:rag",
-          "x": -5.6,
-          "z": -8.4,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse frame",
-          "x": 21,
-          "z": -9.3,
-          "width": 0.14,
-          "depth": 0.14,
-          "height": 2.75,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse frame",
-          "x": 21,
-          "z": -6.5,
-          "width": 0.14,
-          "depth": 0.14,
-          "height": 2.75,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse frame",
-          "x": 21,
-          "z": -3.7,
-          "width": 0.14,
-          "depth": 0.14,
-          "height": 2.75,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse frame",
-          "x": 27,
-          "z": -9.3,
-          "width": 0.14,
-          "depth": 0.14,
-          "height": 2.75,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse frame",
-          "x": 27,
-          "z": -6.5,
-          "width": 0.14,
-          "depth": 0.14,
-          "height": 2.75,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse frame",
-          "x": 27,
-          "z": -3.7,
-          "width": 0.14,
-          "depth": 0.14,
-          "height": 2.75,
-          "y": 0.8500000000000001,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse glazing",
-          "x": 21,
-          "z": -7.9,
-          "width": 0.06,
-          "depth": 2.6,
-          "height": 2.2,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse glazing",
-          "x": 21,
-          "z": -5.1,
-          "width": 0.06,
-          "depth": 2.6,
-          "height": 2.2,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse glazing",
-          "x": 27,
-          "z": -7.9,
-          "width": 0.06,
-          "depth": 2.6,
-          "height": 2.2,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: greenhouse glazing",
-          "x": 27,
-          "z": -5.1,
-          "width": 0.06,
-          "depth": 2.6,
-          "height": 2.2,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: table",
-          "x": 21.9,
-          "z": -6.5,
-          "width": 1.1,
-          "depth": 4.4,
-          "height": 0.9,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: table",
-          "x": 26.1,
-          "z": -6.5,
-          "width": 1.1,
-          "depth": 4.4,
-          "height": 0.9,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: raised bed",
-          "x": 19.5,
-          "z": -14,
-          "width": 2,
-          "depth": 1,
-          "height": 0.5,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: raised bed",
-          "x": 28.5,
-          "z": -14,
-          "width": 2,
-          "depth": 1,
-          "height": 0.5,
-          "y": 0.85,
-          "rotation": 0
-        },
-        {
-          "name": "visionx: raised bed",
+          "name": "terrace edge amtrak east",
           "x": 15,
+          "z": -13.55,
+          "width": 0.12,
+          "depth": 19.1,
+          "height": 0.9,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "retaining wall amtrak east",
+          "x": 15,
+          "z": -13.55,
+          "width": 0.12,
+          "depth": 19.1,
+          "height": 2.3,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "terrace edge amtrak rear",
+          "x": 0,
+          "z": -23.1,
+          "width": 0.12,
+          "depth": 30,
+          "height": 0.9,
+          "y": 3.15,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall amtrak rear",
+          "x": 0,
+          "z": -23.1,
+          "width": 0.12,
+          "depth": 30,
+          "height": 2.3,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge amtrak edge-left -4",
+          "x": -8.625,
           "z": -4,
-          "width": 2,
-          "depth": 1,
-          "height": 0.5,
-          "y": 0.85,
-          "rotation": 0
+          "width": 0.12,
+          "depth": 12.75,
+          "height": 0.9,
+          "y": 3.15,
+          "rotation": 1.5707963267948966
         },
         {
-          "name": "visionx: raised bed",
-          "x": 33,
+          "name": "retaining wall amtrak edge-left -4",
+          "x": -8.625,
           "z": -4,
+          "width": 0.12,
+          "depth": 12.75,
+          "height": 2.3,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge amtrak edge-right -4",
+          "x": 8.625,
+          "z": -4,
+          "width": 0.12,
+          "depth": 12.75,
+          "height": 0.9,
+          "y": 3.15,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall amtrak edge-right -4",
+          "x": 8.625,
+          "z": -4,
+          "width": 0.12,
+          "depth": 12.75,
+          "height": 2.3,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge beaconfire west",
+          "x": -34,
+          "z": 1,
+          "width": 0.12,
+          "depth": 23,
+          "height": 0.9,
+          "y": 1.85,
+          "rotation": 0
+        },
+        {
+          "name": "retaining wall beaconfire west",
+          "x": -34,
+          "z": 1,
+          "width": 0.12,
+          "depth": 23,
+          "height": 1,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "terrace edge beaconfire east",
+          "x": -12,
+          "z": 1,
+          "width": 0.12,
+          "depth": 23,
+          "height": 0.9,
+          "y": 1.85,
+          "rotation": 0
+        },
+        {
+          "name": "retaining wall beaconfire east",
+          "x": -12,
+          "z": 1,
+          "width": 0.12,
+          "depth": 23,
+          "height": 1,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "terrace edge beaconfire edge-left -10.5",
+          "x": -29.625,
+          "z": -10.5,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 0.9,
+          "y": 1.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall beaconfire edge-left -10.5",
+          "x": -29.625,
+          "z": -10.5,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 1,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge beaconfire edge-right -10.5",
+          "x": -16.375,
+          "z": -10.5,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 0.9,
+          "y": 1.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall beaconfire edge-right -10.5",
+          "x": -16.375,
+          "z": -10.5,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 1,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge beaconfire edge-left 12.5",
+          "x": -29.625,
+          "z": 12.5,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 0.9,
+          "y": 1.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall beaconfire edge-left 12.5",
+          "x": -29.625,
+          "z": 12.5,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 1,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge beaconfire edge-right 12.5",
+          "x": -16.375,
+          "z": 12.5,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 0.9,
+          "y": 1.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall beaconfire edge-right 12.5",
+          "x": -16.375,
+          "z": 12.5,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 1,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge visionx west",
+          "x": 12,
+          "z": 0,
+          "width": 0.12,
+          "depth": 24,
+          "height": 0.9,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "retaining wall visionx west",
+          "x": 12,
+          "z": 0,
+          "width": 0.12,
+          "depth": 24,
+          "height": 1.4,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "terrace edge visionx east",
+          "x": 34,
+          "z": 0,
+          "width": 0.12,
+          "depth": 24,
+          "height": 0.9,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "retaining wall visionx east",
+          "x": 34,
+          "z": 0,
+          "width": 0.12,
+          "depth": 24,
+          "height": 1.4,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "terrace edge visionx edge-left -12",
+          "x": 16.375,
+          "z": -12,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 0.9,
+          "y": 2.25,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall visionx edge-left -12",
+          "x": 16.375,
+          "z": -12,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 1.4,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge visionx edge-right -12",
+          "x": 29.625,
+          "z": -12,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 0.9,
+          "y": 2.25,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall visionx edge-right -12",
+          "x": 29.625,
+          "z": -12,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 1.4,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge visionx edge-left 12",
+          "x": 16.375,
+          "z": 12,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 0.9,
+          "y": 2.25,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall visionx edge-left 12",
+          "x": 16.375,
+          "z": 12,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 1.4,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "terrace edge visionx edge-right 12",
+          "x": 29.625,
+          "z": 12,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 0.9,
+          "y": 2.25,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "retaining wall visionx edge-right 12",
+          "x": 29.625,
+          "z": 12,
+          "width": 0.12,
+          "depth": 8.75,
+          "height": 1.4,
+          "y": 0.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "Amtrak experience exhibit",
+          "x": 0,
+          "z": 21.15,
+          "width": 5,
+          "depth": 0.42,
+          "height": 2.57,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "BeaconFire experience exhibit",
+          "x": -16,
+          "z": 21.15,
+          "width": 5,
+          "depth": 0.42,
+          "height": 2.57,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "VisionX experience exhibit",
+          "x": 16,
+          "z": 21.15,
+          "width": 5,
+          "depth": 0.42,
+          "height": 2.57,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "terminal -1 wall -11.2",
+          "x": -5.52,
+          "z": -11.2,
+          "width": 6.6,
+          "depth": 0.24,
+          "height": 4.9,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "terminal -1 wall -18.4",
+          "x": -5.52,
+          "z": -18.4,
+          "width": 6.6,
+          "depth": 0.24,
+          "height": 4.9,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "terminal 1 wall -11.2",
+          "x": 5.52,
+          "z": -11.2,
+          "width": 6.6,
+          "depth": 0.24,
+          "height": 4.9,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "terminal 1 wall -18.4",
+          "x": 5.52,
+          "z": -18.4,
+          "width": 6.6,
+          "depth": 0.24,
+          "height": 4.9,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "terminal side wall",
+          "x": -8.86,
+          "z": -14.8,
+          "width": 0.28,
+          "depth": 7.2,
+          "height": 4.9,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "terminal side wall",
+          "x": 8.86,
+          "z": -14.8,
+          "width": 0.28,
+          "depth": 7.2,
+          "height": 4.9,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "station canopy post",
+          "x": -8,
+          "z": -10.1,
+          "width": 0.14,
+          "depth": 0.14,
+          "height": 3.6,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "station canopy post",
+          "x": -5.5,
+          "z": -10.1,
+          "width": 0.14,
+          "depth": 0.14,
+          "height": 3.6,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "station canopy post",
+          "x": 5.5,
+          "z": -10.1,
+          "width": 0.14,
+          "depth": 0.14,
+          "height": 3.6,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "station canopy post",
+          "x": 8,
+          "z": -10.1,
+          "width": 0.14,
+          "depth": 0.14,
+          "height": 3.6,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "junction bench waiting-west",
+          "x": -6.1,
+          "z": -15.1,
+          "width": 2.15,
+          "depth": 0.77,
+          "height": 1.27,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "station luggage trolley",
+          "x": -6.1,
+          "z": -17.7,
+          "width": 1.4,
+          "depth": 0.66,
+          "height": 1.13,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "junction bench waiting-east",
+          "x": 6.1,
+          "z": -15.1,
+          "width": 2.15,
+          "depth": 0.77,
+          "height": 1.27,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "station luggage trolley",
+          "x": 6.1,
+          "z": -17.7,
+          "width": 1.4,
+          "depth": 0.66,
+          "height": 1.13,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "Workforce systems experience exhibit",
+          "x": -11,
+          "z": -6.5,
+          "width": 3.9,
+          "depth": 0.42,
+          "height": 2.57,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "station signal",
+          "x": 4.1,
+          "z": -4.8,
+          "width": 0.4,
+          "depth": 0.35,
+          "height": 2.8,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "departure display",
+          "x": 7.7,
+          "z": -4.75,
+          "width": 2.5,
+          "depth": 0.28,
+          "height": 2.3,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "dispatch pedestal",
+          "x": 8.5,
+          "z": -4.75,
+          "width": 1.5,
+          "depth": 0.35,
+          "height": 1.4,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "rail crossing notice",
+          "x": -3.1,
+          "z": -4.4,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 1.65,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "rail crossing notice",
+          "x": 3.1,
+          "z": -4.4,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 1.65,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "rail crossing notice",
+          "x": -3.1,
+          "z": -23,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 1.65,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "rail crossing notice",
+          "x": 3.1,
+          "z": -23,
+          "width": 0.16,
+          "depth": 0.16,
+          "height": 1.65,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "workshop sidewall",
+          "x": -30,
+          "z": -2,
+          "width": 0.26,
+          "depth": 8,
+          "height": 4.65,
+          "y": 1.85,
+          "rotation": 0
+        },
+        {
+          "name": "workshop sidewall",
+          "x": -16,
+          "z": -2,
+          "width": 0.26,
+          "depth": 8,
+          "height": 4.65,
+          "y": 1.85,
+          "rotation": 0
+        },
+        {
+          "name": "workshop portal wing",
+          "x": -27.7,
+          "z": -6,
+          "width": 4.5,
+          "depth": 0.24,
+          "height": 4.4,
+          "y": 1.85,
+          "rotation": 0
+        },
+        {
+          "name": "workshop portal wing",
+          "x": -18.3,
+          "z": -6,
+          "width": 4.5,
+          "depth": 0.24,
+          "height": 4.4,
+          "y": 1.85,
+          "rotation": 0
+        },
+        {
+          "name": "workshop portal wing",
+          "x": -27.7,
+          "z": 2,
+          "width": 4.5,
+          "depth": 0.24,
+          "height": 4.4,
+          "y": 1.85,
+          "rotation": 0
+        },
+        {
+          "name": "workshop portal wing",
+          "x": -18.3,
+          "z": 2,
+          "width": 4.5,
+          "depth": 0.24,
+          "height": 4.4,
+          "y": 1.85,
+          "rotation": 0
+        },
+        {
+          "name": "workshop desk",
+          "x": -27.25,
+          "z": -1.85,
           "width": 2,
-          "depth": 1,
-          "height": 0.5,
-          "y": 0.85,
+          "depth": 3.6,
+          "height": 1.03,
+          "y": 1.85,
           "rotation": 0
         },
         {
-          "name": "visionx: rest bench",
-          "x": 19.2,
-          "z": -1.7999999999999998,
-          "width": 1.95,
-          "depth": 0.8,
-          "height": 1.25,
-          "y": 0.85,
+          "name": "workshop desk",
+          "x": -18.75,
+          "z": -1.85,
+          "width": 2,
+          "depth": 3.6,
+          "height": 1.03,
+          "y": 1.85,
           "rotation": 0
         },
         {
-          "name": "visionx: plaque visionx:plants",
-          "x": 28.5,
-          "z": -1.5,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
-          "y": 0.85,
+          "name": "server cabinet",
+          "x": -29.3,
+          "z": -4.6,
+          "width": 0.8,
+          "depth": 1.4,
+          "height": 1.9,
+          "y": 1.85,
           "rotation": 0
         },
         {
-          "name": "visionx: plaque visionx:water",
-          "x": 29,
-          "z": -7.5,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
-          "y": 0.85,
+          "name": "server cabinet",
+          "x": -16.7,
+          "z": -4.6,
+          "width": 0.8,
+          "depth": 1.4,
+          "height": 1.9,
+          "y": 1.85,
           "rotation": 0
         },
         {
-          "name": "visionx: plaque visionx:assistant",
-          "x": 18.5,
-          "z": -9.2,
-          "width": 1.62,
-          "depth": 0.15,
-          "height": 1.5,
-          "y": 0.85,
+          "name": "process node 0",
+          "x": -30.75,
+          "z": 6.55,
+          "width": 1.35,
+          "depth": 0.91,
+          "height": 1.42,
+          "y": 1.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": -33.05,
-          "z": 1.275,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
+          "name": "process node 1",
+          "x": -28.2,
+          "z": 6.55,
+          "width": 1.35,
+          "depth": 0.91,
+          "height": 1.42,
+          "y": 1.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": -23.436499999999995,
-          "z": -21.419999999999998,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
+          "name": "process node 2",
+          "x": -25.65,
+          "z": 6.55,
+          "width": 1.35,
+          "depth": 0.91,
+          "height": 1.42,
+          "y": 1.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": 6.398499999999999,
-          "z": -24.99,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
+          "name": "Retrieval to reply experience exhibit",
+          "x": -17,
+          "z": 6.85,
+          "width": 3.9,
+          "depth": 0.42,
+          "height": 2.57,
+          "y": 1.85,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": 29.6035,
-          "z": -16.32,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
+          "name": "conservatory side base",
+          "x": 16.3,
+          "z": -3,
+          "width": 0.28,
+          "depth": 10.4,
+          "height": 3.2,
+          "y": 2.25,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": 32.2555,
-          "z": 10.709999999999999,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
+          "name": "conservatory side base",
+          "x": 29.7,
+          "z": -3,
+          "width": 0.28,
+          "depth": 10.4,
+          "height": 3.2,
+          "y": 2.25,
           "rotation": 0
         },
         {
-          "name": "coast tree",
-          "x": 13.360000000000001,
-          "z": 24.479999999999997,
-          "width": 0.5,
-          "depth": 0.5,
-          "height": 4,
-          "y": 0.85,
+          "name": "conservatory end wing",
+          "x": 18.45,
+          "z": 2.2,
+          "width": 4.28,
+          "depth": 0.21,
+          "height": 3.2,
+          "y": 2.25,
           "rotation": 0
         },
         {
-          "name": "promenade lamp",
-          "x": 24.799999999999997,
-          "z": 13.8,
+          "name": "conservatory end wing",
+          "x": 27.55,
+          "z": 2.2,
+          "width": 4.28,
+          "depth": 0.21,
+          "height": 3.2,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "conservatory end wing",
+          "x": 18.45,
+          "z": -8.2,
+          "width": 4.28,
+          "depth": 0.21,
+          "height": 3.2,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "conservatory end wing",
+          "x": 27.55,
+          "z": -8.2,
+          "width": 4.28,
+          "depth": 0.21,
+          "height": 3.2,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "greenhouse growing bed",
+          "x": 19.15,
+          "z": -3,
+          "width": 2.2,
+          "depth": 7.3,
+          "height": 0.9,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "greenhouse growing bed",
+          "x": 26.85,
+          "z": -3,
+          "width": 2.2,
+          "depth": 7.3,
+          "height": 0.9,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "junction planted border",
+          "x": 29.8,
+          "z": 8.6,
+          "width": 3.9,
+          "depth": 1.45,
+          "height": 0.85,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "junction planted border",
+          "x": 14.3,
+          "z": 8.6,
+          "width": 3,
+          "depth": 1.25,
+          "height": 0.85,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "irrigation control",
+          "x": 29.2,
+          "z": 5.3,
           "width": 0.3,
           "depth": 0.3,
-          "height": 3,
+          "height": 1.35,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "Plant companions experience exhibit",
+          "x": 18.2,
+          "z": 5,
+          "width": 3.9,
+          "depth": 0.42,
+          "height": 2.57,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "junction bench harbor-seat",
+          "x": 7.2,
+          "z": 21.4,
+          "width": 2.15,
+          "depth": 0.77,
+          "height": 1.27,
           "y": 0.85,
           "rotation": 0
         },
         {
-          "name": "promenade lamp",
-          "x": 24.799999999999997,
-          "z": 20.400000000000002,
+          "name": "junction bench workshop-seat",
+          "x": -32,
+          "z": 4.1,
+          "width": 2.15,
+          "depth": 0.77,
+          "height": 1.27,
+          "y": 1.85,
+          "rotation": 1.5707963267948966
+        },
+        {
+          "name": "junction bench garden-seat",
+          "x": 31.8,
+          "z": -3,
+          "width": 2.15,
+          "depth": 0.77,
+          "height": 1.27,
+          "y": 2.25,
+          "rotation": -1.5707963267948966
+        },
+        {
+          "name": "junction bench coastal-seat",
+          "x": -8,
+          "z": -22.6,
+          "width": 2.15,
+          "depth": 0.77,
+          "height": 1.27,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "junction tree bf-front",
+          "x": -31,
+          "z": 14.8,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 4.6,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction tree bf-back",
+          "x": -29,
+          "z": -14.1,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 4.1,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction tree vx-front",
+          "x": 31.2,
+          "z": 15.8,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 4.8,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction tree vx-back",
+          "x": 30,
+          "z": -15,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 4,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction tree harbor-west",
+          "x": -10.2,
+          "z": 22.4,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 3.7,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction tree harbor-east",
+          "x": 10.1,
+          "z": 22.4,
+          "width": 0.34,
+          "depth": 0.34,
+          "height": 3.7,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction lamp entry-left",
+          "x": -5.6,
+          "z": 21.8,
           "width": 0.3,
           "depth": 0.3,
-          "height": 3,
+          "height": 2.82,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction lamp entry-right",
+          "x": 5.6,
+          "z": 21.8,
+          "width": 0.3,
+          "depth": 0.3,
+          "height": 2.82,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction lamp station-left",
+          "x": -3.4,
+          "z": -4.85,
+          "width": 0.3,
+          "depth": 0.3,
+          "height": 2.82,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "junction lamp station-right",
+          "x": 3.4,
+          "z": -4.85,
+          "width": 0.3,
+          "depth": 0.3,
+          "height": 2.82,
+          "y": 3.15,
+          "rotation": 0
+        },
+        {
+          "name": "junction lamp works-front",
+          "x": -26,
+          "z": 11.2,
+          "width": 0.3,
+          "depth": 0.3,
+          "height": 2.82,
+          "y": 1.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction lamp green-front",
+          "x": 26,
+          "z": 10.8,
+          "width": 0.3,
+          "depth": 0.3,
+          "height": 2.82,
+          "y": 2.25,
+          "rotation": 0
+        },
+        {
+          "name": "junction lamp coast-west",
+          "x": -18.1,
+          "z": -21,
+          "width": 0.3,
+          "depth": 0.3,
+          "height": 2.82,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction lamp coast-east",
+          "x": 18.2,
+          "z": -21,
+          "width": 0.3,
+          "depth": 0.3,
+          "height": 2.82,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction planted border",
+          "x": -8,
+          "z": 14,
+          "width": 3.8,
+          "depth": 1.4,
+          "height": 0.85,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction planted border",
+          "x": 8,
+          "z": 14,
+          "width": 3.8,
+          "depth": 1.4,
+          "height": 0.85,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction direction sign",
+          "x": 4.1,
+          "z": 11.8,
+          "width": 0.17,
+          "depth": 0.17,
+          "height": 2.05,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction direction sign",
+          "x": -25.8,
+          "z": 20.8,
+          "width": 0.17,
+          "depth": 0.17,
+          "height": 2.05,
+          "y": 0.85,
+          "rotation": 0
+        },
+        {
+          "name": "junction direction sign",
+          "x": 25.8,
+          "z": 20.8,
+          "width": 0.17,
+          "depth": 0.17,
+          "height": 2.05,
           "y": 0.85,
           "rotation": 0
         }
@@ -4731,259 +7205,175 @@
         ],
         [
           0,
+          25.8
+        ],
+        [
+          -8,
+          25
+        ],
+        [
+          -8,
+          19
+        ],
+        [
+          0,
+          16
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          0,
+          -4
+        ],
+        [
+          0,
+          -9.4
+        ],
+        [
+          0,
+          -14.8
+        ],
+        [
+          0,
+          -21.8
+        ],
+        [
+          0,
+          -14.8
+        ],
+        [
+          0,
+          -9.4
+        ],
+        [
+          0,
+          -4
+        ],
+        [
+          0,
+          10
+        ],
+        [
+          0,
+          16
+        ],
+        [
+          -8,
+          19
+        ],
+        [
+          -8,
+          25
+        ],
+        [
+          0,
+          25.8
+        ],
+        [
+          -8,
+          25
+        ],
+        [
+          -21,
+          23.8
+        ],
+        [
+          -23,
           22
         ],
         [
-          -24,
-          22
+          -23,
+          20.5
         ],
         [
-          -24,
-          6
+          -23,
+          12.5
         ],
         [
-          -28.5,
-          6
+          -23,
+          5
         ],
         [
-          -28.5,
-          -2.5
-        ],
-        [
-          -23.5,
-          -2.5
-        ],
-        [
-          -23.5,
-          2.5
-        ],
-        [
-          -18.5,
-          2.5
-        ],
-        [
-          -18.5,
-          -2.5
-        ],
-        [
-          -17,
-          -2.5
-        ],
-        [
-          -17,
-          -5.5
-        ],
-        [
-          -19,
-          -5.5
-        ],
-        [
-          -19,
-          -7.5
-        ],
-        [
-          -17,
-          -7.5
-        ],
-        [
-          -17,
-          -10.5
-        ],
-        [
-          -31,
-          -10.5
-        ],
-        [
-          -31,
-          -6.5
-        ],
-        [
-          -29,
-          -6.5
-        ],
-        [
-          -30.5,
-          -6.5
-        ],
-        [
-          -30.5,
-          -2.5
-        ],
-        [
-          -24,
-          -2.5
-        ],
-        [
-          -24,
-          6
-        ],
-        [
-          0,
-          6
-        ],
-        [
-          4.5,
-          6
-        ],
-        [
-          4.5,
-          0
-        ],
-        [
-          6.5,
-          0
-        ],
-        [
-          6.5,
-          -3
-        ],
-        [
-          5.5,
-          -3
-        ],
-        [
-          5.5,
-          -7
-        ],
-        [
-          8,
-          -7
-        ],
-        [
-          8,
-          -10
-        ],
-        [
-          5,
-          -10
-        ],
-        [
-          5,
-          -11.5
-        ],
-        [
-          -7.5,
-          -11.5
-        ],
-        [
-          -7.5,
-          -7
-        ],
-        [
-          -5.5,
-          -7
-        ],
-        [
-          -7.5,
-          -7
-        ],
-        [
-          -7.5,
-          -0.5
-        ],
-        [
-          -5.5,
-          -0.5
-        ],
-        [
-          0,
-          -0.5
-        ],
-        [
-          0,
-          6
-        ],
-        [
-          24,
-          6
-        ],
-        [
-          28.5,
-          6
-        ],
-        [
-          28.5,
-          0
-        ],
-        [
-          30.5,
-          0
-        ],
-        [
-          30.5,
-          -3
-        ],
-        [
-          29,
-          -3
-        ],
-        [
-          29,
-          -6
-        ],
-        [
-          31,
-          -6
-        ],
-        [
-          31,
-          -9
-        ],
-        [
-          28.5,
-          -9
-        ],
-        [
-          28.5,
-          -10.5
-        ],
-        [
-          16.5,
-          -10.5
-        ],
-        [
-          16.5,
-          -8
-        ],
-        [
-          18.5,
-          -8
-        ],
-        [
-          12.5,
-          -8
-        ],
-        [
-          12.5,
+          -23,
           -2
         ],
         [
-          17,
-          -2
+          -23,
+          -10.5
         ],
         [
-          17,
-          0
+          -23,
+          -18.5
         ],
         [
-          19,
-          0
+          -23,
+          -20.5
         ],
         [
-          24,
-          0
+          -20,
+          -23
         ],
         [
-          24,
-          6
+          -17,
+          -24.6
+        ],
+        [
+          -14,
+          -25
         ],
         [
           0,
-          6
+          -26
         ],
         [
-          0,
+          14,
+          -25
+        ],
+        [
+          17,
+          -24.4
+        ],
+        [
+          20,
+          -23.9
+        ],
+        [
+          23,
+          -23
+        ],
+        [
+          23,
+          -21.4
+        ],
+        [
+          23,
+          -12
+        ],
+        [
+          23,
+          -3
+        ],
+        [
+          23,
+          12
+        ],
+        [
+          23,
+          20
+        ],
+        [
+          23,
           22
+        ],
+        [
+          16,
+          25
+        ],
+        [
+          0,
+          25.8
         ],
         [
           0,
@@ -4994,157 +7384,380 @@
         {
           "id": "amtrak:experience",
           "type": "read",
-          "label": "The journey",
-          "x": -28.4,
-          "z": -2.9,
-          "y": 0.85,
-          "contentSection": "summary",
           "contentId": "amtrak",
-          "action": "amtrak"
-        },
-        {
-          "id": "amtrak:dispatch",
-          "type": "action",
-          "label": "Dispatch train",
-          "x": -19.3,
-          "z": -3,
+          "label": "Amtrak",
+          "primary": true,
+          "readFull": true,
+          "readLabel": "View experience",
+          "x": 0,
+          "z": 23,
           "y": 0.85,
-          "action": "amtrak",
-          "contentId": "amtrak"
-        },
-        {
-          "id": "amtrak:workflow",
-          "type": "read",
-          "label": "Post bid award",
-          "x": -19.2,
-          "z": -8.2,
-          "y": 0.85,
-          "contentSection": "contributions",
-          "contentId": "amtrak",
-          "action": "amtrak"
+          "cameraTarget": {
+            "x": 0,
+            "y": 6.65,
+            "z": -14
+          },
+          "camera": {
+            "distance": 43,
+            "fitBounds": {
+              "min": {
+                "x": -15,
+                "y": 0.85,
+                "z": -23.1
+              },
+              "max": {
+                "x": 15,
+                "y": 10.8,
+                "z": -4
+              }
+            }
+          },
+          "hitArea": {
+            "x": 0,
+            "y": 2.21,
+            "z": 21.317,
+            "width": 5.04,
+            "height": 2,
+            "yaw": 0
+          }
         },
         {
           "id": "beaconfire:fullstack",
           "type": "read",
-          "label": "Inside the stack",
-          "x": 4.6,
-          "z": -0.7000000000000002,
-          "y": 0.85,
-          "contentSection": "summary",
           "contentId": "beaconfire",
-          "action": "beaconfire"
-        },
-        {
-          "id": "beaconfire:pipeline",
-          "type": "action",
-          "label": "Run pipeline",
-          "x": 5.7,
-          "z": -7.5,
+          "label": "BeaconFire",
+          "primary": true,
+          "readFull": true,
+          "readLabel": "View experience",
+          "x": -16,
+          "z": 23,
           "y": 0.85,
-          "action": "beaconfire",
-          "contentId": "beaconfire"
-        },
-        {
-          "id": "beaconfire:rag",
-          "type": "read",
-          "label": "Retrieval to reply",
-          "x": -5.6,
-          "z": -7.5,
-          "y": 0.85,
-          "contentSection": "contributions",
-          "contentId": "beaconfire",
-          "action": "beaconfire"
+          "cameraTarget": {
+            "x": -23,
+            "y": 4.550000000000001,
+            "z": -2
+          },
+          "camera": {
+            "distance": 36,
+            "fitBounds": {
+              "min": {
+                "x": -34,
+                "y": 0.85,
+                "z": -10.5
+              },
+              "max": {
+                "x": -12,
+                "y": 9.75,
+                "z": 12.5
+              }
+            }
+          },
+          "hitArea": {
+            "x": -16,
+            "y": 2.21,
+            "z": 21.317,
+            "width": 5.04,
+            "height": 2,
+            "yaw": 0
+          }
         },
         {
           "id": "visionx:plants",
           "type": "read",
-          "label": "Plant companions",
-          "x": 28.5,
-          "z": -0.6000000000000001,
-          "y": 0.85,
-          "contentSection": "summary",
           "contentId": "visionx",
-          "action": "visionx"
+          "label": "VisionX",
+          "primary": true,
+          "readFull": true,
+          "readLabel": "View experience",
+          "x": 16,
+          "z": 23,
+          "y": 0.85,
+          "cameraTarget": {
+            "x": 23,
+            "y": 4.65,
+            "z": -3
+          },
+          "camera": {
+            "distance": 36,
+            "fitBounds": {
+              "min": {
+                "x": 12,
+                "y": 0.85,
+                "z": -12
+              },
+              "max": {
+                "x": 34,
+                "y": 8.25,
+                "z": 12
+              }
+            }
+          },
+          "hitArea": {
+            "x": 16,
+            "y": 2.21,
+            "z": 21.317,
+            "width": 5.04,
+            "height": 2,
+            "yaw": 0
+          }
+        },
+        {
+          "id": "amtrak:workflow",
+          "type": "read",
+          "contentId": "amtrak",
+          "label": "Workforce systems",
+          "primary": false,
+          "readFull": true,
+          "readLabel": "View experience",
+          "x": -11,
+          "z": -4.65,
+          "y": 3.15,
+          "cameraTarget": {
+            "x": 0,
+            "y": 6.65,
+            "z": -14
+          },
+          "camera": {
+            "distance": 43,
+            "fitBounds": {
+              "min": {
+                "x": -15,
+                "y": 0.85,
+                "z": -23.1
+              },
+              "max": {
+                "x": 15,
+                "y": 10.8,
+                "z": -4
+              }
+            }
+          },
+          "hitArea": {
+            "x": -11,
+            "y": 4.51,
+            "z": -6.333,
+            "width": 3.94,
+            "height": 2,
+            "yaw": 0
+          }
+        },
+        {
+          "id": "amtrak:dispatch",
+          "type": "action",
+          "contentId": "amtrak",
+          "action": "amtrak",
+          "label": "Dispatch train",
+          "x": 10,
+          "z": -5,
+          "y": 3.15
+        },
+        {
+          "id": "beaconfire:pipeline",
+          "type": "action",
+          "contentId": "beaconfire",
+          "action": "beaconfire",
+          "label": "Run the pipeline",
+          "x": -28,
+          "z": 8.45,
+          "y": 1.85
+        },
+        {
+          "id": "beaconfire:rag",
+          "type": "read",
+          "contentId": "beaconfire",
+          "label": "Retrieval to reply",
+          "primary": false,
+          "readFull": true,
+          "readLabel": "View experience",
+          "x": -17,
+          "z": 8.7,
+          "y": 1.85,
+          "cameraTarget": {
+            "x": -23,
+            "y": 4.550000000000001,
+            "z": -2
+          },
+          "camera": {
+            "distance": 36,
+            "fitBounds": {
+              "min": {
+                "x": -34,
+                "y": 0.85,
+                "z": -10.5
+              },
+              "max": {
+                "x": -12,
+                "y": 9.75,
+                "z": 12.5
+              }
+            }
+          },
+          "hitArea": {
+            "x": -17,
+            "y": 3.21,
+            "z": 7.0169999999999995,
+            "width": 3.94,
+            "height": 2,
+            "yaw": 0
+          }
         },
         {
           "id": "visionx:water",
           "type": "action",
-          "label": "Water the garden",
-          "x": 29,
-          "z": -6.6,
-          "y": 0.85,
+          "contentId": "visionx",
           "action": "visionx",
-          "contentId": "visionx"
+          "label": "Water the garden",
+          "x": 29.2,
+          "z": 6.75,
+          "y": 2.25
         },
         {
           "id": "visionx:assistant",
           "type": "read",
-          "label": "Virtual assistant",
-          "x": 18.5,
-          "z": -8.3,
-          "y": 0.85,
-          "contentSection": "results",
           "contentId": "visionx",
-          "action": "visionx"
+          "label": "Plant companions",
+          "primary": false,
+          "readFull": true,
+          "readLabel": "View experience",
+          "x": 18.2,
+          "z": 6.85,
+          "y": 2.25,
+          "cameraTarget": {
+            "x": 23,
+            "y": 4.65,
+            "z": -3
+          },
+          "camera": {
+            "distance": 36,
+            "fitBounds": {
+              "min": {
+                "x": 12,
+                "y": 0.85,
+                "z": -12
+              },
+              "max": {
+                "x": 34,
+                "y": 8.25,
+                "z": 12
+              }
+            }
+          },
+          "hitArea": {
+            "x": 18.2,
+            "y": 3.6100000000000003,
+            "z": 5.167,
+            "width": 3.94,
+            "height": 2,
+            "yaw": 0
+          }
         }
       ],
       "benches": [
         {
-          "x": -28.8,
-          "z": -8.3,
-          "y": 1.4,
-          "yaw": 0,
-          "approach": {
-            "x": -28.8,
-            "z": -7.4,
-            "y": 0.85
-          },
-          "id": "amtrak:bench",
+          "id": "amtrak:waiting-west",
           "contentId": "amtrak",
-          "action": "amtrak"
+          "action": "amtrak",
+          "x": -6.1,
+          "z": -15.1,
+          "y": 3.73,
+          "yaw": 0,
+          "rotation": 0,
+          "approach": {
+            "x": -6.1,
+            "z": -13.6,
+            "y": 3.15
+          }
         },
         {
-          "x": -5.3,
-          "z": -2,
-          "y": 1.4,
+          "id": "amtrak:waiting-east",
+          "contentId": "amtrak",
+          "action": "amtrak",
+          "x": 6.1,
+          "z": -15.1,
+          "y": 3.73,
           "yaw": 0,
+          "rotation": 0,
           "approach": {
-            "x": -5.3,
-            "z": -1.1,
+            "x": 6.1,
+            "z": -13.6,
+            "y": 3.15
+          }
+        },
+        {
+          "id": "amtrak:harbor-seat",
+          "contentId": "amtrak",
+          "action": "amtrak",
+          "x": 7.2,
+          "z": 21.4,
+          "y": 1.43,
+          "yaw": 0,
+          "rotation": 0,
+          "approach": {
+            "x": 7.2,
+            "z": 22.9,
             "y": 0.85
-          },
-          "id": "beaconfire:bench",
+          }
+        },
+        {
+          "id": "beaconfire:workshop-seat",
           "contentId": "beaconfire",
-          "action": "beaconfire"
+          "action": "beaconfire",
+          "x": -32,
+          "z": 4.1,
+          "y": 2.43,
+          "yaw": 1.5707963267948966,
+          "rotation": 1.5707963267948966,
+          "approach": {
+            "x": -30.5,
+            "z": 4.1,
+            "y": 1.85
+          }
         },
         {
-          "x": 19.2,
-          "z": -1.7999999999999998,
-          "y": 1.4,
-          "yaw": 0,
-          "approach": {
-            "x": 19.2,
-            "z": -0.8999999999999999,
-            "y": 0.85
-          },
-          "id": "visionx:bench",
+          "id": "visionx:garden-seat",
           "contentId": "visionx",
-          "action": "visionx"
+          "action": "visionx",
+          "x": 31.8,
+          "z": -3,
+          "y": 2.83,
+          "yaw": -1.5707963267948966,
+          "rotation": -1.5707963267948966,
+          "approach": {
+            "x": 30.3,
+            "z": -3,
+            "y": 2.25
+          }
+        },
+        {
+          "id": "amtrak:coastal-seat",
+          "contentId": "amtrak",
+          "action": "amtrak",
+          "x": -8,
+          "z": -22.6,
+          "y": 3.73,
+          "yaw": 0,
+          "rotation": 0,
+          "approach": {
+            "x": -8,
+            "z": -21.1,
+            "y": 3.15
+          }
         }
       ],
       "bench": {
-        "x": -28.8,
-        "z": -8.3,
-        "y": 1.4,
-        "yaw": 0,
-        "approach": {
-          "x": -28.8,
-          "z": -7.4,
-          "y": 0.85
-        },
-        "id": "amtrak:bench",
+        "id": "amtrak:waiting-west",
         "contentId": "amtrak",
-        "action": "amtrak"
+        "action": "amtrak",
+        "x": -6.1,
+        "z": -15.1,
+        "y": 3.73,
+        "yaw": 0,
+        "rotation": 0,
+        "approach": {
+          "x": -6.1,
+          "z": -13.6,
+          "y": 3.15
+        }
       },
       "berths": [
         {
@@ -5177,73 +7790,165 @@
       "districts": [
         {
           "id": "amtrak",
-          "x": -24,
-          "z": -4,
+          "x": 0,
+          "y": 0,
+          "z": -14,
           "rotation": 0,
           "group": "district_amtrak",
+          "cameraTarget": {
+            "x": 0,
+            "y": 6.65,
+            "z": -14
+          },
+          "camera": {
+            "distance": 43,
+            "fitBounds": {
+              "min": {
+                "x": -15,
+                "y": 0.85,
+                "z": -23.1
+              },
+              "max": {
+                "x": 15,
+                "y": 10.8,
+                "z": -4
+              }
+            }
+          },
           "crossing": {
-            "x": -24,
-            "z": 0.40000000000000036,
-            "width": 3,
-            "depth": 2.5,
+            "contentId": "amtrak",
+            "x": 0,
+            "z": -6.4,
+            "y": 3.15,
+            "width": 4,
+            "depth": 2.8,
             "trackCenter": [
-              -24,
-              -5.4
+              0,
+              -14
             ],
             "trackRadii": [
-              8.8,
-              5.8
-            ],
-            "contentId": "amtrak"
+              12.8,
+              7.6
+            ]
           },
           "animation": {
             "train": {
               "trackCentre": [
                 0,
-                0,
-                -1.4
+                3.15,
+                0
               ],
               "trackRadii": [
-                8.8,
-                5.8
+                12.8,
+                7.6
               ],
               "initialAngle": 0,
-              "rootY": 0,
+              "rootY": 3.15,
+              "surfaceY": 3.15,
               "forward": "-Z",
-              "duration": 10
+              "duration": 18
             }
           }
         },
         {
           "id": "beaconfire",
-          "x": 0,
-          "z": -4,
+          "x": -23,
+          "y": 0,
+          "z": -2,
           "rotation": 0,
-          "group": "district_beaconfire"
+          "group": "district_beaconfire",
+          "cameraTarget": {
+            "x": -23,
+            "y": 4.550000000000001,
+            "z": -2
+          },
+          "camera": {
+            "distance": 36,
+            "fitBounds": {
+              "min": {
+                "x": -34,
+                "y": 0.85,
+                "z": -10.5
+              },
+              "max": {
+                "x": -12,
+                "y": 9.75,
+                "z": 12.5
+              }
+            }
+          }
         },
         {
           "id": "visionx",
-          "x": 24,
-          "z": -4,
+          "x": 23,
+          "y": 0,
+          "z": -3,
           "rotation": 0,
-          "group": "district_visionx"
+          "group": "district_visionx",
+          "cameraTarget": {
+            "x": 23,
+            "y": 4.65,
+            "z": -3
+          },
+          "camera": {
+            "distance": 36,
+            "fitBounds": {
+              "min": {
+                "x": 12,
+                "y": 0.85,
+                "z": -12
+              },
+              "max": {
+                "x": 34,
+                "y": 8.25,
+                "z": 12
+              }
+            }
+          },
+          "animation": {
+            "sprinkler": {
+              "position": [
+                6.2,
+                3.48,
+                8.3
+              ],
+              "surfaceY": 2.25
+            }
+          }
         }
       ],
       "crossings": [
         {
-          "x": -24,
-          "z": 0.40000000000000036,
-          "width": 3,
-          "depth": 2.5,
+          "contentId": "amtrak",
+          "x": 0,
+          "z": -6.4,
+          "y": 3.15,
+          "width": 4,
+          "depth": 2.8,
           "trackCenter": [
-            -24,
-            -5.4
+            0,
+            -14
           ],
           "trackRadii": [
-            8.8,
-            5.8
+            12.8,
+            7.6
+          ]
+        },
+        {
+          "contentId": "amtrak",
+          "x": 0,
+          "z": -21.6,
+          "y": 3.15,
+          "width": 4,
+          "depth": 2.8,
+          "trackCenter": [
+            0,
+            -14
           ],
-          "contentId": "amtrak"
+          "trackRadii": [
+            12.8,
+            7.6
+          ]
         }
       ],
       "dock": {
@@ -5252,29 +7957,883 @@
         "startZ": 27.499999999999996,
         "endZ": 38
       },
+      "landmarks": [
+        {
+          "id": "career-station",
+          "contentId": "amtrak",
+          "label": "Amtrak Central",
+          "x": 0,
+          "z": -14.8,
+          "width": 18,
+          "depth": 7.2,
+          "nodeGroup": "occluder_junction_terminal_walls"
+        },
+        {
+          "id": "software-workshop",
+          "contentId": "beaconfire",
+          "label": "BeaconFire Works",
+          "x": -23,
+          "z": -2,
+          "width": 14,
+          "depth": 8,
+          "nodeGroup": "occluder_junction_workshop_walls"
+        },
+        {
+          "id": "visionx-conservatory",
+          "contentId": "visionx",
+          "label": "VisionX Conservatory",
+          "x": 23,
+          "z": -3,
+          "width": 13.4,
+          "depth": 10.4,
+          "nodeGroup": "occluder_junction_conservatory_frame"
+        }
+      ],
+      "interiors": [
+        {
+          "landmarkId": "career-station",
+          "floorY": 3.15,
+          "bounds": {
+            "x": 0,
+            "z": -14.8,
+            "width": 18,
+            "depth": 7.2
+          },
+          "entrances": [
+            {
+              "id": "station-front",
+              "x": 0,
+              "z": -11.2,
+              "width": 4.4,
+              "yaw": 0
+            },
+            {
+              "id": "station-rear",
+              "x": 0,
+              "z": -18.4,
+              "width": 4.4,
+              "yaw": 3.141592653589793
+            }
+          ],
+          "cutawayGroups": [
+            "occluder_junction_terminal_walls",
+            "occluder_junction_terminal_roof",
+            "occluder_junction_terminal_vault"
+          ],
+          "walkRoute": [
+            [
+              0,
+              -9.4
+            ],
+            [
+              0,
+              -14.8
+            ],
+            [
+              0,
+              -20
+            ]
+          ]
+        },
+        {
+          "landmarkId": "software-workshop",
+          "floorY": 1.85,
+          "bounds": {
+            "x": -23,
+            "z": -2,
+            "width": 14,
+            "depth": 8
+          },
+          "entrances": [
+            {
+              "id": "workshop-front",
+              "x": -23,
+              "z": 2,
+              "width": 4.5,
+              "yaw": 0
+            },
+            {
+              "id": "workshop-rear",
+              "x": -23,
+              "z": -6,
+              "width": 4.5,
+              "yaw": 3.141592653589793
+            }
+          ],
+          "cutawayGroups": [
+            "occluder_junction_workshop_walls",
+            "occluder_junction_workshop_roof"
+          ],
+          "walkRoute": [
+            [
+              -23,
+              5
+            ],
+            [
+              -23,
+              -2
+            ],
+            [
+              -23,
+              -9
+            ]
+          ]
+        },
+        {
+          "landmarkId": "visionx-conservatory",
+          "floorY": 2.25,
+          "bounds": {
+            "x": 23,
+            "z": -3,
+            "width": 13.4,
+            "depth": 10.4
+          },
+          "entrances": [
+            {
+              "id": "conservatory-front",
+              "x": 23,
+              "z": 2.2,
+              "width": 4.7,
+              "yaw": 0
+            },
+            {
+              "id": "conservatory-rear",
+              "x": 23,
+              "z": -8.2,
+              "width": 4.7,
+              "yaw": 3.141592653589793
+            }
+          ],
+          "cutawayGroups": [
+            "occluder_junction_conservatory_frame",
+            "occluder_junction_conservatory_glazing",
+            "occluder_junction_conservatory_roof"
+          ],
+          "walkRoute": [
+            [
+              23,
+              5
+            ],
+            [
+              23,
+              -3
+            ],
+            [
+              23,
+              -10.4
+            ]
+          ]
+        }
+      ],
+      "paths": [
+        {
+          "id": "career-loop",
+          "kind": "walk",
+          "main": true,
+          "width": 3.2,
+          "points": [
+            [
+              0,
+              25.8
+            ],
+            [
+              -8,
+              25
+            ],
+            [
+              -21,
+              23.8
+            ],
+            [
+              -23,
+              22
+            ],
+            [
+              -23,
+              20.5
+            ],
+            [
+              -23,
+              12.5
+            ],
+            [
+              -23,
+              5
+            ],
+            [
+              -23,
+              -2
+            ],
+            [
+              -23,
+              -10.5
+            ],
+            [
+              -23,
+              -18.5
+            ],
+            [
+              -23,
+              -20.5
+            ],
+            [
+              -20,
+              -23
+            ],
+            [
+              -17,
+              -24.6
+            ],
+            [
+              -14,
+              -25
+            ],
+            [
+              0,
+              -26
+            ],
+            [
+              14,
+              -25
+            ],
+            [
+              17,
+              -24.4
+            ],
+            [
+              20,
+              -23.9
+            ],
+            [
+              23,
+              -23
+            ],
+            [
+              23,
+              -21.4
+            ],
+            [
+              23,
+              -12
+            ],
+            [
+              23,
+              -3
+            ],
+            [
+              23,
+              12
+            ],
+            [
+              23,
+              20
+            ],
+            [
+              23,
+              22
+            ],
+            [
+              16,
+              25
+            ],
+            [
+              0,
+              25.8
+            ]
+          ]
+        },
+        {
+          "id": "station-avenue",
+          "kind": "walk",
+          "main": true,
+          "width": 3.2,
+          "points": [
+            [
+              -8,
+              25
+            ],
+            [
+              -8,
+              19
+            ],
+            [
+              0,
+              16
+            ],
+            [
+              0,
+              10
+            ],
+            [
+              0,
+              -4
+            ],
+            [
+              0,
+              -9.4
+            ],
+            [
+              0,
+              -14.8
+            ],
+            [
+              0,
+              -21.8
+            ]
+          ]
+        },
+        {
+          "id": "harbor-approach",
+          "kind": "walk",
+          "width": 3.2,
+          "points": [
+            [
+              0,
+              27.499999999999996
+            ],
+            [
+              0,
+              25.8
+            ]
+          ]
+        },
+        {
+          "id": "company-directory",
+          "kind": "walk",
+          "width": 3.2,
+          "points": [
+            [
+              -19.5,
+              24.4
+            ],
+            [
+              19.5,
+              24.4
+            ]
+          ]
+        }
+      ],
       "crossing": {
-        "x": -24,
-        "z": 0.40000000000000036,
-        "width": 3,
-        "depth": 2.5,
+        "contentId": "amtrak",
+        "x": 0,
+        "z": -6.4,
+        "y": 3.15,
+        "width": 4,
+        "depth": 2.8,
         "trackCenter": [
-          -24,
-          -5.4
+          0,
+          -14
         ],
         "trackRadii": [
-          8.8,
-          5.8
-        ],
-        "contentId": "amtrak"
+          12.8,
+          7.6
+        ]
       },
-      "routeLength": 391,
-      "estimatedWalkingSeconds": 162.9,
-      "width": 2.05,
+      "trainTrack": {
+        "center": [
+          0,
+          3.15,
+          -14
+        ],
+        "radiusX": 12.8,
+        "radiusZ": 7.6,
+        "railY": 3.21,
+        "points": [
+          [
+            12.8,
+            3.15,
+            -14
+          ],
+          [
+            12.772594217454126,
+            3.15,
+            -13.502936217850912
+          ],
+          [
+            12.690494225584773,
+            3.15,
+            -13.008000939127609
+          ],
+          [
+            12.55405158916135,
+            3.15,
+            -12.517313552677425
+          ],
+          [
+            12.363850576500075,
+            3.15,
+            -12.032975257220842
+          ],
+          [
+            12.120705657537354,
+            3.15,
+            -11.557060063695971
+          ],
+          [
+            11.825658016144471,
+            3.15,
+            -11.091605914025317
+          ],
+          [
+            11.479971091618411,
+            3.15,
+            -10.63860595433559
+          ],
+          [
+            11.085125168440817,
+            3.15,
+            -10.200000000000001
+          ],
+          [
+            10.64281103747258,
+            3.15,
+            -9.777666229051023
+          ],
+          [
+            10.15492275572781,
+            3.15,
+            -9.373413139533724
+          ],
+          [
+            9.62354953573091,
+            3.15,
+            -8.988971805239476
+          ],
+          [
+            9.05096679918781,
+            3.15,
+            -8.625988462982239
+          ],
+          [
+            8.439626433280882,
+            3.15,
+            -8.286017463159773
+          ],
+          [
+            7.792146291311624,
+            3.15,
+            -7.970514613786613
+          ],
+          [
+            7.111298982650911,
+            3.15,
+            -7.680830946500658
+          ],
+          [
+            6.400000000000002,
+            3.15,
+            -7.418206931238267
+          ],
+          [
+            5.661295234803216,
+            3.15,
+            -7.183767164351568
+          ],
+          [
+            4.898347934273151,
+            3.15,
+            -6.978515552914221
+          ],
+          [
+            4.11442515588047,
+            3.15,
+            -6.803331015837198
+          ],
+          [
+            3.3128837773122655,
+            3.15,
+            -6.658963720203081
+          ],
+          [
+            2.4971561218064426,
+            3.15,
+            -6.546031868935449
+          ],
+          [
+            1.670735260416662,
+            3.15,
+            -6.4650190535590415
+          ],
+          [
+            0.8371600541458339,
+            3.15,
+            -6.416272183386614
+          ],
+          [
+            7.837739514543061e-16,
+            3.15,
+            -6.4
+          ],
+          [
+            -0.8371600541458323,
+            3.15,
+            -6.416272183386614
+          ],
+          [
+            -1.6707352604166605,
+            3.15,
+            -6.4650190535590415
+          ],
+          [
+            -2.497156121806441,
+            3.15,
+            -6.546031868935449
+          ],
+          [
+            -3.312883777312264,
+            3.15,
+            -6.658963720203081
+          ],
+          [
+            -4.114425155880468,
+            3.15,
+            -6.803331015837197
+          ],
+          [
+            -4.898347934273146,
+            3.15,
+            -6.97851555291422
+          ],
+          [
+            -5.661295234803215,
+            3.15,
+            -7.183767164351568
+          ],
+          [
+            -6.399999999999998,
+            3.15,
+            -7.418206931238266
+          ],
+          [
+            -7.11129898265091,
+            3.15,
+            -7.680830946500658
+          ],
+          [
+            -7.792146291311624,
+            3.15,
+            -7.970514613786613
+          ],
+          [
+            -8.439626433280882,
+            3.15,
+            -8.286017463159773
+          ],
+          [
+            -9.050966799187808,
+            3.15,
+            -8.625988462982239
+          ],
+          [
+            -9.623549535730909,
+            3.15,
+            -8.988971805239476
+          ],
+          [
+            -10.15492275572781,
+            3.15,
+            -9.37341313953372
+          ],
+          [
+            -10.642811037472576,
+            3.15,
+            -9.777666229051022
+          ],
+          [
+            -11.085125168440817,
+            3.15,
+            -10.200000000000001
+          ],
+          [
+            -11.47997109161841,
+            3.15,
+            -10.638605954335588
+          ],
+          [
+            -11.825658016144471,
+            3.15,
+            -11.091605914025317
+          ],
+          [
+            -12.120705657537352,
+            3.15,
+            -11.557060063695971
+          ],
+          [
+            -12.363850576500074,
+            3.15,
+            -12.03297525722084
+          ],
+          [
+            -12.55405158916135,
+            3.15,
+            -12.517313552677425
+          ],
+          [
+            -12.690494225584773,
+            3.15,
+            -13.008000939127605
+          ],
+          [
+            -12.772594217454126,
+            3.15,
+            -13.502936217850912
+          ],
+          [
+            -12.8,
+            3.15,
+            -13.999999999999998
+          ],
+          [
+            -12.772594217454126,
+            3.15,
+            -14.497063782149086
+          ],
+          [
+            -12.690494225584773,
+            3.15,
+            -14.991999060872393
+          ],
+          [
+            -12.554051589161352,
+            3.15,
+            -15.482686447322571
+          ],
+          [
+            -12.363850576500075,
+            3.15,
+            -15.967024742779158
+          ],
+          [
+            -12.120705657537354,
+            3.15,
+            -16.44293993630403
+          ],
+          [
+            -11.825658016144473,
+            3.15,
+            -16.90839408597468
+          ],
+          [
+            -11.47997109161841,
+            3.15,
+            -17.36139404566441
+          ],
+          [
+            -11.085125168440818,
+            3.15,
+            -17.799999999999997
+          ],
+          [
+            -10.642811037472583,
+            3.15,
+            -18.222333770948975
+          ],
+          [
+            -10.15492275572781,
+            3.15,
+            -18.626586860466276
+          ],
+          [
+            -9.62354953573091,
+            3.15,
+            -19.011028194760524
+          ],
+          [
+            -9.050966799187814,
+            3.15,
+            -19.374011537017758
+          ],
+          [
+            -8.439626433280884,
+            3.15,
+            -19.713982536840227
+          ],
+          [
+            -7.792146291311628,
+            3.15,
+            -20.029485386213384
+          ],
+          [
+            -7.111298982650908,
+            3.15,
+            -20.319169053499344
+          ],
+          [
+            -6.400000000000006,
+            3.15,
+            -20.581793068761733
+          ],
+          [
+            -5.661295234803218,
+            3.15,
+            -20.81623283564843
+          ],
+          [
+            -4.898347934273146,
+            3.15,
+            -21.02148444708578
+          ],
+          [
+            -4.114425155880471,
+            3.15,
+            -21.1966689841628
+          ],
+          [
+            -3.312883777312264,
+            3.15,
+            -21.341036279796917
+          ],
+          [
+            -2.497156121806447,
+            3.15,
+            -21.45396813106455
+          ],
+          [
+            -1.670735260416661,
+            3.15,
+            -21.53498094644096
+          ],
+          [
+            -0.837160054145827,
+            3.15,
+            -21.583727816613386
+          ],
+          [
+            -2.351321854362918e-15,
+            3.15,
+            -21.6
+          ],
+          [
+            0.8371600541458224,
+            3.15,
+            -21.583727816613386
+          ],
+          [
+            1.6707352604166563,
+            3.15,
+            -21.53498094644096
+          ],
+          [
+            2.4971561218064426,
+            3.15,
+            -21.45396813106455
+          ],
+          [
+            3.31288377731226,
+            3.15,
+            -21.34103627979692
+          ],
+          [
+            4.114425155880467,
+            3.15,
+            -21.1966689841628
+          ],
+          [
+            4.898347934273142,
+            3.15,
+            -21.021484447085783
+          ],
+          [
+            5.661295234803213,
+            3.15,
+            -20.81623283564843
+          ],
+          [
+            6.400000000000002,
+            3.15,
+            -20.581793068761733
+          ],
+          [
+            7.111298982650904,
+            3.15,
+            -20.319169053499344
+          ],
+          [
+            7.792146291311615,
+            3.15,
+            -20.02948538621339
+          ],
+          [
+            8.439626433280884,
+            3.15,
+            -19.713982536840227
+          ],
+          [
+            9.050966799187806,
+            3.15,
+            -19.37401153701776
+          ],
+          [
+            9.623549535730913,
+            3.15,
+            -19.01102819476052
+          ],
+          [
+            10.154922755727808,
+            3.15,
+            -18.62658686046628
+          ],
+          [
+            10.642811037472573,
+            3.15,
+            -18.222333770948982
+          ],
+          [
+            11.085125168440811,
+            3.15,
+            -17.800000000000004
+          ],
+          [
+            11.47997109161841,
+            3.15,
+            -17.36139404566441
+          ],
+          [
+            11.825658016144473,
+            3.15,
+            -16.90839408597468
+          ],
+          [
+            12.120705657537352,
+            3.15,
+            -16.44293993630403
+          ],
+          [
+            12.363850576500072,
+            3.15,
+            -15.967024742779163
+          ],
+          [
+            12.554051589161348,
+            3.15,
+            -15.482686447322578
+          ],
+          [
+            12.690494225584773,
+            3.15,
+            -14.991999060872393
+          ],
+          [
+            12.772594217454126,
+            3.15,
+            -14.497063782149086
+          ]
+        ]
+      },
+      "routeLength": 322.73,
+      "estimatedWalkingSeconds": 134.5,
+      "width": 3.2,
       "validation": {
         "connectedFromDock": true,
+        "routeClearance": 1.3,
+        "pathWidth": 3.2,
+        "mainPathWidth": 3.2,
+        "terraces": 3,
         "stationsReachable": 9,
-        "routeClearance": 0.8,
-        "pathWidth": 2.05
+        "primaryExperienceEntries": 3,
+        "openInteriors": 3,
+        "stepFreeRamps": 5
       }
     },
     {

@@ -3,7 +3,7 @@ import {islands,toWorld} from '../config.js';
 import {dockDistance} from '../core/dock.js';
 import {oceanHeight} from './water-space.js';
 export class IslandDetails{
- constructor(scene,settings,loader){Object.assign(this,{scene,settings,loader});this.items=new Map();this.dummy=new THREE.Object3D();
+ constructor(scene,settings,loader){Object.assign(this,{scene,settings,loader});this.items=new Map();this.dummy=new THREE.Object3D();this.mistOrigin=new THREE.Vector3();this.sprinklerModel=null;this.sprinkler=null;
   this.fenders=new THREE.InstancedMesh(new THREE.CapsuleGeometry(.12,.42,3,7),new THREE.MeshStandardMaterial({color:'#eee4cb',roughness:.8}),islands.length*2);this.lines=new THREE.InstancedMesh(new THREE.CylinderGeometry(.018,.018,.42,5),new THREE.MeshStandardMaterial({color:'#aa946c'}),islands.length*2);this.ripples=new THREE.InstancedMesh(new THREE.RingGeometry(.36,.39,20),new THREE.MeshBasicMaterial({color:'#f1ceb0',transparent:true,opacity:.4,depthWrite:false,side:THREE.DoubleSide}),islands.length*2);this.mist=new THREE.InstancedMesh(new THREE.SphereGeometry(.075,5,4),new THREE.MeshBasicMaterial({color:'#e5bda4',transparent:true,opacity:.28,depthWrite:false}),24);this.mist.frustumCulled=false;scene.add(this.mist);for(const m of [this.fenders,this.lines,this.ripples]){m.frustumCulled=false;scene.add(m);}
  }
  async ensure(island){if(this.v4)return;const quality=this.settings.quality;let item=this.items.get(island.id);if(!item){item={island,cache:new Map(),pending:new Set(),model:null};this.items.set(island.id,item);}if(item.cache.has(quality)){this.show(item,quality);return;}if(item.pending.has(quality))return;item.pending.add(quality);
@@ -14,8 +14,12 @@ export class IslandDetails{
    const near=dockDistance(p,island)<6;for(const side of [-1,1]){const q=toWorld(island,side*(island.pier.width/2+.18),(island.pier.startZ+island.pier.endZ)/2),sway=!this.settings.reduced&&near?Math.sin(time*3)*.1:0;this.dummy.position.set(q.x,.34,q.z);this.dummy.rotation.set(sway,0,side*.08);this.dummy.scale.setScalar(distance<65?1:0);this.dummy.updateMatrix();this.fenders.setMatrixAt(n,this.dummy.matrix);
     this.dummy.position.y=.76;this.dummy.scale.setScalar(distance<65?1:0);this.dummy.updateMatrix();this.lines.setMatrixAt(n,this.dummy.matrix);
     const radius=.8+(Math.sin(time*1.7+n)*.5+.5)*.65;this.dummy.position.y=oceanHeight(q.x,q.z,waterTime)+.02;this.dummy.rotation.set(-Math.PI/2,0,0);this.dummy.scale.setScalar(distance<65?radius:0);this.dummy.updateMatrix();this.ripples.setMatrixAt(n++,this.dummy.matrix);}
-  }const controller=controllers.get('experience')?.children?.find(c=>c.island.id==='visionx'),garden=controller?.island||islands[1],active=!!controller&&controller.elapsed<controller.duration&&!this.settings.reduced&&Math.hypot(p.x-garden.x,p.z-garden.z)<65;
-  for(let n=0;n<24;n++){const age=(time*1.2+n/24)%1,a=n*2.399+time*.3,q=toWorld(garden,4.4+Math.cos(a)*age*1.6,4+Math.sin(a)*age*.8);this.dummy.position.set(q.x,1.7+Math.sin(age*Math.PI)*.5-age*.6,q.z);this.dummy.rotation.set(0,0,0);this.dummy.scale.setScalar(active&&(this.settings.quality==='high'||n%2===0)?Math.sin(age*Math.PI)*1.5:0);this.dummy.updateMatrix();this.mist.setMatrixAt(n,this.dummy.matrix);}this.mist.instanceMatrix.needsUpdate=true;for(const m of [this.fenders,this.lines,this.ripples])m.instanceMatrix.needsUpdate=true;
+  }const controller=controllers.get('experience')?.children?.find(c=>c.island.id==='visionx'),model=controller?.model||null;
+  // Cache the authored emitter per bound model; quality swaps replace the root.
+  if(model!==this.sprinklerModel){this.sprinklerModel=model;this.sprinkler=model?.getObjectByName('anim_sprinkler')||null;}
+  if(this.sprinkler)this.sprinkler.getWorldPosition(this.mistOrigin);
+  const active=!!this.sprinkler&&controller.elapsed<controller.duration&&!this.settings.reduced&&Math.hypot(p.x-this.mistOrigin.x,p.z-this.mistOrigin.z)<65,rotation=controller?.island.rotation||0,c=Math.cos(rotation),s=Math.sin(rotation);
+  for(let n=0;n<24;n++){const age=(time*1.2+n/24)%1,a=n*2.399+time*.3,x=Math.cos(a)*age*1.6,z=Math.sin(a)*age*.8;this.dummy.position.set(this.mistOrigin.x+x*c+z*s,this.mistOrigin.y+Math.sin(age*Math.PI)*.5-age*.6,this.mistOrigin.z-x*s+z*c);this.dummy.rotation.set(0,0,0);this.dummy.scale.setScalar(active&&(this.settings.quality==='high'||n%2===0)?Math.sin(age*Math.PI)*1.5:0);this.dummy.updateMatrix();this.mist.setMatrixAt(n,this.dummy.matrix);}this.mist.instanceMatrix.needsUpdate=true;for(const m of [this.fenders,this.lines,this.ripples])m.instanceMatrix.needsUpdate=true;
  }
  setQuality(){for(const item of this.items.values())this.ensure(item.island);}
 }

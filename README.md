@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V16 — Coastal Drive** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V17 — Career Junction** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -13,6 +13,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Four connected exhibition islands:** About combines Harbor and Connect; Experience combines Amtrak, BeaconFire and VisionX; Projects combines Affirmation, Research and Catering; Education keeps BU and CMU together. Nine independent stories remain available through the directory.
 - **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, four walkable islands, exhibit stops, benches and safe boarding transitions.
 - **Jack’s Estate:** About Island has a furnished house with a walkable ground floor, four garage bays with a drivable Porsche 911, Mercedes G63, Ferrari Purosangue and Ford Raptor, a garden circuit, a tennis court and three putting greens.
+- **Career Junction:** Experience is a terraced coastal town with an Amtrak clock station, BeaconFire brick workshop and VisionX conservatory. Direct company readers, connected ramps and small working displays make the career stories easy to find.
 - **Garden practice:** return six machine-fed tennis balls or putt across three greens, with animated racket and club contact, keyboard and touch controls, and results that last only for the current round.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
@@ -76,6 +77,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.2 — Relaxed Driving Pose** | Rearward driver placement, relaxed wheel reach and a charcoal G63 roof | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/a375409df896d102ea7b0b80c116f7bd382e2b52) |
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
 | **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
+| **V17 — Career Junction** | Rebuilds Experience as a layered seaside career town, with three company exhibits, walkable interiors and an elevated model railway | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V16 — Coastal Drive** | Expands About to a 90 × 80 estate with a 6.5 m coastal driving loop, roomy garage forecourt and sunset parking | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V15.3.2 — Every Island Arrival** | Replays the panorama on every landing with a 0.5s hold and 1.8s smooth approach | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V15.3.1 — Quicker Island Arrival** | Halves the initial panorama hold to 0.8s while retaining the smooth 2.4s approach | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -87,6 +89,15 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V17 — Career Junction
+
+- Experience keeps its **78 × 60** shoreline, original bridge and both landing positions. Three raised precincts connect to the harbor and coastal promenade by ramps.
+- A sandstone Amtrak terminal has a clock, navy vaulted roof, open concourse and model train circuit. BeaconFire combines an open brick workshop with a three-node pipeline; VisionX has a glass conservatory, planting benches and irrigation. These are original concept environments, not claims about the employers’ real offices.
+- Three harbor kiosks and the company entrances open the existing full résumé stories with **View experience**. Nearby devices use F; reading uses E or the full sign face. Height and visibility checks prevent reading across retaining walls.
+- Company-specific reading views retain the island orientation. The field map includes the railway, company names, paths and exhibit markers.
+- Elevated railway crossings check the pedestrian’s actual level. Sprinkler mist follows its authored emitter, including platform height and quality changes. Interior cutaways and the existing shared simulation clock support walk-through spaces and pause recovery.
+- Other islands, vehicles, Jack, stored records and the **0.5 s + 1.8 s** arrival sequence are retained.
 
 ### V16 — Coastal Drive
 

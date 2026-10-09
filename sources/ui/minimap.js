@@ -80,6 +80,7 @@ export class VoyageMinimap {
   for(const area of g.parkingAreas){this.polygon(area.polygon,projection);c.fillStyle='#c6c5b8';c.fill();for(const stall of area.stalls){this.polygon(stall.polygon,projection);c.strokeStyle='#faf4df';c.lineWidth=.9;c.stroke();}}
   for(const o of g.obstacles){if(o.width*o.depth<2||o.height<1.4)continue;this.polygon(o.polygon,projection);c.fillStyle=o.mapColor||'#98afa0';c.fill();c.strokeStyle='#718b80';c.lineWidth=.7;c.stroke();}
   for(const landmark of g.landmarks){if(g.parkingAreas.some(area=>area.id===landmark.id))continue;this.polygon(landmark.polygon,projection);c.fillStyle=landmark.id==='duan-center'?'#718c9f':'#b5ac91';c.fill();c.strokeStyle='#566b71';c.lineWidth=.8;c.stroke();}
+  for(const track of g.tracks){c.beginPath();track.points.forEach((p,n)=>{const q=projection.project(p);n?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y);});c.strokeStyle='#505969';c.lineWidth=2.4;c.stroke();c.strokeStyle='#d6c4a5';c.lineWidth=.8;c.setLineDash([1,2]);c.stroke();c.setLineDash([]);}
   for(const s of g.stations){const p=projection.project(s);this.dot(p,s.type==='read'?3.4:2.3,s.type==='read'?'#285d72':'#94804d',PAPER);}
   if(island.id==='education'){
    const schools=g.campuses.length?g.campuses:g.stations.filter(s=>s.schoolId&&s.primary);
@@ -88,7 +89,7 @@ export class VoyageMinimap {
   }else if(island.id==='about'){
    for(const l of g.landmarks){const p=projection.project(l);const dy=({'jack-house':9,garage:-10,tennis:0,golf:12,lighthouse:-11,'coast-overlook':-12})[l.id]??-5;this.tag(({ 'jack-house':'House',garage:'Garage',tennis:'Tennis',golf:'Golf',lighthouse:'Light','coast-overlook':'Parking'})[l.id]||l.label,p.x,p.y+dy,w<190?8:9,w);}
   }else{
-   for(const d of g.districts){const p=projection.project(d),primary=g.stations.find(s=>s.contentId===d.id&&s.primary);this.tag(`${primary?primary.number+' ':''}${NAMES[d.id]||d.id}`,p.x,p.y-16,w<190?9:10,w);}
+   for(const d of g.districts){const p=projection.project(d),primary=g.stations.find(s=>s.contentId===d.id&&s.primary);this.tag(`${primary?.number?primary.number+' ':''}${NAMES[d.id]||d.id}`,p.x,p.y-16,w<190?9:10,w);}
   }
   const dock=g.dock;if(dock.length){const p=projection.project({x:dock.reduce((sum,p)=>sum+p.x,0)/dock.length,z:dock.reduce((sum,p)=>sum+p.z,0)/dock.length});this.tag('Dock',p.x,p.y+13,9,w);}
  }

@@ -3,9 +3,15 @@ export function exhibitRange(action,riding=false,retained=false){
  return (expanded?(riding?4.5:3):1.8)+(retained?(expanded ? .5 : .3):0);
 }
 
+// Range on the map alone is insufficient for displays on raised terraces.
+export function exhibitHeightReachable(action,position){
+ const height=action.position?.y;
+ return !Number.isFinite(height)||!Number.isFinite(position.y)||Math.abs(height-position.y)<=.8;
+}
+
 export function selectLandExhibit(actions,position,{riding=false,previous=null,visible=()=>true}={}){
  // Individual directory rows are pointer targets; the overview owns its E/F action.
- return actions.filter(a=>!a.station?.directory&&(!riding||a.kind==='read'&&a.station?.readFull)&&a.distance(position)<=exhibitRange(a,riding,a===previous)&&visible(a)).sort((a,b)=>a.distance(position)-b.distance(position))[0]||null;
+ return actions.filter(a=>!a.station?.directory&&(!riding||a.kind==='read'&&a.station?.readFull)&&exhibitHeightReachable(a,position)&&a.distance(position)<=exhibitRange(a,riding,a===previous)&&visible(a)).sort((a,b)=>a.distance(position)-b.distance(position))[0]||null;
 }
 
 export function exhibitReadLabel(action){

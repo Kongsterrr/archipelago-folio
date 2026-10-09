@@ -26,7 +26,7 @@ import { IslandController } from './world/island.js';
 import { FeedbackSystem } from './world/feedback.js';
 import { Interactable } from './world/interactable.js';
 import { syncInteractionMarkers } from './core/interaction-markers.js';
-import {exhibitRange,exhibitReadLabel,selectLandExhibit,selectProjectSign,landPrimaryAction} from './core/project-exhibits.js';
+import {exhibitRange,exhibitHeightReachable,exhibitReadLabel,selectLandExhibit,selectProjectSign,landPrimaryAction} from './core/project-exhibits.js';
 import { PropManager } from './world/props.js';
 import {DockInteraction} from './core/dock.js';
 import {AmbientFleet} from './world/fleet.js';
@@ -111,7 +111,7 @@ export class Game {
  async loadModelNow(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='about'?'16':id==='education'?'14.3':id==='projects'?'13.3':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='about'?'16':id==='education'?'14.3':id==='projects'?'13.3':id==='experience'?'17':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
     const materials=Array.isArray(o.material)?o.material:[o.material];
     const glazing=id==='boat'&&materials.some(m=>m.transparent);
     // The clear windscreen should reveal the helm, including in the shadow pass.
@@ -122,7 +122,7 @@ export class Game {
     this.boatVisual.clear();this.boatVisual.add(gltf.scene);this.boatModel=gltf.scene;prepareBoatMaterials(gltf.scene);applySunsetMaterials(gltf.scene,'boat');this.surfaces.bind(gltf.scene,'boat');this.appearance.bind(gltf.scene);
     this.boatOutline=gltf.scene.clone(true);this.boatOutline.traverse(o=>{if(o.isMesh){o.material=new THREE.MeshBasicMaterial({color:'#fff8da',depthTest:false,transparent:true,opacity:.35});o.castShadow=false;o.renderOrder=9;}});this.boatOutline.scale.setScalar(1.025);this.boatOutline.visible=false;this.boatVisual.add(this.boatOutline);
    }else{
-    const shore=item.group.children.filter(o=>o.userData.shore);if(item.model){this.surfaces.release(item.model);this.controllers.get(id)?.release();releaseSunsetMaterials(item.model);}if(item.model)item.model.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});item.group.clear();item.quality=quality;item.group.add(...shore,gltf.scene);item.model=gltf.scene;applySunsetMaterials(gltf.scene,id);if(id==='about')installEstateNet(gltf.scene,this.walkLayouts?.get('about')||{groundY:.85});this.controllers.get(id).bind(gltf.scene);this.surfaces.bind(gltf.scene,id);gltf.scene.traverse(o=>{if(o.isMesh&&(Array.isArray(o.material)?o.material:[o.material]).some(m=>['glass','campus_windowClear','estate_clear'].includes(m.userData.sunsetMaterial?.role)))o.castShadow=false;});
+    const shore=item.group.children.filter(o=>o.userData.shore);if(item.model){this.surfaces.release(item.model);this.controllers.get(id)?.release();releaseSunsetMaterials(item.model);}if(item.model)item.model.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});item.group.clear();item.quality=quality;item.group.add(...shore,gltf.scene);item.model=gltf.scene;applySunsetMaterials(gltf.scene,id);if(id==='about')installEstateNet(gltf.scene,this.walkLayouts?.get('about')||{groundY:.85});this.controllers.get(id).bind(gltf.scene);this.surfaces.bind(gltf.scene,id);gltf.scene.traverse(o=>{if(o.isMesh&&(Array.isArray(o.material)?o.material:[o.material]).some(m=>['glass','campus_windowClear','estate_clear','junction_clear'].includes(m.userData.sunsetMaterial?.role)))o.castShadow=false;});
    }
    if(id==='about'&&this.walkLayouts?.has(id))this.installGarageCars(item.island,this.ensureWalkWorld(item.island));
    if(id==='education'&&this.bicycle)this.bicycle.setSurfaceModel(item.model);
@@ -160,7 +160,7 @@ export class Game {
     const candidates=actions.filter(a=>(!ridingVehicle(this.player)||a.station?.readFull)&&a.distance(p)<=12&&a.available());
     const hits=candidates.flatMap(a=>this.raycaster.intersectObject(a.hitObject||a.object,true).map(hit=>({a,distance:hit.distance}))).sort((a,b)=>a.distance-b.distance);
     const hit=hits.find(({a})=>walk.visible(p,a.position));
-    if(hit){if(hit.a.distance(p)<=exhibitRange(hit.a,ridingVehicle(this.player),hit.a===this.nearStation))hit.a.run({direct:true});else if(hit.a.station?.readFull)this.events.trigger('message',['Move closer to view']);}
+    if(hit){if(exhibitHeightReachable(hit.a,p)&&hit.a.distance(p)<=exhibitRange(hit.a,ridingVehicle(this.player),hit.a===this.nearStation))hit.a.run({direct:true});else if(hit.a.station?.readFull)this.events.trigger('message',['Move closer to view']);}
    }else{
     const hit=this.interactables.filter(i=>i.object&&i.available()&&i.distance(this.activeActor.position)<10).find(i=>this.raycaster.intersectObject(i.object,true).length);hit?.run();
    }
@@ -414,7 +414,7 @@ export class Game {
   return campusStationFocus(this.practiceIsland,{...local,camera:{practice:true,azimuth:this.practiceIsland.rotation,elevation:.8,fitBounds}});
  }
  setZoom(index){if(this.player?.onLand)this.settings.walkZoom=Math.max(0,Math.min(2,index));else this.cameraRig.setZoom(index);this.discovery?.save();this.events.trigger('zoom',[this.settings.zoom]);}
- async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=16');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
+ async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=17');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
  async prepareAshore(island){this.inputs.setEnabled(false);this.events.trigger('message',['Preparing '+island.name+' for a little walk…']);
   if(!this.walkLayouts?.size)await this.loadWalkLayouts();await Promise.all([this.loadModel(island.id),this.jack.load()]);const layout=this.walkLayouts.get(island.id);if(!layout||!this.loaded.get(island.id).model||!this.jack.ready)throw new Error('The island is still loading. You can read it now or try going ashore again.');
   const walk=this.ensureWalkWorld(island);if(island.id==='projects')await this.installQuadBike(island,walk);if(island.id==='education')await this.installBicycle(island,walk);if(island.id==='about')await this.installGarageCars(island,walk);return walk;
