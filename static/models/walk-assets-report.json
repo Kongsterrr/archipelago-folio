@@ -4,37 +4,43 @@
     {
       "id": "experience",
       "quality": "high",
-      "bytes": 1375480,
-      "triangles": 116268,
-      "drawCalls": 156,
-      "routeSeconds": 134.5,
+      "bytes": 1317444,
+      "triangles": 117132,
+      "drawCalls": 141,
+      "routeSeconds": 110.6,
       "connectedFromDock": true,
       "routeClearance": 1.3,
       "pathWidth": 3.2,
       "mainPathWidth": 3.2,
-      "terraces": 3,
-      "stationsReachable": 9,
+      "terraces": 2,
+      "stationsReachable": 10,
       "primaryExperienceEntries": 3,
+      "portDirectoryLinks": 3,
       "openInteriors": 3,
-      "stepFreeRamps": 5
+      "stepFreeRamps": 3,
+      "realStairTreads": 25,
+      "unifiedTerrain": true
     },
     {
       "id": "experience",
       "quality": "low",
-      "bytes": 973208,
-      "triangles": 71380,
-      "drawCalls": 149,
-      "routeSeconds": 134.5,
+      "bytes": 989752,
+      "triangles": 81070,
+      "drawCalls": 140,
+      "routeSeconds": 110.6,
       "connectedFromDock": true,
       "routeClearance": 1.3,
       "pathWidth": 3.2,
       "mainPathWidth": 3.2,
-      "terraces": 3,
-      "stationsReachable": 9,
+      "terraces": 2,
+      "stationsReachable": 10,
       "primaryExperienceEntries": 3,
+      "portDirectoryLinks": 3,
       "openInteriors": 3,
-      "stepFreeRamps": 5
+      "stepFreeRamps": 3,
+      "realStairTreads": 25,
+      "unifiedTerrain": true
     }
   ],
-  "totalBytes": 2348688
+  "totalBytes": 2307196
 }

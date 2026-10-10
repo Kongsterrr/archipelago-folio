@@ -21,7 +21,7 @@ export class IslandWalkWorld{
   for(const t of ShapeUtils.triangulateShape(points,[]))triangle(...t);
   const vertices=new Float32Array(verticesList.flat()),indices=new Uint32Array(indicesList);
   this.terrain=layout.terrain?new TerrainSurface(layout.terrain):null;
-  this.terrainCollider=add(R.ColliderDesc.trimesh(this.terrain?new Float32Array(layout.terrain.vertices):vertices,this.terrain?new Uint32Array(layout.terrain.indices):indices,R.TriMeshFlags.FIX_INTERNAL_EDGES));
+  this.terrainCollider=add(R.ColliderDesc.trimesh(this.terrain?new Float32Array(layout.terrain.vertices):vertices,this.terrain?new Uint32Array(layout.terrain.colliderIndices??layout.terrain.indices):indices,R.TriMeshFlags.FIX_INTERNAL_EDGES));
   this.surfaces=layout.surfaces?.length?layout.surfaces:[{x:0,z:11.85,width:3,depth:7.9,y:.85}];
   for(const f of this.surfaces){
    const angle=f.rotation||0,pitch=-Math.atan(f.slope||0),cy=Math.cos(angle/2),sy=Math.sin(angle/2),cx=Math.cos(pitch/2),sx=Math.sin(pitch/2),c=Math.cos(angle),s=Math.sin(angle);
@@ -48,6 +48,12 @@ export class IslandWalkWorld{
   return{...result,normal:{x:n.x*c+n.z*s,y:n.y,z:-n.x*s+n.z*c}};
  }
  groundAt(point){return this.groundSample(point).height;}
+ // Stair treads are authored support boxes at exactly the rendered heights.
+ // A narrow-step controller profile is local to this architectural surface.
+ nearStairs(point){const p=dockLocal(point,this.island);return (this.layout.stairs||[]).some(stair=>inRect(p,stair,CHARACTER.radius+.4));}
+ // Explicit architectural ramps include the short approach at either end so
+ // their capsule support does not change its downward request at the seam.
+ nearRamp(point){const p=dockLocal(point,this.island);return (this.layout.ramps||[]).some(ramp=>inRect(p,ramp,CHARACTER.radius+.4));}
  // Authored mountain surfaces opt into one traversal policy for both actors.
  // Older flat islands and unprofiled terrain retain their original limits.
  get allTerrain(){return Number.isFinite(this.layout.terrain?.navigation?.maxClimbSlopeDegrees);}
@@ -79,7 +85,15 @@ export class CharacterController{
   if(this.walkWorld.allTerrain){this.stepTerrain(p,x,z,dt);return;}
   const safe=q=>this.walkWorld.contains(q)&&(!this.walkWorld.terrain||(this.walkWorld.safeGround(q,CHARACTER.radius)&&Math.abs(this.walkWorld.groundAt(q)-this.walkWorld.groundAt(p))<.18));
   let next={x:p.x+x*dt,z:p.z+z*dt};if(!safe(next)){if(safe({x:next.x,z:p.z}))next.z=p.z;else if(safe({x:p.x,z:next.z}))next.x=p.x;else next={x:p.x,z:p.z};}
-  this.controller.computeColliderMovement(this.collider,{x:next.x-p.x,y:-Math.max(.08,5*dt),z:next.z-p.z},undefined,WALK_GROUP,c=>this.walkWorld.handles.has(c.handle));
+  const stairs=this.walkWorld.nearStairs(p)||this.walkWorld.nearStairs(next);
+  const ramp=this.walkWorld.nearRamp(p)||this.walkWorld.nearRamp(next);
+  if(stairs!==this.stairProfile){this.controller.enableAutostep(.18,stairs ? .15 : .25,false);this.stairProfile=stairs;}
+  // Strong downward motion fights the capsule against short vertical risers.
+  // A small negative component preserves snap-to-ground while real autostep
+  // handles the treads. It also avoids projecting a large downward request
+  // along an architectural ramp, which slows climbing and accelerates exits.
+  // The rest of the world's gravity policy is unchanged.
+  this.controller.computeColliderMovement(this.collider,{x:next.x-p.x,y:stairs||ramp?-.6*dt:-Math.max(.08,5*dt),z:next.z-p.z},undefined,WALK_GROUP,c=>this.walkWorld.handles.has(c.handle));
   const movement=this.controller.computedMovement(),body=this.body.translation();this.body.setNextKinematicTranslation({x:body.x+movement.x,y:body.y+movement.y,z:body.z+movement.z});this.velocity={x:movement.x/dt,y:movement.y/dt,z:movement.z/dt};
   if(this.speed>.06){const target=Math.atan2(-movement.x,-movement.z),delta=Math.atan2(Math.sin(target-this.yaw),Math.cos(target-this.yaw));this.yaw+=delta*Math.min(1,12*dt);}
  }

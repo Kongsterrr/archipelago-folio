@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import {islandActions,toWorld} from '../config.js';
+import {sampleTrainMotion,trainDuration} from '../core/train-path.js';
+const LEGACY_TRAIN_CARS=[{trainOffset:0}];
 
 export class IslandController {
- constructor(island,group){this.island=island;this.group=group;this.nodes=[];this.glowing=[];this.occluders=[];this.elapsed=99;this.duration=0;this.lastActive=false;this.model=null;this.ownedMaterials=new Set();this.materialBindings=[];this.campusState={fencePattern:0,fenceElapsed:1,schoolId:null,duanTheme:0,duanStarted:false,duanElapsed:5,studyActive:false,studyElapsed:2};this.campusWindows=[];this.campusPatterns=[];this.duanThemes=[];this.duanPulses=[];this.studyPages=[];this.studyLights=[];}
+ constructor(island,group){this.island=island;this.group=group;this.nodes=[];this.glowing=[];this.occluders=[];this.elapsed=99;this.duration=0;this.lastActive=false;this.model=null;this.ownedMaterials=new Set();this.materialBindings=[];this.trainCars=[];this.train={};this.trainSample={};this.trainSafetySample={};this.campusState={fencePattern:0,fenceElapsed:1,schoolId:null,duanTheme:0,duanStarted:false,duanElapsed:5,studyActive:false,studyElapsed:2};this.campusWindows=[];this.campusPatterns=[];this.duanThemes=[];this.duanPulses=[];this.studyPages=[];this.studyLights=[];}
  bind(model){
   this.release();
   this.model=model;this.nodes=[];this.glowing=[];this.occluders=[];this.children=[];
@@ -36,6 +38,9 @@ export class IslandController {
    }
   });
   this.glowing=[...new Set(this.glowing)];
+  this.train=this.island.animation?.train||{};
+  const cars=new Map((this.train.cars||[]).map(car=>[car.name,car]));
+  this.trainCars=this.nodes.filter(node=>{if(this.train.path?!cars.has(node.name):node.name!=='anim_train')return false;const car=cars.get(node.name);node.trainOffset=car?.offset||0;node.trainHalfLength=car?.halfLength??1.4;node.trainHalfWidth=car?.halfWidth??.71;return true;});
   this.campusPatterns=this.nodes.filter(n=>/^anim_campus_fence_pattern_[0-2]$/.test(n.name));
   this.duanThemes=this.nodes.filter(n=>/^anim_duan_theme_[0-2]$/.test(n.name));
   this.duanPulses=this.nodes.filter(n=>/^anim_duan_pulse_[0-2]$/.test(n.name));
@@ -50,7 +55,7 @@ export class IslandController {
   for(const child of this.children||[])child.release();
   for(const {mesh,original,assigned} of this.materialBindings)if(mesh.material===assigned)mesh.material=original;
   for(const material of this.ownedMaterials)material.dispose();
-  this.ownedMaterials.clear();this.materialBindings=[];this.children=[];this.nodes=[];this.glowing=[];this.occluders=[];this.campusWindows=[];this.campusPatterns=[];this.duanThemes=[];this.duanPulses=[];this.studyPages=[];this.studyLights=[];this.model=null;
+  this.ownedMaterials.clear();this.materialBindings=[];this.children=[];this.nodes=[];this.glowing=[];this.occluders=[];this.trainCars=[];this.train={};this.campusWindows=[];this.campusPatterns=[];this.duanThemes=[];this.duanPulses=[];this.studyPages=[];this.studyLights=[];this.model=null;
  }
  campusController(){return this.island.id==='learning'?this:this.children?.find(child=>child.island.id==='learning');}
  cycleCampusFence(reduced=false){
@@ -107,23 +112,31 @@ export class IslandController {
    if(state.schoolId==='bu'){material.emissive.set('#ffd59a');material.emissiveIntensity=Math.max(intensity,.48);}
   }
  }
- activate(actionId){if(this.children?.length){const child=actionId==null?this.children[0]:this.children.find(c=>c.island.id===actionId);if(!child)return;const result=child.activate();this.elapsed=0;this.duration=child.duration;return result;}this.elapsed=0;this.duration=this.island.id==='amtrak'?(this.island.animation?.train?.duration||10):this.island.id==='learning'?10:6;return islandActions[this.island.id]?.[1];}
+ activate(actionId){if(this.children?.length){const child=actionId==null?this.children[0]:this.children.find(c=>c.island.id===actionId);if(!child)return;const result=child.activate();this.elapsed=0;this.duration=child.duration;return result;}this.train=this.island.animation?.train||{};this.elapsed=0;this.duration=this.island.id==='amtrak'?trainDuration(this.train):this.island.id==='learning'?10:6;return islandActions[this.island.id]?.[1];}
  update(dt,position,time,focused=false,reduced=false,focusedDistrict=null){
   if(this.children?.length){for(const child of this.children){child.pedestrian=this.pedestrian;child.update(dt,position,time,focused&&(!focusedDistrict||child.island.id===focusedDistrict),reduced);}this.elapsed+=dt;return;}
   const distance=Math.hypot(position.x-this.island.x,position.z-this.island.z);
   if(this.island.id==='learning'){this.campusState.fenceElapsed=Math.min(1,this.campusState.fenceElapsed+Math.max(0,dt));this.campusState.duanElapsed=Math.min(5,this.campusState.duanElapsed+Math.max(0,dt));this.campusState.studyElapsed=Math.min(2,this.campusState.studyElapsed+Math.max(0,dt));this.applyCampusFeedback(reduced);}
-  let advance=dt;if(this.island.id==='amtrak'&&this.pedestrian&&this.elapsed<this.duration){const tr=this.island.animation?.train,c=tr?.trackCentre||[0,0,-1.4],r=tr?.trackRadii||[8.8,5.8],p=this.pedestrian,dx=p.x-this.island.x,dz=p.z-this.island.z,co=Math.cos(this.island.rotation),si=Math.sin(this.island.rotation),px=dx*co-dz*si,pz=dx*si+dz*co,trackY=(this.island.y||0)+(tr?.surfaceY??c[1]);
-   const sameLevel=!Number.isFinite(p.y)||!Number.isFinite(tr?.surfaceY)||Math.abs(p.y-trackY)<1.4;
-   if(sameLevel)for(let n=0;n<=8;n++){const a=(tr?.initialAngle||0)+(this.elapsed+n*.06)/Math.max(1,this.duration)*Math.PI*2;if(Math.hypot(c[0]+Math.cos(a)*r[0]-px,c[2]+Math.sin(a)*r[1]-pz)<2.2){advance=0;break;}}
+  let advance=dt;if(this.island.id==='amtrak'&&this.pedestrian&&this.elapsed<this.duration){const tr=this.train,p=this.pedestrian,dx=p.x-this.island.x,dz=p.z-this.island.z,co=Math.cos(this.island.rotation),si=Math.sin(this.island.rotation),px=dx*co-dz*si,pz=dx*si+dz*co,surfaceY=tr.surfaceY??tr.path?.center[1],trackY=(this.island.y||0)+(surfaceY??tr.trackCentre?.[1]??0);
+   const sameLevel=!Number.isFinite(p.y)||!Number.isFinite(surfaceY)||Math.abs(p.y-trackY)<1.4;
+   if(sameLevel)for(const car of tr.path?this.trainCars:LEGACY_TRAIN_CARS){for(let n=0;n<=Math.max(8,Math.ceil(dt/.06));n++){
+    const point=sampleTrainMotion(tr,this.elapsed+n*.06,this.duration,car.trainOffset,this.trainSafetySample),qx=px-point.x,qz=pz-point.z;
+    // The capsule and a small stopping margin expand the actual car envelope.
+    // A visitor behind the gallery fence must not stop a train on the next lane.
+    let blocked=Math.hypot(qx,qz)<2.2;
+    if(tr.path){const along=Math.max(0,Math.abs(qx*point.tangentX+qz*point.tangentZ)-car.trainHalfLength),across=Math.max(0,Math.abs(-qx*point.tangentZ+qz*point.tangentX)-car.trainHalfWidth);blocked=Math.hypot(along,across)<.4;}
+    if(blocked){advance=0;break;}
+   }if(advance===0)break;}
   }this.elapsed+=advance;const playing=this.elapsed<this.duration;
   if(distance>80&&!focused&&!playing)return;
-  const t=this.elapsed,phase=Math.min(1,t/Math.max(1,this.duration)),envelope=playing?Math.sin(Math.min(1,t*2)*Math.PI/2)*Math.min(1,(this.duration-t)*2):0;
+  const t=this.elapsed,envelope=playing?Math.sin(Math.min(1,t*2)*Math.PI/2)*Math.min(1,(this.duration-t)*2):0;
   for(const node of this.nodes){
    const o=node.object,n=node.name;if(n.startsWith('anim_duan_')||n.startsWith('anim_campus_study_'))continue;o.position.copy(node.position);o.rotation.copy(node.rotation);o.scale.copy(node.scale);
    if(!playing||reduced)continue;
-   if(n==='anim_train'){
-    const track=this.island.animation?.train,c=track?.trackCentre||[0,0,-1.4],r=track?.trackRadii||[8.8,5.8],a=(track?.initialAngle||0)+phase*Math.PI*2;
-    o.position.set(c[0]+Math.cos(a)*r[0],track?.rootY??node.position.y,c[2]+Math.sin(a)*r[1]);o.rotation.y=Math.atan2(Math.sin(a)*r[0],-Math.cos(a)*r[1]);
+   if(node.trainOffset!==undefined){
+    const point=sampleTrainMotion(this.train,t,this.duration,node.trainOffset,this.trainSample);
+    o.position.set(point.x,this.train.path?point.y:this.train.rootY??node.position.y,point.z);
+    if(this.train.path)o.rotation.set(0,point.yaw,0);else o.rotation.y=point.yaw;
    }else if(n.includes('bell'))o.rotation.z+=Math.sin(t*13)*.3*envelope;
    else if(n.includes('flag'))o.rotation.y+=Math.sin(t*6)*.12;
    else if(n.includes('packet')||n.includes('data')){const index=Number(n.split('_').at(-1))||0,stage=Math.max(0,Math.min(1,(t-index*1.5)/1.2));o.position.x+=stage*1.1;o.position.y+=Math.sin(stage*Math.PI)*.45;o.scale.multiplyScalar(.75+stage*.4);}

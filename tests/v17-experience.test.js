@@ -15,6 +15,7 @@ import {exhibitTarget} from '../sources/core/portfolio-navigation.js';
 import {exhibitReadLabel, selectLandExhibit} from '../sources/core/project-exhibits.js';
 import {IslandController} from '../sources/world/island.js';
 import {applySunsetMaterials, releaseSunsetMaterials} from '../sources/world/sunset-materials.js';
+import {sampleTrainMotion,trainDuration} from '../sources/core/train-path.js';
 
 const json = async path => JSON.parse(await fs.readFile(new URL(path, import.meta.url), 'utf8'));
 const layout = (await json('../static/models/walk-layout.json')).islands.find(i => i.id === 'experience');
@@ -64,16 +65,16 @@ function traverse(fixture, route) {
       fixture.world.step();
       fixture.actor.afterStep();
       const after = fixture.actor.position;
-      assert.ok(Math.abs(after.y - fixture.walk.groundAt(after)) < .08, `feet leave the surface approaching ${x},${z}: feet=${after.y.toFixed(5)}, support=${fixture.walk.groundAt(after).toFixed(5)}, world=${after.x.toFixed(5)},${after.z.toFixed(5)}`);
-      assert.ok(Math.hypot(after.x-before.x, after.y-before.y, after.z-before.z) < .08, `abrupt step approaching ${x},${z}`);
+      assert.ok(Math.abs(after.y - fixture.walk.groundAt(after)) < .18, `feet leave the tread approaching ${x},${z}: feet=${after.y.toFixed(5)}, support=${fixture.walk.groundAt(after).toFixed(5)}, world=${after.x.toFixed(5)},${after.z.toFixed(5)}`);
+      assert.ok(Math.hypot(after.x-before.x, after.z-before.z) < .08 && Math.abs(after.y-before.y)<.18, `abrupt step approaching ${x},${z}`);
       highest = Math.max(highest, after.y);
     }
-    assert.ok(reached, `real character cannot reach ${x},${z}`);
+    assert.ok(reached, `real character cannot reach ${x},${z}; world position=${JSON.stringify(fixture.actor.position)}`);
   }
   return highest;
 }
 
-test('Career Junction preserves the Experience coast, pier and both boat berths', () => {
+test('Career Terraces preserves the Experience coast, pier and both boat berths', () => {
   assert.deepEqual(layout.shore, originalShore);
   assert.deepEqual(layout.dock, {width:4,deckY:.85,startZ:27.499999999999996,endZ:38});
   assert.deepEqual(layout.berths, [-1,1].map(side => ({boat:{x:side*4.3,z:35.55,yaw:Math.PI},landing:{x:side*.5,z:35.5,y:.85,yaw:Math.PI}})));
@@ -84,7 +85,7 @@ test('Career Junction preserves the Experience coast, pier and both boat berths'
 
 test('high and low Experience exports share scene contracts and meet compressed byte budgets', async () => {
   const high = metadata('high'), low = metadata('low');
-  assert.match(high.revision, /^v17-/);
+  assert.match(high.revision, /^v18-/);
   assert.equal(low.revision, high.revision);
   assert.equal(manifests.high.walkLayout, manifests.low.walkLayout);
   for (const key of ['dock','shorePolygon','districts','occluders']) assert.deepEqual(high[key], low[key], key);
@@ -98,11 +99,11 @@ test('high and low Experience exports share scene contracts and meet compressed 
   assert.ok(low.triangles < high.triangles, 'low quality retains a lower geometry cost');
 });
 
-test('three harbor kiosks and each company entry read the complete corresponding experience', () => {
+test('one harbor directory and each company entry read the complete corresponding experience', () => {
   const primaries = layout.stations.filter(station => station.primary);
   assert.deepEqual(primaries.map(station => station.contentId).sort(), [...companyIds].sort());
-  const fullReads = layout.stations.filter(station => station.readFull);
-  assert.ok(primaries.every(station => station.readFull), 'all three harbor kiosks open the complete experience');
+  const fullReads = layout.stations.filter(station => station.readFull&&!station.directoryOverview);
+  assert.ok(primaries.every(station => station.readFull), 'all three company entrances open the complete experience');
   for (const id of companyIds) assert.ok(fullReads.some(station => station.contentId === id && !station.primary), `${id}: company entry is readable`);
   for (const station of fullReads) {
     assert.equal(station.type, 'read');
@@ -113,7 +114,16 @@ test('three harbor kiosks and each company entry read the complete corresponding
     assert.equal(target.entry.id, station.contentId);
     assert.equal(target.island.id, 'experience');
   }
-  for (const station of primaries) assert.ok(station.z >= 20 && Math.abs(station.y - layout.groundY) < .01, 'harbor readers remain accessible before any ramp');
+  const harbor = fullReads.filter(station => station.directory);
+  assert.equal(harbor.length, 3, 'the compact harbor directory retains three direct story links');
+  assert.equal(layout.stations.filter(station=>station.directoryOverview).length,1,'one shared directory owns the harbor keyboard action');
+  const overview=layout.stations.find(station=>station.directoryOverview);
+  assert.equal(overview.contentId,'experience');
+  assert.equal(exhibitReadLabel({station:overview}),overview.readLabel);
+  assert.match(overview.readLabel,/experience/i,'the overview action identifies this island');
+  assert.equal(exhibitTarget(overview,'experience',content,islands).island.id,'experience');
+  assert.ok(Math.max(...harbor.map(station=>station.x))-Math.min(...harbor.map(station=>station.x)) < 6, 'the links belong to one compact directory');
+  for (const station of harbor) assert.ok(station.z >= 20 && Math.abs(station.y-layout.groundY)<.01, 'directory remains accessible before any ramp');
 });
 
 test('all Experience reading, action and bench approaches are clear and correctly grounded', () => {
@@ -126,7 +136,7 @@ test('all Experience reading, action and bench approaches are clear and correctl
     for (const action of actions) {
       assert.ok(f.walk.clear(action.position, .24), `${action.id}: capsule approach is blocked`);
       assert.ok(Math.abs(action.position.y - f.walk.groundAt(action.position)) < .035, `${action.id}: interaction floats above its support`);
-      if (action.station.readFull) assert.equal(selectLandExhibit(actions, action.position, {visible:candidate => f.walk.visible(action.position,candidate.position)}), action, `${action.id}: E selects its own complete experience`);
+      if (action.station.readFull&&!action.station.directory || action.station.directoryOverview) assert.equal(selectLandExhibit(actions, action.position, {visible:candidate => f.walk.visible(action.position,candidate.position)}), action, `${action.id}: E selects its own complete experience or shared directory`);
     }
     assert.ok(layout.benches.length >= 3);
     for (const bench of layout.benches) {
@@ -157,13 +167,14 @@ test('an alternate harbor approach cannot sink the Rapier character into the bro
   try {
     // This approach leaves a small lateral offset that previously made Rapier
     // miss one downward sweep on the flat station floor, then recover slowly.
-    const route = [[0,35.5],[0,27],[-8,25],[-8,19],[0,16],[0,10],[0,-4],[0,-9.4],[0,-14.8],[0,-21.8],[0,-14.8],[0,-9.4],[0,-4],[0,10]];
+    const aisle=layout.interiors.find(interior=>interior.landmarkId==='career-station').walkRoute;
+    const route = [[0,35.5],[0,27],[-8,25],[0,25.8],[0,24],[0,12],...aisle,...aisle.slice(0,-1).reverse(),[0,12],[0,24]];
     traverse(f,route);
     assert.equal(f.rescues,0,'floor support must remain continuous without a safety teleport');
   } finally { f.world.free(); }
 });
 
-for (const ramp of layout.surfaces.filter(surface=>surface.slope)) {
+for (const ramp of layout.ramps || layout.surfaces.filter(surface=>surface.slope)) {
   for (const fromBelow of [false,true]) test(`${ramp.id}: real Rapier ${fromBelow?'wrong-side approaches cannot enter beneath the ramp':'sideways walking cannot leave through gaps between railing posts'}`, () => {
     const f=physicsFixture();
     try {
@@ -237,7 +248,7 @@ for (const quality of ['high','low']) test(`${quality}: actual Experience GLB re
 
 for (const quality of ['high','low']) test(`${quality}: each complete Experience read target matches its first visible sign face`, async () => {
   const scene = await model(quality), ray = new THREE.Raycaster();
-  for (const station of layout.stations.filter(item => item.readFull)) {
+  for (const station of layout.stations.filter(item => item.readFull&&!item.directoryOverview)) {
     const group = scene.getObjectByName(THREE.PropertyBinding.sanitizeNodeName(`station_${station.id}`));
     assert.ok(group, `${station.id}: visible reading sign exists`);
     const face = station.hitArea, yaw = face.yaw || 0;
@@ -273,12 +284,12 @@ for (const quality of ['high','low']) test(`${quality}: company reading cameras 
     assert.ok(vertices.length>0);
     landmarks.set(landmark.contentId,vertices);
   }
-  const readers = [...layout.districts.map(district=>({...district,contentId:district.id})),...layout.stations.filter(station=>station.readFull)];
+  const readers = [...layout.districts.map(district=>({...district,contentId:district.id})),...layout.stations.filter(station=>station.readFull&&!station.directoryOverview)];
   for (const reader of readers) {
     assert.ok(reader.camera?.fitBounds, `${reader.id}: company reader provides architectural framing`);
     const focus=campusStationFocus(island,reader), vertices=landmarks.get(reader.contentId);
     assert.equal(focus.contentId,reader.contentId);
-    for (const [width,height] of [[1440,900],[390,844]]) {
+    for (const [width,height] of [[1440,900],[1920,1080],[390,844],[844,390]]) {
       const camera=new THREE.PerspectiveCamera(28,width/height,.2,600), rig=new CameraRig(camera,{zoom:1,walkZoom:1,reduced:false},width,height);
       rig.update(0,{position:localToWorld(island,reader),focus,locomotion:'walking'},true);
       const rect=campusReadingRect(width,height);
@@ -323,18 +334,18 @@ test('an elevated Amtrak train yields to a visitor on its track plane while the 
   try {
     const train = controller.children.find(child => child.island.id === 'amtrak'), track = train.island.animation.train;
     const district = layout.districts.find(item => item.id === 'amtrak');
-    const trackY = (district.y || 0) + (track.surfaceY ?? track.trackCentre[1]);
+    const start = sampleTrainMotion(track,0,trainDuration(track));
+    const trackY = (district.y || 0) + start.y;
     assert.ok(trackY - layout.groundY > 1.5, 'track has a distinct elevated pedestrian plane');
     controller.activate('amtrak');
-    const angle = track.initialAngle || 0;
-    const position = toWorld(train.island,track.trackCentre[0]+Math.cos(angle)*track.trackRadii[0],track.trackCentre[2]+Math.sin(angle)*track.trackRadii[1],trackY);
+    const position = toWorld(train.island,start.x,start.z,trackY);
     controller.pedestrian = position;
     controller.update(STEP,island,0);
     assert.equal(train.elapsed,0,'visitor standing on the elevated track stops dispatch');
     controller.pedestrian = {...position,y:layout.groundY};
     controller.update(STEP,island,STEP);
     assert.ok(train.elapsed > 0,'visitor beneath the elevated track does not stop dispatch');
-    const node = scene.getObjectByName('anim_train'), before = {elapsed:train.elapsed,position:node.position.toArray(),quaternion:node.quaternion.toArray()};
+    const node = scene.getObjectByName(track.cars?.[0]?.name || 'anim_train'), before = {elapsed:train.elapsed,position:node.position.toArray(),quaternion:node.quaternion.toArray()};
     controller.update(0,island,50,true,false,'amtrak');
     assert.equal(train.elapsed,before.elapsed,'read focus does not advance simulation time');
     assert.deepEqual(node.position.toArray(),before.position);
@@ -345,7 +356,7 @@ test('an elevated Amtrak train yields to a visitor on its track plane while the 
 for (const quality of ['high','low']) test(`${quality}: terrace and ramp rendering agrees with exported walking heights and real Rapier support`, async () => {
   const scene = await model(quality), f = physicsFixture(), ray = new THREE.Raycaster();
   try {
-    const elevated = layout.surfaces.filter(surface => surface.y > layout.groundY + .1 || surface.slope);
+    const elevated = layout.ramps || layout.surfaces.filter(surface => surface.y > layout.groundY + .1 || surface.slope);
     const ramps = elevated.filter(surface => surface.slope);
     assert.ok(ramps.length > 0, 'the elevated terraces are connected by real slopes');
     for (const surface of elevated) {
@@ -366,13 +377,13 @@ for (const quality of ['high','low']) test(`${quality}: terrace and ramp renderi
   } finally { f.world.free(); }
 });
 
-test('the exported main streets retain their full 3.2–4 metre clear walking width', () => {
+test('the exported main streets retain their full clear walking width', () => {
   const f = physicsFixture();
   try {
     const mainPaths = layout.paths.filter(path => path.main);
-    assert.ok(mainPaths.length >= 2, 'a scenic circuit and station avenue are documented');
+    assert.ok(mainPaths.length >= 1, 'the continuous main scenic circuit is documented');
     for (const path of mainPaths) {
-      assert.ok(path.width >= 3.2 && path.width <= 4, `${path.id}: main circulation width`);
+      assert.ok(path.width >= 3.2 && path.width <= 7.2, `${path.id}: main circulation width`);
       for (let segment = 1; segment < path.points.length; segment++) {
         const a = path.points[segment-1], b = path.points[segment];
         const dx = b[0]-a[0], dz = b[1]-a[1], length = Math.hypot(dx,dz);
@@ -409,6 +420,6 @@ test('the complete tour passes through all three open interiors with clear publi
         assert.ok(nearest < .1, `${interior.landmarkId}: real traversal route includes the through-aisle`);
       }
     }
-    assert.ok(layout.route.some(([x,z]) => z < -25), 'tour visits the rear coastal loop');
+    assert.ok(layout.route.some(([x,z]) => z < -16), 'tour visits the elevated rear railway promenade');
   } finally { f.world.free(); }
 });

@@ -7,6 +7,7 @@ import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
 import {islands,toWorld,islandActions} from '../sources/config.js';
 import {IslandController} from '../sources/world/island.js';
 import {applySunsetMaterials,SUNSET_ISLAND_PALETTES} from '../sources/world/sunset-materials.js';
+import {sampleTrainMotion,trainDuration} from '../sources/core/train-path.js';
 
 async function load(id,quality='high'){
  const bytes=fs.readFileSync(new URL(`../static/models/${quality==='low'?'low/':''}${id}.glb`,import.meta.url));
@@ -38,7 +39,8 @@ test('an explicit unknown district action cannot silently start the first child'
 test('Amtrak pedestrian stopping transforms through both the island and district offsets',async()=>{
  const f=await fixture(),train=f.child('amtrak'),track=train.island.animation.train;
  const district=f.island.districts.find(d=>d.id==='amtrak'),expected=toWorld(f.island,district.x,district.z);assert.ok(Math.hypot(train.island.x-expected.x,train.island.z-expected.z)<1e-10);
- f.controller.activate('amtrak');f.controller.pedestrian=toWorld(train.island,track.trackCentre[0]+track.trackRadii[0],track.trackCentre[2],(district.y||0)+track.trackCentre[1]);
+ const start=sampleTrainMotion(track,0,trainDuration(track));
+ f.controller.activate('amtrak');f.controller.pedestrian=toWorld(train.island,start.x,start.z,(district.y||0)+start.y);
  f.controller.update(1/60,f.island,0);assert.equal(train.elapsed,0,'a visitor at the translated train position stops the train');
  f.controller.pedestrian=toWorld(f.island,0,f.island.pier.endZ-2.5);
  f.controller.update(1/60,f.island,1/60);assert.ok(train.elapsed>0,'a visitor at the harbor does not stop the district train');
@@ -49,7 +51,8 @@ test('Amtrak crossing guard also respects a rotated district inside the parent',
  const custom={...f.island,districts:f.island.districts.map(d=>d.id==='amtrak'?{...d,rotation}:d)};
  f.model.getObjectByName('district_amtrak').rotation.y=rotation;const controller=new IslandController(custom,f.outer);controller.bind(f.model);const train=controller.children.find(c=>c.island.id==='amtrak');
  const track=train.island.animation.train;
- assert.equal(train.island.rotation,f.island.rotation+rotation);controller.activate('amtrak');controller.pedestrian=toWorld(train.island,track.trackCentre[0]+track.trackRadii[0],track.trackCentre[2],(district.y||0)+track.trackCentre[1]);
+ const start=sampleTrainMotion(track,0,trainDuration(track));
+ assert.equal(train.island.rotation,f.island.rotation+rotation);controller.activate('amtrak');controller.pedestrian=toWorld(train.island,start.x,start.z,(district.y||0)+start.y);
  controller.update(1/60,custom,0);assert.equal(train.elapsed,0);controller.pedestrian=toWorld(train.island,-18,18);controller.update(1/60,custom,1/60);assert.ok(train.elapsed>0);
 });
 

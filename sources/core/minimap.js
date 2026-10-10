@@ -1,3 +1,5 @@
+import {trainTrackPoints} from './train-path.js';
+
 // Both map modes use world X/Z, with north (-Z) at the top of the canvas.
 export function selectMapIsland({onLand,island,nearby,challengeActive=false}){
  return onLand?(island??null):challengeActive?null:(nearby??null);
@@ -45,7 +47,7 @@ export function islandMapGeometry(island,layout={}){
   approach:approach?rectangle({x:(approach.min[0]+approach.max[0])/2,z:(approach.min[2]+approach.max[2])/2,width:approach.max[0]-approach.min[0]+1.5,depth:approach.max[2]-approach.min[2]+1.5}).map(project):[],
   route:(layout.route??[]).map(project),
   roads:layout.roads?.length?layout.roads.map(road=>({...road,points:road.points.map(([x,y,z])=>project({x,z}))})):(layout.paths??[]).map(path=>({...path,points:path.points.map(project)})),
-  tracks:(layout.districts??island.districts??[]).filter(d=>d.animation?.train).map(d=>{const t=d.animation.train,c=t.trackCentre||[0,0,0],r=t.trackRadii;return{points:Array.from({length:65},(_,n)=>{const a=n*Math.PI/32,dx=c[0]+Math.cos(a)*r[0],dz=c[2]+Math.sin(a)*r[1],rotation=d.rotation||0;return project({x:d.x+dx*Math.cos(rotation)+dz*Math.sin(rotation),z:d.z-dx*Math.sin(rotation)+dz*Math.cos(rotation)});})};}),
+  tracks:(layout.districts??island.districts??[]).filter(d=>d.animation?.train).map(d=>{const rotation=d.rotation||0,c=Math.cos(rotation),s=Math.sin(rotation);return{points:trainTrackPoints(d.animation.train).map(p=>project({x:d.x+p.x*c+p.z*s,z:d.z-p.x*s+p.z*c}))};}),
   terrain:layout.terrain?Array.from({length:layout.terrain.indices.length/3},(_,index)=>{
    const v=layout.terrain.vertices,ids=layout.terrain.indices.slice(index*3,index*3+3);
    return{height:ids.reduce((sum,id)=>sum+v[id*3+1],0)/3,points:ids.map(id=>project({x:v[id*3],z:v[id*3+2]}))};

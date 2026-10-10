@@ -927,14 +927,14 @@
       "id": "experience",
       "name": "experience",
       "file": "experience.glb",
-      "bytes": 1375480,
-      "rawBytes": 5872432,
-      "revision": "v17-career-junction",
-      "sourceMeshes": 2310,
-      "drawCalls": 156,
-      "staticDrawCalls": 8,
-      "vertices": 156531,
-      "triangles": 116268,
+      "bytes": 1317444,
+      "rawBytes": 5611980,
+      "revision": "v18-career-terraces",
+      "sourceMeshes": 2327,
+      "drawCalls": 141,
+      "staticDrawCalls": 11,
+      "vertices": 148647,
+      "triangles": 117132,
       "bounds": {
         "min": [
           -39,
@@ -943,22 +943,22 @@
         ],
         "max": [
           39,
-          10.675000190734863,
+          15.800000190734863,
           38
         ]
       },
       "dimensions": [
         78,
-        11.35500019788742,
+        16.48000019788742,
         68
       ],
       "animationNodes": [
         {
           "name": "anim_signal",
           "position": [
-            4.1,
-            5.4,
-            9.2
+            -11.3,
+            7.9,
+            -8.05
           ],
           "rotation": [
             0,
@@ -981,8 +981,8 @@
           "name": "anim_order",
           "position": [
             7.7,
-            4.8,
-            9.25
+            7.55,
+            -7.699999999999999
           ],
           "rotation": [
             0,
@@ -1002,22 +1002,46 @@
           ]
         },
         {
-          "name": "anim_train",
+          "name": "anim_train_engine",
           "position": [
-            12.8,
-            3.15,
+            -16,
+            5.8,
+            -9.05
+          ],
+          "rotation": [
+            0,
+            -1.5707963267948966,
             0
+          ],
+          "quaternion": [
+            0,
+            -0.7071067811865475,
+            0,
+            0.7071067811865476
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_train_car_1",
+          "position": [
+            -18.501735597447166,
+            5.8,
+            -10.734461226507982
           ],
           "rotation": [
             -3.141592653589793,
-            1.2246467991473532e-16,
+            -0.38561114160970933,
             -3.141592653589793
           ],
           "quaternion": [
             0,
-            1,
+            0.9814705140235357,
             0,
-            6.123233995736766e-17
+            -0.19161323049929702
           ],
           "scale": [
             1,
@@ -1028,9 +1052,9 @@
         {
           "name": "anim_rotor",
           "position": [
-            -5.100000000000001,
-            8.63,
-            -1.7000000000000002
+            -3.6000000000000014,
+            9.03,
+            -4
           ],
           "rotation": [
             0,
@@ -1052,9 +1076,9 @@
         {
           "name": "anim_packet_0",
           "position": [
-            -8.3,
-            3.73,
-            8.55
+            -3.599999999999998,
+            3.83,
+            -1.5999999999999996
           ],
           "rotation": [
             0,
@@ -1076,9 +1100,9 @@
         {
           "name": "anim_packet_1",
           "position": [
-            -5.75,
-            3.73,
-            8.55
+            -3.599999999999998,
+            3.83,
+            -0.1999999999999993
           ],
           "rotation": [
             0,
@@ -1100,9 +1124,9 @@
         {
           "name": "anim_packet_2",
           "position": [
-            -3.1999999999999993,
-            3.73,
-            8.55
+            -3.599999999999998,
+            3.83,
+            1.2000000000000002
           ],
           "rotation": [
             0,
@@ -1124,9 +1148,9 @@
         {
           "name": "anim_plant_0",
           "position": [
-            -3.8500000000000014,
-            3.19,
-            -2.7
+            -3.580000000000002,
+            3.44,
+            -4
           ],
           "rotation": [
             0,
@@ -1148,9 +1172,9 @@
         {
           "name": "anim_plant_1",
           "position": [
-            -3.8500000000000014,
-            3.19,
-            -0.9500000000000002
+            2.669999999999998,
+            3.44,
+            -4
           ],
           "rotation": [
             0,
@@ -1172,9 +1196,9 @@
         {
           "name": "anim_plant_2",
           "position": [
-            -3.8500000000000014,
-            3.19,
-            0.7999999999999998
+            -2.620000000000001,
+            3.44,
+            -4
           ],
           "rotation": [
             0,
@@ -1196,9 +1220,9 @@
         {
           "name": "anim_plant_3",
           "position": [
-            -3.8500000000000014,
-            3.19,
-            2.55
+            3.629999999999999,
+            3.44,
+            -4
           ],
           "rotation": [
             0,
@@ -1220,9 +1244,9 @@
         {
           "name": "anim_plant_4",
           "position": [
-            3.8500000000000014,
-            3.19,
-            -2.7
+            -3.580000000000002,
+            3.44,
+            4
           ],
           "rotation": [
             0,
@@ -1244,9 +1268,9 @@
         {
           "name": "anim_plant_5",
           "position": [
-            3.8500000000000014,
-            3.19,
-            -0.9500000000000002
+            2.669999999999998,
+            3.44,
+            4
           ],
           "rotation": [
             0,
@@ -1268,9 +1292,9 @@
         {
           "name": "anim_plant_6",
           "position": [
-            3.8500000000000014,
-            3.19,
-            0.7999999999999998
+            -2.620000000000001,
+            3.44,
+            4
           ],
           "rotation": [
             0,
@@ -1292,9 +1316,9 @@
         {
           "name": "anim_plant_7",
           "position": [
-            3.8500000000000014,
-            3.19,
-            2.55
+            3.629999999999999,
+            3.44,
+            4
           ],
           "rotation": [
             0,
@@ -1316,9 +1340,9 @@
         {
           "name": "anim_sprinkler",
           "position": [
-            6.199999999999999,
-            3.48,
-            8.3
+            4.599999999999998,
+            3.65,
+            0
           ],
           "rotation": [
             0,
@@ -1342,9 +1366,9 @@
         {
           "name": "anim_signal",
           "position": [
-            4.1,
-            5.4,
-            9.2
+            -11.3,
+            7.9,
+            -8.05
           ],
           "rotation": [
             0,
@@ -1367,8 +1391,8 @@
           "name": "anim_order",
           "position": [
             7.7,
-            4.8,
-            9.25
+            7.55,
+            -7.699999999999999
           ],
           "rotation": [
             0,
@@ -1388,22 +1412,46 @@
           ]
         },
         {
-          "name": "anim_train",
+          "name": "anim_train_engine",
           "position": [
-            12.8,
-            3.15,
+            -16,
+            5.8,
+            -9.05
+          ],
+          "rotation": [
+            0,
+            -1.5707963267948966,
             0
+          ],
+          "quaternion": [
+            0,
+            -0.7071067811865475,
+            0,
+            0.7071067811865476
+          ],
+          "scale": [
+            1,
+            1,
+            1
+          ]
+        },
+        {
+          "name": "anim_train_car_1",
+          "position": [
+            -18.501735597447166,
+            5.8,
+            -10.734461226507982
           ],
           "rotation": [
             -3.141592653589793,
-            1.2246467991473532e-16,
+            -0.38561114160970933,
             -3.141592653589793
           ],
           "quaternion": [
             0,
-            1,
+            0.9814705140235357,
             0,
-            6.123233995736766e-17
+            -0.19161323049929702
           ],
           "scale": [
             1,
@@ -1414,9 +1462,9 @@
         {
           "name": "anim_rotor",
           "position": [
-            -5.100000000000001,
-            8.63,
-            -1.7000000000000002
+            -3.6000000000000014,
+            9.03,
+            -4
           ],
           "rotation": [
             0,
@@ -1438,9 +1486,9 @@
         {
           "name": "anim_packet_0",
           "position": [
-            -8.3,
-            3.73,
-            8.55
+            -3.599999999999998,
+            3.83,
+            -1.5999999999999996
           ],
           "rotation": [
             0,
@@ -1462,9 +1510,9 @@
         {
           "name": "anim_packet_1",
           "position": [
-            -5.75,
-            3.73,
-            8.55
+            -3.599999999999998,
+            3.83,
+            -0.1999999999999993
           ],
           "rotation": [
             0,
@@ -1486,9 +1534,9 @@
         {
           "name": "anim_packet_2",
           "position": [
-            -3.1999999999999993,
-            3.73,
-            8.55
+            -3.599999999999998,
+            3.83,
+            1.2000000000000002
           ],
           "rotation": [
             0,
@@ -1510,9 +1558,9 @@
         {
           "name": "anim_plant_0",
           "position": [
-            -3.8500000000000014,
-            3.19,
-            -2.7
+            -3.580000000000002,
+            3.44,
+            -4
           ],
           "rotation": [
             0,
@@ -1534,9 +1582,9 @@
         {
           "name": "anim_plant_1",
           "position": [
-            -3.8500000000000014,
-            3.19,
-            -0.9500000000000002
+            2.669999999999998,
+            3.44,
+            -4
           ],
           "rotation": [
             0,
@@ -1558,9 +1606,9 @@
         {
           "name": "anim_plant_2",
           "position": [
-            -3.8500000000000014,
-            3.19,
-            0.7999999999999998
+            -2.620000000000001,
+            3.44,
+            -4
           ],
           "rotation": [
             0,
@@ -1582,9 +1630,9 @@
         {
           "name": "anim_plant_3",
           "position": [
-            -3.8500000000000014,
-            3.19,
-            2.55
+            3.629999999999999,
+            3.44,
+            -4
           ],
           "rotation": [
             0,
@@ -1606,9 +1654,9 @@
         {
           "name": "anim_plant_4",
           "position": [
-            3.8500000000000014,
-            3.19,
-            -2.7
+            -3.580000000000002,
+            3.44,
+            4
           ],
           "rotation": [
             0,
@@ -1630,9 +1678,9 @@
         {
           "name": "anim_plant_5",
           "position": [
-            3.8500000000000014,
-            3.19,
-            -0.9500000000000002
+            2.669999999999998,
+            3.44,
+            4
           ],
           "rotation": [
             0,
@@ -1654,9 +1702,9 @@
         {
           "name": "anim_plant_6",
           "position": [
-            3.8500000000000014,
-            3.19,
-            0.7999999999999998
+            -2.620000000000001,
+            3.44,
+            4
           ],
           "rotation": [
             0,
@@ -1678,9 +1726,9 @@
         {
           "name": "anim_plant_7",
           "position": [
-            3.8500000000000014,
-            3.19,
-            2.55
+            3.629999999999999,
+            3.44,
+            4
           ],
           "rotation": [
             0,
@@ -1702,9 +1750,9 @@
         {
           "name": "anim_sprinkler",
           "position": [
-            6.199999999999999,
-            3.48,
-            8.3
+            4.599999999999998,
+            3.65,
+            0
           ],
           "rotation": [
             0,
@@ -1886,127 +1934,126 @@
           "id": "amtrak",
           "x": 0,
           "y": 0,
-          "z": -14,
+          "z": -10.05,
           "rotation": 0,
           "group": "district_amtrak",
           "cameraTarget": {
             "x": 0,
-            "y": 6.65,
-            "z": -14
+            "y": 9.1,
+            "z": -10.5
           },
           "camera": {
-            "distance": 43,
+            "distance": 44,
             "fitBounds": {
               "min": {
-                "x": -15,
-                "y": 0.85,
-                "z": -23.1
+                "x": -14.5,
+                "y": 5.8,
+                "z": -18.1
               },
               "max": {
-                "x": 15,
-                "y": 10.8,
-                "z": -4
+                "x": 14.5,
+                "y": 15.9,
+                "z": -2.2
               }
             }
           },
-          "crossing": {
-            "contentId": "amtrak",
-            "x": 0,
-            "z": -6.4,
-            "y": 3.15,
-            "width": 4,
-            "depth": 2.8,
-            "trackCenter": [
-              0,
-              -14
-            ],
-            "trackRadii": [
-              12.8,
-              7.6
-            ]
-          },
           "animation": {
             "train": {
-              "trackCentre": [
-                0,
-                3.15,
-                0
-              ],
-              "trackRadii": [
-                12.8,
-                7.6
-              ],
-              "initialAngle": 0,
-              "rootY": 3.15,
-              "surfaceY": 3.15,
+              "path": {
+                "type": "racetrack",
+                "center": [
+                  0,
+                  5.8,
+                  -11.75
+                ],
+                "halfStraight": 16,
+                "radius": 2.7
+              },
+              "speed": 2,
+              "rootY": 5.8,
+              "surfaceY": 5.8,
               "forward": "-Z",
-              "duration": 18
+              "duration": 40.48230016469244,
+              "cars": [
+                {
+                  "name": "anim_train_engine",
+                  "offset": 0,
+                  "halfLength": 1.4,
+                  "halfWidth": 0.71
+                },
+                {
+                  "name": "anim_train_car_1",
+                  "offset": 3.2,
+                  "halfLength": 1.2,
+                  "halfWidth": 0.69
+                }
+              ]
             }
           }
         },
         {
           "id": "beaconfire",
-          "x": -23,
+          "x": -20.1,
           "y": 0,
-          "z": -2,
+          "z": 6,
           "rotation": 0,
           "group": "district_beaconfire",
           "cameraTarget": {
-            "x": -23,
-            "y": 4.550000000000001,
-            "z": -2
+            "x": -20.1,
+            "y": 5,
+            "z": 6
           },
           "camera": {
-            "distance": 36,
+            "distance": 34,
             "fitBounds": {
               "min": {
-                "x": -34,
-                "y": 0.85,
-                "z": -10.5
+                "x": -27,
+                "y": 2.4,
+                "z": -0.6
               },
               "max": {
-                "x": -12,
-                "y": 9.75,
-                "z": 12.5
+                "x": -9.9,
+                "y": 9.5,
+                "z": 13
               }
             }
           }
         },
         {
           "id": "visionx",
-          "x": 23,
+          "x": 20.1,
           "y": 0,
-          "z": -3,
+          "z": 6,
           "rotation": 0,
           "group": "district_visionx",
           "cameraTarget": {
-            "x": 23,
-            "y": 4.65,
-            "z": -3
+            "x": 20.1,
+            "y": 4.9,
+            "z": 6
           },
           "camera": {
-            "distance": 36,
+            "distance": 34,
             "fitBounds": {
               "min": {
-                "x": 12,
-                "y": 0.85,
-                "z": -12
+                "x": 9.9,
+                "y": 2.4,
+                "z": -0.6
               },
               "max": {
-                "x": 34,
-                "y": 8.25,
-                "z": 12
+                "x": 27,
+                "y": 7.9,
+                "z": 13
               }
             }
           },
           "animation": {
             "sprinkler": {
               "position": [
-                6.2,
-                3.48,
-                8.3
+                4.6,
+                3.65,
+                0
               ],
-              "surfaceY": 2.25
+              "surfaceY": 2.4
             }
           }
         }
@@ -2024,17 +2071,19 @@
         "occluder_junction_terminal_walls",
         "occluder_junction_terminal_roof",
         "occluder_junction_terminal_vault",
-        "occluder_junction_tree_harbor-west",
-        "occluder_junction_tree_harbor-east",
+        "occluder_junction_tree_upper-west",
+        "occluder_junction_tree_upper-east",
+        "occluder_junction_beaconfire_arcade",
         "occluder_junction_workshop_walls",
         "occluder_junction_workshop_roof",
-        "occluder_junction_tree_bf-front",
-        "occluder_junction_tree_bf-back",
+        "occluder_junction_tree_court-west",
+        "occluder_junction_tree_quay-west",
+        "occluder_junction_visionx_arcade",
         "occluder_junction_conservatory_frame",
         "occluder_junction_conservatory_glazing",
         "occluder_junction_conservatory_roof",
-        "occluder_junction_tree_vx-front",
-        "occluder_junction_tree_vx-back"
+        "occluder_junction_tree_court-east",
+        "occluder_junction_tree_quay-east"
       ]
     },
     {
@@ -3891,8 +3940,8 @@
       ]
     }
   ],
-  "totalBytes": 5303280,
-  "totalTriangles": 382526,
+  "totalBytes": 5245244,
+  "totalTriangles": 383390,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }

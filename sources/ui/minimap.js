@@ -2,6 +2,8 @@ import {createMapProjection,islandMapGeometry,selectMapIsland} from '../core/min
 
 const NAMES={about:'Jack Kong',experience:'Experience',projects:'Projects',education:'Education',harbor:'Meet Jack',connect:'Connect',amtrak:'Amtrak',beaconfire:'BeaconFire',visionx:'VisionX',affirmation:'Affirmation',research:'Research',catering:'Catering',learning:'Education'};
 const INK='#244d59',PAPER='#fffbef',ORANGE='#ed7541';
+const TERRAIN_COLORS=['#c7d7af','#b8c797','#a3b384','#9eaa90','#969c91'];
+const EXPERIENCE_TERRACE_COLORS=['#d4c9b3','#bdc6c8','#ece0c8'];
 
 // Canvas coordinates are CSS pixels; backing pixels follow the display density.
 // All map geometry comes from the same island/walk data as the playable world.
@@ -68,10 +70,10 @@ export class VoyageMinimap {
   const c=this.ctx;
   for(const campus of g.campuses){if(!campus.polygon.length)continue;this.polygon(campus.polygon,projection);c.fillStyle=campus.schoolId==='bu'?'#dbcac2':'#c0d0a5';c.fill();}
   if(g.terrain.length){
-   const key=[w,this.canvas.clientHeight,projection.scale].join(':');
+   const key=[island.id,w,this.canvas.clientHeight,projection.scale].join(':');
    if(g.mapPaths?.key!==key){
-    const bands=['#c7d7af','#b8c797','#a3b384','#9eaa90','#969c91'].map(color=>({color,path:new Path2D()}));
-    for(const face of g.terrain){const band=bands[Math.min(4,Math.floor(face.height/2))];face.points.forEach((p,n)=>{const q=projection.project(p);n?band.path.lineTo(q.x,q.y):band.path.moveTo(q.x,q.y);});band.path.closePath();}
+    const experience=island.id==='experience',bands=(experience?EXPERIENCE_TERRACE_COLORS:TERRAIN_COLORS).map(color=>({color,path:new Path2D()}));
+    for(const face of g.terrain){const index=experience?(face.height<1.5?0:face.height<4.2?1:2):Math.max(0,Math.min(4,Math.floor(face.height/2))),band=bands[index];face.points.forEach((p,n)=>{const q=projection.project(p);n?band.path.lineTo(q.x,q.y):band.path.moveTo(q.x,q.y);});band.path.closePath();}
     g.mapPaths={key,bands};
    }
    for(const band of g.mapPaths.bands){c.fillStyle=band.color;c.fill(band.path);}
