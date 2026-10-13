@@ -20,6 +20,13 @@
     <div class="island-labels" id="island-labels" aria-hidden="true"></div>
     <div class="context-actions" id="context-actions"><button id="dock-button" hidden><kbd>E</kbd><span id="dock-copy">Go ashore</span></button><button id="read-island-button" class="quiet-action" hidden>Read island</button><button id="play-button" class="play-action" hidden><kbd>F</kbd><span id="play-copy">Play</span></button></div>
     <section class="walking-hud" id="walking-hud" hidden><span class="eyebrow">ON FOOT WITH JACK</span><strong id="walking-island"></strong><button id="projects-guide" hidden>View 3 projects</button><button id="return-boat">Return to boat</button></section>
+    <section class="train-hud" id="train-hud" aria-label="Career Railway journey" hidden>
+      <div class="train-hud-heading"><span class="eyebrow" id="train-phase">CAREER RAILWAY</span><button id="train-options" type="button" aria-label="Train journey options">Options <kbd>ESC</kbd></button></div>
+      <ol class="train-timeline" aria-label="Career journey in chronological order"><li data-train-stop="harbor">Harbor</li><li data-train-stop="visionx">01 VisionX</li><li data-train-stop="beaconfire">02 BeaconFire</li><li data-train-stop="amtrak">03 Amtrak</li></ol>
+      <div class="train-stop-heading" aria-live="polite" aria-atomic="true"><strong id="train-title">Harbor Station</strong><span id="train-period"></span></div>
+      <p id="train-summary"></p>
+      <div class="train-actions"><button id="train-read" type="button" hidden>Read experience</button><button id="train-get-off" type="button"><kbd>E</kbd> Get off</button><button id="train-continue" type="button"><kbd>F</kbd><span>Start journey</span></button></div>
+    </section>
     <section class="challenge-hud" id="challenge-hud" aria-label="Current challenge" hidden><div class="challenge-heading"><span class="eyebrow" id="challenge-name">BUOY RUN</span><button id="challenge-exit" aria-label="End current challenge"><span class="ui-icon" data-icon="close"></span></button></div><div class="challenge-main"><strong id="challenge-time">00:00.00</strong><span id="challenge-progress">0 / 6 gates</span></div><div id="challenge-guide"></div><button class="hud-link" id="cargo-reset" hidden>Reset cargo</button></section>
     <div class="countdown" id="countdown" aria-live="polite" hidden></div>
     <section class="practice-hud" id="practice-hud" aria-label="Garden practice" hidden>

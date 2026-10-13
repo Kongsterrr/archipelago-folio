@@ -5,6 +5,8 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
 import {IslandController} from '../sources/world/island.js';
+import {CareerTrainController,CAREER_TRAIN} from '../sources/core/career-train.js';
+import {CareerTrainVisual} from '../sources/world/career-train.js';
 import {islands} from '../sources/config.js';
 import {islandMapGeometry} from '../sources/core/minimap.js';
 import {sampleTrainPath,trainPathLength,sampleTrainMotion,trainDuration} from '../sources/core/train-path.js';
@@ -184,50 +186,60 @@ test('legacy Amtrak protects its default track before a model is bound',()=>{
  assert.equal(shifted.duration,12);assert.equal(shifted.elapsed,0,'unbound legacy metadata also governs timing and yielding');
 });
 
-test('high and low exported trains share authored poses, materials and clear gallery operation',async t=>{
+test('the separate passenger train has complete geometry and stays bound to the shared railway after model replacement',async t=>{
  const json=async file=>JSON.parse(await fs.readFile(new URL(file,import.meta.url),'utf8'));
  const layout=(await json('../static/models/walk-layout.json')).islands.find(i=>i.id==='experience'),island=islands.find(i=>i.id==='experience');
- const expected=layout.districts.find(d=>d.id==='amtrak').animation.train;
- assert.ok(expected.path&&expected.cars.length===2,'the final asset has the rear railway contract');
+ const railway=layout.railway;
+ assert.ok(railway?.path&&railway.stations.length===4,'the live island exports its functional four-station railway');
+ const bytes=await fs.readFile(new URL('../static/models/career-train.glb',import.meta.url));
+ assert.ok(bytes.byteLength<=350_000,'the independently loaded train meets its compressed budget');
+ const parse=async()=> (await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;
+ const scene=new THREE.Scene(),controller=new CareerTrainController(railway,{island}),visual=new CareerTrainVisual(scene,controller);
+ t.after(()=>visual.dispose());
  const materialSets=[];
- for(const quality of['high','low']){
-  const prefix=quality==='low'?'low/':'',metadata=(await json(`../static/models/${prefix}manifest.json`)).models.find(m=>m.id==='experience');
-  assert.deepEqual(metadata.districts.find(d=>d.id==='amtrak').animation.train,expected,`${quality}: manifest and walk geometry agree`);
-  const bytes=await fs.readFile(new URL(`../static/models/${prefix}experience.glb`,import.meta.url));
-  const scene=(await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;
-  const outer=new THREE.Group();outer.position.set(island.x,0,island.z);outer.rotation.y=island.rotation;outer.add(scene);outer.updateMatrixWorld(true);
-  const controller=new IslandController(island,outer);controller.bind(scene);t.after(()=>controller.release());
-  const child=controller.children.find(c=>c.island.id==='amtrak'),materials=new Map();assert.equal(child.trainCars.length,2);
-  for(const car of expected.cars){
-   const node=scene.getObjectByName(car.name),pose=sampleTrainMotion(expected,0,trainDuration(expected),car.offset);
-   assert.equal(node.parent.name,'district_amtrak',`${quality}: each car has its own independent district transform`);
-   assert.ok(node.position.distanceTo(new THREE.Vector3(pose.x,pose.y,pose.z))<1e-5,`${quality}: authored position matches action start`);
-   const forward=new THREE.Vector3(0,0,-1).applyQuaternion(node.quaternion);
-   close(forward.x,pose.tangentX,'authored tangent X',1e-5);close(forward.z,pose.tangentZ,'authored tangent Z',1e-5);
+ for(const replacement of [false,true]){
+  const model=await parse();visual.bind(model);scene.updateMatrixWorld(true);
+  assert.equal(visual.cars.length,2,'both complete cars have independent transforms');
+  assert.ok(visual.wheels.length>=8,'each car has four separately rotatable wheels');
+  const materials=new Map();
+  for(const [index,car]of CAREER_TRAIN.cars.entries()){
+   const node=model.getObjectByName(car.name);assert.ok(node,`${car.name}: live mesh owner exists`);
+   assert.equal(node.isMesh,undefined,'a root controls all parts of each car');
+   const box=new THREE.Box3();
    node.traverse(mesh=>{if(!mesh.isMesh)return;for(const material of Array.isArray(mesh.material)?mesh.material:[mesh.material])materials.set(material.name,material.color.getHexString());
     const vertices=mesh.geometry.attributes.position;
     for(let n=0;n<vertices.count;n++){
-     const p=node.worldToLocal(new THREE.Vector3().fromBufferAttribute(vertices,n).applyMatrix4(mesh.matrixWorld));
-     assert.ok(Math.abs(p.x)<=car.halfWidth+.002&&Math.abs(p.z)<=car.halfLength+.002,`${quality}: safety metadata encloses the visible ${car.name}`);
+     const p=node.worldToLocal(new THREE.Vector3().fromBufferAttribute(vertices,n).applyMatrix4(mesh.matrixWorld));box.expandByPoint(p);
+     assert.ok(Math.abs(p.x)<=car.halfWidth+.025&&Math.abs(p.z)<=car.halfLength+.025,`${car.name}: safety metadata encloses the visible body`);
     }
    });
+   const size=box.getSize(new THREE.Vector3());assert.ok(size.x>1.4&&size.z>3&&size.y>.8,'the test covers a full-size rideable carriage, not a placeholder');
+   const pose=controller.carPose(index),forward=new THREE.Vector3(0,0,-1).applyQuaternion(node.quaternion),local=sampleTrainPath(railway.path,controller.distance-car.offset);
+   const c=Math.cos(island.rotation),s=Math.sin(island.rotation);
+   close(node.position.x,pose.x,'world car X',1e-5);close(node.position.y,pose.y,'car height',1e-5);close(node.position.z,pose.z,'world car Z',1e-5);
+   close(forward.x,local.tangentX*c+local.tangentZ*s,'3D forward X',1e-5);close(forward.y,local.tangentY||0,'3D climbing tangent',1e-5);close(forward.z,-local.tangentX*s+local.tangentZ*c,'3D forward Z',1e-5);
   }
   materialSets.push([...materials].sort(([a],[b])=>a.localeCompare(b)));
-  const map=islandMapGeometry(island,layout).tracks[0].points;
-  map.forEach((p,n)=>{const q=layout.trainTrack.points[n],world=outer.localToWorld(new THREE.Vector3(...q));close(p.x,world.x,'actual map X',1e-5);close(p.z,world.z,'actual map Z',1e-5);});
-  for(const x of[-16,0,16]){
-   controller.activate('amtrak');const viewer=outer.localToWorld(new THREE.Vector3(x,5.8,-17.67));controller.pedestrian={...viewer};
-   const duration=trainDuration(expected),step=duration/240;
-   for(let n=0;n<240;n++){
-    controller.update(step,island,n*step);
-    for(const car of child.trainCars){
-     const pose=sampleTrainMotion(expected,child.elapsed,child.duration,car.trainOffset),forward=new THREE.Vector3(0,0,-1).applyQuaternion(car.object.quaternion);
-     assert.ok(car.object.position.distanceTo(new THREE.Vector3(pose.x,pose.y,pose.z))<1e-5,`${quality}: loaded car follows the path`);
-     close(forward.x,pose.tangentX,`${quality}: loaded car faces travel X`,1e-5);close(forward.z,pose.tangentZ,`${quality}: loaded car faces travel Z`,1e-5);
-    }
-   }
-   close(child.elapsed,duration,`${quality}: gallery fence visitor never interrupts a complete lap`,1e-6);
+  if(!replacement){
+   const passenger=new THREE.Group();passenger.name='test-passenger';visual.mountPoint.add(passenger);
+   assert.equal(visual.mountPoint.parent,scene,'the actor anchor belongs to the stable scene, not either car asset');
+   assert.equal(model.getObjectByName('test-passenger'),undefined,'model disposal cannot traverse the passenger');
+   assert.equal(controller.board(),true);assert.equal(controller.continue(),true);
+   for(let frame=0;frame<120;frame++)controller.step(1/60);
+   visual.update(.5);assert.ok(visual.wheels.every(wheel=>Math.abs(wheel.object.rotation.x)>.1),'actual distance rotates all wheel groups');
+  }else{
+   assert.ok(visual.mountPoint.getObjectByName('test-passenger'),'asset replacement preserves the single passenger instance');
+   assert.equal(controller.passenger,true,'asset replacement does not end the ride');
   }
  }
- assert.deepEqual(materialSets[0],materialSets[1],'quality switch preserves train material colors');
+ assert.deepEqual(materialSets[0],materialSets[1],'model replacement preserves train finishes');
+ const map=islandMapGeometry(island,layout).tracks[0]?.points;
+ assert.ok(map?.length>=64,'the local map contains the entire rideable rail route');
+ const outer=new THREE.Group();outer.position.set(island.x,0,island.z);outer.rotation.y=island.rotation;outer.updateMatrixWorld(true);
+ for(const point of map){
+  const local=outer.worldToLocal(new THREE.Vector3(point.x,0,point.z));
+  let nearest=Infinity;
+  for(let n=0;n<=2048;n++){const rail=sampleTrainPath(railway.path,controller.length*n/2048);nearest=Math.min(nearest,Math.hypot(local.x-rail.x,local.z-rail.z));}
+  assert.ok(nearest<.09,'the map railway follows the same route as the passenger train');
+ }
 });

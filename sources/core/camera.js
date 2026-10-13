@@ -15,7 +15,9 @@ const groundForward = azimuth => new THREE.Vector3(-Math.sin(azimuth), 0, -Math.
 export function cameraAzimuth({focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH} = {}) {
   if (focus?.boatStudio) return AZIMUTH;
   if (focus) return focus.camera?.azimuth ?? AZIMUTH;
-  return locomotion === 'walking' || locomotion === 'quad' || locomotion === 'bicycle' || locomotion === 'car' ? landAzimuth : AZIMUTH;
+  // Rail cinematography has its own slowly changing angle. Keep this mode key
+  // stable so CameraTransition does not start a fade on every railway bend.
+  return ['walking','quad','bicycle','car','train'].includes(locomotion) ? landAzimuth : AZIMUTH;
 }
 
 export class CameraRig {
@@ -71,7 +73,7 @@ export class CameraRig {
     return Math.abs(projected.x) < .94 && projected.y > -.85 && projected.y < .82 && Math.abs(boat.x) < .7 && Math.abs(boat.y) < .68;
   }
 
-  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH, terrainHeight = null, arrival = null}, snap = false) {
+  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH, terrainHeight = null, arrival = null, trainView = null}, snap = false) {
     if(this.lastPoint&&!focus&&!this.lastFocus&&!snap){const delta=new THREE.Vector3(position.x-this.lastPoint.x,position.y-this.lastPoint.y,position.z-this.lastPoint.z);this.position.add(delta);this.target.add(delta);}
     this.lastPoint={...position};this.lastFocus=!!focus;
     const azimuth = cameraAzimuth({focus, locomotion, landAzimuth});
@@ -94,6 +96,21 @@ export class CameraRig {
       const target = new THREE.Vector3(focus.x, cfg.height || 3, focus.z);
       if (this.width >= 900) target.addScaledVector(right, focus.exhibit?460/this.height*distance*Math.tan(THREE.MathUtils.degToRad(FOV/2)):7.4);
       desired = {target, position: target.clone().add(new THREE.Vector3(Math.sin(az)*Math.cos(el), Math.sin(el), Math.cos(az)*Math.cos(el)).multiplyScalar(distance))};
+    } else if (locomotion === 'train') {
+      const view = trainView || {};
+      const wantedAzimuth = this.settings.reduced ? landAzimuth : view.azimuth ?? landAzimuth;
+      if(snap || this.trainAzimuth === undefined)this.trainAzimuth=wantedAzimuth;
+      else this.trainAzimuth+=Math.atan2(Math.sin(wantedAzimuth-this.trainAzimuth),Math.cos(wantedAzimuth-this.trainAzimuth))*(1-Math.exp(-.85*dt));
+      const distance=Math.max(view.distance||32,54*(this.height/this.width)/(844/390))*ZOOM_LEVELS[this.settings.walkZoom??1];
+      this.distance=snap?distance:THREE.MathUtils.damp(this.distance,distance,3,dt);
+      const el=view.elevation??.60,heading=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
+      const target=new THREE.Vector3(position.x,position.y+.9,position.z).addScaledVector(heading,1.5);
+      const look=view.lookAt;
+      if(look&&!this.settings.reduced)target.lerp(new THREE.Vector3(look.x,look.y??target.y,look.z),.18);
+      const direction=new THREE.Vector3(Math.sin(this.trainAzimuth)*Math.cos(el),Math.sin(el),Math.cos(this.trainAzimuth)*Math.cos(el));
+      // A short landscape screen needs the carriage above the passenger card.
+      if(this.height<=560&&this.width>this.height)target.addScaledVector(groundForward(this.trainAzimuth),-this.distance*Math.tan(THREE.MathUtils.degToRad(FOV/2))*.30/Math.sin(el));
+      desired={target,position:target.clone().addScaledVector(direction,this.distance)};
     } else if (locomotion === 'quad' || locomotion === 'bicycle' || locomotion === 'car') {
       const base=Math.max(locomotion==='car'?23:locomotion==='bicycle'?15:17,(locomotion==='car'?42:locomotion==='bicycle'?28:32)*(this.height/this.width)/(844/390));
       const desiredDistance=base*ZOOM_LEVELS[this.settings.walkZoom??1]+(this.settings.reduced?10:Math.min(10,speed*.5));

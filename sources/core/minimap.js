@@ -47,7 +47,7 @@ export function islandMapGeometry(island,layout={}){
   approach:approach?rectangle({x:(approach.min[0]+approach.max[0])/2,z:(approach.min[2]+approach.max[2])/2,width:approach.max[0]-approach.min[0]+1.5,depth:approach.max[2]-approach.min[2]+1.5}).map(project):[],
   route:(layout.route??[]).map(project),
   roads:layout.roads?.length?layout.roads.map(road=>({...road,points:road.points.map(([x,y,z])=>project({x,z}))})):(layout.paths??[]).map(path=>({...path,points:path.points.map(project)})),
-  tracks:(layout.districts??island.districts??[]).filter(d=>d.animation?.train).map(d=>{const rotation=d.rotation||0,c=Math.cos(rotation),s=Math.sin(rotation);return{points:trainTrackPoints(d.animation.train).map(p=>project({x:d.x+p.x*c+p.z*s,z:d.z-p.x*s+p.z*c}))};}),
+  tracks:layout.railway?[{stops:layout.railway.stations.map((stop,index)=>({id:stop.id,label:index?String(index):'H',...project(stop.boarding||stop.approach)})),points:trainTrackPoints({path:layout.railway.path}).map(p=>project({x:p.x,z:p.z}))}]:(layout.districts??island.districts??[]).filter(d=>d.animation?.train).map(d=>{const rotation=d.rotation||0,c=Math.cos(rotation),s=Math.sin(rotation);return{points:trainTrackPoints(d.animation.train).map(p=>project({x:d.x+p.x*c+p.z*s,z:d.z-p.x*s+p.z*c}))};}),
   terrain:layout.terrain?Array.from({length:layout.terrain.indices.length/3},(_,index)=>{
    const v=layout.terrain.vertices,ids=layout.terrain.indices.slice(index*3,index*3+3);
    return{height:ids.reduce((sum,id)=>sum+v[id*3+1],0)/3,points:ids.map(id=>project({x:v[id*3],z:v[id*3+2]}))};

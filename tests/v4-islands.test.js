@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import R from '@dimforge/rapier3d-compat/rapier.es.js';
-import {CharacterController,IslandWalkWorld,localToWorld,SEA_GROUP} from '../sources/core/character.js';
+import {CharacterController,IslandWalkWorld,localToWorld,SEA_GROUP,CHARACTER} from '../sources/core/character.js';
 import {createIslandColliders} from '../sources/core/collisions.js';
 import {islands} from '../sources/config.js';
 import {DiscoveryStore} from '../sources/core/discovery.js';
@@ -10,12 +10,20 @@ import {IslandController} from '../sources/world/island.js';
 import {Group} from 'three';
 await R.init();
 const layouts=JSON.parse(fs.readFileSync(new URL('../static/models/walk-layout.json',import.meta.url))).islands;
+function assertFeetSupported(character,walk){
+ const p=character.position,supports=[walk.groundAt(p)];
+ // On a descending tread, the capsule is still supported by its trailing
+ // footprint before its centre crosses onto the lower tread. Keep the flat
+ // ground tolerance while checking those real stair contacts as well.
+ if(walk.nearStairs(p))for(let n=0;n<16;n++){const a=n/16*Math.PI*2;supports.push(walk.groundAt({x:p.x+Math.cos(a)*CHARACTER.radius,z:p.z+Math.sin(a)*CHARACTER.radius}));}
+ assert.ok(Math.min(...supports.map(y=>Math.abs(p.y-y)))<.08,`feet lost surface at ${JSON.stringify(p)}; support ${supports.join(',')}`);
+}
 for(const layout of layouts)test(`${layout.id}: actual character completes scenic loop, both berths clear, bench accessible`,()=>{
  const i=islands.find(i=>i.id===layout.id),world=new R.World({x:0,y:0,z:0});world.timestep=1/60;
  try{createIslandColliders(R,world,i);world.forEachCollider(c=>c.setCollisionGroups(SEA_GROUP));const walk=new IslandWalkWorld(R,world,i,layout),c=new CharacterController(R,world);world.step();
  for(const b of layout.berths){const p=localToWorld(i,b.boat),l=localToWorld(i,b.landing);assert.ok(walk.clear(l),'landing blocked');assert.equal(world.intersectionWithShape({x:p.x,y:.35,z:p.z},{x:0,y:Math.sin(p.yaw/2),z:0,w:Math.cos(p.yaw/2)},new R.Cuboid(.85,.7,2.1),undefined,SEA_GROUP),null,'boat berth blocked');}
  c.teleport(localToWorld(i,layout.berths[0].landing),walk);c.enable(true);world.step();let rescues=0;const tp=c.teleport.bind(c);c.teleport=(...a)=>{rescues++;return tp(...a);};
- for(const [x,z]of layout.route){const target=localToWorld(i,{x,z});let reached=false;const budget=Math.ceil((Math.hypot(c.position.x-target.x,c.position.z-target.z)/2.4+4)*60);for(let n=0;n<budget;n++){const dx=target.x-c.position.x,dz=target.z-c.position.z,d=Math.hypot(dx,dz);if(d<.09){reached=true;break;}const scale=Math.min(1,d/(2.4/60));c.step({x:dx/d*scale,z:dz/d*scale},1/60);world.step();c.afterStep();assert.ok(Math.abs(c.position.y-walk.groundAt(c.position))<.08,'feet lost surface');}assert.ok(reached,`route blocked ${x},${z}`);}
+ for(const [x,z]of layout.route){const target=localToWorld(i,{x,z});let reached=false;const budget=Math.ceil((Math.hypot(c.position.x-target.x,c.position.z-target.z)/2.4+4)*60);for(let n=0;n<budget;n++){const dx=target.x-c.position.x,dz=target.z-c.position.z,d=Math.hypot(dx,dz);if(d<.09){reached=true;break;}const scale=Math.min(1,d/(2.4/60));c.step({x:dx/d*scale,z:dz/d*scale},1/60);world.step();c.afterStep();assertFeetSupported(c,walk);}assert.ok(reached,`route blocked ${x},${z}`);}
  assert.equal(rescues,0,'route needed a rescue');assert.ok(layout.stations.length>=3);for(const s of layout.stations)assert.ok(walk.clear(localToWorld(i,s)),`${s.id} inaccessible`);
  const approach=localToWorld(i,layout.bench.approach);assert.ok(walk.clear(approach));assert.ok(walk.visible(approach,approach));c.teleport(approach,walk);c.seated=true;world.step();c.step({x:0,z:0},1/60);world.step();assert.equal(c.speed,0);c.step({x:1,z:0},1/60);assert.equal(c.seated,false);
  }finally{world.free();}

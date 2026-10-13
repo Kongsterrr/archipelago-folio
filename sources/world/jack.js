@@ -141,18 +141,19 @@ export class JackAvatar {
     if (this.pose === 'interact') this.actions.get('interact')?.reset().play();
   }
 
-  update(dt, {player, boatVisual, quadBike, bicycle, character, alpha, reduced, frozen, lookTarget, practice}) {
+  update(dt, {player, boatVisual, quadBike, bicycle, trainVisual, character, alpha, reduced, frozen, lookTarget, practice}) {
     if (!this.ready) return;
     const land = player.onLand;
     const cycling = !!player.ridingBicycle;
     const driving = !!player.ridingCar;
+    const onTrain = !!player.ridingTrain && !!trainVisual;
     const riding = player.ridingQuad || cycling || driving;
     const vehicle = driving ? player.car : cycling ? bicycle : quadBike;
-    const actorMode = driving ? 'car-'+player.car.id : cycling ? 'bicycle' : riding ? 'quad' : land ? 'land' : 'boat';
+    const actorMode = onTrain ? 'train' : driving ? 'car-'+player.car.id : cycling ? 'bicycle' : riding ? 'quad' : land ? 'land' : 'boat';
     const modeChanged = this.actorMode !== actorMode;
     this.actorMode = actorMode;
     this.onLand = land;
-    if (modeChanged) this.resetPose(riding || !land ? 'helm' : 'idle');
+    if (modeChanged) this.resetPose(onTrain ? 'sit' : riding || !land ? 'helm' : 'idle');
     // A pause holds the rendered pose too. Reset/boarding may still commit a new
     // stable actor in a frozen frame, without reviving old animations.
     if (frozen && !modeChanged && !this.forceFrame) {
@@ -166,7 +167,18 @@ export class JackAvatar {
     const step = frozen ? 0 : dt;
     this.expression?.restore();
     this.estatePose?.restore();
-    if (riding && vehicle) {
+    if (onTrain) {
+      // A scene-owned passenger mount survives train/island quality replacement.
+      const mount = trainVisual.mountPoint;
+      if (this.root.parent !== mount) mount.add(this.root);
+      this.root.position.set(0, -(this.spec.benchSeatOffset ?? .52), -(this.spec.benchForwardOffset ?? 0));
+      this.root.rotation.set(0, 0, 0);
+      this.root.scale.setScalar(1);
+      this.wasSeated = false;
+      this.standTime = 0;
+      this.setPose('sit');
+      this.actions.get('sit')?.setEffectiveTimeScale(reduced ? 0 : 1);
+    } else if (riding && vehicle) {
       // The dedicated quad pose is fitted after the animation mixer below.
       // Boat steering-wheel contacts cannot be reused for wider handlebars.
       const mount = vehicle.mountPoint;
@@ -229,8 +241,8 @@ export class JackAvatar {
       else if (cycling && bicycle) this.bicyclePose.apply(bicycle);
     else if (riding && quadBike) this.quadPose.apply(quadBike);
     if(practice)this.estatePose.apply({...practice,phase:practice.swing>=0?'swing':'ready',reduced});else this.estatePose.reset();
-    const expressionPosition = riding ? vehicle.position : character.position;
-    this.expression?.update(step, {reduced, frozen, walking: land && !riding, moving: land && !riding && character.speed > .1, yaw: this.root.rotation.y, position: expressionPosition, lookTarget: land && !riding ? lookTarget : null, interacting: this.interactTime});
+    const expressionPosition = onTrain ? player.train.position : riding ? vehicle.position : character.position;
+    this.expression?.update(step, {reduced, frozen, walking: land && !riding && !onTrain, moving: land && !riding && !onTrain && character.speed > .1, yaw: this.root.rotation.y, position: expressionPosition, lookTarget: land && !riding && !onTrain ? lookTarget : null, interacting: this.interactTime});
   }
 
   bicycleContactStatus(bicycle) {

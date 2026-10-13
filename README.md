@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V18 — Career Terraces** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V19 — Career Railway** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -13,7 +13,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Four connected exhibition islands:** About combines Harbor and Connect; Experience combines Amtrak, BeaconFire and VisionX; Projects combines Affirmation, Research and Catering; Education keeps BU and CMU together. Nine independent stories remain available through the directory.
 - **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, four walkable islands, exhibit stops, benches and safe boarding transitions.
 - **Jack’s Estate:** About Island has a furnished house with a walkable ground floor, four garage bays with a drivable Porsche 911, Mercedes G63, Ferrari Purosangue and Ford Raptor, a garden circuit, a tennis court and three putting greens.
-- **Career Terraces:** a connected Experience courtyard rises from the quay to the Amtrak clock station. A brick workshop and glass conservatory frame the court; broad stairs, side streets and a rear railway promenade connect the three career stories.
+- **Career Railway:** board an open sightseeing carriage and visit VisionX, BeaconFire and Amtrak in career order. The train waits at each station while you read or explore, can be called from another platform, and returns along the coast. Three connected neighborhoods rise from the harbor garden to the clock-tower station.
 - **Garden practice:** return six machine-fed tennis balls or putt across three greens, with animated racket and club contact, keyboard and touch controls, and results that last only for the current round.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
@@ -77,6 +77,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.2 — Relaxed Driving Pose** | Rearward driver placement, relaxed wheel reach and a charcoal G63 roof | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/a375409df896d102ea7b0b80c116f7bd382e2b52) |
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
 | **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
+| **V19 — Career Railway** | A rideable coastal train links VisionX, BeaconFire and Amtrak in chronological order, with station visits, platform calls, independent car motion and a layered railway town | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V18 — Career Terraces** | Connects Experience around a three-level courtyard, broad stairs, architectural streets and a rear railway with independently turning cars | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V17 — Career Junction** | Rebuilds Experience as a layered seaside career town, with three company exhibits, walkable interiors and an elevated model railway | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V16 — Coastal Drive** | Expands About to a 90 × 80 estate with a 6.5 m coastal driving loop, roomy garage forecourt and sunset parking | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -90,6 +91,18 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V19 — Career Railway
+
+- Replaces the decorative rear train circuit with an island-wide railway and four platforms: **Harbor → VisionX → BeaconFire → Amtrak → Harbor**. The waterfront garden, brick workshop and elevated clock station share the island's paths and rising terrain; the rear coast extends modestly while the original pier and boat berths remain.
+- An original navy, cream and copper locomotive pulls an open wooden-seat carriage. Jack uses the existing seated pose on a permanent passenger mount. Both cars follow the same height-aware, arc-length-sampled route as the track; their wheels roll with distance and the coupling follows the cars through bends.
+- Approach a stopped carriage and press **E · Board train**. Choose **Start journey** or press **F** to depart. At each employer, **Read experience** opens the complete résumé entry, **E · Get off** uses a checked platform exit, and **F · Continue journey** leaves for the next stop. The train waits without a countdown when you read or walk around.
+- The station timeline uses the existing facts: **VisionX, May–August 2023; BeaconFire, February–September 2024; Amtrak, November 2024–Present**. Passing a company does not mark its content as read. All stories remain accessible from the ordinary menu without taking the train.
+- Other platforms offer **F · Call train**. The empty train follows its real route to the requested platform and shows an estimated arrival time. While riding, **Escape** opens paused passenger options, including a safe rail journey back to the harbor. Ordinary throttle, steering and mid-route dismounting are disabled.
+- The train runs on the existing fixed simulation step and pauses with reading, menus and the background. Travel, Reset and other challenges clear the passenger state and send the empty train home without a visible teleport. Its session-owned simulation and separate Jack mount survive island quality replacement; no saved-record migration is added.
+- A compact passenger card replaces driving controls, and a gradual sightseeing view follows the journey. Reduced motion keeps a fixed camera direction. The bounded `career_train` voyage tool uses the same proximity, visibility, pause and exit checks as the interface.
+
+These environments illustrate career themes, not the employers' actual offices. Visual captures, renderer/device coverage and measured limitations belong in [validation notes](VALIDATION.md); concept illustrations are not evidence of the rendered result.
 
 ### V18 — Career Terraces
 
@@ -550,6 +563,7 @@ Open the local URL printed by Vite, normally `http://127.0.0.1:5173`.
 | `npm run build` | Build the static site into `dist/` |
 | `npm run preview` | Preview the production build locally |
 | `npm test` | Run physics, camera, input, challenge, and current gameplay, migration and historical asset regression tests |
+| `npm run models:career-train` | Rebuild the original locomotive/carriage GLB and its manifest |
 
 No API keys, backend, account setup, or environment variables are required to run the portfolio.
 
@@ -566,17 +580,21 @@ No API keys, backend, account setup, or environment variables are required to ru
 | Walk on land | WASD / arrows, relative to the screen |
 | Run on land | Hold Shift |
 | Operate a nearby device on foot / read while riding | F |
+| Board / leave a stopped train | E / Enter beside the carriage or while stopped |
+| Start / continue the sightseeing train, or call it from a nearby platform | F / the displayed action button |
 | Tennis: move / swing | A / D or left / right; Space |
 | Putting: aim / charge and putt | A / D or left / right; hold and release Space |
 | Horn | H |
 | Map | M |
 | Reset to safe harbor / current island dock | R |
-| Close a panel / leave practice when no panel is open | Escape |
+| Close a panel / leave practice / open passenger options while riding the train | Escape |
 | Camera zoom | Mouse wheel or + / − controls |
 
 Touch devices have a camera-relative joystick and on-screen driving, horn, reading, and action buttons. Boat Studio is available from Jack’s Harbor and Settings. On land, the joystick moves Jack and Boost becomes Run; both Shift and the on-screen speed button double movement speed. Move to stand up from a bench; use Return to boat while on foot. While riding, that shortcut becomes Dismount, and the joystick steers the vehicle.
 
 During estate practice, the joystick moves sideways along the tennis baseline or adjusts putting aim. The dedicated Hit and Hold to charge buttons provide the corresponding Space actions. Practice overrides ordinary walking until the round is left.
+
+The sightseeing train drives itself. Its touch controls separate **Read experience**, **Get off** and **Continue journey**; exit and story buttons are available only at a stopped station. Onboard **Options** pauses the ride and offers a safe return to the harbor. Stepping off leaves the train waiting while Jack explores on foot.
 
 Opening a menu or switching away pauses simulation; an active challenge resumes after a short countdown. Going ashore, resetting, and traveling cancel an unfinished challenge. On land, the parked boat stays locked while sea life and traffic continue. Reading pauses the whole simulation. Sound starts off, and visual cues remain available while muted.
 
@@ -608,6 +626,8 @@ tests/                   Automated regression checks
 
 `EstatePracticeController` advances tennis and putting on the fixed simulation step, with separate pause, countdown and round state. `EstatePracticeView` renders the active ball and receiving marker; `EstateSportPose` applies racket and club poses to Jack’s existing rig. Practice keeps Jack in the walking locomotion mode and exposes transient status through the voyage tools without writing to `DiscoveryStore`.
 
+`CareerTrainController` owns chronological stops, braking, pedestrian yielding, empty platform calls and return journeys. `CareerJourney` integrates boarding transitions, checked exits, pause reasons and the `riding-train` actor with the game; `CareerTrainVisual` animates independent cars and a permanent passenger mount. The island layout supplies one shared railway path for scenery, simulation and the map. Train state is session-only and continues independently of rendering visibility.
+
 ## Customize the content
 
 - Edit [`sources/content.json`](sources/content.json) to update the nine entries. The scene, panels, directory, and reading mode share this data.
@@ -625,9 +645,10 @@ Generated assets are checked in. Regenerate the current character and islands wi
 node scripts/build-jack.mjs # legacy procedural model
 node scripts/build-imported-jack.mjs # current playable imported character
 node scripts/build-walk-islands.mjs
+npm run models:career-train # independent original locomotive and open carriage
 ```
 
-The island builder exports all four V11 parent islands in both quality variants plus `walk-layout.json`, preserving the existing boat and avatar. Use `node scripts/build-walk-islands.mjs` for the current islands. The earlier `build-assets`, compression and low-asset scripts remain historical tools and would overwrite current manifests; do not run them to rebuild V11. Old individual island GLBs remain historical fixtures and are not loaded by the current game.
+The island builder exports all four parent islands in both quality variants plus `walk-layout.json`, preserving the existing boat and avatar. Use `node scripts/build-walk-islands.mjs` for the current islands. The separate train builder writes `career-train.glb` and `career-train-manifest.json`; both quality levels share this asset, loaded with Experience rather than the initial harbor. The earlier `build-assets`, compression and low-asset scripts remain historical tools and would overwrite current manifests; do not run them to rebuild the current islands. Old individual island GLBs remain historical fixtures and are not loaded by the current game.
 
 To rebuild only the main boat:
 

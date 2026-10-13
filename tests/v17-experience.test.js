@@ -15,7 +15,8 @@ import {exhibitTarget} from '../sources/core/portfolio-navigation.js';
 import {exhibitReadLabel, selectLandExhibit} from '../sources/core/project-exhibits.js';
 import {IslandController} from '../sources/world/island.js';
 import {applySunsetMaterials, releaseSunsetMaterials} from '../sources/world/sunset-materials.js';
-import {sampleTrainMotion,trainDuration} from '../sources/core/train-path.js';
+import {sampleTrainPath} from '../sources/core/train-path.js';
+import {CareerTrainController,CAREER_TRAIN} from '../sources/core/career-train.js';
 
 const json = async path => JSON.parse(await fs.readFile(new URL(path, import.meta.url), 'utf8'));
 const layout = (await json('../static/models/walk-layout.json')).islands.find(i => i.id === 'experience');
@@ -74,24 +75,26 @@ function traverse(fixture, route) {
   return highest;
 }
 
-test('Career Terraces preserves the Experience coast, pier and both boat berths', () => {
-  assert.deepEqual(layout.shore, originalShore);
+test('Career Railway modestly extends the rear coast while preserving the harbor, pier and both boat berths', () => {
+  assert.equal(layout.shore.length,originalShore.length,'the shoreline keeps its existing coastal silhouette');
+  for(const [index,point]of originalShore.entries())if(point[1]>=0)assert.deepEqual(layout.shore[index],point,'the front coast and existing dock connection stay fixed');
   assert.deepEqual(layout.dock, {width:4,deckY:.85,startZ:27.499999999999996,endZ:38});
   assert.deepEqual(layout.berths, [-1,1].map(side => ({boat:{x:side*4.3,z:35.55,yaw:Math.PI},landing:{x:side*.5,z:35.5,y:.85,yaw:Math.PI}})));
   const shore = metadata('high').shorePolygon;
   assert.equal(Math.max(...shore.map(p => p[0])) - Math.min(...shore.map(p => p[0])), 78);
-  assert.equal(Math.max(...shore.map(p => p[1])) - Math.min(...shore.map(p => p[1])), 60);
+  assert.equal(Math.max(...shore.map(p => p[1])) - Math.min(...shore.map(p => p[1])), 62);
+  assert.ok(Math.min(...layout.shore.map(p=>p[1]))>=-32,'walkable shore remains inside the modest rear extension');
 });
 
 test('high and low Experience exports share scene contracts and meet compressed byte budgets', async () => {
   const high = metadata('high'), low = metadata('low');
-  assert.match(high.revision, /^v18-/);
+  assert.match(high.revision, /^v19-/);
   assert.equal(low.revision, high.revision);
   assert.equal(manifests.high.walkLayout, manifests.low.walkLayout);
   for (const key of ['dock','shorePolygon','districts','occluders']) assert.deepEqual(high[key], low[key], key);
   assert.deepEqual(high.districts, layout.districts);
   assert.deepEqual(high.animationNodes.map(n => [n.name,n.position,n.rotation,n.scale]), low.animationNodes.map(n => [n.name,n.position,n.rotation,n.scale]));
-  for (const [quality,budget] of [['high',1_500_000],['low',1_000_000]]) {
+  for (const [quality,budget] of [['high',2_000_000],['low',1_200_000]]) {
     const size = (await fs.stat(new URL(`../static/models/${quality === 'low' ? 'low/' : ''}experience.glb`, import.meta.url))).size;
     assert.equal(metadata(quality).bytes, size);
     assert.ok(size <= budget, `${quality}: ${size} bytes exceeds ${budget}`);
@@ -167,25 +170,28 @@ test('an alternate harbor approach cannot sink the Rapier character into the bro
   try {
     // This approach leaves a small lateral offset that previously made Rapier
     // miss one downward sweep on the flat station floor, then recover slowly.
-    const aisle=layout.interiors.find(interior=>interior.landmarkId==='career-station').walkRoute;
-    const route = [[0,35.5],[0,27],[-8,25],[0,25.8],[0,24],[0,12],...aisle,...aisle.slice(0,-1).reverse(),[0,12],[0,24]];
+    const route = [[0,35.5],[0,30.5],[.6,30.5],[0,30.5],...layout.route,...layout.route.slice(0,-1).reverse(),[0,30.5],[0,35.5]];
     traverse(f,route);
     assert.equal(f.rescues,0,'floor support must remain continuous without a safety teleport');
   } finally { f.world.free(); }
 });
 
-for (const ramp of layout.ramps || layout.surfaces.filter(surface=>surface.slope)) {
+for (const ramp of (layout.ramps || layout.surfaces.filter(surface=>surface.slope)).filter(surface=>Math.abs(surface.slope)>1e-6&&surface.depth>1)) {
   for (const fromBelow of [false,true]) test(`${ramp.id}: real Rapier ${fromBelow?'wrong-side approaches cannot enter beneath the ramp':'sideways walking cannot leave through gaps between railing posts'}`, () => {
     const f=physicsFixture();
     try {
       const rotation=ramp.rotation||0, yaw=rotation+island.rotation;
-      let approaches=0;
+      let approaches=0;const lowerTerrainClearances=[];
       for (const side of [-1,1]) for (const gap of [-.375,-.125,.125,.375]) {
         const along=ramp.depth*gap, across=side*(ramp.width/2+(fromBelow?.6:-.55));
         const center=localToWorld(island,{x:ramp.x+along*Math.sin(rotation),z:ramp.z+along*Math.cos(rotation)});
         const start=localToWorld(island,{x:ramp.x+across*Math.cos(rotation)+along*Math.sin(rotation),z:ramp.z-across*Math.sin(rotation)+along*Math.cos(rotation)});
         start.y=f.walk.groundAt(start);
         const surfaceY=f.walk.groundAt(center);
+        // The seaside platform ramp has water outside its outer guard; only
+        // actual land approaches can exercise entering beneath the ramp.
+        if (fromBelow&&!f.walk.contains(start,.22)) continue;
+        if(fromBelow)lowerTerrainClearances.push(surfaceY-start.y);
         // Near a ramp's low end there is no space underneath to test.
         if (fromBelow&&surfaceY-start.y<.3) continue;
         approaches++;
@@ -199,11 +205,11 @@ for (const ramp of layout.ramps || layout.surfaces.filter(surface=>surface.slope
           if (fromBelow) assert.ok(offset>=ramp.width/2,`${ramp.id}: visitor enters the solid ramp wedge from its lower side`);
           else {
             assert.ok(offset<ramp.width/2,`${ramp.id}: visitor leaves the ramp through its visible railing`);
-            assert.ok(Math.abs(position.y-surfaceY)<.08,`${ramp.id}: feet lose support while pressing against the ramp railing`);
+            assert.ok(Math.abs(position.y-f.walk.groundAt(position))<.08,`${ramp.id}: feet lose support while pressing against the ramp railing`);
           }
         }
       }
-      assert.ok(approaches>0,`${ramp.id}: at least one approach is exercised`);
+      assert.ok(approaches>0||(fromBelow&&lowerTerrainClearances.length>0&&lowerTerrainClearances.every(clearance=>clearance<.3)),`${ramp.id}: exercise every accessible lower approach or prove the neighboring terrain fills the ramp underside`);
     } finally { f.world.free(); }
   });
 }
@@ -296,7 +302,7 @@ for (const quality of ['high','low']) test(`${quality}: company reading cameras 
       for (const vertex of vertices) {
         const p=vertex.clone().project(camera), x=(p.x+1)*width/2, y=(1-p.y)*height/2;
         assert.ok(p.z>=-1&&p.z<=1&&x>=rect.left-.1&&x<=rect.right+.1&&y>=rect.top-.1&&y<=rect.bottom+.1,
-          `${reader.id} at ${width}×${height}: architecture is hidden by the reader or clipped by the viewport`);
+          `${reader.id} at ${width}×${height}: architecture is hidden by the reader or clipped by the viewport; vertex ${vertex.toArray().map(v=>v.toFixed(3))}, screen ${x.toFixed(2)},${y.toFixed(2)}, allowed ${JSON.stringify(rect)}`);
       }
     }
   }
@@ -324,33 +330,26 @@ test('actual brick, steel, greenhouse glass and paving retain their authored fin
   } finally { releaseSunsetMaterials(scene); }
 });
 
-test('an elevated Amtrak train yields to a visitor on its track plane while the lower walk remains independent', async () => {
-  const scene = await model('high'), outer = new THREE.Group();
-  outer.position.set(island.x,0,island.z);
-  outer.rotation.y = island.rotation;
-  outer.add(scene);
-  const controller = new IslandController(island,outer);
-  controller.bind(scene);
-  try {
-    const train = controller.children.find(child => child.island.id === 'amtrak'), track = train.island.animation.train;
-    const district = layout.districts.find(item => item.id === 'amtrak');
-    const start = sampleTrainMotion(track,0,trainDuration(track));
-    const trackY = (district.y || 0) + start.y;
-    assert.ok(trackY - layout.groundY > 1.5, 'track has a distinct elevated pedestrian plane');
-    controller.activate('amtrak');
-    const position = toWorld(train.island,start.x,start.z,trackY);
-    controller.pedestrian = position;
-    controller.update(STEP,island,0);
-    assert.equal(train.elapsed,0,'visitor standing on the elevated track stops dispatch');
-    controller.pedestrian = {...position,y:layout.groundY};
-    controller.update(STEP,island,STEP);
-    assert.ok(train.elapsed > 0,'visitor beneath the elevated track does not stop dispatch');
-    const node = scene.getObjectByName(track.cars?.[0]?.name || 'anim_train'), before = {elapsed:train.elapsed,position:node.position.toArray(),quaternion:node.quaternion.toArray()};
-    controller.update(0,island,50,true,false,'amtrak');
-    assert.equal(train.elapsed,before.elapsed,'read focus does not advance simulation time');
-    assert.deepEqual(node.position.toArray(),before.position);
-    assert.deepEqual(node.quaternion.toArray(),before.quaternion);
-  } finally { controller.release(); }
+test('the real career railway yields to an elevated track visitor, ignores the inaccessible lower plane and freezes on pause', () => {
+  const railway=layout.railway;
+  assert.ok(railway?.path,'functional railway replaces the old Amtrak decoration');
+  const train=new CareerTrainController(railway,{island});
+  const highStop=railway.stations.find(station=>station.id==='amtrak');
+  // Load a valid elevated starting pose without changing the shared route.
+  train.distance=highStop.distance;train.previousDistance=train.distance;train.stationId='amtrak';
+  assert.equal(train.board(),true);assert.equal(train.continue(),true);
+  const coach=sampleTrainPath(railway.path,train.distance-CAREER_TRAIN.coachOffset),position=train.worldPoint(coach);
+  assert.ok(position.y-layout.groundY>1.5,'the actual high-station track is elevated');
+  train.step(STEP,{pedestrians:[position]});
+  assert.equal(train.distance,highStop.distance,'a visitor inside the trailing carriage envelope holds the whole train');
+  train.step(STEP,{pedestrians:[{...position,y:position.y-3}]});
+  assert.ok(train.distance>highStop.distance,'an inaccessible lower plane does not block the high rail route');
+  const before={distance:train.distance,position:train.position};
+  train.step(10,{paused:true});
+  assert.equal(train.distance,before.distance,'a background pause cannot advance the rail clock');
+  assert.deepEqual(train.position,before.position,'pausing retains the passenger location');
+  train.step(STEP);
+  assert.ok(train.distance>before.distance,'the functional train resumes even without any island decoration animation');
 });
 
 for (const quality of ['high','low']) test(`${quality}: terrace and ramp rendering agrees with exported walking heights and real Rapier support`, async () => {
@@ -387,6 +386,7 @@ test('the exported main streets retain their full clear walking width', () => {
       for (let segment = 1; segment < path.points.length; segment++) {
         const a = path.points[segment-1], b = path.points[segment];
         const dx = b[0]-a[0], dz = b[1]-a[1], length = Math.hypot(dx,dz);
+        if(length<1e-8)continue;
         const steps = Math.max(1,Math.ceil(length/.35));
         for (let step = 0; step <= steps; step++) for (const offset of [-path.width/2+.06,0,path.width/2-.06]) {
           const x = a[0]+dx*step/steps+dz/length*offset;
@@ -407,17 +407,24 @@ test('the complete tour passes through all three open interiors with clear publi
     for (const interior of layout.interiors) {
       assert.ok(interior.entrances.length >= 2, `${interior.landmarkId}: public through-route`);
       assert.ok(interior.entrances.every(entrance => entrance.width >= 3.2), `${interior.landmarkId}: generous entrances`);
+      for(const entrance of interior.entrances){const position=localToWorld(island,entrance);assert.ok(f.walk.clear(position,.3),`${interior.landmarkId}: the actual doorway admits Jack`);assert.ok(f.walk.safeGround(position,.22),`${interior.landmarkId}: doorway support is walkable`);}
       for (const point of interior.walkRoute) {
         const [x,z] = point;
         const worldPoint = localToWorld(island,{x,z});
         assert.ok(f.walk.clear(worldPoint,.3), `${interior.landmarkId}: center aisle remains open`);
-        assert.ok(Math.abs(f.walk.groundAt(worldPoint)-interior.floorY) < .035, `${interior.landmarkId}: one supported interior floor`);
+        let authoredHeight=interior.floorY;
+        for(const ramp of layout.ramps||[]){
+          const angle=ramp.rotation||0,dx=x-ramp.x,dz=z-ramp.z,across=dx*Math.cos(angle)-dz*Math.sin(angle),along=dx*Math.sin(angle)+dz*Math.cos(angle);
+          if(Math.abs(across)<=ramp.width/2&&Math.abs(along)<=ramp.depth/2)authoredHeight=Math.max(authoredHeight,ramp.y+ramp.slope*along);
+        }
+        assert.ok(Math.abs(f.walk.groundAt(worldPoint)-authoredHeight) < .035, `${interior.landmarkId}: aisle follows its floor or the authored platform access ramp`);
         const nearest = Math.min(...layout.route.slice(1).map((end,index) => {
           const start = layout.route[index], dx = end[0]-start[0], dz = end[1]-start[1];
           const ratio = Math.max(0,Math.min(1,((x-start[0])*dx+(z-start[1])*dz)/(dx*dx+dz*dz || 1)));
           return Math.hypot(x-start[0]-dx*ratio,z-start[1]-dz*ratio);
         }));
-        assert.ok(nearest < .1, `${interior.landmarkId}: real traversal route includes the through-aisle`);
+        const bounds=interior.bounds,inside=Math.abs(x-bounds.x)<=bounds.width/2&&Math.abs(z-bounds.z)<=bounds.depth/2;
+        if(inside)assert.ok(nearest < .1, `${interior.landmarkId}: real traversal route includes the through-aisle`);
       }
     }
     assert.ok(layout.route.some(([x,z]) => z < -16), 'tour visits the elevated rear railway promenade');

@@ -19,6 +19,18 @@ async function fixture(id='experience',quality='high'){
  const controller=new IslandController(island,outer);controller.bind(model);outer.updateMatrixWorld(true);
  return {island,outer,model,controller,child:id=>controller.children.find(c=>c.island.id===id)};
 }
+function legacyTrainFixture(t,rotation=0){
+ // V19's shipped train belongs to CareerTrainController. Keep this older
+ // district/ellipse contract explicit so new island metadata cannot erase it.
+ const track={trackCentre:[1.2,.95,-3.4],trackRadii:[8.8,5.8],initialAngle:.31,duration:10,rootY:.95,surfaceY:.95};
+ const district={id:'amtrak',x:6.2,y:2.4,z:-9.7,rotation,animation:{train:track}},island={...islands.find(i=>i.id==='experience'),districts:[district]};
+ const outer=new THREE.Group(),model=new THREE.Group(),group=new THREE.Group(),node=new THREE.Group(),start=sampleTrainMotion(track,0,trainDuration(track));
+ outer.position.set(island.x,0,island.z);outer.rotation.y=island.rotation;outer.add(model);
+ group.name='district_amtrak';group.position.set(district.x,district.y,district.z);group.rotation.y=rotation;model.add(group);
+ node.name='anim_train';node.position.set(start.x,start.y,start.z);group.add(node);
+ const controller=new IslandController(island,outer);controller.bind(model);outer.updateMatrixWorld(true);t.after(()=>controller.release());
+ return{island,district,outer,model,group,node,track,controller,train:controller.children[0]};
+}
 const transforms=controller=>controller.nodes.map(({object})=>({object,position:object.position.toArray(),rotation:object.quaternion.toArray(),scale:object.scale.toArray()}));
 function assertTransformsUnchanged(before){for(const entry of before){assert.deepEqual(entry.object.position.toArray(),entry.position,entry.object.name+' position');assert.ok(new THREE.Quaternion().fromArray(entry.rotation).angleTo(entry.object.quaternion)<1e-7,entry.object.name+' orientation');assert.deepEqual(entry.object.scale.toArray(),entry.scale,entry.object.name+' scale');}}
 
@@ -36,24 +48,21 @@ test('an explicit unknown district action cannot silently start the first child'
  assert.deepEqual(f.controller.children.map(c=>c.elapsed),before);
 });
 
-test('Amtrak pedestrian stopping transforms through both the island and district offsets',async()=>{
- const f=await fixture(),train=f.child('amtrak'),track=train.island.animation.train;
- const district=f.island.districts.find(d=>d.id==='amtrak'),expected=toWorld(f.island,district.x,district.z);assert.ok(Math.hypot(train.island.x-expected.x,train.island.z-expected.z)<1e-10);
- const start=sampleTrainMotion(track,0,trainDuration(track));
- f.controller.activate('amtrak');f.controller.pedestrian=toWorld(train.island,start.x,start.z,(district.y||0)+start.y);
+test('legacy Amtrak pedestrian stopping transforms through both the island and district offsets',t=>{
+ const f=legacyTrainFixture(t),{train,district}=f,expected=toWorld(f.island,district.x,district.z);assert.ok(Math.hypot(train.island.x-expected.x,train.island.z-expected.z)<1e-10);
+ const start=sampleTrainMotion(f.track,0,trainDuration(f.track)),rendered=f.node.getWorldPosition(new THREE.Vector3()),point=toWorld(train.island,start.x,start.z,district.y+start.y);
+ assert.ok(rendered.distanceTo(new THREE.Vector3(point.x,point.y,point.z))<1e-10,'guard coordinates match the actual nested scene transforms');
+ f.controller.activate('amtrak');f.controller.pedestrian=rendered;
  f.controller.update(1/60,f.island,0);assert.equal(train.elapsed,0,'a visitor at the translated train position stops the train');
  f.controller.pedestrian=toWorld(f.island,0,f.island.pier.endZ-2.5);
  f.controller.update(1/60,f.island,1/60);assert.ok(train.elapsed>0,'a visitor at the harbor does not stop the district train');
 });
 
-test('Amtrak crossing guard also respects a rotated district inside the parent',async()=>{
- const f=await fixture(),district=f.island.districts.find(d=>d.id==='amtrak'),rotation=.37;
- const custom={...f.island,districts:f.island.districts.map(d=>d.id==='amtrak'?{...d,rotation}:d)};
- f.model.getObjectByName('district_amtrak').rotation.y=rotation;const controller=new IslandController(custom,f.outer);controller.bind(f.model);const train=controller.children.find(c=>c.island.id==='amtrak');
- const track=train.island.animation.train;
- const start=sampleTrainMotion(track,0,trainDuration(track));
- assert.equal(train.island.rotation,f.island.rotation+rotation);controller.activate('amtrak');controller.pedestrian=toWorld(train.island,start.x,start.z,(district.y||0)+start.y);
- controller.update(1/60,custom,0);assert.equal(train.elapsed,0);controller.pedestrian=toWorld(train.island,-18,18);controller.update(1/60,custom,1/60);assert.ok(train.elapsed>0);
+test('legacy Amtrak crossing guard also respects a rotated district inside the parent',t=>{
+ const rotation=.37,f=legacyTrainFixture(t,rotation),{controller,train}=f;
+ assert.equal(train.island.rotation,f.island.rotation+rotation);controller.activate('amtrak');controller.pedestrian=f.node.getWorldPosition(new THREE.Vector3());
+ controller.update(1/60,f.island,0);assert.equal(train.elapsed,0,'the rendered train location is protected through both rotations');
+ controller.pedestrian=f.group.localToWorld(new THREE.Vector3(-18,.95,18));controller.update(1/60,f.island,1/60);assert.ok(train.elapsed>0,'a distant visitor releases the same legacy train');
 });
 
 test('one packet action moves each material batch only through its animated owner',async()=>{

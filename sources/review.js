@@ -8,19 +8,23 @@ import {daylightEnvironment} from './world/bay-lighting.js';
 import {applyJackHairSurface} from './world/jack-hair-surface.js';
 import {prepareBoatMaterials,BoatAppearance} from './world/boat-appearance.js';
 import {JACK_ASSET_URL} from './world/jack-asset.js';
+import {CareerTrainController} from './core/career-train.js';
+import {careerRailway} from '../scripts/lib/career-railway-layout.mjs';
+import {CareerTrainVisual} from './world/career-train.js';
 import {JackAvatar} from './world/jack.js';
 import RAPIER from '@dimforge/rapier3d-compat/rapier.es.js';
 import {GarageCarController,GARAGE_CARS,garageCarAssetURL} from './core/garage-car.js';
 import {BicycleController} from './core/bicycle.js';
 import {addQuadRiderSupports} from './world/quad-rider-pose.js';
-const params=new URLSearchParams(location.search),kind=['car-911','car-g63','car-ferrari','car-raptor','bicycle','boat','quad-bike','harbor','about','experience','projects','education'].includes(params.get('model'))?params.get('model'):'jack',clay=params.has('clay');
+const params=new URLSearchParams(location.search),kind=['career-train','car-911','car-g63','car-ferrari','car-raptor','bicycle','boat','quad-bike','harbor','about','experience','projects','education'].includes(params.get('model'))?params.get('model'):'jack',clay=params.has('clay');
 const canvas=document.querySelector('canvas'),renderer=new THREE.WebGPURenderer({canvas,antialias:true,forceWebGL:params.has('webgl')});await renderer.init();
 renderer.setPixelRatio(1.5);renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
 const loader=new GLTFLoader().setMeshoptDecoder(MeshoptDecoder),gltf=await loader.loadAsync(kind.startsWith('car-')?garageCarAssetURL(kind.slice(4),params.has('low')?'low':'high'):kind==='jack'&&!params.has('legacy')?JACK_ASSET_URL:`/models/${params.has('low')&&kind.startsWith('car-')?'low/':''}${kind}.glb?v=${kind.startsWith('car-')?'15.1.1':kind==='bicycle'?'14.2.3':kind==='about'?'15':kind==='education'?'14.3':kind==='jack'?8:kind==='quad-bike'?2:11}`),surfaces=new SurfaceLibrary({renderer});
 const environment=daylightEnvironment();const views=[],reviewCars=[];let spinWheels=false,spinPhase=0,lastSpinTime=performance.now();
 const carReview=kind.startsWith('car-');const wheelDetail=carReview&&params.get('detail')==='wheel';
-const riderReview=['car-911','car-g63','car-ferrari','car-raptor','quad-bike','bicycle'].includes(kind)&&params.has('rider');
+const riderReview=['career-train','car-911','car-g63','car-ferrari','car-raptor','quad-bike','bicycle'].includes(kind)&&params.has('rider');
 if(kind==='bicycle'||carReview)await RAPIER.init();
+const railReview=kind==='career-train'?careerRailway():null;
 const riderGLTF=riderReview?await loader.loadAsync(JACK_ASSET_URL):null;
 for(let index=0;index<3;index++){
  const scene=new THREE.Scene();scene.background=new THREE.Color('#eee9df');scene.environment=environment;scene.environmentIntensity=.7;
@@ -48,6 +52,11 @@ for(let index=0;index<3;index++){
    group.userData.contacts=avatar.quadPose.contacts;model=group;
  }
 
+ if(kind==='career-train'&&railReview){
+  const train=new CareerTrainController(railReview);const visual=new CareerTrainVisual(scene,train);scene.remove(model);visual.bind(model);
+  if(riderReview){const avatar=new JackAvatar(scene,{loadAsync:async()=>({scene:clone(riderGLTF.scene),animations:riderGLTF.animations})});await avatar.load();avatar.update(0,{player:{onLand:true,ridingTrain:true,train},trainVisual:visual,character:{position:train.position},alpha:1,reduced:true,frozen:false});}
+  model=visual.group;model.userData.reviewSeat=visual.mountPoint;model.userData.reviewYaw=train.yaw;
+ }
  if(kind==='bicycle'){
    const world=new RAPIER.World({x:0,y:0,z:0}),walk={handles:new Set(),groundAt:()=>0,contains:()=>true,clear:()=>true,visible:()=>true};
    const bicycle=new BicycleController(RAPIER,world,walk,{x:0,y:0,z:0,yaw:0});
@@ -63,15 +72,17 @@ for(let index=0;index<3;index++){
   model=car.group;reviewCars.push(car);
  }
  const bounds=new THREE.Box3().setFromObject(model),size=bounds.getSize(new THREE.Vector3()),center=bounds.getCenter(new THREE.Vector3());
+ if(kind==='career-train'&&riderReview&&params.get('detail')==='rider'){center.copy(model.userData.reviewSeat.localToWorld(new THREE.Vector3(0,.3,-.2)));size.set(2,1.9,2);}
  if(carReview&&params.get('detail')==='driver'){const car=reviewCars.at(-1);center.copy(car.group.localToWorld(new THREE.Vector3(...car.contactTargets().pelvis).add(new THREE.Vector3(0,.35,-.15))));size.set(1.15,1.2,1.2);}
  if(wheelDetail){const car=reviewCars.at(-1),radius=car.wheelRadii[0];model.getObjectByName('car-steer-front-left').getWorldPosition(center);size.set(radius*.85,radius*2,radius*2);bounds.min.y=center.y-radius;}
  const floor=new THREE.Mesh(new THREE.PlaneGeometry(100,100).rotateX(-Math.PI/2),new THREE.MeshStandardMaterial({color:'#eee9df',roughness:.9}));floor.position.y=bounds.min.y-.007;floor.receiveShadow=true;scene.add(floor);
  scene.add(new THREE.HemisphereLight('#e8f3ed','#aaa28b',.9));const sun=new THREE.DirectionalLight('#fff0d5',3.25);sun.position.set(-3,6,-4);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.normalBias=.009;sun.shadow.bias=-.0001;const extent=Math.max(2,size.length());Object.assign(sun.shadow.camera,{left:-extent,right:extent,top:extent,bottom:-extent,near:.1,far:500});scene.add(sun);
  const camera=new THREE.PerspectiveCamera(28,1,.01,1000);const directions=wheelDetail?[new THREE.Vector3(-1,.08,-.10),new THREE.Vector3(-1,.08,-.10),new THREE.Vector3(-1,.08,-.10)]:carReview?[new THREE.Vector3(-.8,.6,-1),new THREE.Vector3(-1,.15,0),new THREE.Vector3(-.4,1,-.8)]:kind==='jack'||riderReview?[new THREE.Vector3(0,.02,-1),new THREE.Vector3(.7,.13,-1),new THREE.Vector3(1,.02,-.04)]:['education','about'].includes(kind)?[new THREE.Vector3(0,.8,1),new THREE.Vector3(.8,.8,1),new THREE.Vector3(1,.6,0)]:[new THREE.Vector3(0,.8,-1),new THREE.Vector3(.8,.8,-1),new THREE.Vector3(1,.6,0)];
+ if(kind==='career-train')directions[index].applyAxisAngle(new THREE.Vector3(0,1,0),model.userData.reviewYaw);
  views.push({scene,camera,center,size,direction:directions[index].normalize()});
 }
 if(!clay)await surfaces.loadQuality('high');
 function render(){const time=performance.now(),dt=Math.min(.05,(time-lastSpinTime)/1000);lastSpinTime=time;if(spinWheels)spinPhase+=dt;for(const[ n,car]of reviewCars.entries()){car.wheelAngle=car.previousWheelAngle=Number(params.get('wheelAngle')||0)+spinPhase+(wheelDetail?n*Math.PI*2/3:0);car.updateVisual(0,true);}const w=canvas.clientWidth,h=canvas.clientHeight;renderer.setSize(w,h,false);renderer.setScissorTest(true);views.forEach((v,n)=>{v.camera.aspect=(w/3)/h;v.camera.updateProjectionMatrix();const distance=(kind==='jack'||riderReview&&!carReview?Math.max(v.size.y,v.size.x*1.15):v.size.length())*.62/Math.tan(THREE.MathUtils.degToRad(14))/Math.min(1,v.camera.aspect);v.camera.position.copy(v.center).addScaledVector(v.direction,distance);v.camera.lookAt(v.center);renderer.setViewport(n*w/3,0,w/3,h);renderer.setScissor(n*w/3,0,w/3,h);renderer.render(v.scene,v.camera);});renderer.setScissorTest(false);}
 if(carReview){const button=document.createElement('button');button.textContent='Spin wheels slowly';button.onclick=()=>{spinWheels=!spinWheels;button.textContent=spinWheels?'Pause wheels':'Spin wheels slowly';};document.querySelector('header').append(button);document.querySelectorAll('.labels span').forEach((element,n)=>{element.textContent=(wheelDetail?['ROLL 0°','ROLL 120°','ROLL 240°']:['FRONT THREE-QUARTER','DRIVER SIDE','CABIN VIEW'])[n]||'';});}
-renderer.setAnimationLoop(render);document.querySelector('h1').textContent=`${kind==='jack'?(params.has('legacy')?'V8 · ORIGINAL':'V9 · IMPORTED'):carReview?'V15.2.1':kind==='bicycle'?'V14.2.3':kind==='about'?'V15':kind==='education'?'V14.3':['about','experience','projects'].includes(kind)?'V11':kind==='quad-bike'?'V12.1':'V9'} · ${riderReview?`${carReview?kind.toUpperCase():kind==='bicycle'?'BICYCLE':'QUAD'} + ACTUAL JACK`:kind.toUpperCase()} / ${clay?'CLAY':'ACTUAL MATERIALS'}`;document.querySelector('#state').textContent=`Actual runtime GLB · ${clay?'Neutral clay':kind==='jack'&&!params.has('legacy')?'User-supplied mesh and texture · local rig':surfaces.stats().status+' · shared game surfaces'}${riderReview?carReview?' · Seated pelvis, palms and foot contacts':' · Palms fitted to actual handlebar grips':''} · Web${renderer.backend.isWebGPUBackend?'GPU':'GL2'}`;
+renderer.setAnimationLoop(render);document.querySelector('h1').textContent=`${kind==='jack'?(params.has('legacy')?'V8 · ORIGINAL':'V9 · IMPORTED'):carReview?'V15.2.1':kind==='career-train'?'V19':kind==='bicycle'?'V14.2.3':kind==='about'?'V15':kind==='education'?'V14.3':['about','experience','projects'].includes(kind)?'V11':kind==='quad-bike'?'V12.1':'V9'} · ${riderReview?`${carReview?kind.toUpperCase():kind==='career-train'?'CAREER TRAIN':kind==='bicycle'?'BICYCLE':'QUAD'} + ACTUAL JACK`:kind.toUpperCase()} / ${clay?'CLAY':'ACTUAL MATERIALS'}`;document.querySelector('#state').textContent=`Actual runtime GLB · ${clay?'Neutral clay':kind==='jack'&&!params.has('legacy')?'User-supplied mesh and texture · local rig':surfaces.stats().status+' · shared game surfaces'}${riderReview?kind==='career-train'?' · Actual seated clip, bench and footboard contacts':carReview?' · Seated pelvis, palms and foot contacts':' · Palms fitted to actual handlebar grips':''} · Web${renderer.backend.isWebGPUBackend?'GPU':'GL2'}`;
 document.querySelector('#capture').onclick=async()=>{render();const blob=await new Promise(resolve=>canvas.toBlob(resolve));const response=await fetch(`http://127.0.0.1:5174/capture/${kind}-${clay?'clay':'materials'}.png`,{method:'POST',body:blob});document.querySelector('#state').textContent=response.ok?'Actual render saved.':'Capture server unavailable.';};

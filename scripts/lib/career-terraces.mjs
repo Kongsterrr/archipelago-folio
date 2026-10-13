@@ -17,24 +17,27 @@ export function careerTerraces(shore,groundY=.85){
  const box=(x0,x1,z0,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
  const region=(id,polygon,height,material='junction_paving',kind='terrace')=>{const r={id,polygon:ccw(polygon),height:typeof height==='number'?()=>height:height,material,kind};regions.push(r);return r;};
  const base={id:'coastal-ground',height:()=>groundY,material:'junction_lawn',kind:'ground'};
- region('harbor-quay',box(-40,40,18,31),groundY);
- region('shared-town-court',box(-29.7,29.7,-2.2,16),2.4);
- region('west-lower-street',ccw([[-16,14],[-29.7,14],[-29.7,21.4],[-21,21.4]]),2.4);
- region('east-lower-street',[[16,14],[29.7,14],[29.7,21.4],[21,21.4]],2.4);
- const upper=[[-29.7,-2.2],[-29.7,-11],[-22,-22],[-18,-26],[-10,-27],[7,-26.6],[16,-26.1],[21,-23.8],[24,-20],[29.7,-11],[29.7,-2.2]];
- // The upper contour is convex; it follows the rear coast as a single town bank.
- region('station-promenade',upper,5.8);
- // Same-level gardens are true material regions in the paving, not floating mats.
- for(const [x0,x1,z0,z1] of [[-10,-5,3.1,6.4],[5,10,3.1,6.4],[-25,-17,15.3,16],[17,25,15.3,16]])region('court-garden',box(x0,x1,z0,z1),2.4,'junction_lawn');
+ region('harbor-quay',box(-40,40,14,31),groundY);
+ region('shared-town-court',box(-26,2,-11.4,14),3.65);
+ region('brick-rail-street',box(-26,10,-11.4,-2),3.65,'junction_brick');
+ region('visionx-garden',box(2,27,-2,11.8),1.55);
+ region('station-town-bank',box(-25,25,-24.8,-11.4),6.4);
+ for(const [x0,x1,z0,z1,y] of [[-24,-21,5,10,3.65],[-8,-5,7,10,3.65],[22,26,0,5,1.55],[5,9,-1,2,1.55]])region('town-garden',box(x0,x1,z0,z1),y,'junction_lawn');
  const ramps=[];
- function ramp(id,x,z,width,depth,frontY,backY){const slope=(frontY-backY)/depth,y=(frontY+backY)/2,r={id,x,z,width,depth,y,slope,rotation:0,frontY,backY};ramps.push(r);region(id,box(x-width/2,x+width/2,z-depth/2,z+depth/2),(xx,zz)=>y+slope*(zz-z),'junction_paving','ramp');}
- ramp('harbor-arrival-ramp',0,18.5,4.4,12,.85,2.4);
- ramp('west-town-street',-28.1,7.8,3.2,20,2.4,5.8);
- ramp('east-town-street',28.1,7.8,3.2,20,2.4,5.8);
- const stairs={id:'station-grand-stair',x:0,z:2.75,width:7.2,depth:9.9,frontZ:7.7,backZ:-2.2,frontY:2.4,backY:5.8,treadHeight:.136,maxStepHeight:.136,treadDepth:.34,stepCount:25,landing:{id:'station-stair-landing',x:0,z:2.58,width:7.2,depth:1.4,frontZ:3.28,backZ:1.88,y:4.168},treads:[]};
- function flight(count,startZ,startY,offset){for(let i=0;i<count;i++){const frontZ=startZ-i*.34,backZ=frontZ-.34,y=+(startY+(i+1)*.136).toFixed(6),id='station-stair-tread-'+(offset+i+1);region(id,box(-3.6,3.6,backZ,frontZ),y,'junction_stone','stair');stairs.treads.push({id,x:0,z:(frontZ+backZ)/2,width:7.2,depth:.34,y,frontZ,backZ});}}
- flight(13,7.7,2.4,0);region('station-stair-landing',box(-3.6,3.6,1.88,3.28),4.168,'junction_stone','stair');flight(12,1.88,4.168,13);
- stairs.walkRoute=[[0,8.25],...stairs.treads.slice(0,13).map(t=>[0,t.z]),[0,2.58],...stairs.treads.slice(13).map(t=>[0,t.z]),[0,-3.1]];
+ function ramp(id,x,z,width,depth,frontY,backY,rotation=0){
+  const slope=(frontY-backY)/depth,y=(frontY+backY)/2,c=Math.cos(rotation),s=Math.sin(rotation),r={id,x,z,width,depth,y,slope,rotation,frontY,backY};ramps.push(r);
+  const polygon=box(-width/2-.10,width/2+.10,-depth/2,depth/2).map(([px,pz])=>[x+px*c+pz*s,z-px*s+pz*c]);
+  region(id,polygon,(xx,zz)=>y+slope*((xx-x)*s+(zz-z)*c),'junction_paving','ramp');
+ }
+ ramp('harbor-arrival-ramp',-3.5,18,4.4,13,.85,3.65);
+ ramp('garden-street',7,3.5,3.2,10,1.55,3.65,Math.PI/2);
+ const streetLength=Math.hypot(4.5,11.8);
+ ramp('station-west-street',-19.25,-17.3,3.2,streetLength,3.65,6.4,Math.atan2(-4.5,11.8));
+ const westAngle=Math.atan2(-4.5,11.8);ramp('station-west-lower-landing',-21.5+Math.sin(westAngle),-11.4+Math.cos(westAngle),3.2,2,3.65,3.65,westAngle);
+ const stairs={id:'station-grand-stair',x:0,z:-15.4,width:6.4,depth:8,frontZ:-11.4,backZ:-19.4,frontY:3.65,backY:6.4,treadHeight:.1375,maxStepHeight:.1375,treadDepth:.34,stepCount:20,landing:{id:'station-stair-landing',x:0,z:-15.4,width:6.4,depth:1.2,frontZ:-14.8,backZ:-16,y:5.025},treads:[]};
+ function flight(count,startZ,startY,offset){for(let i=0;i<count;i++){const frontZ=startZ-i*.34,backZ=frontZ-.34,y=+(startY+(i+1)*.1375).toFixed(6),id='station-stair-tread-'+(offset+i+1);region(id,box(-3.2,3.2,backZ,frontZ),y,'junction_stone','stair');stairs.treads.push({id,x:0,z:(frontZ+backZ)/2,width:6.4,depth:.34,y,frontZ,backZ});}}
+ flight(10,-11.4,3.65,0);region('station-stair-landing',box(-3.2,3.2,-16,-14.8),5.025,'junction_stone','stair');flight(10,-16,5.025,10);
+ stairs.walkRoute=[[0,-10.4],...stairs.treads.slice(0,10).map(t=>[0,t.z]),[0,-15.4],...stairs.treads.slice(10).map(t=>[0,t.z]),[0,-19.55]];
  const profile=(x,z)=>{for(let i=regions.length-1;i>=0;i--)if(contains(regions[i].polygon,x,z))return regions[i];return base;};
  const insideShore=(x,z)=>{let inside=false;for(let i=0,j=shore.length-1;i<shore.length;j=i++){const a=shore[i],b=shore[j];if((a[1]>z)!=(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;};
  const height=(x,z)=>profile(x,z).height(x,z);
@@ -56,5 +59,5 @@ export function careerTerraces(shore,groundY=.85){
  }
  const lines=new Map();for(const e of edges){let dx=e.b[0]-e.a[0],dz=e.b[1]-e.a[1],length=Math.hypot(dx,dz);dx/=length;dz/=length;if(dx<-.0001||(Math.abs(dx)<.0001&&dz<0)){dx=-dx;dz=-dz;}const offset=-dz*e.a[0]+dx*e.a[1],key=[dx,dz,offset,e.top,e.bottom].map(v=>v.toFixed(5)).join(',');if(!lines.has(key))lines.set(key,{dx,dz,offset,top:e.top,bottom:e.bottom,region:e.region,outward:e.outward,intervals:[]});const line=lines.get(key),a=dx*e.a[0]+dz*e.a[1],b=dx*e.b[0]+dz*e.b[1];line.intervals.push([Math.min(a,b),Math.max(a,b)]);}
  const mergedEdges=[];for(const l of lines.values()){const intervals=l.intervals.sort((a,b)=>a[0]-b[0]),merged=[];for(const interval of intervals){const last=merged.at(-1);if(last&&interval[0]<=last[1]+.00002)last[1]=Math.max(last[1],interval[1]);else merged.push([...interval]);}for(const[a,b]of merged){const p=t=>[l.dx*t-l.dz*l.offset,l.dz*t+l.dx*l.offset];mergedEdges.push({a:p(a),b:p(b),top:l.top,bottom:l.bottom,region:l.region,outward:l.outward});}}
- return{terrain:{version:1,kind:'career-terraces',vertices:vertices.flat(),indices,colliderIndices,bounds:{min:[Math.min(...shore.map(p=>p[0])),groundY,Math.min(...shore.map(p=>p[1]))],max:[Math.max(...shore.map(p=>p[0])),5.8,Math.max(...shore.map(p=>p[1]))]}},vertices,materials,edges:mergedEdges,ramps,stairs,height,isPaving:(x,z)=>insideShore(x,z)&&profile(x,z).material==='junction_paving',regions:regions.map(r=>({id:r.id,polygon:r.polygon,kind:r.kind}))};
+ return{terrain:{version:1,kind:'career-terraces',vertices:vertices.flat(),indices,colliderIndices,bounds:{min:[Math.min(...shore.map(p=>p[0])),groundY,Math.min(...shore.map(p=>p[1]))],max:[Math.max(...shore.map(p=>p[0])),6.4,Math.max(...shore.map(p=>p[1]))]}},vertices,materials,edges:mergedEdges,ramps,stairs,height,isPaving:(x,z)=>insideShore(x,z)&&profile(x,z).material==='junction_paving',regions:regions.map(r=>({id:r.id,polygon:r.polygon,kind:r.kind}))};
 }

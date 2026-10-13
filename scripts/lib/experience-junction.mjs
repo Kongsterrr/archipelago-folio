@@ -1,7 +1,8 @@
-// V18: one terraced coastal town, with shared civic space and a rear railway.
+// V19: one terraced coastal town, with shared civic space and a rear railway.
 import * as THREE from 'three';
+import {careerRailway} from './career-railway-layout.mjs';
 import {careerTerraces} from './career-terraces.mjs';
-import {sampleTrainPath,trainPathLength} from '../../sources/core/train-path.js';
+import {sampleTrainPath,trainPathLength,trainDistanceAtPlan} from '../../sources/core/train-path.js';
 
 export const experiencePalette={
  junction_sandstone:'#d6c3a1',junction_stone:'#e5dac4',junction_joint:'#b3a28b',
@@ -20,14 +21,16 @@ export function buildExperienceJunction(api){
  for(const[id,g]of Object.entries(D))g.name='district_'+id;
  const b=(w,h,d,x,y,z,m='junction_stone',p=D.amtrak,r=zero)=>bevel(w,h,d,x,y,z,m,.025,r,p);
  const bx=(w,h,d,x,y,z,m='junction_stone',p=D.amtrak,r=zero)=>box(w,h,d,x,y,z,m,r,p);
- const tx=(s,size,x,y,z,m='junction_steel',p=D.amtrak)=>text3D(s,size,x,y,z,m,.006,p);
+ // Low-detail text retains its exact visible front plane, without the tiny
+ // extrusion sidewalls; this reserves geometry for the station architecture.
+ const tx=(s,size,x,y,z,m='junction_steel',p=D.amtrak)=>{const o=text3D(s,size,x,y,z,m,.006,p);if(low){const previous=o.geometry,g=new THREE.ShapeGeometry(previous.parameters.shapes,1);g.computeBoundingBox();g.translate(-(g.boundingBox.max.x+g.boundingBox.min.x)/2,0,.006);o.geometry=g;previous.dispose();}return o;};
  const named=(n,x=0,y=0,z=0,p=D.amtrak)=>{const g=group([x,y,z],zero,p);g.name=n;return g;};
  const obstruction=(name,x,z,width,depth,height=2,y=Y,rotation=0)=>solid(x,z,width,depth,height,y,rotation,name);
  const sph=(r,x,y,z,m='junction_leaf',p=D.amtrak,scale=[1,1,1])=>{const o=mesh(new THREE.SphereGeometry(r,low?6:9,low?4:6),m,[x,y,z],zero,p);o.scale.set(...scale);return o;};
- layout.landmarks=[];layout.interiors=[];layout.paths=[];layout.crossings=[];layout.crossing=null;
- const terrain=careerTerraces(layout.shore,Y);layout.terrain=terrain.terrain;layout.ramps=terrain.ramps;layout.stairs=[terrain.stairs];layout.terraces={quayY:Y,courtY:CY,stationY:SY,regions:terrain.regions};
+ layout.railway=careerRailway();layout.landmarks=[];layout.interiors=[];layout.paths=[];layout.crossings=[];layout.crossing=null;
+ const terrain=careerTerraces(layout.shore,Y);layout.terrain=terrain.terrain;layout.ramps=terrain.ramps;layout.stairs=[terrain.stairs];layout.terraces={quayY:Y,courtY:3.65,gardenY:1.55,stationY:6.4,regions:terrain.regions};
  // Continuous sloped support avoids trimesh seam sweeps while matching the rendered planes.
- layout.surfaces.push(...terrain.ramps,...terrain.stairs.treads,terrain.stairs.landing);
+ layout.surfaces.push(...terrain.ramps.map(r=>({...r,width:r.width+.20,depth:r.depth+(r.slope?.08:0)})),...terrain.stairs.treads,terrain.stairs.landing);
  for(const[material,indices]of Object.entries(terrain.materials))custom(terrain.vertices,indices,material,root);
  // Fine stone joints follow the exact shared floor, including graded streets.
  // These 6mm surface details have no collider and stop at gardens and risers.
@@ -40,7 +43,7 @@ export function buildExperienceJunction(api){
    if(Math.abs(mid-heights.reduce((sum,y)=>sum+y,0)/4)>.002||Math.max(...heights)-Math.min(...heights)>.17)return;
    const offset=vertices.length;vertices.push(...points.map(([x,z],i)=>[x,heights[i]+.006,z]));indices.push(offset,offset+2,offset+1,offset,offset+3,offset+2);
   }
-  const rowDepth=low?2.4:1.8,tileWidth=low?3.2:2.4;
+  const rowDepth=low?3.2:1.8,tileWidth=low?4.5:2.4;
   for(let row=Math.floor(-28/rowDepth);row<=Math.ceil(31/rowDepth);row++){
    const z=row*rowDepth;
    for(let x=-38;x<38;x+=.8)joint(x,z,x+.8,z);
@@ -58,17 +61,29 @@ export function buildExperienceJunction(api){
   for(let i=0;i<segments;i++){const ta=Math.max(0,i/segments-.006/length),tb=Math.min(1,(i+1)/segments+.006/length),t=(ta+tb)/2,bottom=Math.min(baseA+(baseB-baseA)*ta,baseA+(baseB-baseA)*tb),top=Math.max(ay+(by-ay)*ta,ay+(by-ay)*tb)+.83;obstruction(name,a[0]+(c[0]-a[0])*t,a[1]+(c[1]-a[1])*t,.12,length*(tb-ta),top-bottom,bottom,angle);}
  }
  // Shared parapets follow the town silhouette; there are no employer enclosures.
- for(const e of terrain.edges){const a=e.a.map((v,i)=>v+e.outward[i]*.09),b=e.b.map((v,i)=>v+e.outward[i]*.09);rail('town retaining edge',a,b,e.top,e.top,D.amtrak,e.bottom,e.bottom,true);}
- for(const r of layout.ramps)for(const side of[-1,1]){const x=r.x+side*(r.width/2+.09),a=[x,r.z-r.depth/2],c=[x,r.z+r.depth/2];rail('ramp side '+r.id,a,c,r.backY,r.frontY,D.amtrak,Y,Y);}
- for(const side of[-1,1]){
-  const x=side*3.73;rail('grand stair lower balustrade',[x,7.7],[x,3.28],CY,4.168,D.amtrak,CY,CY,true);rail('grand stair landing balustrade',[x,3.28],[x,1.88],4.168,4.168,D.amtrak,CY,CY,true);rail('grand stair upper balustrade',[x,1.88],[x,-2.2],4.168,SY,D.amtrak,CY,CY,true);
+ const railSamples=Array.from({length:Math.ceil(layout.railway.length/.35)},(_,i)=>sampleTrainPath(layout.railway.path,i*.35));
+ for(const e of terrain.edges){
+  const length=Math.hypot(e.b[0]-e.a[0],e.b[1]-e.a[1]),n=Math.ceil(length/.4),point=t=>e.a.map((v,i)=>v+(e.b[i]-v)*t+e.outward[i]*.09);let start=null;
+  const flush=t=>{if(start!==null){rail('town retaining edge',point(start),point(t),e.top,e.top,D.amtrak,e.bottom,e.bottom,true);start=null;}};
+  for(let i=0;i<n;i++){const m=point((i+.5)/n),near=railSamples.some(q=>Math.hypot(q.x-m[0],q.z-m[1])<2.2);if(near)flush(i/n);else if(start===null)start=i/n;}flush(1);
  }
+ function rampGuards(r){if(!r.slope)return;const c=Math.cos(r.rotation||0),s=Math.sin(r.rotation||0);for(const side of[-1,1]){const xx=side*(r.width/2+.09),point=zz=>[r.x+xx*c+zz*s,r.z-xx*s+zz*c],inset=r.id==='station-west-street'?1.5:0,back=-r.depth/2+inset,front=r.depth/2-inset;rail('ramp side '+r.id,point(back),point(front),r.y+r.slope*back,r.y+r.slope*front,D.amtrak,Y,Y);}}
+ for(const r of layout.ramps)rampGuards(r);
+ for(const side of[-1,1]){const x=side*3.33;rail('grand stair lower balustrade',[x,-11.4],[x,-14.8],3.65,5.025,D.amtrak,3.65,3.65,true);rail('grand stair landing balustrade',[x,-14.8],[x,-16],5.025,5.025,D.amtrak,3.65,3.65,true);rail('grand stair upper balustrade',[x,-16],[x,-19.4],5.025,6.4,D.amtrak,3.65,3.65,true);}
  function arch(x,y,z,w,h,p,glass=true,material='junction_stone'){
   const stem=h-w/2,shape=new THREE.Shape();shape.moveTo(-w/2,0);shape.lineTo(w/2,0);shape.lineTo(w/2,stem);shape.absarc(0,stem,w/2,0,Math.PI,false);shape.closePath();if(glass)mesh(new THREE.ShapeGeometry(shape,low?7:12),'junction_glass',[x,y,z],zero,p);
   for(const dx of[-w/2,w/2])bx(.13,stem,.18,x+dx,y+stem/2,z+.035,material,p);
   for(let i=0,n=low?9:14;i<n;i++){const a=i*Math.PI/n,c=(i+1)*Math.PI/n;rod([x+Math.cos(a)*w/2,y+stem+Math.sin(a)*w/2,z+.05],[x+Math.cos(c)*w/2,y+stem+Math.sin(c)*w/2,z+.05],.10,material,p,6);}
   if(glass){bx(.065,h-.12,.06,x,y+h/2-.06,z+.06,material,p);bx(w,.055,.06,x,y+stem*.62,z+.06,material,p);b(w+.28,.13,.30,x,y-.055,z+.055,material,p);}
  }
+ // These openings change the masonry render only. The existing solid wall
+ // colliders continue to protect the glazed windows and their deep reveals.
+ function piercedWall(x,y,z,w,h,d,openings,material,p){
+  const shape=new THREE.Shape();shape.moveTo(-w/2,0);shape.lineTo(w/2,0);shape.lineTo(w/2,h);shape.lineTo(-w/2,h);shape.closePath();
+  for(const q of openings){const hole=new THREE.Path(),xx=q.x-x,stem=q.height-(q.arch?q.width/2:0);hole.moveTo(xx-q.width/2,q.bottom);hole.lineTo(xx+q.width/2,q.bottom);hole.lineTo(xx+q.width/2,q.bottom+stem);if(q.arch)hole.absarc(xx,q.bottom+stem,q.width/2,0,Math.PI,false);else hole.lineTo(xx-q.width/2,q.bottom+q.height);hole.closePath();shape.holes.push(hole);}
+  const g=new THREE.ExtrudeGeometry(shape,{depth:d,bevelEnabled:false,steps:1,curveSegments:low?8:12});g.translate(0,0,-d/2);return mesh(g,material,[x,y,z],zero,p);
+ }
+ function northSign(label,size,x,y,z,p){const face=named('career_railway_lettering',x,y,z,p);face.rotation.y=Math.PI;tx(label,size,0,0,0,'junction_cream',face);return face;}
  function canopy(name,x,z,w,d,y,rise,m,p){
   const g=named(name,0,0,0,p),n=low?12:18,v=[],ix=[];for(const zz of[z-d/2,z+d/2])for(let i=0;i<=n;i++){const a=i*Math.PI/n;v.push([x+Math.cos(a)*w/2,y+Math.sin(a)*rise,zz]);}for(let i=0;i<n;i++){const j=n+1+i;ix.push(i,i+1,j,i+1,j+1,j,j,i+1,i,j,j+1,i+1);}custom(v,ix,m,g);
   for(let j=0;j<=5;j++){const zz=z-d/2+d*j/5;for(let i=0;i<n;i++){const a=i*Math.PI/n,c=(i+1)*Math.PI/n;rod([x+Math.cos(a)*w/2,y+Math.sin(a)*rise+.035,zz],[x+Math.cos(c)*w/2,y+Math.sin(c)*rise+.035,zz],.046,'junction_teal',g,6);}}
@@ -91,17 +106,34 @@ export function buildExperienceJunction(api){
  // One compact port directory. Its three rows are direct pointer destinations;
  // its single nearby E interaction opens the Experience overview.
  {
-  const x=-6.4,z=23.4,g=named('station_experience:directory',x,Y,z,D.amtrak);b(5.25,2.72,.27,0,1.62,0,'junction_stone',g);b(5.45,.16,.54,0,3.05,0,'junction_navy',g);for(const dx of[-2.13,2.13])bx(.13,1,.16,dx,.5,0,'junction_steel',g);tx('CAREER QUARTER',.31,0,2.76,.15,'junction_navy',g);
-  for(const[i,id]of['amtrak','beaconfire','visionx'].entries()){const row=named('station_'+id+':directory',0,0,0,g),yy=2.22-i*.68,color={amtrak:'junction_navy',beaconfire:'junction_copper',visionx:'junction_teal'}[id];bx(4.86,.58,.026,0,yy,.151,color,row);tx((i+1)+'  '+(id==='beaconfire'?'BEACONFIRE':id.toUpperCase()),.225,-.45,yy-.06,.169,'junction_cream',row);tx('VIEW',.13,1.98,yy-.05,.169,'junction_cream',row);layout.stations.push({id:id+':directory',type:'read',contentId:id,label:id==='beaconfire'?'BeaconFire':id==='amtrak'?'Amtrak':'VisionX',directory:true,primary:false,readFull:true,readLabel:'View experience',x:x+(i-1)*.04,z:25.35,y:Y,...cameras[id],hitArea:{x,y:Y+yy,z:z+.18,width:4.9,height:.6,yaw:0}});}
-  obstruction('port career directory',x,z,5.25,.35,3.2,Y);layout.stations.push({id:'experience:directory',type:'read',contentId:'experience',label:'Career Quarter directory',directoryOverview:true,readFull:true,readLabel:'Explore experience',x,z:25.35,y:Y});
+  const x=-10.8,z=25.0,g=named('station_experience:directory',x,Y,z,D.amtrak);b(5.25,2.72,.27,0,1.62,0,'junction_stone',g);b(5.45,.16,.54,0,3.05,0,'junction_navy',g);for(const dx of[-2.13,2.13])bx(.13,1,.16,dx,.5,0,'junction_steel',g);tx('CAREER QUARTER',.31,0,2.76,.15,'junction_navy',g);
+  for(const[i,id]of['amtrak','beaconfire','visionx'].entries()){const row=named('station_'+id+':directory',0,0,0,g),yy=2.22-i*.68,color={amtrak:'junction_navy',beaconfire:'junction_copper',visionx:'junction_teal'}[id];bx(4.86,.58,.026,0,yy,.151,color,row);tx((i+1)+'  '+(id==='beaconfire'?'BEACONFIRE':id.toUpperCase()),.225,-.45,yy-.06,.169,'junction_cream',row);tx('VIEW',.13,1.98,yy-.05,.169,'junction_cream',row);layout.stations.push({id:id+':directory',type:'read',contentId:id,label:id==='beaconfire'?'BeaconFire':id==='amtrak'?'Amtrak':'VisionX',directory:true,primary:false,readFull:true,readLabel:'View experience',x:x+(i-1)*.04,z:27.0,y:Y,...cameras[id],hitArea:{x,y:Y+yy,z:z+.18,width:4.9,height:.6,yaw:0}});}
+  obstruction('port career directory',x,z,5.25,.35,3.2,Y);layout.stations.push({id:'experience:directory',type:'read',contentId:'experience',label:'Career Quarter directory',directoryOverview:true,readFull:true,readLabel:'Explore experience',x,z:27.0,y:Y});
+ }
+
+ function authored(id,dx,dy,dz,sz,build){
+  const parent=D[id],part=named('career_'+id+'_architecture',0,0,0,parent),keys=['stations','obstacles','benches','landmarks','interiors'],starts=Object.fromEntries(keys.map(k=>[k,layout[k].length]));D[id]=part;build();D[id]=parent;part.position.set(dx,dy,dz);part.scale.z=sz;
+  const point=q=>{if(q.x!==undefined)q.x+=dx;if(q.z!==undefined)q.z=q.z*sz+dz;if(q.y!==undefined)q.y+=dy;return q;};
+  for(const q of layout.stations.slice(starts.stations)){point(q);if(q.hitArea){point(q.hitArea);q.hitArea.width*=Math.abs(Math.sin(q.hitArea.yaw||0))*sz+Math.abs(Math.cos(q.hitArea.yaw||0));}}
+  for(const q of layout.obstacles.slice(starts.obstacles)){point(q);const a=q.rotation||0;q.width*=Math.abs(Math.sin(a))*sz+Math.abs(Math.cos(a));q.depth*=Math.abs(Math.cos(a))*sz+Math.abs(Math.sin(a));}
+  for(const q of layout.benches.slice(starts.benches)){point(q);point(q.approach);}
+  for(const q of layout.landmarks.slice(starts.landmarks)){point(q);q.depth*=sz;}
+  for(const q of layout.interiors.slice(starts.interiors)){q.floorY+=dy;point(q.bounds);q.bounds.depth*=sz;for(const e of q.entrances){point(e);e.y=terrain.height(e.x,e.z);e.width*=Math.abs(Math.sin(e.yaw||0))*sz+Math.abs(Math.cos(e.yaw||0));}q.walkRoute=q.walkRoute.map(([x,z])=>[x+dx,z*sz+dz]);}
  }
  // Grand terminal: deep stone reveals, lower tiled wings and a clock fronton.
  {
+  authored('amtrak',0,.6,-8,1,()=>{
   const p=D.amtrak,walls=named('occluder_junction_terminal_walls',0,0,0,p),roof=named('occluder_junction_terminal_roof',0,0,0,p),front=-6,back=-14.1,cz=-10.05;
   layout.landmarks.push({id:'career-station',contentId:'amtrak',label:'Amtrak Central',x:0,z:cz,width:24,depth:8.1,nodeGroup:walls.name});
-  for(const xx of[-11.86,11.86]){bx(.28,5.0,8.1,xx,SY+2.5,cz,'junction_sandstone',walls);obstruction('terminal side wall',xx,cz,.28,8.1,5,SY);}
-  for(const zz of[front,back])for(const sign of[-1,1]){const xx=sign*7.68;bx(8.64,5,.24,xx,SY+2.5,zz,'junction_sandstone',walls);obstruction('terminal portal wing',xx,zz,8.64,.24,5,SY);}
-  for(const zz of[front+.02,back-.02]){arch(0,SY,zz,6.5,4.78,walls,false);for(const xx of[-9.5,-5.7,5.7,9.5])arch(xx,SY+.83,zz+.12,2.18,3.15,walls,true);bx(24.45,.22,.4,0,SY+4.75,zz,'junction_stone',walls);}
+  for(const xx of[-11.86,11.86])for(const [zz,dd] of xx<0?[[-13.4,1.4],[-7.65,3.3]]:[[cz,8.1]]){bx(.28,5.0,dd,xx,SY+2.5,zz,'junction_sandstone',walls);obstruction('terminal side wall',xx,zz,.28,dd,5,SY);}
+  for(const zz of[front,back])for(const sign of[-1,1]){const xx=sign*7.68;if(zz===back)piercedWall(xx,SY,zz,8.64,5,.24,[5.7,9.5].map(x=>({x:sign*x,bottom:.83,width:2.18,height:3.15,arch:true})),'junction_sandstone',walls);else bx(8.64,5,.24,xx,SY+2.5,zz,'junction_sandstone',walls);obstruction('terminal portal wing',xx,zz,8.64,.24,5,SY);}
+  arch(0,SY,front+.02,6.5,4.78,walls,false);for(const xx of[-9.5,-5.7,5.7,9.5])arch(xx,SY+.83,front+.14,2.18,3.15,walls,true);
+  for(const zz of[front+.02,back-.02])bx(24.45,.22,.4,0,SY+4.75,zz,'junction_stone',walls);
+  const rear=named('career_terminal_railway_facade',0,0,back-.17,walls);rear.rotation.y=Math.PI;arch(0,SY,0,6.5,4.78,rear,false);
+  for(const xx of[-9.5,-5.7,5.7,9.5]){arch(xx,SY+.83,-.24,2.18,3.15,rear,true);arch(xx,SY+.77,0,2.34,3.32,rear,false);bx(2.60,.14,.48,xx,SY+.76,.01,'junction_stone',rear);}
+  for(const xx of[-11.9,-3.38,3.38,11.9]){bx(.36,5.08,.42,xx,SY+2.54,back-.10,'junction_stone',walls);bx(.55,.22,.59,xx,SY+.16,back-.13,'junction_stone',walls);}
+  for(const side of[-1,1]){bx(8.64,.15,.34,side*7.68,SY+.55,back-.07,'junction_stone',walls);bx(8.7,.15,.43,side*7.68,SY+4.40,back-.10,'junction_stone',walls);}
+  bx(10.4,.62,.28,0,SY+4.88,back-.20,'junction_navy',walls);northSign('AMTRAK CENTRAL',.40,0,SY+4.73,back-.35,walls);
   for(let yy=SY+.5;yy<SY+4.5;yy+=low?.72:.43)for(const side of[-1,1])bx(8.62,.018,.018,side*7.68,yy,front+.129,'junction_joint',walls);
   for(const xx of[-11.9,-3.38,3.38,11.9]){bx(.36,5.23,.52,xx,SY+2.615,front,'junction_stone',walls);b(.52,.20,.65,xx,SY+.16,front,'junction_stone',walls);}
   for(const sign of[-1,1]){const x=sign*7.7;custom([[x-4.55,10.92,-14.5],[x+4.55,10.92,-14.5],[x,11.8,-14.5],[x-4.55,10.92,-5.65],[x+4.55,10.92,-5.65],[x,11.8,-5.65]],[0,3,5,0,5,2,2,5,4,2,4,1,0,2,1,3,4,5],'junction_navy',roof);for(let k=0;k<=(low?5:10);k++){const z=-14.25+k*(low?1.66:.83);rod([x-4.3,11.02,z],[x,11.88,z],.022,'junction_copper',roof,5);rod([x,11.88,z],[x+4.3,11.02,z],.022,'junction_copper',roof,5);}}
@@ -110,27 +142,39 @@ export function buildExperienceJunction(api){
   b(3.5,3.65,1.6,0,13.525,-7.2,'junction_sandstone',roof);b(3.82,.20,1.93,0,15.45,-7.2,'junction_stone',roof);b(3.12,.22,1.60,0,15.69,-7.2,'junction_navy',roof);
   cyl(1.05,1.05,.10,0,13.97,-6.34,'junction_cream',low?22:32,[Math.PI/2,0,0],roof);torus(1.10,.068,0,13.97,-6.26,'junction_copper',zero,6,low?24:36,roof);
   for(let i=0;i<12;i++){const a=i*Math.PI/6;bx(.048,i%3===0?.18:.10,.022,Math.sin(a)*.88,13.97+Math.cos(a)*.88,-6.245,'junction_navy',roof,[0,0,-a]);}rod([0,13.97,-6.21],[.51,14.25,-6.21],.035,'junction_navy',roof,7);rod([0,13.97,-6.21],[-.21,14.62,-6.21],.025,'junction_navy',roof,6);
-  for(const side of[-1,1]){bench('station-wait-'+side,'amtrak',side*7.5,-10.2,SY,0);b(1.15,.64,.52,side*9.3,SY+.32,-12.8,'junction_woodDark',p);obstruction('station luggage',side*9.3,-12.8,1.2,.6,.8,SY);}
+  const clockBack=named('career_terminal_railway_clock',0,13.97,-8.08,roof);clockBack.rotation.y=Math.PI;cyl(1.05,1.05,.10,0,0,0,'junction_cream',low?18:28,[Math.PI/2,0,0],clockBack);torus(1.10,.055,0,0,.06,'junction_copper',zero,5,low?20:28,clockBack);for(let i=0;i<12;i++){const a=i*Math.PI/6;bx(.045,i%3===0?.18:.10,.024,Math.sin(a)*.88,Math.cos(a)*.88,.085,'junction_navy',clockBack,[0,0,-a]);}rod([0,0,.10],[.51,.28,.10],.035,'junction_navy',clockBack,6);rod([0,0,.10],[-.21,.65,.10],.025,'junction_navy',clockBack,6);
+  for(const side of[-1,1]){bench('station-wait-'+side,'amtrak',side*7.5,-8.2,SY,0);b(1.15,.64,.52,side*9.3,SY+.32,-12.8,'junction_woodDark',p);obstruction('station luggage',side*9.3,-12.8,1.2,.6,.8,SY);}
   reader('amtrak:experience','amtrak',-7.6,-5.255,SY,0,[-7.6,-3.75],['FULL STACK ENGINEER','NOV 2024 - PRESENT','WORKFORCE SYSTEMS'],.75);
-  layout.interiors.push({landmarkId:'career-station',floorY:SY,bounds:{x:0,z:cz,width:24,depth:8.1},entrances:[{id:'station-front',x:0,z:front,width:6.5,yaw:0},{id:'station-rear',x:0,z:back,width:6.5,yaw:Math.PI}],cutawayGroups:[walls.name,roof.name,'occluder_junction_terminal_vault'],walkRoute:[[0,-4.2],[0,-10.05],[0,-16.1]]});
+  layout.interiors.push({landmarkId:'career-station',floorY:SY,bounds:{x:0,z:cz,width:24,depth:8.1},entrances:[{id:'station-front',x:0,z:front,width:6.5,yaw:0},{id:'station-rear',x:0,z:back,width:6.5,yaw:Math.PI}],cutawayGroups:[walls.name,roof.name,'occluder_junction_terminal_vault'],walkRoute:[[0,-11.6],[0,-12.0],[0,-13.3]]});
+  });
  }
  // The two lower wings open into the same arcaded court, sharing a floor datum.
  for(const[id,cx]of[['beaconfire',-20.1],['visionx',20.1]]){
+  authored(id,id==='beaconfire'?3.1:-2.1,id==='beaconfire'?1.25:-.85,id==='beaconfire'?-.5:-1,id==='beaconfire'?1:.75,()=>{
   const p=D[id],side=Math.sign(cx),arc=named('occluder_junction_'+id+'_arcade',0,0,0,p),inner=side*14.1,columns=side*10.1;
   bx(4.5,.24,13.3,side*12.15,5.52,6.3,'junction_stone',arc);bx(4.67,.10,13.45,side*12.15,5.70,6.3,'junction_copper',arc);
-  for(const z of[.25,3,8.3,12.8]){bx(.19,3.03,.19,columns,CY+1.515,z,'junction_stone',arc);b(.36,.16,.36,columns,CY+.08,z,'junction_stone',arc);b(.39,.20,.39,columns,5.28,z,'junction_stone',arc);obstruction('court arcade pier',columns,z,.23,.23,3.1,CY);}
-  // Recessed wall bays make the taller station bank part of the town architecture.
-  for(const x of[side*8,side*17,side*23]){const niche=named('town_bank_niche_'+id+'_'+x,x,CY,-2.14,p);arch(0,0,0,2.3,2.9,niche,true,'junction_stone');}
+  for(const z of id==='visionx'?[.25,3,11.75]:[.25,3,8.3,12.8]){bx(.19,3.03,.19,columns,CY+1.515,z,'junction_stone',arc);b(.36,.16,.36,columns,CY+.08,z,'junction_stone',arc);b(.39,.20,.39,columns,5.28,z,'junction_stone',arc);obstruction('court arcade pier',columns,z,.23,.23,3.1,CY);}
   if(id==='beaconfire'){
    const walls=named('occluder_junction_workshop_walls',0,0,0,p),roof=named('occluder_junction_workshop_roof',0,0,0,p);layout.landmarks.push({id:'software-workshop',contentId:id,label:'BeaconFire Works',x:cx,z:6,width:12,depth:12,nodeGroup:walls.name});
-   bx(.26,5.1,12,-26.1,CY+2.55,6,'junction_brick',walls);obstruction('workshop outer wall',-26.1,6,.26,12,5.1,CY);bx(12,5.1,.26,cx,CY+2.55,0,'junction_brick',walls);obstruction('workshop rear wall',cx,0,12,.26,5.1,CY);
+   bx(.26,5.1,12,-26.1,CY+2.55,6,'junction_brick',walls);obstruction('workshop outer wall',-26.1,6,.26,12,5.1,CY);for(const xx of[cx-4.1,cx+4.1]){piercedWall(xx,CY,0,3.8,5.1,.26,[{x:xx,bottom:.85,width:2.25,height:2.75}],'junction_brick',walls);obstruction('workshop rear wall',xx,0,3.8,.26,5.1,CY);
+    const window=named('career_workshop_railway_window',xx,CY+.85,-.15,walls);window.rotation.y=Math.PI;bx(2.24,2.74,.025,0,1.375,-.21,'junction_glass',window);for(const dx of[-1.16,1.16])bx(.13,2.91,.32,dx,1.375,-.035,'junction_stone',window);for(const yy of[0,2.75])bx(2.48,.14,.36,0,yy,0,'junction_stone',window);for(const dx of[-.38,.38])bx(.055,2.65,.07,dx,1.375,-.10,'junction_cream',window);for(const yy of[.88,1.77])bx(2.20,.055,.07,0,yy,-.10,'junction_cream',window);bx(2.65,.15,.51,0,-.07,.045,'junction_stone',window);bx(2.57,.19,.35,0,2.89,-.015,'junction_copper',window);
+   }
+   for(const xx of[cx-6,cx-2.22,cx+2.22,cx+6]){bx(.27,5.18,.38,xx,CY+2.59,-.08,'junction_stone',walls);bx(.43,.22,.48,xx,CY+.18,-.12,'junction_stone',walls);}
+   for(const xx of[cx-4.1,cx+4.1]){bx(3.8,.16,.35,xx,CY+.49,-.055,'junction_stone',walls);for(let yy=CY+.40;yy<CY+4.6;yy+=low?.70:.42)for(const side of[-1,1])bx(.68,.021,.018,xx+side*1.52,yy,-.141,'junction_brickJoint',walls);}
+   bx(12.6,.20,.49,cx,CY+4.96,-.08,'junction_stone',walls);bx(12.75,.10,.62,cx,CY+5.10,-.10,'junction_copper',walls);bx(9.2,.66,.29,cx,CY+4.32,-.19,'junction_navy',walls);northSign('BEACONFIRE WORKS',.35,cx,CY+4.18,-.35,walls);
    for(const z of[1.9,10.1]){bx(.26,4.8,3.8,inner,CY+2.4,z,'junction_brick',walls);obstruction('workshop court wing',inner,z,.26,3.8,4.8,CY);}
    for(const x of[cx-4.13,cx+4.13]){bx(3.74,4.8,.24,x,CY+2.4,12,'junction_brick',walls);obstruction('workshop front wing',x,12,3.74,.24,4.8,CY);arch(x,CY+.80,12.15,2.25,2.7,walls,true,'junction_copper');}
    for(let yy=CY+.35;yy<CY+4.65;yy+=low?.68:.4)for(const x of[cx-4.13,cx+4.13])bx(3.73,.025,.018,x,yy,12.14,'junction_brickJoint',walls);
    for(const x of[cx-6,cx-2.25,cx+2.25,cx+6])bx(.32,5.2,.39,x,CY+2.6,12,'junction_stone',walls);
-   bx(12.6,.18,12.7,cx,7.54,6,'junction_steel',roof);for(const x of[cx-3,cx+3]){custom([[x-2.92,7.64,-.25],[x+2.92,7.64,-.25],[x+1.28,8.66,-.25],[x-2.92,7.64,12.3],[x+2.92,7.64,12.3],[x+1.28,8.66,12.3]],[0,3,5,0,5,2,2,5,4,2,4,1,0,2,1,3,4,5],'junction_navy',roof);bx(.08,.92,11.9,x+1.3,8.14,6,'junction_glass',roof);}
+   bx(12.6,.18,12.7,cx,7.54,6,'junction_steel',roof);for(const x of[cx-3,cx+3]){custom([[x-2.92,7.64,-.25],[x+2.92,7.64,-.25],[x+1.28,8.66,-.25],[x-2.92,7.64,12.3],[x+2.92,7.64,12.3],[x+1.28,8.66,12.3]],[0,3,5,0,5,2,2,5,4,2,4,1,0,2,1,3,4,5],'junction_navy',roof);bx(.08,.92,11.9,x+1.3,8.14,6,'junction_glass',roof);
+    custom([[x-2.14,7.76,-.28],[x+1.20,8.47,-.28],[x+2.35,7.76,-.28]],[0,1,2],'junction_glass',roof);for(const [a,c]of[[[x-2.92,7.66,-.31],[x+1.28,8.68,-.31]],[[x+1.28,8.68,-.31],[x+2.92,7.66,-.31]],[[x+1.28,8.68,-.31],[x+1.28,8.68,12.3]]])rod(a,c,.045,'junction_copper',roof,5);for(const [xx,yy]of[[x,8.18],[x+1.2,8.45]])bx(.065,yy-7.77,.06,xx,(yy+7.77)/2,-.315,'junction_cream',roof);
+   }
    b(9.2,.66,.26,cx,6.74,12.22,'junction_navy',walls);tx('BEACONFIRE WORKS',.35,cx,6.60,12.365,'junction_cream',walls);
    for(const x of[cx-3.6,cx+3.6])for(const z of[2.15,10]){b(2.25,.13,1.35,x,CY+.90,z,'junction_wood',p);for(const dx of[-.88,.88])bx(.08,.83,.8,x+dx,CY+.42,z,'junction_steel',p);b(.88,.64,.065,x,CY+1.29,z-.25,'junction_steel',p);bx(.77,.51,.021,x,CY+1.29,z-.208,'junction_glass',p);obstruction('workshop desk',x,z,2.3,1.4,1.63,CY);}
+   // Tools and a task lamp sit inside the existing northern bench footprint;
+   // the open central doorway and its platform ramp remain completely clear.
+   bx(.07,.58,1.12,cx+2.53,CY+1.27,2.15,'junction_copper',p);for(let i=0;i<3;i++){const zz=1.78+i*.33;rod([cx+2.48,CY+1.13,zz],[cx+2.48,CY+1.45,zz],.033,'junction_steel',p,5);bx(.10,.065,.16,cx+2.47,CY+1.46,zz,'junction_metal',p);}bx(.38,.21,.32,cx+2.96,CY+1.07,1.76,'junction_steel',p);bx(.52,.07,.40,cx+2.96,CY+1.21,1.76,'junction_metal',p);rod([cx+4.26,CY+.98,1.68],[cx+4.26,CY+1.48,1.68],.035,'junction_steel',p,5);cone(.18,.16,cx+4.26,CY+1.51,1.68,'junction_copper',7,p);sph(.075,cx+4.26,CY+1.43,1.68,'warmWindow',p);
+   rod([cx-2.55,CY+3.65,.30],[cx+2.55,CY+3.65,.30],.095,'junction_copper',p,6);for(const side of[-1,1]){rod([cx+side*2.55,CY+1.0,.30],[cx+side*2.55,CY+3.65,.30],.09,'junction_copper',p,6);for(const yy of[CY+1.85,CY+3.05])bx(.29,.11,.21,cx+side*2.55,yy,.30,'junction_steel',p);}
    const rotor=named('anim_rotor',cx-3.6,9.03,2.0,p);cyl(.35,.48,.72,cx-3.6,8.60,2,'junction_copper',12,zero,roof);cyl(.37,.37,.47,cx-3.6,9.13,2,'warmWindow',12,zero,roof);cone(.56,.32,cx-3.6,9.51,2,'junction_navy',10,roof);for(let j=0;j<4;j++)bx(.65,.05,.14,Math.cos(j*Math.PI/2)*.29,0,Math.sin(j*Math.PI/2)*.29,'junction_metal',rotor,[0,-j*Math.PI/2,0]);
    const nodeX=-23.7;for(let i=0;i<3;i++){const z=4.4+i*1.4;b(.85,.87,.73,nodeX,CY+.435,z,'junction_stone',p);const packet=named('anim_packet_'+i,nodeX,CY+1.43,z,p);b(.28,.28,.28,0,0,0,i===1?'junction_teal':'junction_copper',packet);obstruction('workflow console',nodeX,z,.95,.8,1.25,CY);tx(['RETRIEVE','CONTEXT','RESPONSE'][i],.085,nodeX,CY+.56,z+.377,'junction_navy',p);tx('CONCEPT ILLUSTRATION',.044,nodeX,CY+.36,z+.377,'junction_steel',p);}layout.stations.push({id:'beaconfire:pipeline',type:'action',contentId:id,action:id,label:'Run the pipeline',x:-22,z:6,y:CY});
    reader('beaconfire:fullstack',id,-13.955,10.05,CY,Math.PI/2,[-12.05,10.05],['FULL STACK ENGINEER','FEB 2024 - SEP 2024','SERVICES / MESSAGING / AI SEARCH']);
@@ -148,31 +192,111 @@ export function buildExperienceJunction(api){
    reader('visionx:plants',id,13.955,10.05,CY,-Math.PI/2,[12.05,10.05],['SOFTWARE ENGINEER INTERN','MAY 2023 - AUG 2023','PLANT RECOMMENDATIONS']);
    layout.interiors.push({landmarkId:'visionx-conservatory',floorY:CY,bounds:{x:cx,z:6,width:12,depth:12},entrances:[{id:'conservatory-court',x:inner,z:6,width:4.4,yaw:-Math.PI/2},{id:'conservatory-front',x:cx,z:12,width:4.8,yaw:0}],cutawayGroups:[frame.name,glass.name,'occluder_junction_conservatory_roof',arc.name],walkRoute:[[cx,14],[cx,6],[12,6]]});
   }
+  });
  }
- // A railway behind the station, separated from its entrance and passenger gallery.
- const path={type:'racetrack',center:[0,SY,-21.8],halfStraight:16,radius:2.7},length=trainPathLength(path);
- for(let distance=0;distance<length;distance+=low?.76:.58){const q=sampleTrainPath(path,distance);bx(1.28,.045,.18,q.x,SY+.024,q.z,'junction_woodDark',D.amtrak,[0,q.yaw,0]);}
- for(const side of[-1,1])for(let distance=0,n=Math.ceil(length/(low?.42:.28)),i=0;i<n;i++){const a=sampleTrainPath(path,length*i/n),c=sampleTrainPath(path,length*(i+1)/n),offset=.43*side;rod([a.x-a.tangentZ*offset,SY+.07,a.z+a.tangentX*offset],[c.x-c.tangentZ*offset,SY+.07,c.z+c.tangentX*offset],.03,'junction_metal',D.amtrak,6);}
- rail('rear railway gallery fence',[-20,-17.95],[20,-17.95],SY,SY,D.amtrak,SY,SY);
- const signal=named('anim_signal',-11.3,SY+2.1,-18.1,D.amtrak);bx(.35,.83,.22,0,0,0,'junction_navy',signal);for(const yy of[-.21,.21])cyl(.10,.10,.028,0,yy,.14,yy>0?'orange':'yellow',10,[Math.PI/2,0,0],signal);rod([-11.3,SY,-18.1],[-11.3,SY+2.3,-18.1],.046,'junction_navy',D.amtrak,6);obstruction('rail signal',-11.3,-18.1,.4,.3,2.6,SY);
- const order=named('anim_order',7.7,SY+1.75,-17.75,D.amtrak);b(3.5,.95,.16,0,0,0,'junction_navy',order);tx('DEPARTURES',.17,0,.17,.1,'junction_cream',order);tx('JACK CENTRAL',.15,0,-.15,.1,'junction_cream',order);
- b(1.4,.73,.4,10,SY+.365,-18,'junction_stone',D.amtrak);tx('DISPATCH',.14,10,SY+.93,-17.78,'junction_navy',D.amtrak);obstruction('dispatch cabinet',10,-18,1.45,.4,1.2,SY);tx('POSTINGS / BIDS / AWARDS',.060,10,SY+.48,-17.788,'junction_navy',D.amtrak);tx('CONCEPT ILLUSTRATION',.053,10,SY+.27,-17.788,'junction_steel',D.amtrak);layout.stations.push({id:'amtrak:dispatch',type:'action',contentId:'amtrak',action:'amtrak',label:'Dispatch train',x:10,z:-16.15,y:SY});
- function trainCar(name,distance,engine){const q=sampleTrainPath(path,distance),g=named(name,q.x,SY,q.z,D.amtrak);g.rotation.y=q.yaw;const len=engine?2.4:2.05;b(engine?1.22:1.18,.80,len,0,.76,0,engine?'junction_navy':'junction_cream',g);b(1.30,.16,len+.08,0,1.22,0,engine?'junction_cream':'junction_navy',g);bx(1.23,.15,len+.02,0,.39,0,engine?'orange':'junction_copper',g);for(const x of engine?[-.63,.63]:[-.62,.62])for(const z of[-.66,.66]){cyl(.22,.22,.13,x,.25,z,'junction_steel',10,[0,0,Math.PI/2],g);bx(.024,.38,.60,x,.94,z,'junction_glass',g);}if(engine){b(1.13,.40,.05,0,1.02,-1.22,'junction_glass',g);for(const x of[-.37,.37])sph(.085,x,.60,-1.29,'warmWindow',g);}return g;}
- trainCar('anim_train_engine',0,true);trainCar('anim_train_car_1',-3.2,false);
- layout.trainTrack={path,center:[0,SY,-21.8],railY:SY+.07,points:Array.from({length:129},(_,i)=>{const q=sampleTrainPath(path,length*i/128);return[q.x,SY,q.z];}),protected:true,gallery:{x:0,z:-16.1,width:32,depth:3.4,y:SY},crossings:[]};
- // Furniture belongs to the edges of rooms and courts, never the clear streets.
- bench('port-seat','amtrak',6.8,24.3,Y,0);bench('court-west','beaconfire',-7.4,13.9,CY,Math.PI/2);bench('court-east','visionx',7.4,13.9,CY,-Math.PI/2);bench('station-west','amtrak',-20,-6.7,SY,0);bench('station-east','amtrak',20,-6.7,SY,0);
- for(const[x,z,y,id,p,h]of[[-8,4.8,CY,'court-west',D.beaconfire,4],[8,4.8,CY,'court-east',D.visionx,4],[-24,-13,SY,'upper-west',D.amtrak,3.9],[24,-13,SY,'upper-east',D.amtrak,3.9],[-14,22,Y,'quay-west',D.beaconfire,3.6],[14,22,Y,'quay-east',D.visionx,3.6]])tree(id,x,z,y,p,h);
- for(const[id,x,z,y,p]of[['quay-west',-3.6,26,Y,D.amtrak],['quay-east',3.6,26,Y,D.amtrak],['court-west',-9.2,14.7,CY,D.beaconfire],['court-east',9.2,14.7,CY,D.visionx],['upper-west',-17,-8,SY,D.amtrak],['upper-east',17,-8,SY,D.amtrak]])light(id,x,z,y,p);
- planter(-18.5,-9.2,3.1,1.2,SY,D.amtrak,true);planter(18.5,-9.2,3.1,1.2,SY,D.amtrak,true);planter(-24.4,12.9,2.0,.85,CY,D.beaconfire,true);planter(24.4,12.9,2.0,.85,CY,D.visionx,true);
- const loop=[[0,25.8],[0,24.5],[0,12.5],[0,10.5],[-12,10.5],[-12,6],[-20.1,6],[-20.1,14],[-24,19.8],[-28.1,19.8],[-28.1,17.8],[-28.1,-2.2],[-28.1,-4.2],[-14.2,-4.2],[0,-4.2],[0,-10.05],[0,-16.1],[14.2,-16.1],[14.2,-4.2],[28.1,-4.2],[28.1,-2.2],[28.1,17.8],[28.1,19.8],[24,19.8],[20.1,14],[20.1,6],[12,6],[12,10.5],[0,10.5],[0,12.5],[0,24.5],[0,25.8]];
- layout.route=[[0,layout.dock.endZ-2.5],...loop,[0,layout.dock.endZ-2.5]];
- layout.paths=[{id:'career-loop',kind:'walk',main:true,width:3.2,points:loop},{id:'station-avenue',kind:'stair',main:false,width:7.2,points:[[0,10.5],[0,7.7],[0,3.28],[0,1.88],[0,-2.2],[0,-4.2]]},{id:'harbor-approach',kind:'walk',width:3.2,points:[[0,layout.dock.startZ],[0,25.8]]}];
+
+
+ // Platforms are raised exactly to the coach deck; inclined stone approaches
+ // share their visible plane with the production cuboid support contract.
+ function platformRamp(id,x,z,width,depth,frontY,backY,rotation=0,guards=true){
+  const r={id,x,z,width,depth,frontY,backY,y:(frontY+backY)/2,slope:(frontY-backY)/depth,rotation};layout.ramps.push(r);layout.surfaces.push({...r,width:width+.20,depth:depth+.08});
+  const c=Math.cos(rotation),s=Math.sin(rotation),point=(xx,zz,yy)=>[x+xx*c+zz*s,yy,z-xx*s+zz*c],w=width/2+.10,d=depth/2,base=Math.min(frontY,backY)-.18;
+  const vs=[point(-w,-d,backY),point(w,-d,backY),point(w,d,frontY),point(-w,d,frontY),point(-w,-d,base),point(w,-d,base),point(w,d,base),point(-w,d,base)];
+  custom(vs,[0,2,1,0,3,2,0,1,5,0,5,4,1,2,6,1,6,5,2,3,7,2,7,6,3,0,4,3,4,7],'junction_stone',D.amtrak);if(guards)rampGuards(r);return r;
+ }
+ const platformRamps={
+  harbor:platformRamp('harbor-platform-ramp',7.5,27.1,2.1,5,.85,1.55,-Math.PI/2),
+  visionx:platformRamp('visionx-platform-ramp',8.5,8.9,2.1,5,1.55,2.25,-Math.PI/2),
+  beaconfire:platformRamp('beaconfire-platform-ramp',-17,-.2,3.2,5,3.65,4.35),
+  amtrak:platformRamp('amtrak-platform-ramp',0,-21.75,3.2,2.9,6.4,7.1),
+ };
+ const rw=layout.railway,path=rw.path,length=rw.length;
+ for(const st of rw.stations){
+  const p=st.platform,g=named('career_platform_'+st.id),ground=terrain.height(p.x,p.z),base=Math.min(st.groundY,ground),height=p.y-base;
+  bx(p.width,height,p.depth,p.x,base+height/2,p.z,'junction_sandstone',g);bx(p.width,.10,p.depth,p.x,p.y-.05,p.z,'junction_stone',g);layout.surfaces.push({id:'platform-'+st.id,...p});
+  // The rail-side edge is continuous stone with a contrasting tactile strip.
+  const toward=Math.sign(st.door.z-p.z),edge=p.z+toward*(p.depth/2-.12);bx(9.8,.012,.22,p.x,p.y+.006,edge,'junction_copper',g);
+  const tag=named('career_platform_label_'+st.id,p.x+4.3,p.y,p.z,g);for(const dx of[-.55,.55])bx(.06,2.6,.06,dx,1.3,0,'junction_steel',tag);b(1.5,.61,.12,0,2.38,0,'junction_navy',tag);tx(st.id==='harbor'?'CAREER LINE':st.id.toUpperCase(),st.id==='beaconfire'?.105:.13,0,2.34,.07,'junction_cream',tag);
+  if(st.id==='beaconfire'||st.id==='amtrak')northSign(st.id.toUpperCase(),st.id==='beaconfire'?.105:.13,0,2.34,-.07,tag);
+  obstruction('platform sign '+st.id,p.x+4.3,p.z,1.5,.15,2.8,p.y);
+  // Open the approach end and boarding edge; guard the remaining exposed end.
+  const freeSide=st.id==='harbor'||st.id==='visionx'?-1:0;
+  for(const side of[-1,1])if(side!==freeSide)rail('platform end '+st.id,[p.x+side*5.08,p.z-1.05],[p.x+side*5.08,p.z+1.05],p.y,p.y,D.amtrak,base,base);
+  st.walkRoute=st.id==='harbor'?[[0,26.5],[5,26.5],[5,27.1],[10,27.1],[st.boarding.x,st.boarding.z]]:st.id==='visionx'?[[12,3.5],[11.5,7.5],[6,7.5],[6,8.9],[11,8.9],[st.boarding.x,st.boarding.z]]:st.id==='beaconfire'?[[-17,5.5],[-17,2.3],[-17,-2.7],[st.boarding.x,st.boarding.z]]:[[0,-19.5],[0,-23.2],[st.boarding.x,st.boarding.z]];
+ }
+ // An open timber harbor canopy frames the waiting coach without enclosing it.
+ for(const x of[17.5,20.5]){bx(.14,3.05,.14,x,3.075,27.18,'junction_woodDark',D.amtrak);obstruction('harbor canopy post',x,27.18,.16,.16,3.05,1.55);}
+ bx(3.2,.14,2.0,19,4.60,26.6,'junction_navy',D.amtrak);b(3.35,.12,.20,19,4.70,27.65,'junction_copper',D.amtrak);tx('CAREER LINE',.20,19,4.43,27.77,'junction_cream',D.amtrak);
+ // Continuous planted borders mark the retaining walls, with openings for streets.
+ for(const [x,z,w,d,y,p] of [[-23.7,12.8,3,.7,3.65,D.beaconfire],[-14,-12.3,3,.65,6.4,D.beaconfire],[9,-11.0,7,.65,3.65,D.amtrak],[20,-12,7,.8,6.4,D.amtrak],[25.9,3.5,.65,5,1.55,D.visionx]])planter(x,z,w,d,y,p,true);
+ // Rails, sleepers and ballast are sampled from the very same 3D curve used
+ // by the vehicle. The coastal portion sits on a stone arcade above low shore.
+ const count=Math.ceil(length/(low?.8:.55)),ballastV=[],ballastI=[];
+ const offset=(q,n,y=q.y)=>{const h=Math.hypot(q.tangentX,q.tangentZ);return[q.x-q.tangentZ/h*n,y,q.z+q.tangentX/h*n];};
+ for(let i=0;i<=count;i++){const q=sampleTrainPath(path,length*i/count);ballastV.push(offset(q,-1.24,q.y-.075),offset(q,1.24,q.y-.075));if(i<count){const j=i*2;ballastI.push(j,j+1,j+2,j+1,j+3,j+2);}}
+ const ballast=custom(ballastV,ballastI,'junction_soil',D.amtrak);ballast.name='career_railway_ballast';
+ const supportV=[],supportI=[];for(let i=0;i<count;i++){const a=sampleTrainPath(path,length*i/count),c=sampleTrainPath(path,length*(i+1)/count);if(a.x>30&&a.z>-17&&a.z<15)continue;for(const side of[-1,1]){const aa=offset(a,side*1.24,a.y-.075),cc=offset(c,side*1.24,c.y-.075),baseA=Math.min(aa[1]-.12,terrain.height(aa[0],aa[2])),baseB=Math.min(cc[1]-.12,terrain.height(cc[0],cc[2])),o=supportV.length;supportV.push(aa,cc,[aa[0],baseA,aa[2]],[cc[0],baseB,cc[2]]);supportI.push(o,o+1,o+2,o+1,o+3,o+2,o+2,o+1,o,o+2,o+3,o+1);}}custom(supportV,supportI,'junction_sandstone',D.amtrak);
+ for(let d=0;d<length;d+=low?.90:.65){const q=sampleTrainPath(path,d);const sleeper=bx(2.15,.055,.17,q.x,q.y-.055,q.z,'junction_woodDark',D.amtrak,[0,q.yaw,0]);sleeper.rotateX(q.pitch);}
+ for(let i=0;i<count;i++){const a=sampleTrainPath(path,length*i/count),c=sampleTrainPath(path,length*(i+1)/count);for(const side of[-1,1])rod(offset(a,side*rw.train.gauge/2,a.y-.025),offset(c,side*rw.train.gauge/2,c.y-.025),.03,'junction_metal',D.amtrak,5);}
+ function wrappedGap(a,b){return Math.abs(((a-b+length*1.5)%length)-length/2);}
+ // Walking never uses the viaduct underside. Ground-to-track retaining walls
+ // and the visible handrails block lateral entry, except at the one crossing.
+ for(let d=0,step=2;d<length;d+=step){const end=Math.min(length,d+step),a=sampleTrainPath(path,d),c=sampleTrainPath(path,end),mid=(d+end)/2;
+  for(const side of[-1,1]){
+   if(rw.crossings.some(k=>wrappedGap(mid,k.distance)<3))continue;
+   const platformHere=rw.stations.some(st=>wrappedGap(mid,st.centerDistance)<5.2&&(st.side==='right'?1:-1)===side);
+   if(platformHere)continue;
+   const aa=offset(a,side*1.40),cc=offset(c,side*1.40),baseA=Math.min(a.y-.08,terrain.height(aa[0],aa[2])),baseB=Math.min(c.y-.08,terrain.height(cc[0],cc[2]));
+   rail('rail corridor guard',[aa[0],aa[2]],[cc[0],cc[2]],a.y-.06,c.y-.06,D.amtrak,baseA,baseB,d>rw.stations[3].centerDistance+10);
+  }
+ }
+ // The outside descent reads as a continuous coastal aqueduct, with actual
+ // recessed arch openings; its footprint has no pedestrian entry.
+ const coast=path.planSegments.find(s=>s.id==='coastal-viaduct');
+ const bays=Math.ceil(32.5/(low?5.8:4.8)),coastTop=z=>sampleTrainPath(path,trainDistanceAtPlan(path,coast.start+z+17.5)).y-.13;
+ for(let i=0;i<bays;i++){const a=-17.5+32.5*i/bays,c=-17.5+32.5*(i+1)/bays,z=(a+c)/2,ya=coastTop(a),yc=coastTop(c),h=coastTop(z)-.85;
+  custom([[30.71,ya,a],[33.29,ya,a],[33.29,yc,c],[30.71,yc,c],[30.71,ya-.27,a],[33.29,ya-.27,a],[33.29,yc-.27,c],[30.71,yc-.27,c]],[0,2,1,0,3,2,0,1,5,0,5,4,1,2,6,1,6,5,2,3,7,2,7,6,3,0,4,3,4,7],'junction_stone',D.amtrak);
+  for(const zz of i===0?[a,c]:[c]){const height=Math.max(.3,coastTop(zz)-.85);bx(2.45,height,.65,32,.85+height/2,zz,'junction_sandstone',D.amtrak);}
+  if(h>1.7){const ar=named('coastal_viaduct_arch',32,.85,z,D.amtrak);ar.rotation.y=Math.PI/2;arch(0,0,1.3,Math.min(3.45,c-a-.8),Math.min(h,3.5),ar,false);}
+ }
+ layout.trainTrack={path,railY:null,points:Array.from({length:251},(_,i)=>{const q=sampleTrainPath(path,length*i/250);return[q.x,q.y,q.z];}),protected:true,crossings:rw.crossings};
+ const crossing=rw.crossings[0];layout.crossings=[crossing];
+ platformRamp('crossing-south-apron',0,-3.95,4.4,.6,3.65,3.75,0,false);platformRamp('crossing-north-apron',0,-8.05,4.4,.6,3.75,3.65,0,false);
+ bx(4.4,.10,3.5,0,3.70,-6,'junction_wood',D.amtrak);layout.surfaces.push({id:crossing.id,x:0,z:-6,width:4.4,depth:3.5,y:3.75});
+ for(let i=0;i<2;i++){const z=i===0?-4.65:-7.35,pivot=named('anim_career_gate_'+i,-2.35,4.48,z,D.amtrak);bx(4.7,.12,.12,2.35,0,0,'junction_cream',pivot);for(let x=.5;x<4.7;x+=.8)bx(.32,.13,.13,x,0,0,'junction_copper',pivot);pivot.rotation.z=Math.PI/2;bx(.20,1,.20,-2.35,4.15,z,'junction_steel',D.amtrak);obstruction('crossing gate pedestal',-2.35,z,.22,.22,1.05,3.65);const lamp=named('anim_career_crossing_signal_'+i,-2.35,5.12,z,D.amtrak);sph(.12,0,0,0,'orange',lamp);}
+ // Company actions retain their identity. The station dispatch is now the
+ // physical railway call point, beside the actual coach boarding position.
+ b(1.3,.77,.36,-4.15,7.485,-23.75,'junction_navy',D.amtrak);tx('CALL TRAIN',.13,-4.15,7.67,-23.55,'junction_cream',D.amtrak);tx('POSTINGS / BIDS / AWARDS',.048,-4.15,7.42,-23.55,'junction_cream',D.amtrak);tx('CONCEPT ILLUSTRATION',.043,-4.15,7.25,-23.55,'junction_cream',D.amtrak);obstruction('dispatch cabinet',-4.15,-23.75,1.32,.4,.9,7.1);
+ northSign('CALL TRAIN',.13,-4.15,7.59,-23.945,D.amtrak);
+ layout.stations.push({id:'amtrak:dispatch',type:'action',contentId:'amtrak',action:'career-train',label:'Call train',x:-3.3,z:-24.25,y:7.1});
+ const signal=named('anim_signal',4.1,8.6,-24.2,D.amtrak);bx(.25,.65,.15,0,0,0,'junction_navy',signal);sph(.07,0,.12,.1,'orange',signal);
+ const order=named('anim_order',0,9.65,-22.3,D.amtrak);b(3.2,.62,.12,0,0,0,'junction_navy',order);tx('CAREER LINE',.2,0,-.05,.08,'junction_cream',order);
+ northSign('CAREER LINE',.2,0,-.05,-.08,order);
+ // Small gardens and lamps articulate the connected streets without blocking
+ // the central stair or the arrival view of the waiting locomotive.
+ bench('port-seat','amtrak',-15,24,Y,0);bench('court-west','beaconfire',-5.9,9.8,3.65,Math.PI/2);bench('court-east','visionx',25,6.9,1.55,-Math.PI/2);bench('station-west','amtrak',-23.3,-16.0,6.4,0);bench('station-east','amtrak',17,-15.5,6.4,0);
+ tree('quay-west',-18,21,Y,D.beaconfire,3.6);tree('court-west',-6.3,8,3.65,D.beaconfire,3.4);tree('garden-east',25.5,1.2,1.55,D.visionx,3.3);tree('upper-east',20,-18,6.4,D.amtrak,3.2);
+ for(const[id,x,z,y,p]of[['quay',-7.3,27,Y,D.amtrak],['court',-8.5,12.6,3.65,D.beaconfire],['garden',25.7,7.8,1.55,D.visionx],['upper',15,-12.6,6.4,D.amtrak]])light(id,x,z,y,p);
+ planter(6.7,.4,3.5,1.1,1.55,D.visionx,true);planter(22,-20.5,3,1.1,6.4,D.amtrak,true);
+ // A nursery/pergola forms a lower foreground to the conservatory glass vault.
+ for(const x of[22.0,24.5])for(const z of[7.9,9.3])bx(.09,2.25,.09,x,2.675,z,'junction_wood',D.visionx);
+ for(let x=22;x<=24.5;x+=.45)bx(.08,.10,2.2,x,3.85,8.6,'junction_wood',D.visionx);
+ planter(23.25,8.6,2.4,.85,1.55,D.visionx,true);
+ layout.interiors[0].entrances.push({id:'station-west',x:-12,z:-19,width:3.4,y:6.4,yaw:-Math.PI/2});
+ layout.interiors[1].entrances.push({id:'workshop-platform',x:-17,z:-.5,width:4.4,y:3.65,yaw:Math.PI});
+ layout.interiors[1].walkRoute=[[-8.9,5.5],[-17,5.5]];
+ layout.interiors[2].walkRoute=[[18,6],[18,3.5],[9.9,3.5]];
+ const court=[[0,26.5],[-3.5,26.5],[-3.5,24.5],[-3.5,11.5],[-3.5,5.5],[-8.9,5.5],[-17,5.5],[-8.9,5.5],[-3.5,5.5],[0,5.5],[0,3.5],[2,3.5],[12,3.5],[18,3.5],[18,6],[18,3.5],[12,3.5],[2,3.5],[0,3.5],[0,-3.5],[0,-9.5]];
+ const upper=[[0,-9.5],[-22.3,-9.5],[-21.5,-11.4],[-17,-23.2],[-13.8,-23.2],[-13.8,-19],[-12,-19],[-7.5,-19],[-7.5,-19.8],[0,-19.8]];
+ const steps=[...terrain.stairs.walkRoute].reverse();
+ layout.route=[[0,layout.dock.endZ-2.5],...court,...upper,...layout.interiors[0].walkRoute,[0,-19.55],...steps,[0,-9.5],[0,-3.5],[0,5.5],[-3.5,5.5],[-3.5,11.5],[-3.5,24.5],[-3.5,26.5],[0,26.5],[0,layout.dock.endZ-2.5]];
+ layout.paths=[{id:'career-loop',kind:'walk',main:true,width:3.2,points:court},{id:'station-street',kind:'walk',main:true,width:3.2,points:upper.slice(0,-3)},{id:'station-avenue',kind:'stair',main:true,width:6.4,points:terrain.stairs.walkRoute},{id:'harbor-approach',kind:'walk',width:3.2,points:[[0,layout.dock.startZ],[0,26.5]]}];
+ layout.pedestrianRoutes={harbor:rw.stations[0].walkRoute,visionx:[[0,5.5],[0,3.5],[2,3.5],...rw.stations[1].walkRoute],beaconfire:[[-3.5,5.5],[-8.9,5.5],...rw.stations[2].walkRoute],amtrak:[[0,-9.5],...terrain.stairs.walkRoute,...rw.stations[3].walkRoute]};
  layout.routeLength=+layout.route.slice(1).reduce((sum,q,i)=>sum+Math.hypot(q[0]-layout.route[i][0],q[1]-layout.route[i][1]),0).toFixed(2);layout.estimatedWalkingSeconds=+(layout.routeLength/2.4).toFixed(1);layout.width=3.2;
- layout.validation={connectedFromDock:true,routeClearance:1.3,pathWidth:3.2,mainPathWidth:3.2,terraces:2,stationsReachable:layout.stations.length,primaryExperienceEntries:3,portDirectoryLinks:3,openInteriors:3,stepFreeRamps:3,realStairTreads:25,unifiedTerrain:true};
- const specs=[['amtrak',0,-10.05],['beaconfire',-20.1,6],['visionx',20.1,6]];
- layout.districts=specs.map(([id,x,z])=>{const g=D[id];for(const child of g.children){child.position.x-=x;child.position.z-=z;}g.position.set(x,0,z);return{id,x,y:0,z,rotation:0,group:g.name,...cameras[id]};});
- const ad=layout.districts[0];ad.animation={train:{path:{...path,center:[0,SY,-11.75]},speed:2,rootY:SY,surfaceY:SY,forward:'-Z',duration:length/2,cars:[{name:'anim_train_engine',offset:0,halfLength:1.4,halfWidth:.71},{name:'anim_train_car_1',offset:3.2,halfLength:1.2,halfWidth:.69}]}};
- layout.districts[2].animation={sprinkler:{position:[4.6,CY+1.25,0],surfaceY:CY}};
+ layout.validation={connectedFromDock:true,routeClearance:1.3,pathWidth:3.2,mainPathWidth:3.2,terraces:3,stationsReachable:layout.stations.length,primaryExperienceEntries:3,portDirectoryLinks:3,openInteriors:3,stepFreeRamps:layout.ramps.length,realStairTreads:20,unifiedTerrain:true,railwayLength:length,railwayStations:4};
+ const actualCameras={amtrak:{cameraTarget:{x:0,y:10,z:-18},camera:{distance:46,azimuth:Math.PI*1.5-.20,fitBounds:{min:{x:-14.5,y:6.4,z:-28},max:{x:14.5,y:16.5,z:-11.3}}}},beaconfire:{cameraTarget:{x:-17,y:6,z:5},camera:{distance:35,azimuth:Math.PI*1.5+.20,fitBounds:{min:{x:-24,y:3.65,z:-1},max:{x:-6,y:10.9,z:12.7}}}},visionx:{cameraTarget:{x:18,y:4,z:3.5},camera:{distance:33,fitBounds:{min:{x:7.7,y:1.55,z:-1.6},max:{x:26.4,y:7.1,z:11}}}}};
+ for(const st of layout.stations)if(actualCameras[st.contentId])Object.assign(st,actualCameras[st.contentId]);
+ layout.districts=[['amtrak',0,-18.05],['beaconfire',-17,5.5],['visionx',18,3.5]].map(([id,x,z])=>{const g=D[id];for(const child of g.children){child.position.x-=x;child.position.z-=z;}g.position.set(x,0,z);const a=actualCameras[id];return{id,x,y:0,z,rotation:0,group:g.name,cameraTarget:a.cameraTarget,camera:a.camera};});
+ layout.districts[2].animation={sprinkler:{position:[4.6,2.8,0],surfaceY:1.55}};
  return{districts:D};
 }

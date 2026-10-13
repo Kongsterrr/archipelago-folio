@@ -56,6 +56,7 @@ export class VoyageMinimap {
   if(island?.id==='education'&&game?.bicycle?.parked){this.vehicle(projection.project(game.bicycle.position),game.bicycle.yaw,'bicycle');}
   if(island?.id==='projects'&&game?.quadBike?.parked){this.vehicle(projection.project(game.quadBike.position),game.quadBike.yaw,'quad');}
   if(island?.id==='about')for(const car of game?.garageCars||[])if(car.parked)this.vehicle(projection.project(car.position),car.yaw,'car');
+  if(island?.id==='experience'&&game?.careerTrain&&!game.player.ridingTrain)this.vehicle(projection.project(game.careerTrain.position),game.careerTrain.yaw,'train');
   this.player(projection.project(position),yaw,w,h);
   this.compass(w);
  }
@@ -83,6 +84,7 @@ export class VoyageMinimap {
   for(const o of g.obstacles){if(o.width*o.depth<2||o.height<1.4)continue;this.polygon(o.polygon,projection);c.fillStyle=o.mapColor||'#98afa0';c.fill();c.strokeStyle='#718b80';c.lineWidth=.7;c.stroke();}
   for(const landmark of g.landmarks){if(g.parkingAreas.some(area=>area.id===landmark.id))continue;this.polygon(landmark.polygon,projection);c.fillStyle=landmark.id==='duan-center'?'#718c9f':'#b5ac91';c.fill();c.strokeStyle='#566b71';c.lineWidth=.8;c.stroke();}
   for(const track of g.tracks){c.beginPath();track.points.forEach((p,n)=>{const q=projection.project(p);n?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y);});c.strokeStyle='#505969';c.lineWidth=2.4;c.stroke();c.strokeStyle='#d6c4a5';c.lineWidth=.8;c.setLineDash([1,2]);c.stroke();c.setLineDash([]);}
+  for(const track of g.tracks)for(const stop of track.stops||[]){const p=projection.project(stop);this.dot(p,5.2,'#5b4b3e',PAPER);c.fillStyle=PAPER;c.font='700 8px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(stop.label,p.x,p.y+.4);}
   for(const s of g.stations){const p=projection.project(s);this.dot(p,s.type==='read'?3.4:2.3,s.type==='read'?'#285d72':'#94804d',PAPER);}
   if(island.id==='education'){
    const schools=g.campuses.length?g.campuses:g.stations.filter(s=>s.schoolId&&s.primary);
@@ -104,6 +106,7 @@ export class VoyageMinimap {
  vehicle(p,yaw,kind){
   const c=this.ctx;c.save();c.translate(p.x,p.y);c.rotate(-yaw);c.fillStyle=INK;c.strokeStyle=PAPER;c.lineWidth=1.5;c.beginPath();
   if(kind==='boat'){c.moveTo(0,-7);c.lineTo(4.5,-1);c.lineTo(4.5,6);c.lineTo(-4.5,6);c.lineTo(-4.5,-1);c.closePath();c.fill();c.stroke();}
+  else if(kind==='train'){c.roundRect(-3,-9,6,18,2);c.fill();c.stroke();c.fillStyle='#dfb477';c.fillRect(-2,-5,4,3);c.fillRect(-2,3,4,3);}
   else if(kind==='bicycle'){c.lineWidth=2;c.beginPath();c.moveTo(0,-6);c.lineTo(0,6);c.moveTo(-4,-4);c.lineTo(4,-4);c.strokeStyle=INK;c.stroke();for(const y of[-6,6]){c.beginPath();c.ellipse(0,y,2,3,0,0,Math.PI*2);c.fill();c.strokeStyle=PAPER;c.lineWidth=1;c.stroke();}}
   else{c.fillRect(-3,-5,6,10);for(const x of[-6,3])for(const y of[-5,2])c.fillRect(x,y,3,4);c.strokeRect(-3,-5,6,10);}
   c.restore();

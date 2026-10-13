@@ -5,11 +5,12 @@ export class PlayerController{
  get ridingQuad(){return this.mode==='riding-quad';}
  get ridingBicycle(){return this.mode==='riding-bicycle';}
  get ridingCar(){return this.mode==='riding-car';}
+ get ridingTrain(){return this.mode==='riding-train'||this.mode==='boarding-train'&&!!this.transition?.committed||this.mode==='leaving-train'&&!this.transition?.committed;}
  get ridingVehicle(){return this.ridingQuad||this.ridingBicycle||this.ridingCar;}
  get activeVehicle(){return this.ridingCar?this.car:this.ridingBicycle?this.bicycle:this.ridingQuad?this.quad:null;}
- get transitioning(){return this.mode==='boarding'||this.mode==='disembarking';}
- get onLand(){return this.walking||this.ridingVehicle||(this.mode==='boarding'&&!this.transition?.committed)||(this.mode==='disembarking'&&!!this.transition?.committed);}
- get activeActor(){return this.ridingVehicle?(this.activeVehicle||this.character):this.onLand?this.character:this.boat;}
+ get transitioning(){return ['boarding','disembarking','boarding-train','leaving-train'].includes(this.mode);}
+ get onLand(){return this.walking||this.ridingVehicle||this.ridingTrain||this.mode==='boarding-train'||this.mode==='leaving-train'||(this.mode==='boarding'&&!this.transition?.committed)||(this.mode==='disembarking'&&!!this.transition?.committed);}
+ get activeActor(){return this.ridingTrain?(this.train||this.character):this.ridingVehicle?(this.activeVehicle||this.character):this.onLand?this.character:this.boat;}
  invalidate(){this.transitionEpoch++;this.transition=null;return this.transitionEpoch;}
  begin(mode,commit){if(this.transitioning)return false;const epoch=this.invalidate();this.stableMode=this.mode;this.mode=mode;this.transition={epoch,elapsed:0,commit,committed:false};return true;}
  tick(dt){const t=this.transition;if(!t||this.pauseReasons.size)return;if(t.epoch!==this.transitionEpoch)return; t.elapsed+=dt;

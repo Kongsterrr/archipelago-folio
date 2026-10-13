@@ -19,11 +19,13 @@ export function exhibitReadLabel(action){
 }
 
 // Dispatch and the on-screen E button share this priority, including overlapping exhibits.
-export function landPrimaryAction({player,canRideQuad,canRideBicycle,nearCar,canBoard,nearStation}){
+export function landPrimaryAction({player,canRideQuad,canRideBicycle,nearCar,canBoard,nearStation,canBoardTrain,canLeaveTrain}){
+ if(player.ridingTrain)return canLeaveTrain?{kind:'leave-train',label:'Get off train'}:null;
  if(player.ridingCar)return {kind:'dismount-car',label:'Exit '+(player.car?.label||'car')};
  if(player.ridingBicycle)return {kind:'dismount-bicycle',label:'Dismount bicycle'};
  if(player.ridingQuad)return {kind:'dismount',label:'Dismount quad bike'};
  if(!player.walking)return null;
+ if(canBoardTrain)return {kind:'board-train',label:'Board train'};
  if(nearCar)return {kind:'mount-car',label:'Drive '+nearCar.label};
  if(canRideBicycle)return {kind:'mount-bicycle',label:'Ride bicycle'};
  if(canRideQuad)return {kind:'mount',label:'Ride quad bike'};
