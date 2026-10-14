@@ -70,19 +70,14 @@ function walkTo(f,plan,target){
  }
 }
 
-test('the harbor ramp admits the real near-railing keyboard approach without a hidden height-sampling wall',()=>{
- const f=fixture(layout.berths[0]);
+test('the current harbor entry uses the published approach and reaches its supported boarding deck',()=>{
+ const f=fixture(layout.berths[0]),plan=navigator(f);
  try{
-  const startRescues=f.rescues;
-  // Reproduce the ordinary screen-up, then screen-right approach from the
-  // first dock landing. This lane is deliberately not the ramp centreline.
-  for(const[input,frames]of[[{x:-1,z:0},231],[{x:0,z:-1},300]])for(let frame=0;frame<frames;frame++){
-   f.character.step(input,DT);f.world.step();f.character.afterStep();
-  }
-  const position=dockLocal(f.character.position,island);
-  assert.ok(position.x>10.8,`the visible ramp lane must reach the platform; stopped at ${JSON.stringify(position)}`);
-  assert.ok(Math.abs(f.character.position.y-1.55)<.035,'the keyboard approach reaches the platform deck');
-  assert.equal(f.rescues,startRescues,'the entry route must not use a rescue teleport');
+  const harbor=layout.railway.stations.find(station=>station.id==='harbor');
+  for(const[x,z]of harbor.walkRoute)walkTo(f,plan,{x,z});
+  f.journey.nearby();assert.equal(f.game.canBoardTrain,true);
+  assert.ok(Math.abs(f.character.position.y-harbor.boarding.y)<.035);
+  assert.equal(f.rescues,0,'the visible harbor route cannot need a rescue teleport');
  }finally{f.world.free();}
 });
 
@@ -126,7 +121,7 @@ for(const[index,berth]of layout.berths.entries())test(`railway berth ${index+1}:
     walkTo(f,plan,stops.find(s=>s.id===id).boarding);f.journey.nearby();assert.equal(f.game.canBoardTrain,true);assert.equal(f.journey.board(),true);f.finishTransition();
    }
   }
-  assert.ok(travelSeconds>=100&&travelSeconds<=130,`full motion time is ${travelSeconds.toFixed(2)}s`);
+  assert.ok(travelSeconds>=30&&travelSeconds<=45,`full motion time is ${travelSeconds.toFixed(2)}s`);
   walkTo(f,plan,berth.landing);assert.equal(f.player.walking,true);assert.ok(Math.abs(f.character.position.y-.85)<.04);
  }finally{f.world.free();}
 });

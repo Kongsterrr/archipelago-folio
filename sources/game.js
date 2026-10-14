@@ -112,7 +112,7 @@ export class Game {
  async loadModelNow(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='about'?'16':id==='education'?'14.3':id==='projects'?'13.3':id==='experience'?'19':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='about'?'16':id==='education'?'14.3':id==='projects'?'13.3':id==='experience'?'20':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
     const materials=Array.isArray(o.material)?o.material:[o.material];
     const glazing=id==='boat'&&materials.some(m=>m.transparent);
     // The clear windscreen should reveal the helm, including in the shadow pass.
@@ -187,7 +187,7 @@ export class Game {
   if(arrivalFinished){this.resetCamera();this.inputs.setEnabled(!this.frozen);}
   const cameraFade=this.cameraTransition.step(dt,{paused:this.player.pauseReasons.has('hidden')});
   if(cameraFade.finished)this.inputs.setEnabled(!this.frozen);
-  this.events.trigger('boardingfade',[Math.max(cameraFade.opacity,this.player.transition?Math.sin(Math.min(1,this.player.transition.elapsed/.6)*Math.PI):0)]);
+  this.events.trigger('boardingfade',[Math.max(cameraFade.opacity,this.player.transitionOpacity)]);
   if(this.mode==='exploring'&&!this.player.pauseReasons.size&&!this.player.transitioning&&!ridingVehicle(this.player)&&!this.player.ridingTrain&&!this.cameraTransition.active)this.challenges.updateClock();
   if(this.mode==='exploring'&&!this.player.pauseReasons.size&&!this.player.transitioning&&!this.cameraTransition.active)this.practice.advanceCountdown(dt);
   const frozen=this.frozen,input=this.player.walking||this.player.ridingTrain?{}:this.inputs.read(this.activeActor.yaw,this.cameraRig.yaw);
@@ -325,6 +325,7 @@ export class Game {
   }
  }
  pause(kind='read',focus=null){
+  this.journey?.holdDeparture(kind);
   if(focus&&this.loaded.has(focus.id))this.loadModel(focus.id);
   if(this.mode==='exploring'&&!this.snapshot)this.snapshot={boat:this.boat.snapshot(),props:this.props.snapshot(),epoch:this.challenges.epoch};
   const reason=kind==='hidden'?'hidden':kind==='travel'?'travel':'read';this.player?.pauseReasons.add(reason);
@@ -420,7 +421,7 @@ export class Game {
   return campusStationFocus(this.practiceIsland,{...local,camera:{practice:true,azimuth:this.practiceIsland.rotation,elevation:.8,fitBounds}});
  }
  setZoom(index){if(this.player?.onLand)this.settings.walkZoom=Math.max(0,Math.min(2,index));else this.cameraRig.setZoom(index);this.discovery?.save();this.events.trigger('zoom',[this.settings.zoom]);}
- async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=19');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
+ async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=20');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
  async prepareAshore(island){this.inputs.setEnabled(false);this.events.trigger('message',['Preparing '+island.name+' for a little walk…']);
   if(!this.walkLayouts?.size)await this.loadWalkLayouts();await Promise.all([this.loadModel(island.id),this.jack.load()]);const layout=this.walkLayouts.get(island.id);if(!layout||!this.loaded.get(island.id).model||!this.jack.ready)throw new Error('The island is still loading. You can read it now or try going ashore again.');
   const walk=this.ensureWalkWorld(island);if(island.id==='projects')await this.installQuadBike(island,walk);if(island.id==='education')await this.installBicycle(island,walk);if(island.id==='about')await this.installGarageCars(island,walk);if(island.id==='experience')await this.journey.load();return walk;
@@ -545,7 +546,8 @@ export class Game {
  }
  commitBoarding(kind,island,berth,walk){if(kind==='ashore'){
   this.boat.teleport(berth.boat);this.boat.park(true);this.character.teleport(berth.landing,walk);this.character.enable(true);this.player.island=island;this.player.berth=berth;this.player.ashoreTime=0;this.jack?.resetPose('idle');
-  if(this.arrival)this.arrival.start(island,arrivalBounds(island,new THREE.Box3().setFromObject(this.loaded.get(island.id).group,true)));
+  if(island.id==='experience')this.journey?.prepareEntry();
+  if(this.arrival)this.arrival.start(island,arrivalBounds(island,new THREE.Box3().setFromObject(this.loaded.get(island.id).group,true),walk?.layout?.overviewBounds));
  }else{this.character.enable(false);this.character.seated=false;this.boat.park(false);this.boat.hold();this.player.island=null;this.player.berth=null;for(const actions of this.landActions.values())for(const a of actions)a.object.visible=false;}
  this.clearWake();this.feedback.clear();this.prev.copy(vec(this.boat.position.x,this.boat.position.y,this.boat.position.z));this.prevYaw=this.boat.yaw;this.snapshot=null;this.pendingResume=null;this.resetCamera();this.events.trigger('message',[kind==='ashore'?'Welcome ashore. WASD to walk · E to read · F to interact.':'Back aboard. Your next island is waiting.']);
  }

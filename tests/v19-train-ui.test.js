@@ -23,7 +23,7 @@ test('the train card uses the actual chronological career content at each stop',
  const steps=[...html.matchAll(/data-train-stop="([^"]+)"/g)].map(match=>match[1]);
  assert.deepEqual(steps,['harbor','visionx','beaconfire','amtrak']);
  assert.equal(hudState({stopped:true,currentStation:'amtrak'}).continueLabel,'Return to harbor');
- assert.equal(hudState({stopped:true,currentStation:'harbor'}).continueLabel,'Start journey');
+ assert.equal(hudState({stopped:true,currentStation:'harbor'}).continueLabel,'Ride again');
 });
 
 test('moving passengers see the next story but cannot read, leave or advance before stopping',()=>{

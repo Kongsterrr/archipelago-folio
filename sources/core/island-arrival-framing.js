@@ -19,8 +19,15 @@ export function arrivalFrameRect(width, height) {
 // worldBounds is a fresh Box3 of the loaded island group/model. This keeps
 // runtime structures and the true roof/peak heights; the shoreline's visible
 // 1.17x halo belongs to the island too. Returned data is a plain world AABB.
-export function arrivalBounds(island, worldBounds) {
+export function arrivalBounds(island, worldBounds, compositionBounds = null) {
   const asVector = p => p?.isVector3 ? p : new Vector3(...p);
+  if(compositionBounds){
+    const local=new Box3(asVector(compositionBounds.min),asVector(compositionBounds.max));
+    if(local.isEmpty()||[...local.min.toArray(),...local.max.toArray()].some(v=>!Number.isFinite(v)))throw new Error('Invalid island composition bounds.');
+    const box=new Box3(),c=Math.cos(island.rotation),s=Math.sin(island.rotation);
+    for(const x of[local.min.x,local.max.x])for(const y of[local.min.y,local.max.y])for(const z of[local.min.z,local.max.z])box.expandByPoint(new Vector3(island.x+x*c+z*s,(island.y||0)+y,island.z-x*s+z*c));
+    box.expandByScalar(.02);return{min:box.min.toArray(),max:box.max.toArray()};
+  }
   const box = new Box3(asVector(worldBounds.min).clone(), asVector(worldBounds.max).clone());
   if (box.isEmpty() || [...box.min.toArray(), ...box.max.toArray()].some(v => !Number.isFinite(v))) {
     throw new Error('Arrival framing requires finite, non-empty loaded island bounds.');

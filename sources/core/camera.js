@@ -104,9 +104,14 @@ export class CameraRig {
       const distance=Math.max(view.distance||32,54*(this.height/this.width)/(844/390))*ZOOM_LEVELS[this.settings.walkZoom??1];
       this.distance=snap?distance:THREE.MathUtils.damp(this.distance,distance,3,dt);
       const el=view.elevation??.60,heading=new THREE.Vector3(-Math.sin(yaw),0,-Math.cos(yaw));
-      const target=new THREE.Vector3(position.x,position.y+.9,position.z).addScaledVector(heading,1.5);
+      const target=view.center?new THREE.Vector3(view.center.x,view.center.y+.9,view.center.z):new THREE.Vector3(position.x,position.y+.9,position.z).addScaledVector(heading,1.5);
       const look=view.lookAt;
-      if(look&&!this.settings.reduced)target.lerp(new THREE.Vector3(look.x,look.y??target.y,look.z),.18);
+      if(look&&!this.settings.reduced){
+        // The portrait frame needs most of its width for both articulated cars.
+        const bias=new THREE.Vector3(look.x-target.x,0,look.z-target.z).multiplyScalar(.18).clampLength(0,this.portrait?.4:2.5);
+        bias.y=clamp(((look.y??target.y)-target.y)*.18,-1.5,1.5);
+        target.add(bias);
+      }
       const direction=new THREE.Vector3(Math.sin(this.trainAzimuth)*Math.cos(el),Math.sin(el),Math.cos(this.trainAzimuth)*Math.cos(el));
       // A short landscape screen needs the carriage above the passenger card.
       if(this.height<=560&&this.width>this.height)target.addScaledVector(groundForward(this.trainAzimuth),-this.distance*Math.tan(THREE.MathUtils.degToRad(FOV/2))*.30/Math.sin(el));

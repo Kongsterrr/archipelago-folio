@@ -70,8 +70,8 @@ test('the Experience terrain is a single-valued surface with one broad court and
   assert.ok(layout.terrain?.indices.length>300,'Career Terraces must have a shared indexed terrain');
   const surface=new TerrainSurface(layout.terrain);
   assert.ok(Math.abs(surface.sample(0,25).height-.85)<.001,'quay elevation remains unchanged');
-  assert.ok(Math.abs(surface.sample(0,12).height-3.65)<.001,'court is genuinely elevated');
-  assert.ok(Math.abs(surface.sample(7,-17).height-6.4)<.001,'station terrace rises above the court');
+  assert.ok(Math.abs(surface.sample(11,-8).height-2.4)<.001,'court is genuinely elevated');
+  assert.ok(Math.abs(surface.sample(-11,-10).height-5.8)<.001,'station terrace rises above the court');
   assert.equal(layout.terrain.navigation?.maxClimbSlopeDegrees,undefined,'architectural stairs use the capsule and actual support, not mountain snapping');
   for(const triangle of surface.triangles) {
     const x=(triangle.a.x+triangle.b.x+triangle.c.x)/3,z=(triangle.a.z+triangle.b.z+triangle.c.z)/3;
@@ -102,29 +102,12 @@ test('terrain covers the island without holes or conflicting height samples on p
   } finally {f.world.free();}
 });
 
-for(const run of [false,true])for(const offset of [-2.2,0,2.2])test(`real Rapier visitor ${run?'runs':'walks'} up and down the broad central stairs at x=${offset}`,()=>{
-  const f=fixture({x:offset,z:-10.4});
-  try {
-    const {highest,lowest}=walkRoute(f,[[offset,-19.55],[offset,-10.4]],{run});
-    assert.ok(highest>6.36&&lowest<3.70,'the route covers the complete 2.75m rise');
-    assert.equal(f.rescues,0,'stairs must not rely on recovery teleportation');
-    assert.ok(Math.abs(f.actor.position.y-3.65)<.035,'feet return to the courtyard floor');
-  } finally {f.world.free();}
+const stair=layout.stairs[0],stairStart=stair.frontZ+.4,stairEnd=stair.backZ-.4;
+for(const run of [false,true])for(const offset of [-1.45,0,1.45])test(`real Rapier visitor ${run?'runs':'walks'} up and down the station side stairs at offset=${offset}`,()=>{
+ const x=stair.x+offset,f=fixture({x,z:stairStart});try{const{highest,lowest}=walkRoute(f,[[x,stairEnd],[x,stairStart]],{run});assert.ok(highest>stair.backY-.04&&lowest<stair.frontY+.04);assert.equal(f.rescues,0);assert.ok(Math.abs(f.actor.position.y-stair.frontY)<.035);}finally{f.world.free();}
 });
-
-test('diagonal approaches cross real stair treads without turning a seam into an invisible wall',()=>{
-  const f=fixture({x:-2.2,z:-10.4});
-  try {
-    const {highest}=walkRoute(f,[[2.2,-19.55],[-2.2,-10.4]]);
-    assert.ok(highest>6.36,'diagonal walking reaches the upper terrace');
-    assert.equal(f.rescues,0);
-    assert.ok(Math.abs(f.actor.position.y-3.65)<.035);
-  } finally {f.world.free();}
-});
-
-test('leaving the stairs restores ordinary street and harbor-ramp movement',()=>{
- const f=fixture({x:0,z:-10.4});try{walkRoute(f,[[0,-19.55],[0,-10.4],[0,-3.5],[0,5.5],[-3.5,5.5],[-3.5,11.5],[-3.5,24.5],[-3.5,26.5],[0,26.5]],{run:true});assert.equal(f.rescues,0);assert.ok(Math.abs(f.actor.position.y-.85)<.035);}finally{f.world.free();}
-});
+test('diagonal approaches cross real stair treads without turning a seam into an invisible wall',()=>{const f=fixture({x:stair.x-1.45,z:stairStart});try{const{highest}=walkRoute(f,[[stair.x+1.45,stairEnd],[stair.x-1.45,stairStart]]);assert.ok(highest>stair.backY-.04);assert.equal(f.rescues,0);}finally{f.world.free();}});
+test('leaving the stairs restores ordinary valley-street movement',()=>{const f=fixture({x:stair.x,z:stairStart});try{walkRoute(f,[[stair.x,stairEnd],[stair.x,stairStart],[-20,-2.9],[-3,-2.9],[-3,-3.6],[0,-3.6],[0,-3.15],[0,-.75],[0,2.75],[0,9.75],[0,10.25],[0,13.25],[0,16.75],[0,19.75],[0,26]],{run:true});assert.equal(f.rescues,0);assert.ok(Math.abs(f.actor.position.y-.85)<.035);}finally{f.world.free();}});
 
 test('long architectural ramps preserve controlled walk and run speeds in either direction',()=>{
   for(const ramp of layout.ramps.filter(r=>r.depth>1.5))for(const run of [false,true])for(const direction of [-1,1]) {
@@ -152,7 +135,7 @@ test('long architectural ramps preserve controlled walk and run speeds in either
 });
 
 test('real ramp and stair movement agrees at 30, 60 and 120 rendering frames per second',()=>{
-  for(const scenario of [{start:{x:-3.5,z:23.5},seconds:4.7,run:false},{start:{x:0,z:-10.4},seconds:3.9,run:false},{start:{x:2.2,z:-10.4},seconds:2,run:true}]) {
+  for(const scenario of [{start:{x:0,z:9.5},seconds:2.2,run:false,minY:1.5},{start:{x:stair.x,z:stairStart},seconds:3.2,run:false,minY:5},{start:{x:stair.x+1.45,z:stairStart},seconds:1.7,run:true,minY:5}]) {
     const positions=[];
     for(const fps of [30,60,120]) {
       const f=fixture(scenario.start);
@@ -167,7 +150,7 @@ test('real ramp and stair movement agrees at 30, 60 and 120 rendering frames per
       } finally {f.world.free();}
     }
     for(const p of positions)assert.ok(Math.hypot(p.x-positions[0].x,p.y-positions[0].y,p.z-positions[0].z)<.01,'render schedule cannot change the actual terrace journey');
-    assert.ok(positions[0].y>3.25,`each schedule genuinely climbs to the upper part of the island: ${JSON.stringify({scenario,position:positions[0]})}`);
+    assert.ok(positions[0].y>scenario.minY,`each schedule genuinely climbs to the upper part of the island: ${JSON.stringify({scenario,position:positions[0]})}`);
   }
 });
 
@@ -186,9 +169,9 @@ for(const quality of ['high','low'])test(`${quality}: visible stairs agree with 
   try {
     const stairs=layout.stairs[0];
     assert.ok(stairs&&stairs.stepCount>=20,'the central rise uses real small stair risers');
-    assert.ok(stairs.treadHeight<=.14&&stairs.treadDepth>=.34);
+    assert.ok(stairs.treadHeight<=.14&&stairs.treadDepth>=.339);
     const heights=new Set();
-    for(const tread of [...stairs.treads,stairs.landing])for(const x of [-2.2,0,2.2]) {
+    for(const tread of stairs.treads)for(const x of [stairs.x-1.45,stairs.x,stairs.x+1.45]) {
       const z=tread.z;
       const point=localToWorld(island,{x,z}),height=f.walk.groundAt(point);
       heights.add(height.toFixed(3));

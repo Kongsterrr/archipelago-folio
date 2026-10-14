@@ -65,7 +65,14 @@ export class IslandWalkWorld{
   for(let i=0;i<8;i++){const a=i*Math.PI/4,p={x:point.x+Math.cos(a)*radius,z:point.z+Math.sin(a)*radius},sample=this.groundSample(p);if(sample.slope>maxSlope+.004||Math.abs(sample.height-center.height)>radius*Math.tan(maxSlope)+.07)return false;}
   return center.slope<=maxSlope+.004;
  }
- clear(point,radius=CHARACTER.radius){if(!this.contains(point,radius))return false;for(const car of this.vehicles||[]){const c=Math.cos(car.yaw),s=Math.sin(car.yaw),dx=point.x-car.position.x,dz=point.z-car.position.z;if(Math.abs(dx*c-dz*s)<car.spec.collisionHalfWidth+radius+.03&&Math.abs(dx*s+dz*c)<car.spec.collisionHalfLength+radius+.03)return false;}const p=dockLocal(point,this.island);return !(this.layout.obstacles||[]).some(o=>inRect(p,o,radius+.03));}
+ clear(point,radius=CHARACTER.radius){
+  if(!this.contains(point,radius))return false;
+  for(const car of this.vehicles||[]){const c=Math.cos(car.yaw),s=Math.sin(car.yaw),dx=point.x-car.position.x,dz=point.z-car.position.z;if(Math.abs(dx*c-dz*s)<car.spec.collisionHalfWidth+radius+.03&&Math.abs(dx*s+dz*c)<car.spec.collisionHalfLength+radius+.03)return false;}
+  const p=dockLocal(point,this.island),feet=Number.isFinite(point.y)?point.y:this.groundAt(point),top=feet+CHARACTER.height+CHARACTER.offset*2;
+  // Upper masonry is not a wall across a lower, open concourse. Match the
+  // character's vertical capsule envelope as well as its horizontal footprint.
+  return !(this.layout.obstacles||[]).some(o=>{const bottom=o.y??this.layout.groundY??.85;return feet<bottom+o.height&&top>bottom&&inRect(p,o,radius+.03);});
+ }
  visible(a,b){const ray=new this.R.Ray({x:a.x,y:a.y+.65,z:a.z},{x:b.x-a.x,y:(b.y??a.y)+.6-(a.y+.65),z:b.z-a.z});return !this.world.castRay(ray,1,true,undefined,WALK_GROUP,undefined,undefined,c=>this.obstacles.includes(c)||(!!this.terrain&&c.handle===this.terrainCollider.handle));}
  dispose(){this.world.removeRigidBody(this.body);}
 }
@@ -93,8 +100,21 @@ export class CharacterController{
   // handles the treads. It also avoids projecting a large downward request
   // along an architectural ramp, which slows climbing and accelerates exits.
   // The rest of the world's gravity policy is unchanged.
-  this.controller.computeColliderMovement(this.collider,{x:next.x-p.x,y:stairs||ramp?-.6*dt:-Math.max(.08,5*dt),z:next.z-p.z},undefined,WALK_GROUP,c=>this.walkWorld.handles.has(c.handle));
-  const movement=this.controller.computedMovement(),body=this.body.translation();this.body.setNextKinematicTranslation({x:body.x+movement.x,y:body.y+movement.y,z:body.z+movement.z});this.velocity={x:movement.x/dt,y:movement.y/dt,z:movement.z/dt};
+  const moveLength=Math.hypot(next.x-p.x,next.z-p.z),probe=CHARACTER.radius+.05;
+  const ux=moveLength?(next.x-p.x)/moveLength:0,uz=moveLength?(next.z-p.z)/moveLength:0;
+  const descendingStair=stairs&&(moveLength>.0001?this.walkWorld.groundAt({x:next.x+ux*probe,z:next.z+uz*probe})<this.walkWorld.groundAt({x:p.x-ux*probe,z:p.z-uz*probe})-.02:this.walkWorld.groundAt(p)<p.y-.035);
+  // Follow stair descent at the walking pace instead of requesting free-fall:
+  // a large vertical sweep is projected along the capsule's tread contact and
+  // otherwise accelerates Jack horizontally at each nosing.
+  const downward=descendingStair?Math.max(.6,moveLength/dt*.55+.4)*dt:(stairs||ramp)?.6*dt:Math.max(.08,5*dt);
+  this.controller.computeColliderMovement(this.collider,{x:next.x-p.x,y:-downward,z:next.z-p.z},undefined,WALK_GROUP,c=>this.walkWorld.handles.has(c.handle));
+  const movement=this.controller.computedMovement(),body=this.body.translation();
+  // Shorten the already-resolved descent vector when the rounded capsule nose
+  // turns downward motion into extra forward motion. Scale Y as well so the
+  // shortened step stays on the same collision-resolved segment.
+  const resolvedLength=Math.hypot(movement.x,movement.z);
+  if(descendingStair&&moveLength>.0001&&resolvedLength>moveLength){const ratio=moveLength/resolvedLength;movement.x*=ratio;movement.y*=ratio;movement.z*=ratio;}
+  this.body.setNextKinematicTranslation({x:body.x+movement.x,y:body.y+movement.y,z:body.z+movement.z});this.velocity={x:movement.x/dt,y:movement.y/dt,z:movement.z/dt};
   if(this.speed>.06){const target=Math.atan2(-movement.x,-movement.z),delta=Math.atan2(Math.sin(target-this.yaw),Math.cos(target-this.yaw));this.yaw+=delta*Math.min(1,12*dt);}
  }
  stepTerrain(p,x,z,dt){

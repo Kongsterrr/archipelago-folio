@@ -5,6 +5,43 @@ const INK='#244d59',PAPER='#fffbef',ORANGE='#ed7541';
 const TERRAIN_COLORS=['#c7d7af','#b8c797','#a3b384','#9eaa90','#969c91'];
 const EXPERIENCE_TERRACE_COLORS=['#d4c9b3','#bdc6c8','#ece0c8'];
 
+// Keep the compact railway's labels outside its route and numbered platforms.
+// World geometry remains north-up; only these screen-space captions move.
+export function careerMapLabels(g,projection,w,h,measure){
+ const size=w<190?8:9,height=size+7,stops=g.tracks.flatMap(track=>track.stops||[]),route=g.tracks.flatMap(track=>track.points.map(p=>projection.project(p)));
+ const blockers=stops.map(stop=>{const p=projection.project(stop);return{x:p.x-7,y:p.y-7,width:14,height:14};});
+ for(const berth of g.boatBerths||[]){const p=projection.project(berth);blockers.push({x:p.x-9,y:p.y-9,width:18,height:18});}
+ blockers.push({x:w-25,y:0,width:25,height:34});
+ const labels=stops.filter(stop=>stop.id!=='harbor').map(stop=>({id:stop.id,text:`${stop.label} ${NAMES[stop.id]||stop.id}`,anchor:projection.project(g.districts.find(d=>d.id===stop.id)||stop)}));
+ if(g.dock.length){const anchor=projection.project({x:g.dock.reduce((sum,p)=>sum+p.x,0)/g.dock.length,z:g.dock.reduce((sum,p)=>sum+p.z,0)/g.dock.length});labels.push({id:'dock',text:w<140?'D':'Dock',anchor:{x:anchor.x,y:anchor.y+12}});}
+ const overlap=(a,b)=>a.x<b.x+b.width+2&&a.x+a.width+2>b.x&&a.y<b.y+b.height+2&&a.y+a.height+2>b.y;
+ const cols=Math.ceil(w),rows=Math.ceil(h),blocked=new Uint8Array(cols*rows),prefix=new Uint32Array((cols+1)*(rows+1));
+ const mark=(x,y,width,height)=>{const x0=Math.max(0,Math.floor(x)),x1=Math.min(cols,Math.ceil(x+width));for(let row=Math.max(0,Math.floor(y));row<Math.min(rows,Math.ceil(y+height));row++)blocked.fill(1,row*cols+x0,row*cols+x1);};
+ for(const box of blockers)mark(box.x-2,box.y-2,box.width+4,box.height+4);
+ const routeMargin=w<140?5:9;
+ for(const p of route)mark(p.x-routeMargin,p.y-routeMargin,routeMargin*2,routeMargin*2);
+ for(let y=1;y<=rows;y++){let sum=0;for(let x=1;x<=cols;x++){sum+=blocked[(y-1)*cols+x-1];prefix[y*(cols+1)+x]=prefix[(y-1)*(cols+1)+x]+sum;}}
+ const occupied=(x,y,width,height)=>{const x0=Math.floor(x),x1=Math.ceil(x+width),y0=Math.floor(y),y1=Math.ceil(y+height),stride=cols+1;return prefix[y1*stride+x1]-prefix[y0*stride+x1]-prefix[y1*stride+x0]+prefix[y0*stride+x0]>0;};
+ const options=[];
+ for(const label of labels.sort((a,b)=>measure(b.text,size)-measure(a.text,size))){
+  const width=measure(label.text,size)+8,candidates=[];
+  for(let y=3;y<=h-height-3;y+=3)for(let x=3;x<=w-width-3;x+=3){
+   if(occupied(x,y,width,height))continue;
+   const cx=x+width/2,cy=y+height/2,cost=(cx-label.anchor.x)**2+(cy-label.anchor.y)**2;
+   candidates.push({id:label.id,text:label.text,x,y,width,height,cx,cy,size,cost});
+  }
+  options.push(candidates.sort((a,b)=>a.cost-b.cost));
+ }
+ // Three company names and one dock caption are small enough to solve jointly;
+ // a greedy placement can strand Amtrak on the smallest portrait map.
+ const place=(index,result)=>{
+  if(index===options.length)return result;
+  for(const candidate of options[index])if(!result.some(box=>overlap(candidate,box))){const fit=place(index+1,[...result,candidate]);if(fit)return fit;}
+  return null;
+ };
+ return place(0,[])||[];
+}
+
 // Canvas coordinates are CSS pixels; backing pixels follow the display density.
 // All map geometry comes from the same island/walk data as the playable world.
 export class VoyageMinimap {
@@ -15,7 +52,9 @@ export class VoyageMinimap {
  geometryFor(island,layout){
   const cached=this.geometry.get(island.id);
   if(cached?.layout===layout)return cached.value;
-  const value=islandMapGeometry(island,layout);this.geometry.set(island.id,{layout,value});return value;
+  const value=islandMapGeometry(island,layout);
+  if(island.id==='experience'&&layout?.railway){const c=Math.cos(island.rotation||0),s=Math.sin(island.rotation||0);value.boatBerths=(layout.berths||[]).map(({boat})=>({x:island.x+boat.x*c+boat.z*s,z:island.z-boat.x*s+boat.z*c}));}
+  this.geometry.set(island.id,{layout,value});return value;
  }
  update({position,yaw=0,game,visited=new Set()}){
   const island=selectMapIsland({onLand:game?.player.onLand,island:game?.player.island,nearby:game?.nearby,challengeActive:!!game?.challenges.active});
@@ -68,7 +107,7 @@ export class VoyageMinimap {
   if(geometry.dock.length){this.polygon(geometry.dock,projection);c.fillStyle='#c8a47a';c.fill();c.strokeStyle='#866c50';c.lineWidth=1;c.stroke();}
  }
  drawDetails(island,g,projection,w){
-  const c=this.ctx;
+  const c=this.ctx,career=island.id==='experience'&&g.tracks.some(track=>track.stops?.length);
   for(const campus of g.campuses){if(!campus.polygon.length)continue;this.polygon(campus.polygon,projection);c.fillStyle=campus.schoolId==='bu'?'#dbcac2':'#c0d0a5';c.fill();}
   if(g.terrain.length){
    const key=[island.id,w,this.canvas.clientHeight,projection.scale].join(':');
@@ -85,8 +124,14 @@ export class VoyageMinimap {
   for(const landmark of g.landmarks){if(g.parkingAreas.some(area=>area.id===landmark.id))continue;this.polygon(landmark.polygon,projection);c.fillStyle=landmark.id==='duan-center'?'#718c9f':'#b5ac91';c.fill();c.strokeStyle='#566b71';c.lineWidth=.8;c.stroke();}
   for(const track of g.tracks){c.beginPath();track.points.forEach((p,n)=>{const q=projection.project(p);n?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y);});c.strokeStyle='#505969';c.lineWidth=2.4;c.stroke();c.strokeStyle='#d6c4a5';c.lineWidth=.8;c.setLineDash([1,2]);c.stroke();c.setLineDash([]);}
   for(const track of g.tracks)for(const stop of track.stops||[]){const p=projection.project(stop);this.dot(p,5.2,'#5b4b3e',PAPER);c.fillStyle=PAPER;c.font='700 8px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(stop.label,p.x,p.y+.4);}
-  for(const s of g.stations){const p=projection.project(s);this.dot(p,s.type==='read'?3.4:2.3,s.type==='read'?'#285d72':'#94804d',PAPER);}
-  if(island.id==='education'){
+  // Company reader/action dots repeat the railway platforms on this island
+  // and obscure their numbers at phone sizes. The four rail stops are its key.
+  if(!career)for(const s of g.stations){const p=projection.project(s);this.dot(p,s.type==='read'?3.4:2.3,s.type==='read'?'#285d72':'#94804d',PAPER);}
+  if(career){
+   const key=[w,this.canvas.clientHeight,projection.scale,projection.bounds?.minX,projection.bounds?.minZ].join(':');
+   if(g.careerLabels?.key!==key)g.careerLabels={key,labels:careerMapLabels(g,projection,w,this.canvas.clientHeight,(text,size)=>{c.font=`600 ${size}px 'DM Sans', sans-serif`;return c.measureText(text).width;})};
+   for(const item of g.careerLabels.labels)this.tag(item.text,item.cx,item.cy,item.size,w);
+  }else if(island.id==='education'){
    const schools=g.campuses.length?g.campuses:g.stations.filter(s=>s.schoolId&&s.primary);
    const duan=g.landmarks.find(l=>l.id==='duan-center');if(duan){const p=projection.project(duan);this.tag(w<190?'Duan':'Duan Center',p.x,p.y-7,w<190?8:9,w);}
    for(const school of schools){const p=projection.project(school);this.tag(school.schoolId==='bu'?'BU':'CMU',p.x,p.y-13,10,w);}
@@ -95,7 +140,7 @@ export class VoyageMinimap {
   }else{
    for(const d of g.districts){const p=projection.project(d),primary=g.stations.find(s=>s.contentId===d.id&&s.primary);this.tag(`${primary?.number?primary.number+' ':''}${NAMES[d.id]||d.id}`,p.x,p.y-16,w<190?9:10,w);}
   }
-  const dock=g.dock;if(dock.length){const p=projection.project({x:dock.reduce((sum,p)=>sum+p.x,0)/dock.length,z:dock.reduce((sum,p)=>sum+p.z,0)/dock.length});this.tag('Dock',p.x,p.y+13,9,w);}
+  const dock=g.dock;if(!career&&dock.length){const p=projection.project({x:dock.reduce((sum,p)=>sum+p.x,0)/dock.length,z:dock.reduce((sum,p)=>sum+p.z,0)/dock.length});this.tag('Dock',p.x,p.y+13,9,w);}
  }
  dot(p,r,fill,stroke){const c=this.ctx;c.beginPath();c.arc(p.x,p.y,r,0,Math.PI*2);c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.lineWidth=1.2;c.stroke();}}
  tag(text,x,y,size,w){

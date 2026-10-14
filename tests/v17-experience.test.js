@@ -88,7 +88,7 @@ test('Career Railway modestly extends the rear coast while preserving the harbor
 
 test('high and low Experience exports share scene contracts and meet compressed byte budgets', async () => {
   const high = metadata('high'), low = metadata('low');
-  assert.match(high.revision, /^v19-/);
+  assert.match(high.revision, /^v20-/);
   assert.equal(low.revision, high.revision);
   assert.equal(manifests.high.walkLayout, manifests.low.walkLayout);
   for (const key of ['dock','shorePolygon','districts','occluders']) assert.deepEqual(high[key], low[key], key);
@@ -225,7 +225,7 @@ for (const quality of ['high','low']) test(`${quality}: actual Experience GLB re
     return box;
   });
   assert.ok(bounds[0].getCenter(new THREE.Vector3()).z < -8, 'Amtrak anchors the rear of the junction');
-  assert.ok(bounds[1].max.x < 0 && bounds[2].min.x > 0, 'software workshop and greenhouse frame opposite sides');
+  assert.ok(bounds[1].max.z < 0 && bounds[2].min.z > 0, 'workshop and greenhouse form separate depth layers');
   for (const id of companyIds) assert.ok(scene.getObjectByName(`district_${id}`), `${id}: independent district root survives export`);
   const controller = new IslandController(island, new THREE.Group());
   controller.bind(scene);
@@ -339,7 +339,7 @@ test('the real career railway yields to an elevated track visitor, ignores the i
   train.distance=highStop.distance;train.previousDistance=train.distance;train.stationId='amtrak';
   assert.equal(train.board(),true);assert.equal(train.continue(),true);
   const coach=sampleTrainPath(railway.path,train.distance-CAREER_TRAIN.coachOffset),position=train.worldPoint(coach);
-  assert.ok(position.y-layout.groundY>1.5,'the actual high-station track is elevated');
+  assert.ok(position.y-layout.groundY>1.2,'the actual high-station track is elevated');
   train.step(STEP,{pedestrians:[position]});
   assert.equal(train.distance,highStop.distance,'a visitor inside the trailing carriage envelope holds the whole train');
   train.step(STEP,{pedestrians:[{...position,y:position.y-3}]});
@@ -382,7 +382,7 @@ test('the exported main streets retain their full clear walking width', () => {
     const mainPaths = layout.paths.filter(path => path.main);
     assert.ok(mainPaths.length >= 1, 'the continuous main scenic circuit is documented');
     for (const path of mainPaths) {
-      assert.ok(path.width >= 3.2 && path.width <= 7.2, `${path.id}: main circulation width`);
+      assert.ok(path.width >= (path.kind==='bridge'?2.8:3.2) && path.width <= 7.2, `${path.id}: main circulation width`);
       for (let segment = 1; segment < path.points.length; segment++) {
         const a = path.points[segment-1], b = path.points[segment];
         const dx = b[0]-a[0], dz = b[1]-a[1], length = Math.hypot(dx,dz);
@@ -391,7 +391,7 @@ test('the exported main streets retain their full clear walking width', () => {
         for (let step = 0; step <= steps; step++) for (const offset of [-path.width/2+.06,0,path.width/2-.06]) {
           const x = a[0]+dx*step/steps+dz/length*offset;
           const z = a[1]+dz*step/steps-dx/length*offset;
-          const point = localToWorld(island,{x,z});
+          const point = localToWorld(island,{x,z});point.y=f.walk.groundAt(point);
           assert.ok(f.walk.clear(point,.025), `${path.id}: obstruction narrows segment ${segment} at ${x.toFixed(2)},${z.toFixed(2)}`);
           assert.ok(f.walk.groundSample(point).slope < Math.PI/12, `${path.id}: a steep edge enters the walking width`);
         }
@@ -408,11 +408,11 @@ test('the complete tour passes through all three open interiors with clear publi
       assert.ok(interior.entrances.length >= 2, `${interior.landmarkId}: public through-route`);
       assert.ok(interior.entrances.every(entrance => entrance.width >= 3.2), `${interior.landmarkId}: generous entrances`);
       for(const entrance of interior.entrances){const position=localToWorld(island,entrance);assert.ok(f.walk.clear(position,.3),`${interior.landmarkId}: the actual doorway admits Jack`);assert.ok(f.walk.safeGround(position,.22),`${interior.landmarkId}: doorway support is walkable`);}
-      for (const point of interior.walkRoute) {
+      for (const [pointIndex,point] of interior.walkRoute.entries()) {
         const [x,z] = point;
-        const worldPoint = localToWorld(island,{x,z});
+        const worldPoint = localToWorld(island,{x,z});worldPoint.y=f.walk.groundAt(worldPoint);
         assert.ok(f.walk.clear(worldPoint,.3), `${interior.landmarkId}: center aisle remains open`);
-        let authoredHeight=interior.floorY;
+        let authoredHeight=interior.walkRouteHeights?.[pointIndex]??interior.floorY;
         for(const ramp of layout.ramps||[]){
           const angle=ramp.rotation||0,dx=x-ramp.x,dz=z-ramp.z,across=dx*Math.cos(angle)-dz*Math.sin(angle),along=dx*Math.sin(angle)+dz*Math.cos(angle);
           if(Math.abs(across)<=ramp.width/2&&Math.abs(along)<=ramp.depth/2)authoredHeight=Math.max(authoredHeight,ramp.y+ramp.slope*along);
@@ -427,6 +427,18 @@ test('the complete tour passes through all three open interiors with clear publi
         if(inside)assert.ok(nearest < .1, `${interior.landmarkId}: real traversal route includes the through-aisle`);
       }
     }
-    assert.ok(layout.route.some(([x,z]) => z < -16), 'tour visits the elevated rear railway promenade');
+    assert.ok(layout.route.some(([x,z]) => z < -11), 'tour reaches the upper station hall');
   } finally { f.world.free(); }
+});
+
+for(const station of layout.railway.stations)test(`${station.id}: the exported station approach is directly walkable from the existing boat berth`,()=>{
+ const f=physicsFixture(),spine=layout.paths.find(path=>path.id==='valley-street').points;
+ try{
+  const approach=station.id==='harbor'?[[0,30]]:station.id==='visionx'?spine.slice(0,4):spine;
+  traverse(f,[[0,30],...approach,...station.walkRoute]);
+  const target=localToWorld(island,station.boarding),p=f.actor.position;
+  assert.ok(Math.hypot(p.x-target.x,p.z-target.z)<.09);
+  assert.ok(Math.abs(p.y-target.y)<.035,'feet finish on the platform floor');
+  assert.equal(f.rescues,0,'no teleport or pathfinding detour repairs the exported approach');
+ }finally{f.world.free();}
 });

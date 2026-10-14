@@ -5,17 +5,19 @@ export class PlayerController{
  get ridingQuad(){return this.mode==='riding-quad';}
  get ridingBicycle(){return this.mode==='riding-bicycle';}
  get ridingCar(){return this.mode==='riding-car';}
- get ridingTrain(){return this.mode==='riding-train'||this.mode==='boarding-train'&&!!this.transition?.committed||this.mode==='leaving-train'&&!this.transition?.committed;}
+ get ridingTrain(){if(this.mode==='riding-train')return true;if(!['boarding-train','leaving-train'].includes(this.mode))return false;return this.transition?.committed?this.transition.destination==='riding-train':this.stableMode==='riding-train';}
  get ridingVehicle(){return this.ridingQuad||this.ridingBicycle||this.ridingCar;}
  get activeVehicle(){return this.ridingCar?this.car:this.ridingBicycle?this.bicycle:this.ridingQuad?this.quad:null;}
- get transitioning(){return ['boarding','disembarking','boarding-train','leaving-train'].includes(this.mode);}
- get onLand(){return this.walking||this.ridingVehicle||this.ridingTrain||this.mode==='boarding-train'||this.mode==='leaving-train'||(this.mode==='boarding'&&!this.transition?.committed)||(this.mode==='disembarking'&&!!this.transition?.committed);}
+ get transitioning(){return ['boarding','disembarking','boarding-train','leaving-train','calling-train'].includes(this.mode);}
+ get onLand(){return this.walking||this.ridingVehicle||this.ridingTrain||this.mode==='boarding-train'||this.mode==='leaving-train'||this.mode==='calling-train'||(this.mode==='boarding'&&!this.transition?.committed)||(this.mode==='disembarking'&&!!this.transition?.committed);}
+ get transitionOpacity(){const t=this.transition;return !t?0:t.commitFrame?1:Math.sin(Math.min(1,t.elapsed/t.duration)*Math.PI);}
  get activeActor(){return this.ridingTrain?(this.train||this.character):this.ridingVehicle?(this.activeVehicle||this.character):this.onLand?this.character:this.boat;}
  invalidate(){this.transitionEpoch++;this.transition=null;return this.transitionEpoch;}
- begin(mode,commit){if(this.transitioning)return false;const epoch=this.invalidate();this.stableMode=this.mode;this.mode=mode;this.transition={epoch,elapsed:0,commit,committed:false};return true;}
+ begin(mode,commit,{duration=.6}={}){if(this.transitioning)return false;const epoch=this.invalidate();this.stableMode=this.mode;this.mode=mode;this.transition={epoch,elapsed:0,duration,commit,committed:false,commitFrame:false};return true;}
  tick(dt){const t=this.transition;if(!t||this.pauseReasons.size)return;if(t.epoch!==this.transitionEpoch)return; t.elapsed+=dt;
-  if(t.elapsed>=.3&&!t.committed){t.committed=true;t.commit();if(this.transition!==t||t.epoch!==this.transitionEpoch)return;}
-  if(t.elapsed>=.6){this.mode=t.destination||this.mode;this.transition=null;}
+  t.commitFrame=false;
+  if(t.elapsed>=t.duration/2&&!t.committed){t.elapsed=t.duration/2;t.committed=true;t.commitFrame=true;t.commit();return;}
+  if(t.elapsed>=t.duration){this.mode=t.destination||this.mode;this.transition=null;}
  }
  rideQuad(quad){if(!this.walking||!quad||this.pauseReasons.size||this.transitioning)return false;this.quad=quad;this.character.enable(false);this.character.seated=false;this.mode='riding-quad';this.ashoreTime=0;return true;}
  leaveQuad(point){if(!this.ridingQuad||!point||this.pauseReasons.size)return false;this.character.teleport(point,this.character.walkWorld);this.character.enable(true);this.mode='walking';this.ashoreTime=0;return true;}

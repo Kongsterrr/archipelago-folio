@@ -246,10 +246,10 @@ test('repeated Travel restarts the overview; skipping and returning manually rep
  assert.equal(f.game.frozen,true);assert.equal(f.game.inputs.enabled,false);
  const berth=f.player.berth,boatPosition={...f.boat.position},boatYaw=f.boat.yaw;
  assert.equal(f.game.skipArrival(),true);assert.equal(f.game.skipArrival(),false);assert.equal(f.game.inputs.enabled,true);
- assert.equal(f.game.boardBoat(),true);f.player.tick(.61);
+ assert.equal(f.game.boardBoat(),true);for(let frame=0;frame<37;frame++)f.player.tick(1/60);
  assert.equal(f.player.mode,'sailing');assert.equal(f.boat.parked,false);assert.equal(f.character.active,false);
  assert.deepEqual({...f.boat.position},boatPosition);assert.equal(f.boat.yaw,boatYaw);
- assert.equal(await f.game.boarding.disembark(experience),true);f.player.tick(.61);
+ assert.equal(await f.game.boarding.disembark(experience),true);for(let frame=0;frame<37;frame++)f.player.tick(1/60);
  assert.equal(f.player.mode,'walking');assert.deepEqual(f.player.berth,berth);
  assert.equal(arrival.active,true,'manual E replays the overview even after a prior Travel to the same island');
  assert.equal(arrival.island,experience);assert.equal(arrival.elapsed,0);assert.equal(arrival.progress,0);

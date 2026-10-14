@@ -16,9 +16,9 @@ function rect(x,z,w,d,a=0){const c=Math.cos(a),s=Math.sin(a);return[[-1,-1],[1,-
 function overlap(a,b){for(const p of[a,b])for(let n=0;n<p.length;n++){const u=p[n],v=p[(n+1)%p.length],x=v[1]-u[1],z=u[0]-v[0],pa=a.map(q=>q[0]*x+q[1]*z),pb=b.map(q=>q[0]*x+q[1]*z);if(Math.max(...pa)<=Math.min(...pb)||Math.max(...pb)<=Math.min(...pa))return false;}return true;}
 test('Career railway has the approved order, level stations, continuous true 3D curve and grade',()=>{
  assert.deepEqual(railway.stations.map(s=>s.id),['harbor','visionx','beaconfire','amtrak']);
- const path=railway.path,length=trainPathLength(path);assert.ok(length>=250&&length<=270);
+ const path=railway.path,length=trainPathLength(path);assert.ok(length>=103&&length<=106);
  for(const part of path.planSegments)if(part.type==='arc')assert.ok(part.radius>=6);
- assert.equal(railway.crossings.length,1);assert.equal(railway.train.gauge,1.62);
+ assert.equal(railway.crossings.length,2);assert.equal(railway.train.gauge,1.62);
  let grade=0;for(let d=0;d<length;d+=.13){const q=sampleTrainPath(path,d),p=sampleTrainPath(path,d+.01);grade=Math.max(grade,Math.abs(q.grade));assert.ok(Math.abs(Math.hypot(p.x-q.x,p.y-q.y,p.z-q.z)-.01)<.00004,'distance means 3D arc length');}
  assert.ok(grade<=.08);assert.ok(Math.hypot(...['x','y','z'].map(k=>sampleTrainPath(path,0)[k]-sampleTrainPath(path,length)[k]))<1e-6);
  for(const station of railway.stations){for(let offset=-5;offset<=5;offset+=.1){const q=sampleTrainPath(path,station.centerDistance+offset);assert.ok(Math.abs(q.y-station.trackY)<.001,'entire ten metre station straight stays level');}assert.ok(Math.abs(station.boarding.y-station.trackY-.6)<1e-8);assert.ok(Math.hypot(station.boarding.x-station.door.x,station.boarding.z-station.door.z)<1.4);}

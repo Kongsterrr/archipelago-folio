@@ -17,27 +17,44 @@ export function careerTerraces(shore,groundY=.85){
  const box=(x0,x1,z0,z1)=>[[x0,z0],[x1,z0],[x1,z1],[x0,z1]];
  const region=(id,polygon,height,material='junction_paving',kind='terrace')=>{const r={id,polygon:ccw(polygon),height:typeof height==='number'?()=>height:height,material,kind};regions.push(r);return r;};
  const base={id:'coastal-ground',height:()=>groundY,material:'junction_lawn',kind:'ground'};
- region('harbor-quay',box(-40,40,14,31),groundY);
- region('shared-town-court',box(-26,2,-11.4,14),3.65);
- region('brick-rail-street',box(-26,10,-11.4,-2),3.65,'junction_brick');
- region('visionx-garden',box(2,27,-2,11.8),1.55);
- region('station-town-bank',box(-25,25,-24.8,-11.4),6.4);
- for(const [x0,x1,z0,z1,y] of [[-24,-21,5,10,3.65],[-8,-5,7,10,3.65],[22,26,0,5,1.55],[5,9,-1,2,1.55]])region('town-garden',box(x0,x1,z0,z1),y,'junction_lawn');
- const ramps=[];
+ const ramps=[],stairways=[];
  function ramp(id,x,z,width,depth,frontY,backY,rotation=0){
   const slope=(frontY-backY)/depth,y=(frontY+backY)/2,c=Math.cos(rotation),s=Math.sin(rotation),r={id,x,z,width,depth,y,slope,rotation,frontY,backY};ramps.push(r);
-  const polygon=box(-width/2-.10,width/2+.10,-depth/2,depth/2).map(([px,pz])=>[x+px*c+pz*s,z-px*s+pz*c]);
-  region(id,polygon,(xx,zz)=>y+slope*((xx-x)*s+(zz-z)*c),'junction_paving','ramp');
+  const polygon=box(-width/2-.1,width/2+.1,-depth/2,depth/2).map(([px,pz])=>[x+px*c+pz*s,z-px*s+pz*c]);region(id,polygon,(xx,zz)=>y+slope*((xx-x)*s+(zz-z)*c),'junction_paving','ramp');
  }
- ramp('harbor-arrival-ramp',-3.5,18,4.4,13,.85,3.65);
- ramp('garden-street',7,3.5,3.2,10,1.55,3.65,Math.PI/2);
- const streetLength=Math.hypot(4.5,11.8);
- ramp('station-west-street',-19.25,-17.3,3.2,streetLength,3.65,6.4,Math.atan2(-4.5,11.8));
- const westAngle=Math.atan2(-4.5,11.8);ramp('station-west-lower-landing',-21.5+Math.sin(westAngle),-11.4+Math.cos(westAngle),3.2,2,3.65,3.65,westAngle);
- const stairs={id:'station-grand-stair',x:0,z:-15.4,width:6.4,depth:8,frontZ:-11.4,backZ:-19.4,frontY:3.65,backY:6.4,treadHeight:.1375,maxStepHeight:.1375,treadDepth:.34,stepCount:20,landing:{id:'station-stair-landing',x:0,z:-15.4,width:6.4,depth:1.2,frontZ:-14.8,backZ:-16,y:5.025},treads:[]};
- function flight(count,startZ,startY,offset){for(let i=0;i<count;i++){const frontZ=startZ-i*.34,backZ=frontZ-.34,y=+(startY+(i+1)*.1375).toFixed(6),id='station-stair-tread-'+(offset+i+1);region(id,box(-3.2,3.2,backZ,frontZ),y,'junction_stone','stair');stairs.treads.push({id,x:0,z:(frontZ+backZ)/2,width:6.4,depth:.34,y,frontZ,backZ});}}
- flight(10,-11.4,3.65,0);region('station-stair-landing',box(-3.2,3.2,-16,-14.8),5.025,'junction_stone','stair');flight(10,-16,5.025,10);
- stairs.walkRoute=[[0,-10.4],...stairs.treads.slice(0,10).map(t=>[0,t.z]),[0,-15.4],...stairs.treads.slice(10).map(t=>[0,t.z]),[0,-19.55]];
+ function stair(id,x,z,width,depth,frontY,backY,count){
+  const rise=(backY-frontY)/count,treadDepth=depth/count,frontZ=z+depth/2,backZ=z-depth/2;
+  const st={id,x,z,width,depth,frontZ,backZ,frontY,backY,treadHeight:Math.abs(rise),maxStepHeight:Math.abs(rise),treadDepth,stepCount:count,treads:[],walkRoute:[[x,frontZ+.4]]};
+  for(let i=0;i<count;i++){const f=frontZ-i*treadDepth,b=f-treadDepth,y=frontY+(i+1)*rise,t={id:id+'-tread-'+i,x,z:(f+b)/2,width,depth:treadDepth,y,frontZ:f,backZ:b};st.treads.push(t);region(t.id,box(x-width/2,x+width/2,b,f),y,'junction_stone','stair');st.walkRoute.push([x,t.z]);}st.walkRoute.push([x,backZ-.4]);stairways.push(st);return st;
+ }
+ region('west-river-cut',box(-24,-17,4,12),-.25,'junction_rockDark','landscape');
+ region('harbor-quay',box(-19,17,18.3,31),.85);
+ region('valley-court',box(-15,19,2.8,13.25),.85);
+ region('valley-garden',[[ -14,4],[-5,3.6],[-3.7,10.6],[-12,12.2]],.85,'junction_lawn');
+ region('visionx-growing-court',box(5,19,4.5,11.2),.85,'junction_lawn');
+ region('beacon-workshop-bank',box(3.8,18,-13,-3.5),2.4,'junction_brick');
+ region('terminal-upper-hall',box(-24,2,-15,-5),5.8);
+ region('station-lower-concourse',box(-24,18,-4,-.1),2.75);
+ // A single open cut through the high station bank, rather than overlapping floors.
+ region('terminal-arcade-cut',box(-24,2,-6.4,-.1),2.75);
+ region('terminal-entry-court',box(-14,-8,-7,-3.5),2.75);
+ region('visionx-platform-porch',box(11.25,14.75,11,13.8),1.55);
+ region('harbor-rail-crossing',box(-2.3,2.3,13.25,16.75),.95);
+ region('town-rail-crossing',box(-2.3,2.3,-.75,2.75),2.15);
+ ramp('harbor-crossing-approach',0,18.25,4.4,3,.85,.95);
+ ramp('garden-crossing-approach',0,11.75,4.4,3,.95,.85);
+ ramp('town-valley-street',0,6.25,4.4,7,.85,2.15);
+ ramp('town-concourse-approach',0,-1.95,4.4,2.4,2.15,2.75);
+ ramp('harbor-platform-ramp',-9,21.3,9.6,6,.85,1.55);
+ ramp('beacon-platform-ramp',11,-3.15,3.2,1.7,2.75,2.4);
+ // A broad side stair climbs beside the terminal, with no hidden lower surface.
+ const stairs=stair('station-grand-stair',-20,-8.14,4.4,7.48,2.75,5.8,22);
+ stair('conservatory-front-stair',13,10,3.4,2,1.55,.85,5);
+ // Step-free upper access is outside the inhabited terminal footprint.
+ ramp('station-west-street',-26.1,-6.5,3.2,15,2.75,5.8);
+ region('station-west-lower-landing',box(-27.8,-23,1,2.2),2.75);
+ region('station-west-approach',box(-24,-23,-5,2.2),2.75);
+ region('station-west-upper-landing',box(-27.8,-22,-15,-14),5.8);
  const profile=(x,z)=>{for(let i=regions.length-1;i>=0;i--)if(contains(regions[i].polygon,x,z))return regions[i];return base;};
  const insideShore=(x,z)=>{let inside=false;for(let i=0,j=shore.length-1;i<shore.length;j=i++){const a=shore[i],b=shore[j];if((a[1]>z)!=(b[1]>z)&&x<(b[0]-a[0])*(z-a[1])/(b[1]-a[1])+a[0])inside=!inside;}return inside;};
  const height=(x,z)=>profile(x,z).height(x,z);
@@ -59,5 +76,5 @@ export function careerTerraces(shore,groundY=.85){
  }
  const lines=new Map();for(const e of edges){let dx=e.b[0]-e.a[0],dz=e.b[1]-e.a[1],length=Math.hypot(dx,dz);dx/=length;dz/=length;if(dx<-.0001||(Math.abs(dx)<.0001&&dz<0)){dx=-dx;dz=-dz;}const offset=-dz*e.a[0]+dx*e.a[1],key=[dx,dz,offset,e.top,e.bottom].map(v=>v.toFixed(5)).join(',');if(!lines.has(key))lines.set(key,{dx,dz,offset,top:e.top,bottom:e.bottom,region:e.region,outward:e.outward,intervals:[]});const line=lines.get(key),a=dx*e.a[0]+dz*e.a[1],b=dx*e.b[0]+dz*e.b[1];line.intervals.push([Math.min(a,b),Math.max(a,b)]);}
  const mergedEdges=[];for(const l of lines.values()){const intervals=l.intervals.sort((a,b)=>a[0]-b[0]),merged=[];for(const interval of intervals){const last=merged.at(-1);if(last&&interval[0]<=last[1]+.00002)last[1]=Math.max(last[1],interval[1]);else merged.push([...interval]);}for(const[a,b]of merged){const p=t=>[l.dx*t-l.dz*l.offset,l.dz*t+l.dx*l.offset];mergedEdges.push({a:p(a),b:p(b),top:l.top,bottom:l.bottom,region:l.region,outward:l.outward});}}
- return{terrain:{version:1,kind:'career-terraces',vertices:vertices.flat(),indices,colliderIndices,bounds:{min:[Math.min(...shore.map(p=>p[0])),groundY,Math.min(...shore.map(p=>p[1]))],max:[Math.max(...shore.map(p=>p[0])),6.4,Math.max(...shore.map(p=>p[1]))]}},vertices,materials,edges:mergedEdges,ramps,stairs,height,isPaving:(x,z)=>insideShore(x,z)&&profile(x,z).material==='junction_paving',regions:regions.map(r=>({id:r.id,polygon:r.polygon,kind:r.kind}))};
+ return{terrain:{version:1,kind:'career-valley',vertices:vertices.flat(),indices,colliderIndices,bounds:{min:[Math.min(...shore.map(p=>p[0])),groundY,Math.min(...shore.map(p=>p[1]))],max:[Math.max(...shore.map(p=>p[0])),5.8,Math.max(...shore.map(p=>p[1]))]}},vertices,materials,edges:mergedEdges,ramps,stairs,stairways,height,isPaving:(x,z)=>insideShore(x,z)&&profile(x,z).material==='junction_paving',regions:regions.map(r=>({id:r.id,polygon:r.polygon,kind:r.kind}))};
 }

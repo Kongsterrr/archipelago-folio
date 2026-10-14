@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V19 — Career Railway** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V20 — Career Valley Express** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -13,7 +13,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Four connected exhibition islands:** About combines Harbor and Connect; Experience combines Amtrak, BeaconFire and VisionX; Projects combines Affirmation, Research and Catering; Education keeps BU and CMU together. Nine independent stories remain available through the directory.
 - **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, four walkable islands, exhibit stops, benches and safe boarding transitions.
 - **Jack’s Estate:** About Island has a furnished house with a walkable ground floor, four garage bays with a drivable Porsche 911, Mercedes G63, Ferrari Purosangue and Ford Raptor, a garden circuit, a tennis court and three putting greens.
-- **Career Railway:** board an open sightseeing carriage and visit VisionX, BeaconFire and Amtrak in career order. The train waits at each station while you read or explore, can be called from another platform, and returns along the coast. Three connected neighborhoods rise from the harbor garden to the clock-tower station.
+- **Career Railway:** board immediately at any of the four platforms and visit VisionX, BeaconFire and Amtrak in career order. The open carriage sets off after Jack settles and pauses briefly at each company. Read, get off or focus the station controls to take your time; continue when ready. Three connected neighborhoods rise from the harbor garden to the clock-tower station.
 - **Garden practice:** return six machine-fed tennis balls or putt across three greens, with animated racket and club contact, keyboard and touch controls, and results that last only for the current round.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
@@ -77,6 +77,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.2 — Relaxed Driving Pose** | Rearward driver placement, relaxed wheel reach and a charcoal G63 roof | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/a375409df896d102ea7b0b80c116f7bd382e2b52) |
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
 | **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
+| **V20 — Career Valley Express** | A compact career valley, immediate platform boarding, automatic departure and brief company stops with accessible controls that hold the train when needed | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V19 — Career Railway** | A rideable coastal train links VisionX, BeaconFire and Amtrak in chronological order, with station visits, platform calls, independent car motion and a layered railway town | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V18 — Career Terraces** | Connects Experience around a three-level courtyard, broad stairs, architectural streets and a rear railway with independently turning cars | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V17 — Career Junction** | Rebuilds Experience as a layered seaside career town, with three company exhibits, walkable interiors and an elevated model railway | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -91,6 +92,18 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V20 — Career Valley Express
+
+- Reorganizes Experience around a compact central valley: the low VisionX garden faces the arrival, BeaconFire defines the middle street, and the Amtrak clock station anchors the upper backdrop. A stone bridge forms the left return leg. The shared route design is about **104.05 units**; the simulated target is **36.3 seconds driving + 0.6 seconds settling + 12 seconds of company stops**, about **48.9 seconds** for an uninterrupted tour. The actual browser journey also completes the chronological circuit without rider input; see the validation notes for recordings and measurement conditions.
+- Approach any of the four station boarding areas and press **E · Board train**. If the carriage is elsewhere, a short opaque transition prepares it at the platform; Jack boards without waiting for an empty train to make a lap. Boarding retains the nearby-platform, clear-exit and pause checks.
+- After the seated transition finishes, Jack settles for **0.6 seconds** and the journey starts automatically. At VisionX, BeaconFire and Amtrak, the train stops for **4 seconds** before continuing. **Continue now / F** leaves sooner; there is no additional Start journey screen. The sequence remains **Harbor → VisionX → BeaconFire → Amtrak → Harbor**.
+- **Read experience**, **E · Get off**, or keyboard focus entering the station controls cancels automatic departure. The train waits for **F / Continue journey** afterward. Opening a menu or switching away also cancels a pending departure, so closing the panel does not unexpectedly send the train away. Ordinary moving-train pauses resume from their same location.
+- The harbor return ends the tour and stays parked: **E** gets off, **F / Ride again** begins another circuit. Each company still opens its original résumé entry, and merely passing it never records it as read.
+- The passenger card keeps its existing compact footprint and 44 px actions. A quiet status and thin progress line show the company stop, while keyboard navigation holds the departure. Stale pointer focus cannot silently hold later stops; disappearing actions release focus without moving it between available controls.
+- The existing `career_train` tool uses the same controls. Its legacy `call` action only prepares an empty train at the nearby requested platform; it never boards Jack. Session-only train state and existing portfolio records retain their roles.
+
+V20 passes **905 automated tests**. Actual WebGPU/WebGL2 and four desktop/emulated-phone viewport checks are documented in [validation notes](VALIDATION.md), including performance limits and real game evidence.
 
 ### V19 — Career Railway
 
@@ -580,8 +593,8 @@ No API keys, backend, account setup, or environment variables are required to ru
 | Walk on land | WASD / arrows, relative to the screen |
 | Run on land | Hold Shift |
 | Operate a nearby device on foot / read while riding | F |
-| Board / leave a stopped train | E / Enter beside the carriage or while stopped |
-| Start / continue the sightseeing train, or call it from a nearby platform | F / the displayed action button |
+| Board at a station / leave a stopped train | E / Enter in the platform boarding area or while stopped |
+| Continue the sightseeing train now / ride again at Harbor | F / the displayed action button |
 | Tennis: move / swing | A / D or left / right; Space |
 | Putting: aim / charge and putt | A / D or left / right; hold and release Space |
 | Horn | H |
@@ -594,7 +607,7 @@ Touch devices have a camera-relative joystick and on-screen driving, horn, readi
 
 During estate practice, the joystick moves sideways along the tennis baseline or adjusts putting aim. The dedicated Hit and Hold to charge buttons provide the corresponding Space actions. Practice overrides ordinary walking until the round is left.
 
-The sightseeing train drives itself. Its touch controls separate **Read experience**, **Get off** and **Continue journey**; exit and story buttons are available only at a stopped station. Onboard **Options** pauses the ride and offers a safe return to the harbor. Stepping off leaves the train waiting while Jack explores on foot.
+The sightseeing train drives itself after a short seated settle. Each company stop has a four-second pause and separate **Read experience**, **Get off** and **Continue now** controls. Reading, getting off, opening a panel or keyboard focus on station controls cancels automatic departure; **F / Continue journey** resumes from a held stop. Onboard **Options** pauses the ride and offers a safe return to the harbor. Harbor ends the tour and waits for **E · Get off** or **F · Ride again**.
 
 Opening a menu or switching away pauses simulation; an active challenge resumes after a short countdown. Going ashore, resetting, and traveling cancel an unfinished challenge. On land, the parked boat stays locked while sea life and traffic continue. Reading pauses the whole simulation. Sound starts off, and visual cues remain available while muted.
 
@@ -626,7 +639,7 @@ tests/                   Automated regression checks
 
 `EstatePracticeController` advances tennis and putting on the fixed simulation step, with separate pause, countdown and round state. `EstatePracticeView` renders the active ball and receiving marker; `EstateSportPose` applies racket and club poses to Jack’s existing rig. Practice keeps Jack in the walking locomotion mode and exposes transient status through the voyage tools without writing to `DiscoveryStore`.
 
-`CareerTrainController` owns chronological stops, braking, pedestrian yielding, empty platform calls and return journeys. `CareerJourney` integrates boarding transitions, checked exits, pause reasons and the `riding-train` actor with the game; `CareerTrainVisual` animates independent cars and a permanent passenger mount. The island layout supplies one shared railway path for scenery, simulation and the map. Train state is session-only and continues independently of rendering visibility.
+`CareerTrainController` owns chronological stops, braking, pedestrian yielding and return journeys. `CareerJourney` integrates immediate platform preparation, boarding transitions, fixed-step automatic departure, checked exits, pause reasons and the `riding-train` actor with the game; `CareerTrainVisual` animates independent cars and a permanent passenger mount. The island layout supplies one shared railway path for scenery, simulation and the map. Train state is session-only and continues independently of rendering visibility.
 
 ## Customize the content
 

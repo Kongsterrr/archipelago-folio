@@ -1,9 +1,13 @@
 import {sampleTrainPath,trainPathLength} from './train-path.js';
 
+export const CAREER_TRAIN_MOTION = Object.freeze({
+  cruiseSpeed:5.5, curveSpeed:3.2, acceleration:1.7, braking:2.2,
+  boardingDelay:.6, stationDwell:4,
+});
 export const CAREER_TRAIN = Object.freeze({
   coachOffset:4.30, floorY:.60, seatSurfaceY:1.12,
   seatPosition:Object.freeze([0,1.12,-.65]),
-  cruiseSpeed:3.2, turnSpeed:1.9, acceleration:.75, braking:1.35,
+  ...CAREER_TRAIN_MOTION, turnSpeed:CAREER_TRAIN_MOTION.curveSpeed,
   cars:Object.freeze([
     Object.freeze({name:'career-locomotive',offset:0,halfLength:1.85,halfWidth:.93,wheelRadius:.42}),
     Object.freeze({name:'career-coach',offset:4.30,halfLength:1.80,halfWidth:.93,wheelRadius:.36}),
@@ -51,6 +55,15 @@ export class CareerTrainController {
   call(id){if(this.paused||this.passenger||!this.stations.some(s=>s.id===id))return false;return this.depart(id,'call');}
   cancelRide(){this.passenger=false;this.revision++;return this.depart('harbor','return');}
   returnToHarbor(){return this.depart('harbor',this.passenger?'tour':'return');}
+  /** Integration calls this only while an entry/boarding mask is fully opaque.
+   * Keep odometry monotonic, but remove interpolation across the reposition.
+   */
+  parkAtStation(id='harbor'){
+    const station=this.stations.find(s=>s.id===id);if(!station||this.passenger)return false;
+    this.distance+=wrap(station.distance-this.distance,this.length);this.previousDistance=this.distance;
+    this.stationId=id;this.targetStationId=null;this.targetDistance=this.distance;
+    this.state='stopped';this.mission=null;this.hold();this.revision++;return true;
+  }
   depart(id,mission){
     const station=this.stations.find(s=>s.id===id);if(!station)return false;
     if(this.state==='stopped'&&this.stationId===id){this.mission=null;return true;}
@@ -74,7 +87,7 @@ export class CareerTrainController {
   speedLimit(distance){
     const a=sampleTrainPath(this.path,distance-.5,this._a),b=sampleTrainPath(this.path,distance+.5,this._b);
     const turn=Math.acos(Math.max(-1,Math.min(1,a.tangentX*b.tangentX+(a.tangentY||0)*(b.tangentY||0)+a.tangentZ*b.tangentZ)));
-    return turn>.10?1.7:turn>.04?2.1:CAREER_TRAIN.cruiseSpeed;
+    return turn>.04?CAREER_TRAIN.curveSpeed:CAREER_TRAIN.cruiseSpeed;
   }
   intersectsPedestrian(distance,p){
     for(const car of CAREER_TRAIN.cars){
@@ -110,8 +123,13 @@ export class CareerTrainController {
   advance(dt,pedestrians){
     if(this.state==='stopped'){this.speed=0;return;}
     const remaining=Math.max(0,this.targetDistance-this.distance),braking=CAREER_TRAIN.braking;
-    let limit=Math.min(CAREER_TRAIN.cruiseSpeed,Math.sqrt(2*braking*remaining));
-    for(let d=0;d<=6;d+=.75)limit=Math.min(limit,Math.sqrt(this.speedLimit(this.distance+d)**2+2*braking*d));
+    // The end-of-step speed leaves enough distance for the following braking
+    // steps, including this step's trapezoidal movement. The final stop can
+    // therefore reach zero without a visible last-frame velocity snap.
+    const brakeStep=braking*dt,stopLimit=Math.max(0,(Math.sqrt(Math.max(0,brakeStep*brakeStep-4*brakeStep*this.speed+8*braking*remaining))-brakeStep)/2);
+    let limit=Math.min(CAREER_TRAIN.cruiseSpeed,stopLimit);
+    const anticipation=Math.max(6,CAREER_TRAIN.cruiseSpeed**2/(2*braking)+1);
+    for(let d=0;d<=anticipation;d+=.25)limit=Math.min(limit,Math.sqrt(this.speedLimit(this.distance+d)**2+2*braking*Math.max(0,d-.25)));
     const clearance=this.clearDistance(pedestrians,Math.max(3,this.speed*this.speed/(2*braking)+1.4));
     if(Number.isFinite(clearance))limit=Math.min(limit,Math.sqrt(2*braking*clearance));
     const oldSpeed=this.speed;this.speed=approach(this.speed,limit,(limit<this.speed?braking:CAREER_TRAIN.acceleration)*dt);
@@ -119,7 +137,7 @@ export class CareerTrainController {
     if(Number.isFinite(clearance))travel=Math.min(travel,clearance);
     if(clearance<.001){this.speed=0;this.state='waiting-crossing';return;}
     if(this.state==='waiting-crossing')this.state='moving';
-    if(travel>=remaining){this.distance=this.targetDistance;this.stationId=this.targetStationId;this.targetStationId=null;this.state='stopped';this.speed=0;this.mission=null;this.revision++;}
+    if(travel>=remaining||remaining<1e-7&&this.speed<=brakeStep){this.distance=this.targetDistance;this.stationId=this.targetStationId;this.targetStationId=null;this.state='stopped';this.speed=0;this.mission=null;this.revision++;}
     else this.distance+=travel;
   }
   status(){return{state:this.state,mission:this.mission,passenger:this.passenger,currentStation:this.currentStation?.id||null,nextStation:this.nextStation?.id||null,targetStation:this.targetStationId,distance:wrap(this.distance,this.length),speed:this.speed,eta:this.eta,paused:this.paused};}

@@ -154,21 +154,48 @@ function syncZoom(){const zoom=game?.zoom??settings.zoom;$('#zoom-label').textCo
 function trainHUDState(status={}){
  const stopped=!!status.stopped,current=status.currentStation||'harbor',next=status.nextStation||'harbor';
  const display=stopped?current:next,entry=['visionx','beaconfire','amtrak'].includes(display)?content.find(item=>item.id===display):null;
- const title=entry?.title||'Harbor Station';
+ const title=entry?.title||'Harbor Station',auto=status.autoDeparture;
+ const departure=stopped&&auto&&Number.isFinite(auto.remaining)&&Number.isFinite(auto.duration)&&auto.duration>0?{remaining:Math.max(0,Math.min(auto.duration,auto.remaining)),duration:auto.duration,phase:auto.phase}:null;
  return {
-  current,next,display,stopped,
-  phase:stopped?'AT THE PLATFORM':status.phase==='boarding'?'TAKE YOUR SEAT':status.phase==='returning'||status.returningPassenger||status.mission==='return'?'RETURNING TO HARBOR':'NEXT STOP',
+  current,next,display,stopped,departure,
+  phase:departure?.phase==='boarding'?'SETTLING IN':departure?`CONTINUING IN ${Math.ceil(departure.remaining)}s`:stopped?'AT THE PLATFORM':status.phase==='boarding'?'TAKE YOUR SEAT':status.phase==='returning'||status.returningPassenger||status.mission==='return'?'RETURNING TO HARBOR':'NEXT STOP',
   title,period:entry?.period||'A journey through my work',
-  summary:entry?.summary||(stopped?'An open carriage. Three chapters. Start whenever you’re ready.':'Follow the coast back to the harbor. Your seat is yours until we arrive.'),
+  summary:entry?.summary||(stopped?(departure?'An open carriage. Three chapters. We’ll set off as soon as you’re settled.':'You’re at the harbor. Step off to explore, or take another tour.'):'Follow the coast back to the harbor. Your seat is yours until we arrive.'),
   read:stopped&&!!status.canRead&&!!entry,getOff:stopped&&!!status.canGetOff,continue:stopped&&!!status.canContinue,
-  continueLabel:current==='harbor'?'Start journey':current==='amtrak'?'Return to harbor':'Continue journey'
+  continueLabel:departure?'Continue now':current==='harbor'?'Ride again':current==='amtrak'?'Return to harbor':'Continue journey'
  };
+}
+// A real keyboard focus choice holds this stop. Pointer focus must not cancel
+// the next station's timer merely because a previously clicked button kept focus.
+let trainFocusModality=null;
+function holdTrainForFocus(target=document.activeElement){
+ if(!target?.closest?.('#train-hud button')||target.disabled||target.hidden)return false;
+ const keyboard=trainFocusModality==='keyboard'||(trainFocusModality===null&&target.matches?.(':focus-visible'));
+ if(!keyboard||!game?.player.ridingTrain||game.frozen||$('#panel').open)return false;
+ const status=game.trainStatus?.();
+ if(!status?.stopped||!status.autoDeparture)return false;
+ game.journey?.holdDeparture('keyboard-focus');return true;
+}
+function holdTrainForPointer(target){
+ const button=target?.closest?.('#train-read,#train-get-off,#train-options');
+ if(!button||button.disabled||button.hidden||!game?.player.ridingTrain||game.frozen||$('#panel').open)return false;
+ const status=game.trainStatus?.();if(!status?.stopped||!status.autoDeparture)return false;
+ // A press just before the timer ends must still be allowed to open its action.
+ game.journey?.holdDeparture('pointer-action');return true;
+}
+function setTrainControl(button,shown,enabled){
+ // Blur only a control that has become unavailable; never move focus between
+ // enabled controls or restore stale pointer focus when a later stop arrives.
+ if((!shown||!enabled)&&document.activeElement===button)button.blur();
+ button.hidden=!shown;button.disabled=!enabled;
 }
 function updateTrainHUD(frozen){
  const riding=!!game?.player.ridingTrain,panelOpen=$('#panel').open;
  document.body.classList.toggle('riding-train',riding);
  $('#train-hud').hidden=!riding||panelOpen||!game?.trainStatus;
+ if($('#train-hud').hidden&&document.activeElement?.closest?.('#train-hud button'))document.activeElement.blur();
  if(!riding||!game?.trainStatus)return;
+ if(!frozen&&!panelOpen)holdTrainForFocus();
  const view=trainHUDState(game.trainStatus());
  for(const [id,text]of[['train-phase',view.phase],['train-title',view.title],['train-period',view.period],['train-summary',view.summary]])if($('#'+id).textContent!==text)$('#'+id).textContent=text;
  for(const stop of document.querySelectorAll('[data-train-stop]')){
@@ -176,11 +203,14 @@ function updateTrainHUD(frozen){
   stop.classList.toggle('current',active);
   if(active)stop.setAttribute('aria-current','step');else stop.removeAttribute('aria-current');
  }
- $('#train-read').hidden=!view.read;$('#train-read').disabled=frozen||!view.read;
- $('#train-get-off').hidden=!view.stopped;$('#train-get-off').disabled=frozen||!view.getOff;
- $('#train-continue').hidden=!view.stopped;$('#train-continue').disabled=frozen||!view.continue;
+ setTrainControl($('#train-read'),view.read,!frozen&&view.read);
+ setTrainControl($('#train-get-off'),view.stopped,!frozen&&view.getOff);
+ setTrainControl($('#train-continue'),view.stopped,!frozen&&view.continue);
  $('#train-continue span').textContent=view.continueLabel;
  $('#train-options').disabled=frozen;
+ const progress=$('#train-departure'),departure=view.departure;
+ progress.hidden=!departure||departure.phase!=='station';
+ if(departure){progress.style.setProperty('--departure-remaining',String(departure.remaining/departure.duration));progress.setAttribute('aria-valuemax',String(departure.duration));progress.setAttribute('aria-valuenow',String(Math.ceil(departure.remaining)));}
 }
 function openTrainOptions(){
  if(!game?.player.ridingTrain||$('#panel').open||game.frozen)return false;
@@ -201,6 +231,10 @@ $('#train-options').onclick=openTrainOptions;
 $('#train-read').onclick=()=>trainAction('read');
 $('#train-get-off').onclick=()=>trainAction('get_off');
 $('#train-continue').onclick=()=>trainAction('continue');
+document.addEventListener('pointerdown',()=>{trainFocusModality='pointer';},true);
+document.addEventListener('keydown',event=>{if(!event.metaKey&&!event.ctrlKey&&!event.altKey&&event.code==='Tab')trainFocusModality='keyboard';},true);
+$('#train-hud').addEventListener('focusin',event=>holdTrainForFocus(event.target));
+$('#train-hud').addEventListener('pointerdown',event=>holdTrainForPointer(event.target));
 document.addEventListener('keydown',event=>{
  if(event.code!=='Escape'||event.repeat||event.defaultPrevented||$('#panel').open||document.querySelector('dialog[open]')||!game?.player.ridingTrain)return;
  if(openTrainOptions()){event.preventDefault();event.stopPropagation();}

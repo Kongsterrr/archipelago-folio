@@ -138,6 +138,7 @@ test('Projects mountain profile leaves real buildings solid and shoreline impass
   try {
     assert.equal(layout.terrain.navigation.maxClimbSlopeDegrees,55);
     const kiosk=localToWorld(projects,{x:18,z:4});
+    kiosk.y=f.walk.groundAt(kiosk);
     assert.equal(f.walk.clear(kiosk,.22),false);
     assert.equal(quadFootprintClear(f.walk,kiosk,projects.rotation),false,'climbable ground never means driving through exhibits');
     const sea=localToWorld(projects,{x:48,z:0});

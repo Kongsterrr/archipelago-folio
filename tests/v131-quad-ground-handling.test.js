@@ -129,6 +129,7 @@ function wallFixture(yawOffset = 0) {
   spawn.y = quadGroundPose(walk, spawn, spawn.yaw).height;
   assert.ok(quadFootprintClear(walk, spawn, spawn.yaw), 'approach staging clears the complete chassis');
   const wall = localToWorld(projects, {x:18,z:4});
+  wall.y = walk.groundAt(wall);
   assert.equal(walk.clear(wall, .1), false, 'fixture really approaches an authored building wall');
   const bike = new QuadBikeController(R, world, walk, spawn); bike.park(false);
   let rescues = 0;
