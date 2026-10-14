@@ -1,6 +1,8 @@
 const TAU = Math.PI * 2;
 const wrap = (distance, length) => ((distance % length) + length) % length;
 const preparedPaths = new WeakMap();
+const isLine = path => Array.isArray(path.from) && Array.isArray(path.to);
+const bounded = (path,distance,length) => path.closed === false ? Math.max(0,Math.min(length,distance)) : wrap(distance,length);
 
 function heightAt(path, distance) {
   const span = path.elevation.find(item => distance >= item.start - 1e-8 && distance <= item.end + 1e-8) || path.elevation.at(-1);
@@ -30,30 +32,38 @@ function interpolateTable(table, value, key) {
 
 /** Convert an authored plan distance to the physical distance used by all cars. */
 export function trainDistanceAtPlan(path, distance) {
+  if (isLine(path)) return Math.max(0,Math.min(trainPlanLength(path),distance)) * trainPathLength(path) / trainPlanLength(path);
   if (!path.planSegments) return distance;
   const p = preparePath(path);return interpolateTable(p.table,Math.max(0,Math.min(p.planLength,distance)),1);
 }
 
-export function trainPlanLength(path) {return path.planSegments ? preparePath(path).planLength : trainPathLength(path);}
+export function trainPlanLength(path) {return isLine(path) ? Math.hypot(path.to[0]-path.from[0],path.to[2]-path.from[2]) : path.planSegments ? preparePath(path).planLength : trainPathLength(path);}
 
 /** A stadium loop starts at the left end of its front straight, travelling +X.
  * Distances are metres, the two end turns are semicircles, and models face -Z.
  * Coordinates belong to the path's parent (island for rails, district for cars).
  */
 export function trainPathLength(path) {
+  if (isLine(path)) return Math.hypot(...path.to.map((value,index)=>value-path.from[index]));
   if (path.planSegments) return preparePath(path).length;
   return 4 * path.halfStraight + TAU * path.radius;
 }
 
 export function sampleTrainPath(path, distance, target = {}) {
+  if (isLine(path)) {
+    const length=trainPathLength(path),d=bounded(path,distance,length),t=d/length;
+    const [dx,dy,dz]=path.to.map((value,index)=>value-path.from[index]),plan=Math.hypot(dx,dz),pitch=Math.atan2(dy,plan);
+    Object.assign(target,{x:path.from[0]+dx*t,y:path.from[1]+dy*t,z:path.from[2]+dz*t,tangentX:dx/length,tangentY:dy/length,tangentZ:dz/length,yaw:Math.atan2(-dx,-dz),pitch,trackPitch:pitch,grade:dy/plan,planDistance:d*plan/length});
+    return target;
+  }
   if (path.planSegments) {
-    const prepared = preparePath(path),d = interpolateTable(prepared.table,wrap(distance,prepared.length),0);
+    const prepared = preparePath(path),d = interpolateTable(prepared.table,bounded(path,distance,prepared.length),0);
     const s = path.planSegments.find(item=>d <= item.end + 1e-8) || path.planSegments.at(-1),along = Math.max(0,d-s.start);
     let x,z,tx,tz;
     if (s.type === 'arc') {const sign = Math.sign(s.sweep),a = s.angle + sign*along/s.radius;x = s.center[0]+s.radius*Math.cos(a);z = s.center[1]+s.radius*Math.sin(a);tx = -Math.sin(a)*sign;tz = Math.cos(a)*sign;}
     else {const t = along/(s.end-s.start);x = s.from[0]+(s.to[0]-s.from[0])*t;z = s.from[1]+(s.to[1]-s.from[1])*t;tx = (s.to[0]-s.from[0])/(s.end-s.start);tz = (s.to[1]-s.from[1])/(s.end-s.start);}
     const h = heightAt(path,d),norm = Math.hypot(1,h.grade);
-    Object.assign(target,{x,y:h.height,z,tangentX:tx/norm,tangentY:h.grade/norm,tangentZ:tz/norm,yaw:Math.atan2(-tx,-tz),pitch:Math.atan(h.grade),grade:h.grade,planDistance:d});return target;
+    Object.assign(target,{x,y:h.height,z,tangentX:tx/norm,tangentY:h.grade/norm,tangentZ:tz/norm,yaw:Math.atan2(-tx,-tz),pitch:Math.atan(h.grade),trackPitch:Math.atan(h.grade),grade:h.grade,planDistance:d});return target;
   }
   const {center, halfStraight: h, radius: r} = path;
   const straight = 2 * h, arc = Math.PI * r;
@@ -76,7 +86,7 @@ export function sampleTrainPath(path, distance, target = {}) {
   target.z = center[2] + z;
   target.tangentX = tx;
   target.tangentZ = tz;
-  target.tangentY = 0;target.pitch = 0;target.grade = 0;
+  target.tangentY = 0;target.pitch = 0;target.trackPitch=0;target.grade = 0;
   target.yaw = Math.atan2(-tx, -tz);
   return target;
 }

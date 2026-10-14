@@ -186,11 +186,12 @@ test('legacy Amtrak protects its default track before a model is bound',()=>{
  assert.equal(shifted.duration,12);assert.equal(shifted.elapsed,0,'unbound legacy metadata also governs timing and yielding');
 });
 
-test('the separate passenger train has complete geometry and stays bound to the shared railway after model replacement',async t=>{
+test('the complete single cabin stays level on the exported open railway after model replacement',async t=>{
  const json=async file=>JSON.parse(await fs.readFile(new URL(file,import.meta.url),'utf8'));
  const layout=(await json('../static/models/walk-layout.json')).islands.find(i=>i.id==='experience'),island=islands.find(i=>i.id==='experience');
  const railway=layout.railway;
  assert.ok(railway?.path&&railway.stations.length===4,'the live island exports its functional four-station railway');
+ assert.equal(railway.path.closed,false,'the shipped railway is the open V21 incline');
  const bytes=await fs.readFile(new URL('../static/models/career-train.glb',import.meta.url));
  assert.ok(bytes.byteLength<=350_000,'the independently loaded train meets its compressed budget');
  const parse=async()=> (await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;
@@ -199,10 +200,10 @@ test('the separate passenger train has complete geometry and stays bound to the 
  const materialSets=[];
  for(const replacement of [false,true]){
   const model=await parse();visual.bind(model);scene.updateMatrixWorld(true);
-  assert.equal(visual.cars.length,2,'both complete cars have independent transforms');
-  assert.ok(visual.wheels.length>=8,'each car has four separately rotatable wheels');
+  assert.equal(visual.cars.length,1,'one complete cabin owns its independent transform');
+  assert.equal(visual.wheels.length,4,'all four wheel groups rotate independently');
   const materials=new Map();
-  for(const [index,car]of CAREER_TRAIN.cars.entries()){
+  for(const [index,car]of controller.cars.entries()){
    const node=model.getObjectByName(car.name);assert.ok(node,`${car.name}: live mesh owner exists`);
    assert.equal(node.isMesh,undefined,'a root controls all parts of each car');
    const box=new THREE.Box3();
@@ -215,14 +216,15 @@ test('the separate passenger train has complete geometry and stays bound to the 
    });
    const size=box.getSize(new THREE.Vector3());assert.ok(size.x>1.4&&size.z>3&&size.y>.8,'the test covers a full-size rideable carriage, not a placeholder');
    const pose=controller.carPose(index),forward=new THREE.Vector3(0,0,-1).applyQuaternion(node.quaternion),local=sampleTrainPath(railway.path,controller.distance-car.offset);
-   const c=Math.cos(island.rotation),s=Math.sin(island.rotation);
+   const c=Math.cos(island.rotation),s=Math.sin(island.rotation),horizontal=Math.hypot(local.tangentX,local.tangentZ);
    close(node.position.x,pose.x,'world car X',1e-5);close(node.position.y,pose.y,'car height',1e-5);close(node.position.z,pose.z,'world car Z',1e-5);
-   close(forward.x,local.tangentX*c+local.tangentZ*s,'3D forward X',1e-5);close(forward.y,local.tangentY||0,'3D climbing tangent',1e-5);close(forward.z,-local.tangentX*s+local.tangentZ*c,'3D forward Z',1e-5);
+   close(forward.x,(local.tangentX*c+local.tangentZ*s)/horizontal,'level forward X',1e-5);close(forward.y,0,'cabin floor remains level',1e-5);close(forward.z,(-local.tangentX*s+local.tangentZ*c)/horizontal,'level forward Z',1e-5);
+   close(pose.trackPitch,local.pitch,'undercarriage follows the actual incline',1e-5);assert.ok(pose.trackPitch>.4);
   }
   materialSets.push([...materials].sort(([a],[b])=>a.localeCompare(b)));
   if(!replacement){
    const passenger=new THREE.Group();passenger.name='test-passenger';visual.mountPoint.add(passenger);
-   assert.equal(visual.mountPoint.parent,scene,'the actor anchor belongs to the stable scene, not either car asset');
+   assert.equal(visual.mountPoint.parent,scene,'the actor anchor belongs to the stable scene, outside the cabin asset');
    assert.equal(model.getObjectByName('test-passenger'),undefined,'model disposal cannot traverse the passenger');
    assert.equal(controller.board(),true);assert.equal(controller.continue(),true);
    for(let frame=0;frame<120;frame++)controller.step(1/60);
@@ -235,6 +237,9 @@ test('the separate passenger train has complete geometry and stays bound to the 
  assert.deepEqual(materialSets[0],materialSets[1],'model replacement preserves train finishes');
  const map=islandMapGeometry(island,layout).tracks[0]?.points;
  assert.ok(map?.length>=64,'the local map contains the entire rideable rail route');
+ const first=map[0],last=map.at(-1),dx=last.x-first.x,dz=last.z-first.z;
+ assert.ok(Math.hypot(dx,dz)>40,'the open minimap line retains distinct terminal endpoints');
+ for(let n=1;n<map.length;n++)assert.ok((map[n].x-map[n-1].x)*dx+(map[n].z-map[n-1].z)*dz>0,'the route never adds a closing segment back to Harbor');
  const outer=new THREE.Group();outer.position.set(island.x,0,island.z);outer.rotation.y=island.rotation;outer.updateMatrixWorld(true);
  for(const point of map){
   const local=outer.worldToLocal(new THREE.Vector3(point.x,0,point.z));

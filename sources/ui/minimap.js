@@ -3,9 +3,12 @@ import {createMapProjection,islandMapGeometry,selectMapIsland} from '../core/min
 const NAMES={about:'Jack Kong',experience:'Experience',projects:'Projects',education:'Education',harbor:'Meet Jack',connect:'Connect',amtrak:'Amtrak',beaconfire:'BeaconFire',visionx:'VisionX',affirmation:'Affirmation',research:'Research',catering:'Catering',learning:'Education'};
 const INK='#244d59',PAPER='#fffbef',ORANGE='#ed7541';
 const TERRAIN_COLORS=['#c7d7af','#b8c797','#a3b384','#9eaa90','#969c91'];
-const EXPERIENCE_TERRACE_COLORS=['#d4c9b3','#bdc6c8','#ece0c8'];
+const EXPERIENCE_TERRACE_COLORS=['#dfd3b6','#c5c9a4','#b4b995','#b3ab96','#98998e'];
 
-// Keep the compact railway's labels outside its route and numbered platforms.
+export const careerTerrainBand=height=>height<4?0:height<11?1:height<18?2:height<26?3:4;
+export const trainMapHeading=train=>(train.yaw||0)+(train.direction<0?Math.PI:0);
+
+// Keep the mountain railway's labels outside its route and numbered platforms.
 // World geometry remains north-up; only these screen-space captions move.
 export function careerMapLabels(g,projection,w,h,measure){
  const size=w<190?8:9,height=size+7,stops=g.tracks.flatMap(track=>track.stops||[]),route=g.tracks.flatMap(track=>track.points.map(p=>projection.project(p)));
@@ -95,8 +98,8 @@ export class VoyageMinimap {
   if(island?.id==='education'&&game?.bicycle?.parked){this.vehicle(projection.project(game.bicycle.position),game.bicycle.yaw,'bicycle');}
   if(island?.id==='projects'&&game?.quadBike?.parked){this.vehicle(projection.project(game.quadBike.position),game.quadBike.yaw,'quad');}
   if(island?.id==='about')for(const car of game?.garageCars||[])if(car.parked)this.vehicle(projection.project(car.position),car.yaw,'car');
-  if(island?.id==='experience'&&game?.careerTrain&&!game.player.ridingTrain)this.vehicle(projection.project(game.careerTrain.position),game.careerTrain.yaw,'train');
-  this.player(projection.project(position),yaw,w,h);
+  if(island?.id==='experience'&&game?.careerTrain&&!game.player.ridingTrain)this.vehicle(projection.project(game.careerTrain.position),trainMapHeading(game.careerTrain),'train');
+  this.player(projection.project(position),game?.player.ridingTrain?trainMapHeading(game.careerTrain):yaw,w,h);
   this.compass(w);
  }
  polygon(points,projection){
@@ -113,7 +116,7 @@ export class VoyageMinimap {
    const key=[island.id,w,this.canvas.clientHeight,projection.scale].join(':');
    if(g.mapPaths?.key!==key){
     const experience=island.id==='experience',bands=(experience?EXPERIENCE_TERRACE_COLORS:TERRAIN_COLORS).map(color=>({color,path:new Path2D()}));
-    for(const face of g.terrain){const index=experience?(face.height<1.5?0:face.height<4.2?1:2):Math.max(0,Math.min(4,Math.floor(face.height/2))),band=bands[index];face.points.forEach((p,n)=>{const q=projection.project(p);n?band.path.lineTo(q.x,q.y):band.path.moveTo(q.x,q.y);});band.path.closePath();}
+    for(const face of g.terrain){const index=experience?careerTerrainBand(face.height):Math.max(0,Math.min(4,Math.floor(face.height/2))),band=bands[index];face.points.forEach((p,n)=>{const q=projection.project(p);n?band.path.lineTo(q.x,q.y):band.path.moveTo(q.x,q.y);});band.path.closePath();}
     g.mapPaths={key,bands};
    }
    for(const band of g.mapPaths.bands){c.fillStyle=band.color;c.fill(band.path);}

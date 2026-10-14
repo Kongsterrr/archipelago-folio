@@ -88,7 +88,7 @@ test('Career Railway modestly extends the rear coast while preserving the harbor
 
 test('high and low Experience exports share scene contracts and meet compressed byte budgets', async () => {
   const high = metadata('high'), low = metadata('low');
-  assert.match(high.revision, /^v20-/);
+  assert.match(high.revision, /^v21-/);
   assert.equal(low.revision, high.revision);
   assert.equal(manifests.high.walkLayout, manifests.low.walkLayout);
   for (const key of ['dock','shorePolygon','districts','occluders']) assert.deepEqual(high[key], low[key], key);
@@ -225,7 +225,7 @@ for (const quality of ['high','low']) test(`${quality}: actual Experience GLB re
     return box;
   });
   assert.ok(bounds[0].getCenter(new THREE.Vector3()).z < -8, 'Amtrak anchors the rear of the junction');
-  assert.ok(bounds[1].max.z < 0 && bounds[2].min.z > 0, 'workshop and greenhouse form separate depth layers');
+  assert.ok(bounds[1].getCenter(new THREE.Vector3()).z+9 < bounds[2].getCenter(new THREE.Vector3()).z, 'workshop and greenhouse form separate depth layers');
   for (const id of companyIds) assert.ok(scene.getObjectByName(`district_${id}`), `${id}: independent district root survives export`);
   const controller = new IslandController(island, new THREE.Group());
   controller.bind(scene);
@@ -338,26 +338,25 @@ test('the real career railway yields to an elevated track visitor, ignores the i
   // Load a valid elevated starting pose without changing the shared route.
   train.distance=highStop.distance;train.previousDistance=train.distance;train.stationId='amtrak';
   assert.equal(train.board(),true);assert.equal(train.continue(),true);
-  const coach=sampleTrainPath(railway.path,train.distance-CAREER_TRAIN.coachOffset),position=train.worldPoint(coach);
+  const coach=sampleTrainPath(railway.path,train.distance-CAREER_TRAIN.coachOffset),position=train.worldPoint(coach);position.y+=CAREER_TRAIN.floorY;
   assert.ok(position.y-layout.groundY>1.2,'the actual high-station track is elevated');
   train.step(STEP,{pedestrians:[position]});
   assert.equal(train.distance,highStop.distance,'a visitor inside the trailing carriage envelope holds the whole train');
   train.step(STEP,{pedestrians:[{...position,y:position.y-3}]});
-  assert.ok(train.distance>highStop.distance,'an inaccessible lower plane does not block the high rail route');
+  assert.ok(train.distance<highStop.distance,'an inaccessible lower plane does not block the high rail route');
   const before={distance:train.distance,position:train.position};
   train.step(10,{paused:true});
   assert.equal(train.distance,before.distance,'a background pause cannot advance the rail clock');
   assert.deepEqual(train.position,before.position,'pausing retains the passenger location');
   train.step(STEP);
-  assert.ok(train.distance>before.distance,'the functional train resumes even without any island decoration animation');
+  assert.ok(train.distance<before.distance,'the functional train resumes even without any island decoration animation');
 });
 
 for (const quality of ['high','low']) test(`${quality}: terrace and ramp rendering agrees with exported walking heights and real Rapier support`, async () => {
   const scene = await model(quality), f = physicsFixture(), ray = new THREE.Raycaster();
   try {
-    const elevated = layout.ramps || layout.surfaces.filter(surface => surface.y > layout.groundY + .1 || surface.slope);
-    const ramps = elevated.filter(surface => surface.slope);
-    assert.ok(ramps.length > 0, 'the elevated terraces are connected by real slopes');
+    const elevated = [...layout.stairs.flatMap(stair=>stair.treads.filter((_,index)=>index%5===0)),...layout.railway.stations.map(station=>station.platform)];
+    assert.ok(layout.stairs.length >= 12, 'the mountain levels are connected by real supported stairs');
     for (const surface of elevated) {
       assert.ok(Math.atan(Math.abs(surface.slope || 0)) < Math.PI/12, 'architectural ramps stay below 15 degrees');
       const angle = surface.rotation || 0;
@@ -366,10 +365,10 @@ for (const quality of ['high','low']) test(`${quality}: terrace and ramp renderi
         const x = surface.x + dx*Math.cos(angle) + dz*Math.sin(angle);
         const z = surface.z - dx*Math.sin(angle) + dz*Math.cos(angle);
         const point = localToWorld(island,{x,z}), height = f.walk.groundAt(point);
-        const hit = f.world.castRay(new R.Ray({x:point.x,y:12,z:point.z},{x:0,y:-1,z:0}),14,true,undefined,undefined,undefined,undefined,collider => f.walk.colliders.includes(collider) && !f.walk.obstacles.includes(collider));
+        const hit = f.world.castRay(new R.Ray({x:point.x,y:45,z:point.z},{x:0,y:-1,z:0}),50,true,undefined,undefined,undefined,undefined,collider => f.walk.colliders.includes(collider) && !f.walk.obstacles.includes(collider));
         assert.ok(hit, `support collider missing at ${x},${z}`);
-        assert.ok(Math.abs(12-hit.timeOfImpact-height) < .008, `Rapier support and ground sample disagree at ${x},${z}`);
-        ray.set(new THREE.Vector3(x,12,z),new THREE.Vector3(0,-1,0));
+        assert.ok(Math.abs(45-hit.timeOfImpact-height) < .008, `Rapier support and ground sample disagree at ${x},${z}`);
+        ray.set(new THREE.Vector3(x,45,z),new THREE.Vector3(0,-1,0));
         assert.ok(ray.intersectObject(scene,true).some(intersection => Math.abs(intersection.point.y-height) < .065), `${quality}: visible support floats away from walking plane at ${x},${z}`);
       }
     }
@@ -432,13 +431,39 @@ test('the complete tour passes through all three open interiors with clear publi
 });
 
 for(const station of layout.railway.stations)test(`${station.id}: the exported station approach is directly walkable from the existing boat berth`,()=>{
- const f=physicsFixture(),spine=layout.paths.find(path=>path.id==='valley-street').points;
+ const f=physicsFixture();
  try{
-  const approach=station.id==='harbor'?[[0,30]]:station.id==='visionx'?spine.slice(0,4):spine;
-  traverse(f,[[0,30],...approach,...station.walkRoute]);
+  traverse(f,station.walkRoute);
   const target=localToWorld(island,station.boarding),p=f.actor.position;
   assert.ok(Math.hypot(p.x-target.x,p.z-target.z)<.09);
   assert.ok(Math.abs(p.y-target.y)<.035,'feet finish on the platform floor');
   assert.equal(f.rescues,0,'no teleport or pathfinding detour repairs the exported approach');
  }finally{f.world.free();}
+});
+
+for(const quality of ['high','low'])test(`${quality}: both conservatory domes have opaque outward-facing blue-green glass shells`,async()=>{
+ const scene=await model(quality),ray=new THREE.Raycaster();
+ for(const[name,x,y,z]of[['east',21.1,14.7,12],['west',11.8,13.4,12]]){
+  const dome=scene.getObjectByName('occluder_junction_conservatory_dome_'+name);assert.ok(dome);
+  ray.set(new THREE.Vector3(x+.6,y+3,z+.4),new THREE.Vector3(0,-1,0));
+  const hit=ray.intersectObject(dome,true).find(h=>h.object.material.name==='junction_glass');
+  assert.ok(hit,`${name}: a visitor-facing ray must hit the glass shell, not only its ribs`);assert.equal(hit.object.material.opacity,1);assert.equal(hit.object.material.transparent,false);
+  assert.ok(hit.point.y>y-.7&&hit.point.y<y+.1);
+ }
+});
+
+for(const quality of ['high','low'])test(`${quality}: platform lamps leave the disembarked visitor visible at the fixed 38 degree walking view`,async()=>{
+ const scene=await model(quality),ray=new THREE.Raycaster(),direction=new THREE.Vector3(0,Math.sin(38*Math.PI/180),Math.cos(38*Math.PI/180));
+ const lamps=layout.obstacles.filter(obstacle=>obstacle.name.startsWith('station lamp ')),lampMeshes=[];
+ scene.traverse(mesh=>{if(mesh.isMesh&&['sunsetLantern','junction_steel'].includes(mesh.material.name))lampMeshes.push(mesh);});
+ assert.equal(lamps.length,layout.railway.stations.length*2);assert.ok(lampMeshes.some(mesh=>mesh.material.name==='sunsetLantern'),'real exported lamp shades must be tested');
+ const isLampHit=hit=>hit.object.material.name==='sunsetLantern'||lamps.some(lamp=>Math.abs(hit.point.x-lamp.x)<=lamp.width/2+.005&&Math.abs(hit.point.z-lamp.z)<=lamp.depth/2+.005&&hit.point.y>=lamp.y&&hit.point.y<=lamp.y+2.25);
+ for(const station of layout.railway.stations)for(const height of [.08,.30,.55,.80,1.05])for(const across of [-.15,0,.15]){
+  const target=new THREE.Vector3(station.boarding.x+across,station.boarding.y+height,station.boarding.z);
+  ray.set(target.clone().addScaledVector(direction,80),direction.clone().negate());ray.far=79.98;
+  // Lamp posts share a merged steel mesh with rails. Test only their authored
+  // volumes, allowing necessary railings and other partial scene occlusion.
+  const hit=ray.intersectObjects(lampMeshes,false).find(isLampHit);
+  assert.ok(!hit,`${station.id}: visitor at height ${height} is hidden by ${hit?.object.name}`);
+ }
 });

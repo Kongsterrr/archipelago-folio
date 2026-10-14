@@ -7,14 +7,14 @@ import {CareerTrainController,CAREER_TRAIN} from '../sources/core/career-train.j
 import {careerRailway} from '../scripts/lib/career-railway-layout.mjs';
 import {CareerJourney} from '../sources/world/career-journey.js';
 
-for(const [width,height]of [[1440,900],[1920,1080],[390,844],[844,390]])test(`whole train remains visible during a circuit at ${width}x${height}`,()=>{
+for(const [width,height]of [[1440,900],[1920,1080],[390,844],[844,390]])test(`level cabin remains visible throughout the mountain line at ${width}x${height}`,()=>{
  const railway=careerRailway(),island={x:-76,z:8,rotation:Math.PI/2};
  const c=new CareerTrainController(railway,{island});
  const journey=Object.assign(Object.create(CareerJourney.prototype),{ready:true,controller:c,railway,island,walk:{layout:{stations:[]}}});
  const camera=new THREE.PerspectiveCamera(28,width/height,.2,600),rig=new CameraRig(camera,{walkZoom:1},width,height);
  for(const zoom of[0,1,2])for(let d=0;d<c.length;d+=2){rig.settings.walkZoom=zoom;c.distance=c.previousDistance=d;rig.update(0,{position:c.position,yaw:c.yaw,locomotion:'train',landAzimuth:Math.PI/2,trainView:journey.cameraView()},true);
-  for(let n=0;n<2;n++){const p=c.carPose(n),m=new THREE.Matrix4().compose(new THREE.Vector3(p.x,p.y,p.z),new THREE.Quaternion().setFromEuler(new THREE.Euler(p.pitch,p.yaw,0,'YXZ')),new THREE.Vector3(1,1,1)),spec=CAREER_TRAIN.cars[n];
-   for(const x of[-spec.halfWidth,spec.halfWidth])for(const z of[-spec.halfLength,spec.halfLength])for(const y of[0,2.9]){const q=new THREE.Vector3(x,y,z).applyMatrix4(m).project(camera);assert.ok(Math.abs(q.x)<.97&&Math.abs(q.y)<.98,`car ${n} at ${d}: ${q.toArray()}`);}
+  for(let n=0;n<c.cars.length;n++){const p=c.carPose(n),m=new THREE.Matrix4().compose(new THREE.Vector3(p.x,p.y,p.z),new THREE.Quaternion().setFromEuler(new THREE.Euler(p.pitch,p.yaw,0,'YXZ')),new THREE.Vector3(1,1,1)),spec=c.cars[n];
+   for(const x of[-spec.halfWidth,spec.halfWidth])for(const z of[-spec.halfLength,spec.halfLength])for(const y of[-1,3.6]){const q=new THREE.Vector3(x,y,z).applyMatrix4(m).project(camera);assert.ok(Math.abs(q.x)<.97&&Math.abs(q.y)<.98,`car ${n} at ${d}: ${q.toArray()}`);}
   }
  }
 });

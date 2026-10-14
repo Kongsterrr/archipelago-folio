@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {Vector3,Mesh,BoxGeometry,MeshBasicMaterial} from 'three';
+import {Vector3,Mesh,BoxGeometry,MeshBasicMaterial,Scene,Group} from 'three';
 import R from '@dimforge/rapier3d-compat/rapier.es.js';
 import {Game} from '../sources/game.js';
 import {BoatController} from '../sources/core/boat.js';
@@ -10,6 +10,9 @@ import {PlayerController,BoardingController} from '../sources/core/player.js';
 import {ChallengeManager} from '../sources/core/challenges.js';
 import {EstatePracticeController} from '../sources/core/estate-practice.js';
 import {IslandArrival} from '../sources/core/island-arrival.js';
+import {CareerTrainController} from '../sources/core/career-train.js';
+import {CareerJourney} from '../sources/world/career-journey.js';
+import {CareerTrainVisual} from '../sources/world/career-train.js';
 import {islands} from '../sources/config.js';
 
 const layouts=new Map(JSON.parse(fs.readFileSync(new URL('../static/models/walk-layout.json',import.meta.url))).islands.map(layout=>[layout.id,layout]));
@@ -83,6 +86,100 @@ function assertAtLanding(f,island){
  close(boat.yaw,player.berth.boat.yaw,'boat retains berth heading');
  assert.equal(boat.speed,0);assert.equal(game.snapshot,null);assert.equal(game.pendingResume,null);
 }
+
+function trainFixture(t,{phase='riding'}={}){
+ const f=fixture(t),{game,player,character}=f,scene=new Scene(),root=new Group(),walk=f.walkFor(experience);
+ scene.add(root);game.scene=scene;game.jack.root=root;
+ const journey=new CareerJourney(game,R);game.journey=journey;journey.island=experience;journey.walk=walk;journey.railway=walk.layout.railway;
+ const train=new CareerTrainController(journey.railway,{island:experience}),visual=new CareerTrainVisual(scene,train);
+ journey.controller=train;journey.visual=visual;journey.marker={visible:false,position:new Vector3()};journey.ready=true;
+ game.careerTrain=train;game.trainVisual=visual;player.train=train;
+ t.after(()=>visual.dispose());
+ player.island=experience;player.berth=game.selectBerth(experience,walk);
+ character.teleport(journey.world(journey.station('harbor').boarding),walk);
+ const mount=()=>{visual.mountPoint.add(root);root.position.set(0,-.52,0);};
+ if(phase.startsWith('calling'))assert.equal(journey.call('harbor'),true);
+ else assert.equal(journey.board(),true);
+ if(phase==='riding'||phase.startsWith('leaving')||phase.endsWith('after')){
+  player.tick(.2);if(player.ridingTrain)mount();
+ }
+ if(phase==='riding'||phase.startsWith('leaving')){
+  player.tick(.2);if(phase.startsWith('leaving')){assert.equal(journey.leave(),true);if(phase.endsWith('after'))player.tick(.2);}
+ }
+ return {...f,journey,train,visual,scene,root};
+}
+
+test('Travel holds a reversing passenger at the same mount until a valid opaque arrival commit',async t=>{
+ const f=trainFixture(t),loading=deferred();
+ assert.equal(f.journey.continue(),true);f.journey.step(2);assert.equal(f.journey.returnToHarbor(),true);assert.equal(f.train.state,'reversing');
+ f.journey.update(1,false);const distance=f.train.distance,parent=f.root.parent,position=f.root.getWorldPosition(new Vector3()),character={...f.character.position};
+ f.game.prepareAshore=()=>loading.promise;
+ const epoch=f.game.beginTravel(),pending=f.game.travelToIsland(projects,epoch);
+ assert.equal(f.player.activeActor,f.train);assert.equal(f.player.mode,'riding-train');assert.equal(f.root.parent,parent);
+ assert.deepEqual(f.root.getWorldPosition(new Vector3()),position);assert.deepEqual(f.character.position,character);
+ assert.equal(f.train.passenger,true);assert.equal(f.train.distance,distance);assert.equal(f.train.speed,0);assert.equal(f.journey.autoDeparture,null);
+ assert.equal(f.game.inputs.keys.size,0);assert.equal(f.game.inputs.enabled,false);
+ let commits=0;const commit=f.game.commitBoarding.bind(f.game);f.game.commitBoarding=(...args)=>{
+  commits++;assert.equal(f.root.parent,f.scene);assert.equal(f.train.passenger,false);assert.deepEqual(f.character.position,character,'no intermediate teleport to the old landing');return commit(...args);
+ };
+ loading.resolve(f.walkFor(projects));assert.equal(await pending,true);f.game.finishTravel(epoch);
+ assert.equal(commits,1);assertAtLanding(f,projects);assert.equal(f.train.distance,distance,'the empty cabin returns physically instead of teleporting');
+});
+
+for(const failure of ['loading','no clear berth'])test(`failed Travel from the train (${failure}) retains its seat and can retry`,async t=>{
+ const f=trainFixture(t),select=f.game.selectBerth.bind(f.game),mount=f.root.parent,position=f.root.getWorldPosition(new Vector3());
+ if(failure==='loading')f.game.prepareAshore=async()=>{throw new Error('Island failed to load');};else f.game.selectBerth=()=>null;
+ const epoch=f.game.beginTravel();assert.equal(await f.game.travelToIsland(projects,epoch),false);f.game.finishTravel(epoch);
+ assert.equal(f.player.activeActor,f.train);assert.equal(f.train.passenger,true);assert.equal(f.root.parent,mount);assert.deepEqual(f.root.getWorldPosition(new Vector3()),position);
+ assert.equal(f.character.active,false);assert.equal(f.journey.autoDeparture,null);assert.equal(f.game.inputs.enabled,true);
+ f.journey.step(5,false);assert.equal(f.train.state,'stopped','failed Travel consumes automatic departure and leaves the seat usable');
+ assert.equal(f.journey.continue(),true);
+ f.game.selectBerth=select;f.game.prepareAshore=async island=>f.walkFor(island);
+ const retry=f.game.beginTravel();assert.equal(await f.game.travelToIsland(projects,retry),true);f.game.finishTravel(retry);assertAtLanding(f,projects);
+});
+
+test('a failed Travel resumes a pending reversal from rest without a wrong-direction frame or seat change',async t=>{
+ const f=trainFixture(t);f.journey.continue();f.journey.step(2);f.journey.returnToHarbor();f.journey.update(1,false);
+ const distance=f.train.distance,mount=f.root.parent;assert.equal(f.train.state,'reversing');
+ f.game.prepareAshore=async()=>{throw new Error('Island failed to load');};
+ const epoch=f.game.beginTravel();assert.equal(await f.game.travelToIsland(projects,epoch),false);f.game.finishTravel(epoch);
+ assert.equal(f.train.speed,0);assert.equal(f.train.distance,distance);assert.equal(f.train.targetStationId,'harbor');assert.equal(f.root.parent,mount);
+ f.journey.step(.1,false);assert.equal(f.train.direction,-1);assert.ok(f.train.distance<distance);assert.equal(f.player.ridingTrain,true);assert.equal(f.journey.returningPassenger,true);
+});
+
+for(const phase of ['boarding-before','boarding-after','leaving-before','leaving-after','calling-before','calling-after'])test(`failed Travel during ${phase} preserves the last committed train actor and mount`,async t=>{
+ const f=trainFixture(t,{phase}),riding=f.player.ridingTrain,actor=f.player.activeActor,parent=f.root.parent,position=f.root.getWorldPosition(new Vector3()),character={...f.character.position};
+ const oldEpoch=f.player.transitionEpoch;
+ f.game.prepareAshore=async()=>{throw new Error('Island failed to load');};
+ const epoch=f.game.beginTravel();assert.equal(f.journey.boardingRequest,null);assert.ok(f.player.transitionEpoch>oldEpoch);
+ assert.equal(await f.game.travelToIsland(projects,epoch),false);f.game.finishTravel(epoch);
+ assert.equal(f.player.mode,riding?'riding-train':'walking');assert.equal(f.player.activeActor,actor);assert.equal(f.train.passenger,riding);
+ assert.equal(f.root.parent,parent);assert.deepEqual(f.root.getWorldPosition(new Vector3()),position);assert.deepEqual(f.character.position,character);
+ assert.equal(f.character.active,!riding);assert.equal(f.player.transition,null);assert.equal(f.journey.autoDeparture,null);
+ f.player.tick(10);assert.equal(f.player.activeActor,actor,'the canceled train fade cannot commit later');
+});
+
+for(const oldFinishesFirst of [true,false])test(`superseded Travel cannot detach the train passenger when the old request finishes ${oldFinishesFirst?'first':'last'}`,async t=>{
+ const f=trainFixture(t),a=deferred(),b=deferred(),mount=f.root.parent;
+ f.game.prepareAshore=island=>island===about?a.promise:b.promise;
+ const firstEpoch=f.game.beginTravel(),first=f.game.travelToIsland(about,firstEpoch),secondEpoch=f.game.beginTravel(),second=f.game.travelToIsland(projects,secondEpoch);
+ if(oldFinishesFirst){a.resolve(f.walkFor(about));assert.equal(await first,false);f.game.finishTravel(firstEpoch);assert.equal(f.root.parent,mount);assert.equal(f.player.activeActor,f.train);assert.equal(f.train.passenger,true);}
+ b.resolve(f.walkFor(projects));assert.equal(await second,true);f.game.finishTravel(secondEpoch);assertAtLanding(f,projects);
+ const parent=f.root.parent,character={...f.character.position},revision=f.train.revision;
+ if(!oldFinishesFirst){a.resolve(f.walkFor(about));assert.equal(await first,false);f.game.finishTravel(firstEpoch);}
+ assert.equal(f.root.parent,parent);assert.deepEqual(f.character.position,character);assert.equal(f.train.revision,revision);
+});
+
+for(const cancel of ['reset','teleport','startChallenge'])test(`${cancel} during a train Travel releases the passenger once and rejects the late arrival`,async t=>{
+ const f=trainFixture(t),loading=deferred();f.journey.continue();f.journey.step(2);f.journey.returnToHarbor();
+ f.game.prepareAshore=()=>loading.promise;
+ const epoch=f.game.beginTravel(),pending=f.game.travelToIsland(projects,epoch);
+ if(cancel==='reset')f.game.reset();else if(cancel==='startChallenge')f.game.startChallenge('buoy');else f.game.teleport({x:0,z:42,yaw:.2});
+ assert.equal(f.root.parent,f.scene);assert.equal(f.train.passenger,false);assert.equal(f.player.ridingTrain,false);
+ const actor=f.player.activeActor,position={...actor.position},revision=f.train.revision;
+ loading.resolve(f.walkFor(projects));assert.equal(await pending,false);f.game.finishTravel(epoch);f.player.tick(1);
+ assert.equal(f.root.parent,f.scene);assert.equal(f.player.activeActor,actor);assert.deepEqual({...actor.position},position);assert.equal(f.train.revision,revision);
+});
 
 for(const [index,island]of islands.entries())test(`Travel to ${island.id} lands Jack on its real bridge and parks every old vehicle`,async t=>{
  const f=fixture(t,{origin:['car','quad','bicycle','walking'][index]});

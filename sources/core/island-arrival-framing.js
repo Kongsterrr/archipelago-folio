@@ -42,8 +42,8 @@ export function arrivalBounds(island, worldBounds, compositionBounds = null) {
   return {min:box.min.toArray(), max:box.max.toArray()};
 }
 
-export function arrivalOverviewPose(bounds, {width,height,azimuth=0,fov=28,near=.2,rect=arrivalFrameRect(width,height)}) {
-  return fitBoundsPose(bounds, {width,height,azimuth,fov,near,elevation:ELEVATION,rect});
+export function arrivalOverviewPose(bounds, {width,height,azimuth=0,fov=28,near=.2,elevation=ELEVATION,rect=arrivalFrameRect(width,height)}) {
+  return fitBoundsPose(bounds, {width,height,azimuth,fov,near,elevation,rect});
 }
 
 // progress is the approach-only normalized time: hold => 0, completion => 1.

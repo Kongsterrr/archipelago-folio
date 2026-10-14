@@ -6,197 +6,158 @@ import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {MeshoptDecoder} from 'three/addons/libs/meshopt_decoder.module.js';
 import {CareerTrainController,CAREER_TRAIN,CAREER_TRAIN_MOTION} from '../sources/core/career-train.js';
 import {CareerTrainVisual} from '../sources/world/career-train.js';
-import {sampleTrainPath,trainPathLength} from '../sources/core/train-path.js';
+import {sampleTrainPath,trainPathLength,trainPlanLength,trainDistanceAtPlan,trainTrackPoints,sampleTrainMotion} from '../sources/core/train-path.js';
 import {careerRailway} from '../scripts/lib/career-railway-layout.mjs';
 
 const DT=1/60,close=(a,b,epsilon=1e-7)=>assert.ok(Math.abs(a-b)<epsilon,`${a} != ${b}`);
-const fixture=(options)=>new CareerTrainController(careerRailway(),options);
+const fixture=options=>new CareerTrainController(careerRailway(),options);
 function arrive(train,options={}){
- let previous=train.distance;
- for(let n=0;n<30000;n++){
-  train.step(DT,options);assert.ok(train.distance>=previous,'path progress never reverses');assert.ok(train.distance-previous<=CAREER_TRAIN.cruiseSpeed*DT+.00001,'no motion teleport');previous=train.distance;
-  if(train.state==='stopped')return;
+ for(let n=0;n<12000;n++){
+  const before=train.distance,odometer=train.odometer;train.step(DT,options);
+  assert.ok(Math.abs(train.distance-before)<=train.motion.cruiseSpeed*DT+1e-6,'no movement teleport');assert.ok(train.odometer>=odometer);
+  if(!train.closed)assert.ok(train.distance>=train.minDistance-1e-8&&train.distance<=train.maxDistance+1e-8,'cabin remains between terminal stops');
+  if(train.state==='stopped')return(n+1)*DT;
  }assert.fail(`train failed to arrive: ${JSON.stringify(train.status())}`);
+}
+function legacyRailway(){
+ const path={center:[0,.95,0],halfStraight:16,radius:8};
+ return{path,stations:['harbor','visionx','beaconfire','amtrak'].map((id,i)=>({id,distance:[6,29,62,90][i]})),crossings:[]};
 }
 async function model(){const bytes=await fs.readFile(new URL('../static/models/career-train.glb',import.meta.url));return(await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;}
 
-test('passenger chooses each chronological departure and the train waits after every exit',()=>{
- const train=fixture();assert.equal(train.currentStation.id,'harbor');assert.equal(train.state,'stopped');assert.equal(train.continue(),false);
- assert.equal(train.board('visionx'),false);assert.equal(train.board('harbor'),true);
+test('open funicular sampling clamps both endpoints and measures physical arc length',()=>{
+ const railway=careerRailway(),path=railway.path,length=trainPathLength(path),first=sampleTrainPath(path,0),last=sampleTrainPath(path,length);
+ assert.equal(path.closed,false);close(length,45.13131878764413);close(trainPlanLength(path),40.03162132982823);
+ for(const [d,want]of[[-100,first],[length+100,last]])assert.deepEqual(sampleTrainPath(path,d),want);
+ assert.deepEqual([first.x,first.y,first.z],path.from);for(const[k,i]of[['x',0],['y',1],['z',2]])close(last[k],path.to[i]);
+ close(trainDistanceAtPlan(path,trainPlanLength(path)/2),length/2);close(first.pitch,27.500954992363763*Math.PI/180);
+ const points=trainTrackPoints({path});assert.equal(points.length,129);assert.deepEqual(points[0],first);assert.deepEqual(points.at(-1),last);
+ assert.ok(Math.abs(points.at(-1).z-points[0].z)>40,'map cannot join upper terminal back to lower terminal');
+});
+
+test('authored open plan segments clamp while legacy stadium and ellipse motion still wrap',()=>{
+ const path={closed:false,planSegments:[{type:'line',from:[0,0],to:[0,-10],start:0,end:10}],elevation:[{start:0,end:10,y0:2,y1:7,ease:0}]},length=trainPathLength(path);
+ close(sampleTrainPath(path,length).z,-10);close(sampleTrainPath(path,length+2).y,7);close(sampleTrainPath(path,-2).z,0);
+ const stadium=legacyRailway().path,L=trainPathLength(stadium);assert.deepEqual(sampleTrainPath(stadium,-2),sampleTrainPath(stadium,L-2));assert.deepEqual(sampleTrainPath(stadium,L),sampleTrainPath(stadium,0));
+ const legacy={trackCentre:[3,0,-8],trackRadii:[4,2]},a=sampleTrainMotion(legacy,0,12),b=sampleTrainMotion(legacy,12,12);close(a.x,b.x);close(a.z,b.z);
+});
+
+test('single cabin ascends chronologically, descends directly and meets the 34.6 second motion budget',()=>{
+ const train=fixture();assert.equal(train.currentStation.id,'harbor');assert.equal(train.continue(),false);assert.equal(train.board('visionx'),false);assert.equal(train.board(),true);
+ let seconds=0;const legs=[];
  for(const stop of['visionx','beaconfire','amtrak','harbor']){
-  assert.equal(train.nextStation.id,stop);assert.equal(train.continue(),true);assert.equal(train.leave(),false,'no moving dismount');assert.equal(train.call('harbor'),false,'occupied train cannot be recalled');
-  arrive(train);assert.equal(train.currentStation.id,stop);assert.equal(train.leave(),true);
-  const distance=train.distance;train.step(120);close(train.distance,distance);assert.equal(train.passenger,false);
-  assert.equal(train.board(stop),true);
+  assert.equal(train.nextStation.id,stop);assert.equal(train.continue(),true);assert.equal(train.leave(),false);assert.equal(train.call('harbor'),false);
+  let frames=0;
+  while(train.state!=='stopped'&&frames<3000){const speed=train.speed;train.step(DT);frames++;assert.ok(train.speed-speed<=CAREER_TRAIN_MOTION.acceleration*DT+1e-8);assert.ok(speed-train.speed<=CAREER_TRAIN_MOTION.braking*DT+1e-8,'arrival reaches zero smoothly');}
+  assert.equal(train.currentStation?.id,stop);close(train.speed,0);close(train.distance,train.targetDistance);legs.push(frames*DT);seconds+=frames*DT;
  }
- assert.ok(train.distance>train.length,'the final return wraps continuously into a second lap');
+ assert.ok(seconds>34.4&&seconds<34.8,`${seconds}: ${legs}`);close(train.distance,train.minDistance);close(train.odometer,2*(train.maxDistance-train.minDistance),1e-5);close(train.wheelDistance,0,1e-5);
+ assert.equal(train.passenger,true);const stopped=train.distance;train.step(60);close(train.distance,stopped);assert.equal(train.nextStation.id,'visionx');
 });
 
-test('an empty call follows the one-way route, skips intermediate stops and never auto-boards',()=>{
- const train=fixture();assert.equal(train.call('amtrak'),true);assert.equal(train.mission,'call');assert.ok(train.eta>0);assert.equal(train.currentStation,null);
- arrive(train);assert.equal(train.currentStation.id,'amtrak');assert.equal(train.passenger,false);
- assert.equal(train.call('visionx'),true);const before=train.distance,target=train.targetDistance;arrive(train);assert.equal(train.currentStation.id,'visionx');assert.ok(train.distance>before);close(train.distance,target);
- train.board('visionx');assert.equal(train.nextStation.id,'beaconfire');
+test('an empty call works in either direction without boarding or visiting intermediate stops',()=>{
+ const train=fixture();assert.equal(train.call('amtrak'),true);assert.ok(train.eta>0);arrive(train);assert.equal(train.passenger,false);
+ assert.equal(train.call('visionx'),true);const before=train.distance;assert.equal(train.direction,-1);arrive(train);assert.equal(train.currentStation.id,'visionx');assert.ok(train.distance<before);
+ assert.equal(train.board(),true);assert.equal(train.direction,1);assert.equal(train.nextStation.id,'beaconfire');
 });
 
-test('cancellation returns empty, while a requested harbor return carries the passenger without teleporting',()=>{
- const train=fixture();train.board();train.continue();train.step(6);const distance=train.distance;
- train.cancelRide();close(train.distance,distance);assert.equal(train.passenger,false);assert.equal(train.mission,'return');assert.equal(train.targetStationId,'harbor');
- const harborTarget=train.targetDistance;arrive(train);assert.equal(train.currentStation.id,'harbor');assert.ok(train.distance>distance);close(train.distance,harborTarget);
- train.call('beaconfire');train.step(3);const redirect=train.distance;train.call('visionx');close(train.distance,redirect);arrive(train);assert.equal(train.currentStation.id,'visionx');
- train.board();train.continue();train.step(2);const occupiedReturn=train.distance;train.returnToHarbor();close(train.distance,occupiedReturn);assert.equal(train.passenger,true);arrive(train);assert.equal(train.currentStation.id,'harbor');assert.equal(train.passenger,true,'integration validates a platform exit after the real return trip');
+test('a moving return brakes for two seconds before reversing with a stable cabin heading',()=>{
+ const train=fixture();train.call('amtrak');train.step(3);close(train.speed,3);const distance=train.distance,yaw=train.yaw;
+ train.cancelRide();assert.equal(train.state,'reversing');assert.equal(train.direction,1);assert.equal(train.targetStationId,'harbor');assert.equal(train.distance,distance);
+ let braking=0,last=train.distance;
+ while(train.direction===1&&braking<180){const old=train.speed;train.step(DT);braking++;close(train.yaw,yaw);assert.ok(old-train.speed<=train.motion.braking*DT+1e-8);if(train.direction===1){assert.ok(train.distance>=last);last=train.distance;}else assert.ok(train.speed<=train.motion.acceleration*DT+1e-8);}
+ assert.ok(braking>=120&&braking<=122,`reversal took ${braking} frames`);close(last-distance,3,1e-6);assert.equal(train.direction,-1);arrive(train);assert.equal(train.currentStation.id,'harbor');
 });
 
-test('all pause causes preserve route and stop intent while resumption accelerates gradually',()=>{
- const train=fixture();train.board();train.continue();train.step(4);assert.ok(train.speed>1);
- const distance=train.distance,target=train.targetDistance;train.step(60,{paused:true});close(train.distance,distance);close(train.previousDistance,distance);close(train.speed,0);close(train.targetDistance,target);
- assert.equal(train.leave(),false);train.step(0,{paused:false});train.step(DT);assert.ok(train.speed>0&&train.speed<=CAREER_TRAIN.acceleration*DT+.00001);
- const a=fixture(),b=fixture();a.board();b.board();a.continue();b.continue();a.step(8);for(let n=0;n<480;n++)b.step(DT);close(a.distance,b.distance,1e-6);
+test('returns requested close to the upper terminal stop before the endpoint and reverse without snapping',()=>{
+ const train=fixture();train.call('amtrak');while(train.maxDistance-train.distance>1)train.step(DT);const start=train.distance;
+ train.returnToHarbor();assert.equal(train.reversing,true);let maximum=start;
+ while(train.reversing){const speed=train.speed;train.step(DT);maximum=Math.max(maximum,train.distance);assert.ok(speed-train.speed<=train.motion.braking*DT+1e-8);assert.ok(maximum<=train.maxDistance+1e-8);}
+ arrive(train);assert.equal(train.currentStation.id,'harbor');
 });
 
-test('V20 compact tour meets its motion budget and brakes continuously to zero at each station',()=>{
- const train=fixture();train.board();let seconds=0;const legs=[];
- for(const stop of['visionx','beaconfire','amtrak','harbor']){
-  assert.equal(train.continue(),true);let frames=0;
-  while(train.state!=='stopped'&&frames<6000){
-   const speed=train.speed,distance=train.distance;train.step(DT);frames++;
-   assert.ok(train.speed-speed<=CAREER_TRAIN_MOTION.acceleration*DT+1e-8,'departure accelerates continuously');
-   assert.ok(speed-train.speed<=CAREER_TRAIN_MOTION.braking*DT+1e-8,'the final stop cannot truncate a moving carriage');
-   assert.ok(train.distance-distance<=CAREER_TRAIN_MOTION.cruiseSpeed*DT+1e-8);
-  }
-  assert.equal(train.currentStation?.id,stop);close(train.speed,0);close(train.distance,train.targetDistance);
-  legs.push(frames*DT);seconds+=frames*DT;
- }
- assert.ok(seconds>=35&&seconds<=38,`compact loop took ${seconds.toFixed(3)}s: ${legs}`);
- close(train.railway.cruiseSpeed,CAREER_TRAIN_MOTION.cruiseSpeed);close(train.railway.curveSpeed,CAREER_TRAIN_MOTION.curveSpeed);
+test('pause preserves return intent and resumes a pending reversal in the correct direction from rest',()=>{
+ const train=fixture();train.call('amtrak');train.step(3);train.returnToHarbor();train.step(.5);const distance=train.distance,target=train.targetDistance;
+ train.step(60,{paused:true});close(train.distance,distance);close(train.previousDistance,distance);close(train.speed,0);close(train.targetDistance,target);assert.equal(train.reversing,true);
+ assert.equal(train.board(),false);train.step(DT,{paused:false});assert.equal(train.direction,-1);assert.ok(train.distance<distance);assert.ok(train.speed<=train.motion.acceleration*DT+1e-8);arrive(train);
+ const a=fixture(),b=fixture();a.call('amtrak');b.call('amtrak');a.step(8);for(let n=0;n<480;n++)b.step(DT);close(a.distance,b.distance,1e-6);
 });
 
-test('V20 opaque station preparation clears route state and never interpolates across the move',()=>{
- const train=fixture();train.call('amtrak');train.step(3);train.cancelRide();train.step(DT);
- const before=train.distance;assert.equal(train.parkAtStation('visionx'),true);
- assert.ok(train.distance>=before);close(train.previousDistance,train.distance);close(train.targetDistance,train.distance);
- assert.equal(train.currentStation.id,'visionx');assert.equal(train.mission,null);assert.equal(train.targetStationId,null);assert.equal(train.passenger,false);close(train.speed,0);
- assert.deepEqual(train.velocity,{x:0,y:0,z:0});assert.deepEqual(train.carPose(1,0),train.carPose(1,1));
- train.board();const stopped=train.distance;assert.equal(train.parkAtStation('harbor'),false,'an occupied carriage cannot be relocated');close(train.distance,stopped);
+test('opaque preparation clears every motion/interpolation field without adding odometry or wheel spin',()=>{
+ const train=fixture();train.call('amtrak');train.step(3);train.cancelRide();train.step(.5);const odometer=train.odometer,wheels=train.wheelDistance;
+ assert.equal(train.parkAtStation('amtrak'),true);close(train.distance,train.maxDistance);close(train.previousDistance,train.distance);close(train.targetDistance,train.distance);assert.equal(train.direction,-1);
+ assert.equal(train.reversing,false);assert.equal(train.reverseDirection,null);assert.equal(train.targetStationId,null);assert.equal(train.mission,null);close(train.speed,0);close(train.odometer,odometer);close(train.wheelDistance,wheels);close(train.previousWheelDistance,wheels);
+ assert.deepEqual(train.velocity,{x:0,y:0,z:0});assert.deepEqual(train.carPose(0,0),train.carPose(0,1));train.board();assert.equal(train.parkAtStation('harbor'),false);
 });
 
-test('motion uses smooth grade and independent car poses through turns, including lap interpolation',()=>{
- const island={x:-76,y:2,z:8,rotation:1.17},train=fixture({island});train.call('amtrak');
- let tilted=false,different=false,maxSpeed=0;
- for(let n=0;n<6000&&train.state!=='stopped';n++){
-  train.step(DT);const a=train.carPose(0),b=train.carPose(1);tilted ||=Math.abs(a.pitch)>.02;different ||=Math.abs(a.yaw-b.yaw)>.1;maxSpeed=Math.max(maxSpeed,train.speed);
-  const local=sampleTrainPath(train.path,train.distance-CAREER_TRAIN.coachOffset),co=Math.cos(island.rotation),si=Math.sin(island.rotation);
-  close(b.x,island.x+local.x*co+local.z*si);close(b.y,island.y+local.y);close(b.z,island.z-local.x*si+local.z*co);
-  const midpoint=train.carPose(1,.5),start=train.carPose(1,0),end=train.carPose(1,1),halfStep=CAREER_TRAIN.cruiseSpeed*DT/2+1e-6;assert.ok(Math.hypot(midpoint.x-start.x,midpoint.z-start.z)<=halfStep);assert.ok(Math.hypot(end.x-midpoint.x,end.z-midpoint.z)<=halfStep);
- }
- assert.ok(tilted&&different&&maxSpeed>3,'tour includes grades, separate turning cars and a cruise section');
- train.previousDistance=train.length-.02;train.distance=train.length+.02;const a=train.carPose(0,0),b=train.carPose(0,1);assert.ok(Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z)<.041,'wrap never interpolates backward around the whole path');
-});
-
-test('independently sampled car envelopes stay separated around every tight curve',()=>{
- const train=fixture();
- for(let d=0;d<train.length;d+=.1){
-  train.distance=train.previousDistance=d;
-  const cars=[0,1].map(i=>{const p=train.carPose(i);return{...p,...CAREER_TRAIN.cars[i],forward:[-Math.sin(p.yaw),-Math.cos(p.yaw)],right:[Math.cos(p.yaw),-Math.sin(p.yaw)]};}),[a,b]=cars;
-  let gap=-Infinity;
-  for(const axis of[a.forward,a.right,b.forward,b.right]){
-   const radius=car=>car.halfLength*Math.abs(car.forward[0]*axis[0]+car.forward[1]*axis[1])+car.halfWidth*Math.abs(car.right[0]*axis[0]+car.right[1]*axis[1]);
-   gap=Math.max(gap,Math.abs((b.x-a.x)*axis[0]+(b.z-a.z)*axis[1])-radius(a)-radius(b));
-  }
-  assert.ok(gap>.10,`car body envelopes overlap or pinch the coupling at ${d}: ${gap}`);
+test('level cabin and downhill-facing seat retain their world pose in both travel directions',()=>{
+ const island={x:-76,y:2,z:8,rotation:1.17},train=fixture({island});assert.equal(train.cars.length,1);assert.equal(train.passengerCarIndex,0);
+ for(const distance of[train.minDistance,20,train.maxDistance])for(const direction of[-1,1]){
+  train.previousDistance=train.distance=distance;train.direction=direction;const car=train.carPose(0),rail=sampleTrainPath(train.path,distance),seat=train.seatPose();
+  close(car.pitch,0);close(car.bodyPitch,0);close(car.trackPitch,rail.pitch);close(car.y,island.y+rail.y);close(seat.y,car.y+CAREER_TRAIN.seatPosition[1]);close(seat.pitch,0);close(seat.yaw,car.yaw+Math.PI);close(train.position.y,car.y+1.65);
  }
 });
 
-for(const crossingIndex of[0,1])test(`occupied crossing ${crossingIndex+1} stops the leading bumper before the pedestrian lane, then releases smoothly`,()=>{
- const train=fixture(),crossing=train.railway.crossings[crossingIndex],p=sampleTrainPath(train.path,crossing.distance);
- train.call('amtrak');let waited=false;
- for(let n=0;n<12000;n++){train.step(DT,{pedestrians:[{x:p.x,y:p.y,z:p.z}]});if(train.state==='waiting-crossing'){waited=true;break;}}
- assert.ok(waited,'the route yields at the actual pedestrian crossing');
- assert.ok(train.distance+CAREER_TRAIN.cars[0].halfLength<=crossing.distance-crossing.width/2-.30,'nose remains behind the crossing boundary');
- const stop=train.distance;train.step(4,{pedestrians:[p]});close(train.distance,stop);
- train.step(DT,{pedestrians:[]});assert.equal(train.state,'moving');assert.ok(train.speed<=CAREER_TRAIN.acceleration*DT+.00001);arrive(train);
+for(const direction of[1,-1])test(`pedestrian protection sweeps toward direction ${direction} and releases from rest`,()=>{
+ const train=fixture();if(direction<0)train.parkAtStation('amtrak');train.call(direction>0?'amtrak':'harbor');train.step(3);
+ const pedestrianDistance=train.distance+direction*7,p=sampleTrainPath(train.path,pedestrianDistance);p.y+=train.spec.floorY;
+ let stopped=false;for(let n=0;n<1200;n++){train.step(DT,{pedestrians:[p]});if(train.state==='waiting-crossing'){stopped=true;break;}}
+ assert.equal(stopped,true);const distance=train.distance;assert.equal(train.intersectsPedestrian(distance,p),false);train.step(2,{pedestrians:[p]});close(train.distance,distance);close(train.speed,0);
+ train.step(DT,{pedestrians:[]});assert.equal(train.state,'moving');assert.ok(train.speed<=train.motion.acceleration*DT+1e-8);arrive(train);
 });
 
-test('a visitor on the platform or another vertical level does not stop an empty call',()=>{
- for(const level of['platform','below']){
-  const train=fixture(),station=train.stations[1],point=level==='platform'?station.boarding:{...sampleTrainPath(train.path,15),y:-4};train.call('visionx');arrive(train,{pedestrians:[point]});assert.equal(train.currentStation.id,'visionx');
- }
+test('a platform visitor or person on another terrace does not block the cabin',()=>{
+ for(const kind of['platform','other-level']){const train=fixture(),point=kind==='platform'?train.stations[1].boarding:{...sampleTrainPath(train.path,20),y:-10};train.call('amtrak');arrive(train,{pedestrians:[point]});assert.equal(train.currentStation.id,'amtrak');}
 });
 
-test('late pedestrian entry or contact with the trailing coach stops without pushing through',()=>{
- const train=fixture();train.call('amtrak');train.distance=train.railway.stations[2].distance-13;train.previousDistance=train.distance;train.speed=CAREER_TRAIN.cruiseSpeed;
- const start=train.distance,p=sampleTrainPath(train.path,start+CAREER_TRAIN.cars[0].halfLength+.37+.12);
- for(let n=0;n<60;n++)train.step(DT,{pedestrians:[p]});
- assert.ok(train.distance-start<=.13,'emergency sweep clamps movement within remaining capsule clearance');assert.equal(train.state,'waiting-crossing');close(train.speed,0);
- train.step(DT,{pedestrians:[]});const coach=sampleTrainPath(train.path,train.distance-CAREER_TRAIN.coachOffset),distance=train.distance;
- train.step(DT,{pedestrians:[coach]});close(train.distance,distance);assert.equal(train.speed,0,'trailing carriage has its own protection');
+test('legacy closed controller still travels forward across its seam and keeps crossings safe',()=>{
+ const railway=legacyRailway(),train=new CareerTrainController(railway);train.board();
+ for(const id of['visionx','beaconfire','amtrak','harbor']){const before=train.distance;assert.equal(train.nextStation.id,id);train.continue();arrive(train);assert.ok(train.distance>before);assert.equal(train.direction,1);}
+ assert.ok(train.distance>train.length);train.previousDistance=train.length-.02;train.distance=train.length+.02;const a=train.carPose(0,0),b=train.carPose(0,1);assert.ok(Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z)<.041);
+ const crossingTrain=new CareerTrainController(legacyRailway()),q=sampleTrainPath(crossingTrain.path,16);q.y+=crossingTrain.spec.floorY;
+ crossingTrain.railway.crossings=[{distance:16,width:4,y:q.y,polygon:[[q.x-2,q.z-2],[q.x+2,q.z-2],[q.x+2,q.z+2],[q.x-2,q.z+2]]}];crossingTrain.call('amtrak');
+ for(let n=0;n<1200&&crossingTrain.state!=='waiting-crossing';n++)crossingTrain.step(DT,{pedestrians:[q]});
+ assert.equal(crossingTrain.state,'waiting-crossing');assert.ok(crossingTrain.distance+crossingTrain.cars[0].halfLength<14-.3);arrive(crossingTrain);
 });
 
-test('the detailed asset fits its body envelopes and preserves open coach seating and animated wheels',async()=>{
+test('detailed cabin asset fits the shared envelope and exposes four independently animated wheels',async()=>{
  const scene=await model();scene.updateMatrixWorld(true);const manifest=JSON.parse(await fs.readFile(new URL('../static/models/career-train-manifest.json',import.meta.url),'utf8'));
- assert.ok(manifest.bytes<=350000);assert.ok(manifest.triangles>10000,'model includes visible construction detail');
- for(const spec of CAREER_TRAIN.cars){
-  const car=scene.getObjectByName(spec.name);assert.ok(car);const box=new THREE.Box3();
-  car.traverse(mesh=>{if(!mesh.isMesh)return;const vertices=mesh.geometry.attributes.position;for(let n=0;n<vertices.count;n++)box.expandByPoint(car.worldToLocal(new THREE.Vector3().fromBufferAttribute(vertices,n).applyMatrix4(mesh.matrixWorld)));});
-  assert.ok(Math.max(Math.abs(box.min.x),Math.abs(box.max.x))<spec.halfWidth+.002,`${spec.name} width ${box.min.x},${box.max.x}`);
-  assert.ok(Math.max(Math.abs(box.min.z),Math.abs(box.max.z))<spec.halfLength+.002,`${spec.name} length ${box.min.z},${box.max.z}`);
-  assert.ok(Math.abs(box.min.y)<.01,'wheels sit on the rail surface');
-  if(spec.offset)assert.ok(box.max.y<1.6,'the coach is open above its low rail and bench backs');
- }
- const names=[];scene.traverse(o=>{if(!o.isMesh&&/^train-wheel-/.test(o.name))names.push(o.name);});assert.equal(names.length,10);
+ assert.ok(manifest.bytes<=350000);
+ for(const spec of CAREER_TRAIN.cars){const car=scene.getObjectByName(spec.name);assert.ok(car);const box=new THREE.Box3();car.traverse(mesh=>{if(!mesh.isMesh)return;const positions=mesh.geometry.attributes.position;for(let n=0;n<positions.count;n++)box.expandByPoint(car.worldToLocal(new THREE.Vector3().fromBufferAttribute(positions,n).applyMatrix4(mesh.matrixWorld)));});assert.ok(Math.max(Math.abs(box.min.x),Math.abs(box.max.x))<spec.halfWidth+.025);assert.ok(Math.max(Math.abs(box.min.z),Math.abs(box.max.z))<spec.halfLength+.025);assert.ok(box.max.y>3,'full cabin has usable headroom');}
+ const names=[];scene.traverse(o=>{if(!o.isMesh&&/^train-wheel-/.test(o.name))names.push(o.name);});assert.equal(names.length,4);
 });
 
-test('the actual wheel treads cover both shared rails through all curves and grades',async t=>{
- const train=fixture(),view=new CareerTrainVisual(new THREE.Scene(),train);t.after(()=>view.dispose());view.bind(await model());
- const railPoint=(distance,side)=>{const q=sampleTrainPath(train.path,distance),h=Math.hypot(q.tangentX,q.tangentZ),offset=side*train.railway.train.gauge/2;return new THREE.Vector3(q.x-q.tangentZ/h*offset,q.y,q.z+q.tangentX/h*offset);};
- for(let distance=0;distance<train.length;distance+=.5){
-  train.distance=train.previousDistance=distance;view.update(1);
-  for(const wheel of view.wheels){
-   const object=wheel.object,car=object.parent,index=view.cars.indexOf(car),side=Math.sign(object.position.x),center=distance-CAREER_TRAIN.cars[index].offset-object.position.z;
-   let low=center-.4,high=center+.4;
-   for(let n=0;n<12;n++){const middle=(low+high)/2,p=car.worldToLocal(railPoint(middle,side));if(p.z>object.position.z)low=middle;else high=middle;}
-   const contact=car.worldToLocal(railPoint((low+high)/2,side)),lateral=Math.abs(contact.x-object.position.x),vertical=Math.abs(contact.y-(object.position.y-wheel.radius));
-   assert.ok(lateral<=.145,`${object.name} misses its rail laterally by ${lateral} at ${distance}`);
-   assert.ok(vertical<.004,`${object.name} floats above its rail by ${vertical} at ${distance}`);
-  }
- }
-});
-
-test('visual replacement preserves distance, passenger ownership, wheel phase, and graded seat orientation',async t=>{
+test('visual replacement preserves single Jack, reverse wheel phase and level passenger mount',async t=>{
  const scene=new THREE.Scene(),train=fixture(),view=new CareerTrainVisual(scene,train);t.after(()=>view.dispose());view.bind(await model());
  const avatar=new THREE.Mesh(new THREE.BoxGeometry(.3,.6,.3),new THREE.MeshBasicMaterial()),anchor=view.mountPoint;anchor.add(avatar);let disposed=false;avatar.geometry.addEventListener('dispose',()=>{disposed=true;});
- train.board();train.continue();train.step(8);view.update(.5);const seat=train.seatPose(.5);assert.ok(anchor.position.distanceTo(new THREE.Vector3(seat.x,seat.y,seat.z))<1e-7);
- const distance=train.distance,phase=view.wheels[0].object.rotation.x;view.bind(await model());assert.equal(view.mountPoint,anchor);assert.equal(avatar.parent,anchor);assert.equal(disposed,false);close(train.distance,distance);
- view.update(.5);close(view.wheels[0].object.rotation.x,phase);assert.equal(view.coupling.visible,true);assert.ok(view.coupling.scale.y>.2&&view.coupling.scale.y<1.5);
- for(let index=0;index<2;index++){const car=view.cars[index],pose=train.carPose(index,.5),forward=new THREE.Vector3(0,0,-1).applyQuaternion(car.quaternion);close(forward.y,Math.sin(pose.pitch));close(Math.atan2(-forward.x,-forward.z),Math.atan2(Math.sin(pose.yaw),Math.cos(pose.yaw)));}
+ train.parkAtStation('amtrak');train.board();train.continue();train.step(3);view.update(.5);const seat=train.seatPose(.5);assert.ok(anchor.position.distanceTo(new THREE.Vector3(seat.x,seat.y,seat.z))<1e-7);close(anchor.rotation.x,0);
+ const distance=train.distance,phase=view.wheels[0].object.rotation.x;view.bind(await model());assert.equal(view.mountPoint,anchor);assert.equal(avatar.parent,anchor);assert.equal(disposed,false);close(train.distance,distance);view.update(.5);close(view.wheels[0].object.rotation.x,phase);assert.equal(view.cars.length,1);assert.equal(view.coupling.visible,false);
  train.step(1,{paused:true});view.update(0,{frozen:true});const before=anchor.matrixWorld.clone();view.update(.7,{frozen:true});assert.deepEqual(anchor.matrixWorld.elements,before.elements);
 });
 
-test('crossing gates warn ahead of the engine, remain closed for the coach and release quality resources',t=>{
- const train=fixture(),spec=train.railway.crossings[0];spec.gates=[{node:'gate',axis:'z',openAngle:Math.PI/2,closedAngle:0}];spec.signals=[{node:'lamp'}];
- const scene=new THREE.Scene(),view=new CareerTrainVisual(scene,train);t.after(()=>view.dispose());
- const original=new THREE.MeshStandardMaterial({emissive:'#310d08',emissiveIntensity:.12}),island=new THREE.Group(),gate=new THREE.Group(),lamp=new THREE.Mesh(new THREE.SphereGeometry(.1),original);
- gate.name='gate';gate.rotation.z=Math.PI/2;lamp.name='lamp';island.add(gate,lamp);view.bindCrossings(island);const clone=lamp.material;assert.notEqual(clone,original);
- const at=distance=>{train.distance=train.previousDistance=distance;view.update(1);};
- at(spec.distance-15);close(gate.rotation.z,Math.PI/2);close(clone.emissiveIntensity,.12);
- at(spec.distance-13);close(gate.rotation.z,Math.PI/2);assert.equal(view.crossings[0].warning,'amber');
- at(spec.distance-9);assert.ok(gate.rotation.z>0&&gate.rotation.z<Math.PI/2);
- at(spec.distance-6);close(gate.rotation.z,0);assert.equal(view.crossings[0].warning,'red');
- at(spec.distance+7);assert.equal(gate.rotation.z,0,'coach is still crossing');
- train.step(0,{paused:true});const held=gate.rotation.z;view.update(.2,{frozen:true});close(gate.rotation.z,held);
- at(spec.distance+13);close(gate.rotation.z,Math.PI/2);close(clone.emissiveIntensity,.12);assert.equal(original.emissiveIntensity,.12,'shared island material remains untouched');
- let disposed=false;clone.addEventListener('dispose',()=>{disposed=true;});view.bindCrossings(null);assert.equal(lamp.material,original);assert.ok(disposed);close(gate.rotation.z,Math.PI/2);
+test('a late empty-call target inside braking distance is reached by a smooth stop and reversal',()=>{
+ const train=fixture();train.call('amtrak');const station=train.stations[1];while(station.distance-train.distance>1.5)train.step(DT);close(train.speed,3);
+ train.call('visionx');assert.equal(train.reversing,true);let overshot=false,reversed=false;
+ for(let n=0;n<1000&&train.state!=='stopped';n++){const speed=train.speed;train.step(DT);assert.ok(speed-train.speed<=train.motion.braking*DT+1e-8,'retarget cannot snap to a nearby platform');overshot ||=train.distance>station.distance;reversed ||=train.direction===-1;}
+ assert.ok(overshot&&reversed);assert.equal(train.currentStation.id,'visionx');close(train.distance,station.distance);
 });
 
-test('both exported island qualities expose the actual animated crossing gates and lamps',async t=>{
- const train=fixture(),view=new CareerTrainVisual(new THREE.Scene(),train);t.after(()=>view.dispose());
- for(const quality of['','low/']){
-  const bytes=await fs.readFile(new URL(`../static/models/${quality}experience.glb`,import.meta.url)),island=(await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;
-  view.bindCrossings(island);assert.equal(view.crossings.length,train.railway.crossings.length);
-  for(const crossing of view.crossings){
-   assert.equal(crossing.gates.length,2);assert.equal(crossing.signals.length,2);
-   train.distance=train.previousDistance=crossing.spec.distance-6;view.update(1);assert.ok(crossing.gates.every(g=>Math.abs(g.object.rotation.z)<1e-7));assert.equal(crossing.warning,'red');
-   train.distance=train.previousDistance=crossing.spec.distance+14;view.update(1);assert.ok(crossing.gates.every(g=>Math.abs(g.object.rotation.z-Math.PI/2)<1e-7));assert.equal(crossing.warning,'off');
-  }
- }
+test('repeated cancel and pause during a reversal preserve its destination and cannot remount a passenger',()=>{
+ const train=fixture();train.board();train.continue();train.step(3);train.cancelRide();train.step(.2);const before=train.distance;
+ train.cancelRide();train.step(0,{paused:true});train.cancelRide();assert.equal(train.distance,before);assert.equal(train.targetStationId,'harbor');assert.equal(train.passenger,false);
+ train.step(DT,{paused:false});assert.equal(train.direction,-1);assert.ok(train.distance<before);arrive(train);assert.equal(train.currentStation.id,'harbor');assert.equal(train.passenger,false);
+});
+
+test('legacy multi-car specifications retain independent offsets and select their authored passenger car',()=>{
+ const cars=[{name:'engine',offset:0,halfLength:1.85,halfWidth:.93,wheelRadius:.42},{name:'coach',offset:4.3,halfLength:1.8,halfWidth:.93,wheelRadius:.36}],spec={...CAREER_TRAIN,cars,passengerCarIndex:1,floorY:.6,seatPosition:[0,1.12,-.65],seatYawOffset:0};
+ const train=new CareerTrainController({...legacyRailway(),train:{spec}});train.distance=train.previousDistance=40;
+ const a=train.carPose(0),b=train.carPose(1),expected=sampleTrainPath(train.path,40-4.3);assert.ok(Math.abs(a.yaw-b.yaw)>.1);close(b.x,expected.x);close(b.z,expected.z);close(train.position.x,b.x);close(train.position.y,b.y+.6);
+});
+
+test('legacy crossing animation keeps gates and cloned signal materials correct through release and replacement',t=>{
+ const railway=legacyRailway(),q=sampleTrainPath(railway.path,16),spec={distance:16,width:4,y:q.y,gates:[{node:'gate',axis:'z',openAngle:Math.PI/2,closedAngle:0}],signals:[{node:'lamp'}]};railway.crossings=[spec];
+ const train=new CareerTrainController(railway),scene=new THREE.Scene(),view=new CareerTrainVisual(scene,train);t.after(()=>view.dispose());
+ const original=new THREE.MeshStandardMaterial({emissive:'#310d08',emissiveIntensity:.12}),island=new THREE.Group(),gate=new THREE.Group(),lamp=new THREE.Mesh(new THREE.SphereGeometry(.1),original);gate.name='gate';gate.rotation.z=Math.PI/2;lamp.name='lamp';island.add(gate,lamp);view.bindCrossings(island);const clone=lamp.material;assert.notEqual(clone,original);
+ const at=distance=>{train.distance=train.previousDistance=distance;view.update(1);};at(1);close(gate.rotation.z,Math.PI/2);at(7);assert.ok(gate.rotation.z>0&&gate.rotation.z<Math.PI/2);at(10);close(gate.rotation.z,0);assert.equal(view.crossings[0].warning,'red');at(19);close(gate.rotation.z,0);at(28);close(gate.rotation.z,Math.PI/2);close(clone.emissiveIntensity,.12);
+ let disposed=false;clone.addEventListener('dispose',()=>{disposed=true;});view.bindCrossings(null);assert.equal(lamp.material,original);assert.ok(disposed);close(gate.rotation.z,Math.PI/2);
 });

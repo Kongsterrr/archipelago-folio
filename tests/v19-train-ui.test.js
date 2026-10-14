@@ -28,11 +28,13 @@ test('the train card uses the actual chronological career content at each stop',
 
 test('moving passengers see the next story but cannot read, leave or advance before stopping',()=>{
  const view=hudState({phase:'moving',stopped:false,currentStation:'visionx',nextStation:'beaconfire',canRead:true,canGetOff:true,canContinue:true});
- assert.equal(view.display,'beaconfire');assert.equal(view.phase,'NEXT STOP');
+ assert.equal(view.display,'beaconfire');assert.equal(view.phase,'UP THE MOUNTAIN');
  assert.equal(view.read,false);assert.equal(view.getOff,false);assert.equal(view.continue,false);
  const returning=hudState({phase:'returning',stopped:false,currentStation:'amtrak',nextStation:'harbor'});
- assert.equal(returning.title,'Harbor Station');assert.equal(returning.phase,'RETURNING TO HARBOR');
- assert.match(returning.summary,/coast back to the harbor/);
+ assert.equal(returning.title,'Harbor Station');assert.equal(returning.phase,'DOWN TO THE HARBOR');
+ assert.match(returning.summary,/way down/);
+ const reversing=hudState({phase:'reversing',stopped:false,currentStation:'beaconfire',nextStation:'harbor',direction:1,canGetOff:true});
+ assert.equal(reversing.phase,'RETURNING SAFELY');assert.equal(reversing.getOff,false);
 });
 
 test('a stopped train never offers actions not explicitly allowed by its runtime state',()=>{

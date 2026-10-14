@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {CareerTrainController,CAREER_TRAIN,CAREER_TRAIN_MOTION} from '../core/career-train.js';
+import {CareerTrainController,CAREER_TRAIN_MOTION} from '../core/career-train.js';
 import {CareerTrainVisual} from './career-train.js';
 import {localToWorld,WALK_GROUP} from '../core/character.js';
 import {campusStationFocus} from '../core/campus-focus.js';
@@ -16,15 +16,15 @@ export class CareerJourney {
   const g=this.game,island=g.loaded.get('experience')?.island,layout=g.walkLayouts?.get('experience');
   if(!island||!layout?.railway)return false;
   try{
-   const asset=await g.loader.loadAsync('/models/career-train.glb?v=20');
+   const asset=await g.loader.loadAsync('/models/career-train.glb?v=21');
    this.island=island;this.walk=g.ensureWalkWorld(island);this.railway=layout.railway;
    this.controller=new CareerTrainController(this.railway,{island});
    this.visual=new CareerTrainVisual(g.scene,this.controller);this.visual.bind(asset.scene);
    this.visual.bindCrossings?.(g.loaded.get('experience')?.model);
    this.visual.update(1);g.careerTrain=this.controller;g.trainVisual=this.visual;g.player.train=this.controller;
-   for(const spec of CAREER_TRAIN.cars){
+   for(const spec of this.controller.cars){
     const body=g.world.createRigidBody(this.R.RigidBodyDesc.kinematicPositionBased());
-    const collider=g.world.createCollider(this.R.ColliderDesc.cuboid(spec.halfWidth,.8,spec.halfLength).setCollisionGroups(WALK_GROUP).setTranslation(0,1,0),body);
+    const collider=g.world.createCollider(this.R.ColliderDesc.cuboid(spec.halfWidth,spec.collisionHalfHeight??.8,spec.halfLength).setCollisionGroups(WALK_GROUP).setTranslation(0,spec.collisionCenterY??1,0),body);
     this.walk.handles.add(collider.handle);this.walk.obstacles.push(collider);this.colliders.push({body,collider});
    }
    this.marker=label('E  BOARD TRAIN',{width:512,height:96,worldWidth:2.1,fontSize:30,background:'#fff5dd',color:'#254f62'});this.marker.visible=false;g.scene.add(this.marker);
@@ -45,6 +45,11 @@ export class CareerJourney {
   if(this.boardingRequest)this.boardingRequest.held=true;
  }
  holdDeparture(reason='interaction'){this.cancelAutoDeparture(reason);}
+ prepareTravel(){
+  // Travel preparation may fail. Keep the committed actor and permanent mount
+  // intact while BoardingController rolls any fade back to its stable state.
+  this.cancelAutoDeparture('travel');this.boardingRequest=null;
+ }
  scheduleDeparture(phase,duration){this.departureHoldReason=null;this.autoDeparture={phase,duration,remaining:duration,waitingForTransition:phase==='boarding'};}
  prepareStation(id){
   if(!this.ready||!this.controller.parkAtStation(id))return false;
@@ -189,10 +194,11 @@ export class CareerJourney {
  update(alpha,frozen){if(this.ready)this.visual.update(alpha,{frozen});}
  cameraView(){
   if(!this.ready)return null;
-  const c=this.controller,d=((c.distance%c.length)+c.length)%c.length,keys=this.railway.cameraPoints||[];
+  const c=this.controller,d=c.closed?((c.distance%c.length)+c.length)%c.length:Math.max(0,Math.min(c.length,c.distance)),keys=this.railway.cameraPoints||[];
   let azimuth=this.island.rotation+.28,elevation=.60,lookAt=null,distance=32;
   if(keys.length){
    const ordered=[...keys].sort((a,b)=>a.distance-b.distance);let a=ordered.at(-1),b=ordered[0],span=c.length-a.distance+b.distance,along=(d-a.distance+c.length)%c.length;
+   if(!c.closed){a=b=d<=ordered[0].distance?ordered[0]:ordered.at(-1);span=1;along=0;}
    for(let n=0;n<ordered.length-1;n++)if(d>=ordered[n].distance&&d<ordered[n+1].distance){a=ordered[n];b=ordered[n+1];span=b.distance-a.distance;along=d-a.distance;break;}
    const t=Math.max(0,Math.min(1,along/Math.max(.01,span))),smooth=t*t*(3-2*t);
    azimuth=this.island.rotation+a.azimuth+Math.atan2(Math.sin(b.azimuth-a.azimuth),Math.cos(b.azimuth-a.azimuth))*smooth;
@@ -201,7 +207,7 @@ export class CareerJourney {
    if(a.lookAt&&b.lookAt)lookAt=this.world({x:a.lookAt[0]+(b.lookAt[0]-a.lookAt[0])*smooth,y:a.lookAt[1]+(b.lookAt[1]-a.lookAt[1])*smooth,z:a.lookAt[2]+(b.lookAt[2]-a.lookAt[2])*smooth});
   }
   const station=c.currentStation,reader=station?.contentId&&this.walk.layout.stations.find(s=>s.primary&&s.contentId===station.contentId);
-  const engine=c.carPose(0),coach=c.carPose(1),center={x:(engine.x+coach.x)/2,y:(engine.y+coach.y)/2+CAREER_TRAIN.floorY,z:(engine.z+coach.z)/2};
+  const center={x:0,y:c.spec.floorY,z:0};for(let index=0;index<c.cars.length;index++){const pose=c.carPose(index);center.x+=pose.x/c.cars.length;center.y+=pose.y/c.cars.length;center.z+=pose.z/c.cars.length;}
   return {azimuth,elevation,distance,center,lookAt:lookAt||(reader?this.world(reader):null)};
  }
  readingFocus(contentId){
@@ -212,13 +218,14 @@ export class CareerJourney {
   focus.camera.azimuth=this.cameraView().azimuth;
   const bounds=focus.camera.fitBounds;
   if(bounds&&this.controller.currentStation?.contentId===contentId){
-   for(const index of[0,1]){const p=this.controller.carPose(index);for(const[k,n]of[['x',0],['y',1],['z',2]]){bounds.min[n]=Math.min(bounds.min[n],p[k]-(k==='y'?0:2.1));bounds.max[n]=Math.max(bounds.max[n],p[k]+(k==='y'?3.2:2.1));}}
+   for(let index=0;index<this.controller.cars.length;index++){const p=this.controller.carPose(index),car=this.controller.cars[index],radius=Math.hypot(car.halfLength,car.halfWidth);for(const[k,n]of[['x',0],['y',1],['z',2]]){bounds.min[n]=Math.min(bounds.min[n],p[k]-(k==='y'?0:radius));bounds.max[n]=Math.max(bounds.max[n],p[k]+(k==='y'?this.controller.spec.floorY+2.2:radius));}}
   }
   return focus;
  }
  status(){
   if(!this.ready)return null;const g=this.game,c=this.controller,base=c.status(),riding=!!g.player.ridingTrain,stopped=c.state==='stopped';
   const automatic=this.autoDeparture?{phase:this.autoDeparture.phase,remaining:this.autoDeparture.remaining,duration:this.autoDeparture.duration}:null;
-  return {...base,phase:c.state,stopped,canContinue:riding&&stopped&&!g.frozen,canGetOff:riding&&stopped&&!g.frozen&&!!this.exitPoint(),canRead:riding&&stopped&&c.currentStation?.id!=='harbor'&&!g.frozen,autoDeparture:automatic,autoDepartureRemaining:automatic?.remaining??null,autoDepartureDuration:automatic?.duration??null,departureHoldReason:this.departureHoldReason,progress:base.distance/c.length,nearStation:this.nearStation?.id||null,boardingPoints:c.stations.map(s=>({id:s.id,position:this.world(s.boarding||s.approach)})),position:{...c.position},passengerPose:c.seatPose(),length:c.length,returningPassenger:this.returningPassenger};
+  const progress=c.closed?base.distance/c.length:Math.max(0,Math.min(1,(c.distance-c.minDistance)/(c.maxDistance-c.minDistance)));
+  return {...base,phase:c.state,stopped,canContinue:riding&&stopped&&!g.frozen,canGetOff:riding&&stopped&&!g.frozen&&!!this.exitPoint(),canRead:riding&&stopped&&c.currentStation?.id!=='harbor'&&!g.frozen,autoDeparture:automatic,autoDepartureRemaining:automatic?.remaining??null,autoDepartureDuration:automatic?.duration??null,departureHoldReason:this.departureHoldReason,progress,nearStation:this.nearStation?.id||null,boardingPoints:c.stations.map(s=>({id:s.id,position:this.world(s.boarding||s.approach)})),position:{...c.position},passengerPose:c.seatPose(),length:c.length,returningPassenger:this.returningPassenger};
  }
 }

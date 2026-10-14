@@ -47,6 +47,8 @@ export class BayLighting {
   this.setQuality(quality);
  }
  setQuality(quality){
+  // An explicit quality choice can retry a transient postprocessing failure.
+  if(quality==='high')this.failed=false;
   this.quality=quality;this.renderer.shadowMap.enabled=true;this.renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   const size=quality==='low'?1024:2048;
   // ShadowNode owns the render target and resizes it on the next shadow pass.
@@ -64,8 +66,13 @@ export class BayLighting {
   if(c.right!==extent){Object.assign(c,{left:-extent,right:extent,top:extent,bottom:-extent});c.updateProjectionMatrix();}
   // Snap the shadow origin to its texel spacing to keep tiny seams stable.
   const texel=extent*2/this.sun.shadow.mapSize.x,x=Math.round(p.x/texel)*texel,z=Math.round(p.z/texel)*texel;
-  this.sun.target.position.set(x,0,z);this.sun.position.copy(this.sun.target.position).addScaledVector(this.sunDirection,90);this.sun.target.updateMatrixWorld();
-  this.bounce.target.position.set(x,0,z);this.bounce.position.set(x+40,45,z+40);this.bounce.target.updateMatrixWorld();
+  // A summit overview covers far more world space per shadow texel than a
+  // walking view. Scale the normal offset with that footprint so steep rock
+  // faces do not acquire horizontal self-shadow bands at the wider framing.
+  this.sun.shadow.normalBias=Math.max(.025,texel*1.5);
+  const y=Math.round((Number.isFinite(p.y)?p.y:0)/texel)*texel;
+  this.sun.target.position.set(x,y,z);this.sun.position.copy(this.sun.target.position).addScaledVector(this.sunDirection,90);this.sun.target.updateMatrixWorld();
+  this.bounce.target.position.set(x,y,z);this.bounce.position.set(x+40,y+45,z+40);this.bounce.target.updateMatrixWorld();
  }
  createPipeline(){
   this.scenePass=pass(this.scene,this.camera,{samples:0});
@@ -84,8 +91,23 @@ export class BayLighting {
  }
  render(){
   if(this.quality==='low'||this.failed){this.renderer.render(this.scene,this.camera);return;}
+  const renderer=this.renderer,state=THREE.RendererUtils.saveRendererState(renderer,this.renderState);this.renderState=state;
+  const passState={xr:renderer.xr.enabled,transparent:renderer.transparent,opaque:renderer.opaque,context:renderer.contextNode,sceneName:this.scene.name,override:this.scene.overrideMaterial,layers:this.camera.layers.mask};
+  // r183's nested render calls also leave their render stack open on a throw.
+  // Preserve only that stack; cumulative frame/call counters must keep running.
+  const stack={};for(const key of['_callDepth','_currentRenderContext','_currentRenderObjectFunction','_handleObjectFunction'])if(key in renderer)stack[key]=renderer[key];
+  const frame=renderer._nodes?.nodeFrame,renderId=frame?.renderId;
   try{if(!this.pipeline)this.createPipeline();this.pipeline.render();}
-  catch(error){this.failed=true;this.disposePipeline();console.warn('Contact shading unavailable; sunset lighting retained.',error.message);this.renderer.render(this.scene,this.camera);}
+  catch(error){
+   // PassNode/RTTNode/RenderPipeline do not restore state with finally. Without
+   // this rollback the fallback renders into a discarded offscreen target and
+   // the canvas silently keeps its last frame while the simulation continues.
+   THREE.RendererUtils.restoreRendererState(renderer,state);Object.assign(renderer,stack);
+   if(frame)frame.renderId=renderId;
+   renderer.xr.enabled=passState.xr;renderer.transparent=passState.transparent;renderer.opaque=passState.opaque;renderer.contextNode=passState.context;
+   this.scene.name=passState.sceneName;this.scene.overrideMaterial=passState.override;this.camera.layers.mask=passState.layers;
+   this.failed=true;this.disposePipeline();console.warn('Contact shading unavailable; sunset lighting retained.',error.message);renderer.render(this.scene,this.camera);
+  }
  }
  disposePipeline(){
   this.pipeline?.dispose();this.scenePass?.dispose();

@@ -4,42 +4,44 @@ import fs from 'node:fs';
 import {TerrainSurface} from '../sources/core/terrain.js';
 import {sampleTrainPath} from '../sources/core/train-path.js';
 import {CAREER_TRAIN_MOTION} from '../sources/core/career-train.js';
-
 const layout=JSON.parse(fs.readFileSync(new URL('../static/models/walk-layout.json',import.meta.url))).islands.find(i=>i.id==='experience');
 const {railway}=layout,terrain=new TerrainSurface(layout.terrain);
-const near=(a,b,epsilon=.00001)=>assert.ok(Math.abs(a-b)<epsilon,`${a} differs from ${b}`);
+const near=(a,b,e=.00001)=>assert.ok(Math.abs(a-b)<e,`${a} differs from ${b}`);
 
-test('V20 valley circuit keeps the approved short geometry, unchanged train and shared operating limits',()=>{
- assert.ok(railway.length>104&&railway.length<104.1);
- assert.deepEqual(railway.path.planSegments.filter(p=>p.type==='line').map(p=>[p.from,p.to]),[[[-15,15],[15,15]],[[15,1],[-15,1]]]);
- assert.deepEqual(railway.path.planSegments.filter(p=>p.type==='arc').map(p=>p.radius),[7,7]);
- assert.deepEqual(railway.train,{length:7.95,width:1.86,height:3.05,coachOffset:4.3,floorOffset:.6,gauge:1.62});
- for(const[key,value]of Object.entries(CAREER_TRAIN_MOTION))assert.equal(railway[key],value,`${key} cannot drift between model export and runtime`);
+test('V21 straight mountain line has the approved stations, reserve and shared motion parameters',()=>{
+ assert.equal(railway.path.type,'funicular');assert.equal(railway.path.closed,false);near(railway.length,45.131318787644);near(railway.endReserve,3.4);
+ assert.deepEqual(railway.train,{length:5,width:2.2,height:4.3,coachOffset:0,floorOffset:1.65,gauge:1.62});
+ for(const[key,value]of Object.entries(CAREER_TRAIN_MOTION))assert.equal(railway[key],value,`${key} stays shared`);
  assert.deepEqual(railway.stations.map(s=>s.id),['harbor','visionx','beaconfire','amtrak']);
- for(const[s,[x,z,y]]of railway.stations.map((s,i)=>[s,[[-9,15,.95],[9,15,.95],[9,1,2.15],[-9,1,2.15]][i]])){
-  const q=sampleTrainPath(railway.path,s.centerDistance);near(q.x,x);near(q.z,z);near(q.y,y);near(s.platform.width,10);near(s.platform.depth,2.1);
+ for(const[s,[z,y]]of railway.stations.map((s,i)=>[s,[[22,3.85],[13.93220338983,8.05],[1.44632768362,14.55],[-12,21.55]][i]])){
+  const q=sampleTrainPath(railway.path,s.centerDistance);near(q.x,0);near(q.z,z);near(q.y+1.65,y);near(s.platform.y,y);near(s.platform.width,2.6);near(s.platform.depth,5.8);
+  assert.ok(Math.abs(s.boarding.x)>=2.6&&Math.abs(s.boarding.x)<=2.8);assert.ok(s.walkRoute.length>15);
  }
+ assert.equal(railway.crossings.length,0);
 });
 
-test('the three company buildings occupy distinct elevations around the public valley',()=>{
- const expected={'visionx-conservatory':[13,8,10,6,.85],'software-workshop':[11,-7.5,11,7,2.4],'career-station':[-11,-9,24,8,5.8]};
- for(const building of layout.landmarks){const[x,z,width,depth,floor]=expected[building.id];near(building.x,x);near(building.z,z,.03);near(building.width,width);near(building.depth,depth);near(layout.interiors.find(i=>i.landmarkId===building.id).floorY,floor);}
- const directory=layout.stations.filter(s=>s.directory).sort((a,b)=>b.hitArea.y-a.hitArea.y);
- assert.deepEqual(directory.map(s=>s.contentId),['visionx','beaconfire','amtrak']);
- assert.deepEqual(layout.overviewBounds,{min:[-29,.85,-24],max:[29,18,38]});
- assert.ok(layout.terraces.regions.some(r=>r.id==='valley-garden'));
- assert.ok(layout.obstacles.filter(o=>o.name.startsWith('landscape ridge')).every(o=>o.y+o.height<10),'the terminal clock remains above the rear rock skyline');
+test('V21 architecture follows the chosen right garden, left workshop and upper station composition',()=>{
+ const expected={'visionx-conservatory':[17,12,16,9,8.05],'software-workshop':[-15,0,18,10,14.55],'career-station':[4,-21,24,8,21.55]};
+ for(const building of layout.landmarks){const[x,z,w,d,y]=expected[building.id];near(building.x,x);near(building.z,z);near(building.width,w);near(building.depth,d);near(layout.interiors.find(i=>i.landmarkId===building.id).floorY,y);}
+ assert.deepEqual(layout.stations.filter(s=>s.directory).sort((a,b)=>b.hitArea.y-a.hitArea.y).map(s=>s.contentId),['visionx','beaconfire','amtrak']);
+ assert.deepEqual(layout.overviewBounds,{min:[-34,.43,-30],max:[34,43,38]});near(layout.overviewCamera.elevation,28*Math.PI/180);
+ assert.ok(layout.terraces.regions.some(r=>r.id==='eastern-mountain'));
+ assert.ok(layout.obstacles.some(o=>o.name==='summit rock main-peak'&&o.y+o.height>=40));
 });
 
-test('lower concourse and workshop entrance have a single continuous walking height',()=>{
- for(const[x,z,y]of[[-20,-4,2.75],[-11,-4.8,2.75],[-11,-6,2.75],[-11,-10,5.8],[11,-4.1,2.4],[11,-5,2.4],[11,-7.5,2.4],[13,8,.85]])near(terrain.sample(x,z).height,y);
- for(let z=-2.3;z>=-5;z-=.025){const a=terrain.sample(11,z).height,b=terrain.sample(11,z-.025).height;assert.ok(Math.abs(a-b)<.02,`workshop access discontinuity at ${z}`);}
- const stair=layout.stairs.find(s=>s.id==='station-grand-stair');near(stair.frontY,2.75);near(stair.backY,5.8);assert.ok(stair.treadHeight<=.14&&stair.treadDepth>=.339);
- const dispatch=layout.stations.find(s=>s.id==='amtrak:dispatch'),station=railway.stations.find(s=>s.id==='amtrak');assert.ok(Math.hypot(dispatch.x-station.boarding.x,dispatch.z-station.boarding.z)<=2.1,'the visible train action is inside the boarding zone');
+test('mountain stairs maintain real accessible tread dimensions, rotated geometry and matched floors',()=>{
+ assert.ok(layout.stairs.length>=12);assert.equal(layout.ramps.length,0);
+ for(const s of layout.stairs){assert.ok(s.width>=3.4);assert.ok(s.treadHeight<=.14);assert.ok(s.treadDepth>=.3399);assert.equal(s.treads.length,s.stepCount);
+  for(const t of s.treads){near(terrain.sample(t.x,t.z).height,t.y,.001);near(t.rotation,s.rotation);}
+ }
+ assert.ok(layout.stairs.some(s=>Math.abs(s.rotation)>1));
+ for(const[x,z,y]of[[17,12,8.05],[-15,0,14.55],[4,-21,21.55]])near(terrain.sample(x,z).height,y);
+ const dispatch=layout.stations.find(s=>s.id==='amtrak:dispatch'),station=railway.stations.at(-1);assert.ok(Math.hypot(dispatch.x-station.boarding.x,dispatch.z-station.boarding.z)<=2.1);
+ assert.ok(layout.terrain.indices.length/3<20000,'localized partitioning avoids global tread cut explosion');assert.ok(layout.terrain.vertices.length/3<12000,'shared indexed vertices keep collider data bounded');
 });
 
-test('V20 route camera keys preserve distance semantics and small view rotations',()=>{
+test('V21 camera keys use bounded open-line distances and small view rotations',()=>{
  for(let i=0;i<railway.cameraPoints.length;i++){
-  const point=railway.cameraPoints[i],next=railway.cameraPoints[(i+1)%railway.cameraPoints.length];assert.ok(point.distance>=0&&point.distance<railway.length);assert.ok(point.viewDistance>=32&&point.viewDistance<=36);assert.equal(point.lookAt.length,3);assert.ok(Math.abs(point.azimuth-next.azimuth)<=20*Math.PI/180);
+  const p=railway.cameraPoints[i],next=railway.cameraPoints[Math.min(i+1,railway.cameraPoints.length-1)];assert.ok(p.distance>=0&&p.distance<=railway.length);assert.ok(p.viewDistance>=32&&p.viewDistance<=44);assert.equal(p.lookAt.length,3);assert.ok(Math.abs(p.azimuth-next.azimuth)<=20*Math.PI/180);
  }
 });

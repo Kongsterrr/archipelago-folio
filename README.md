@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V20 — Career Valley Express** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V21 — Terraced Summit** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -13,7 +13,7 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Four connected exhibition islands:** About combines Harbor and Connect; Experience combines Amtrak, BeaconFire and VisionX; Projects combines Affirmation, Research and Catering; Education keeps BU and CMU together. Nine independent stories remain available through the directory.
 - **Meet Jack:** the actual chibi model supplied by Jack, with its textured hair, face, black shorts and bare feet preserved. A locally fitted skeleton supports seven motions, steady hands at the helm, four walkable islands, exhibit stops, benches and safe boarding transitions.
 - **Jack’s Estate:** About Island has a furnished house with a walkable ground floor, four garage bays with a drivable Porsche 911, Mercedes G63, Ferrari Purosangue and Ford Raptor, a garden circuit, a tennis court and three putting greens.
-- **Career Railway:** board immediately at any of the four platforms and visit VisionX, BeaconFire and Amtrak in career order. The open carriage sets off after Jack settles and pauses briefly at each company. Read, get off or focus the station controls to take your time; continue when ready. Three connected neighborhoods rise from the harbor garden to the clock-tower station.
+- **Career Railway:** board immediately at any of the four platforms and visit VisionX, BeaconFire and Amtrak in career order. The level-floored mountain cabin sets off after Jack settles and pauses briefly at each company. Read, get off or focus the station controls to take your time; continue when ready. A central inclined railway connects the glass garden, brick arcade and summit clock station; it descends directly to the harbor after Amtrak.
 - **Garden practice:** return six machine-fed tennis balls or putt across three greens, with animated racket and club contact, keyboard and touch controls, and results that last only for the current round.
 - **Arcade boat handling:** steering, inertia, reverse, braking, boost, collisions, a close follow camera, and touch controls.
 - **Three challenges:** Buoy Run, Cargo Dock, and Lighthouse Link, with local records and replay support.
@@ -77,6 +77,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.2 — Relaxed Driving Pose** | Rearward driver placement, relaxed wheel reach and a charcoal G63 roof | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/a375409df896d102ea7b0b80c116f7bd382e2b52) |
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
 | **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
+| **V21 — Terraced Summit** | A terraced coastal mountain, a single level-cabin funicular, chronological uphill stops, direct descent and connected hillside walks | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V20 — Career Valley Express** | A compact career valley, immediate platform boarding, automatic departure and brief company stops with accessible controls that hold the train when needed | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V19 — Career Railway** | A rideable coastal train links VisionX, BeaconFire and Amtrak in chronological order, with station visits, platform calls, independent car motion and a layered railway town | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V18 — Career Terraces** | Connects Experience around a three-level courtyard, broad stairs, architectural streets and a rear railway with independently turning cars | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -92,6 +93,17 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V21 — Terraced Summit
+
+- Rebuilds Experience as a tall coastal mountain inside the existing coastline: VisionX’s glass domes on the lower right, BeaconFire’s brick arcade midway on the left, and the Amtrak hall and clock tower above. Stone terraces, planted rock faces and two continuous stair routes connect the four platforms.
+- Replaces the short loop with an **open 27.5° funicular line**. One navy, cream and copper cabin keeps its floor and passenger horizontal above an inclined underframe; the wheels reverse on descent while the body keeps its uphill orientation. Jack sits at the downhill observation window.
+- Uphill stops follow **Harbor → VisionX → BeaconFire → Amtrak**, with **4 seconds** at each company. The summit departure returns directly to Harbor. Immediate platform boarding, **0.6-second** settling, reading/keyboard/menu holds, and user-controlled continuation remain available.
+- Return requests during an ascent brake before reversing. Bounded line position and cumulative wheel travel are separate, so endpoints cannot wrap around and return wheels roll backward continuously.
+- A **28°** arrival overview shows the mountain frontage, while ordinary walking retains its existing camera and controls. Height-aware shadows, fitted reading views, directional train markers and layered map colors support the taller terrain.
+- This is an original career-themed miniature, not a depiction of the employers’ actual workplaces. Existing experience facts, links, saved records, Jack and the other three islands are retained.
+
+Current verification and actual-render evidence are recorded in [validation notes](VALIDATION.md).
 
 ### V20 — Career Valley Express
 

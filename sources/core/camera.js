@@ -86,7 +86,7 @@ export class CameraRig {
       const distance=this.width>=900?desktopDistance:this.height>this.width?24:16;desired={target:point,position:point.clone().addScaledVector(this.direction,distance)};
     } else if (focus?.camera?.fitBounds) {
       desired=fitBoundsPose(focus.camera.fitBounds,{width:this.width,height:this.height,fov:FOV,azimuth,elevation:focus.camera.elevation??.66,near:this.camera.near,...(focus.camera.practice?{rect:{left:24,right:this.width-24,top:Math.min(190,this.height*.28),bottom:this.height-Math.min(170,this.height*.24)}}:{})});
-      if(focus.camera.practice)this.distance=desired.distance;
+      this.distance=desired.distance;
     } else if (focus) {
       const cfg = focus.camera || {};
       const az = azimuth;
@@ -107,7 +107,7 @@ export class CameraRig {
       const target=view.center?new THREE.Vector3(view.center.x,view.center.y+.9,view.center.z):new THREE.Vector3(position.x,position.y+.9,position.z).addScaledVector(heading,1.5);
       const look=view.lookAt;
       if(look&&!this.settings.reduced){
-        // The portrait frame needs most of its width for both articulated cars.
+        // Keep the passenger within the portrait frame while showing a landmark.
         const bias=new THREE.Vector3(look.x-target.x,0,look.z-target.z).multiplyScalar(.18).clampLength(0,this.portrait?.4:2.5);
         bias.y=clamp(((look.y??target.y)-target.y)*.18,-1.5,1.5);
         target.add(bias);
@@ -167,7 +167,7 @@ export class CameraRig {
       desired.position.y=eyeY;
     }
     if(arrival&&!focus){
-      const overview=arrivalOverviewPose(arrival.bounds,{width:this.width,height:this.height,azimuth,near:this.camera.near});
+      const overview=arrivalOverviewPose(arrival.bounds,{width:this.width,height:this.height,azimuth:azimuth+(arrival.camera?.azimuthOffset||0),near:this.camera.near,...(Number.isFinite(arrival.camera?.elevation)?{elevation:arrival.camera.elevation}:{})});
       desired=arrivalApproachPose(overview,desired,arrival.progress);this.distance=desired.distance;snap=true;
     }
     const rate = snap ? 1 : 1-Math.exp(-(focus ? 4 : 8)*dt);

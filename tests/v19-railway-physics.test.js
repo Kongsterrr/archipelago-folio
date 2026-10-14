@@ -6,7 +6,7 @@ import R from '@dimforge/rapier3d-compat/rapier.es.js';
 import {islands} from '../sources/config.js';
 import {CharacterController,IslandWalkWorld,localToWorld,WALK_GROUP} from '../sources/core/character.js';
 import {dockLocal} from '../sources/core/dock.js';
-import {CareerTrainController,CAREER_TRAIN} from '../sources/core/career-train.js';
+import {CareerTrainController} from '../sources/core/career-train.js';
 import {CareerJourney} from '../sources/world/career-journey.js';
 import {PlayerController} from '../sources/core/player.js';
 import {selectLandExhibit} from '../sources/core/project-exhibits.js';
@@ -25,7 +25,7 @@ function fixture(berth){
  const inputs={enabled:true,clear(){},setEnabled(value){this.enabled=value;}},game={boat,player,character,scene,inputs,mode:'exploring',jack:{root,resetPose(){}},cancelChallenge(){},resetCamera(){},events:{trigger(...event){events.push(event);}}};
  Object.defineProperty(game,'frozen',{get(){return player.transitioning||player.pauseReasons.size>0;}});
  const journey=new CareerJourney(game,R);Object.assign(journey,{ready:true,island,railway:layout.railway,walk,controller:new CareerTrainController(layout.railway,{island}),visual:{mountPoint:new THREE.Group(),update(){}},marker:{visible:false,position:new THREE.Vector3()}});game.journey=journey;
- for(const spec of CAREER_TRAIN.cars){const body=world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased());const collider=world.createCollider(R.ColliderDesc.cuboid(spec.halfWidth,.8,spec.halfLength).setCollisionGroups(WALK_GROUP).setTranslation(0,1,0),body);walk.handles.add(collider.handle);walk.obstacles.push(collider);journey.colliders.push({body,collider});}
+ for(const spec of journey.controller.cars){const body=world.createRigidBody(R.RigidBodyDesc.kinematicPositionBased());const collider=world.createCollider(R.ColliderDesc.cuboid(spec.halfWidth,spec.collisionHalfHeight??.8,spec.halfLength).setCollisionGroups(WALK_GROUP).setTranslation(0,spec.collisionCenterY??1,0),body);walk.handles.add(collider.handle);walk.obstacles.push(collider);journey.colliders.push({body,collider});}
  journey.syncPhysics(true);world.step();
  let rescues=0;const teleport=character.teleport.bind(character);character.teleport=(...args)=>{rescues++;return teleport(...args);};
  return{world,walk,character,player,journey,game,events,get rescues(){return rescues;},finishTransition(){player.tick(.3);player.tick(.3);inputs.setEnabled(!game.frozen);}};
@@ -81,19 +81,18 @@ test('the current harbor entry uses the published approach and reaches its suppo
  }finally{f.world.free();}
 });
 
-test('architectural ramps remain traversable uphill and downhill in both railing-side lanes',()=>{
+test('all four level funicular platforms provide supported walking space beside the cabin',()=>{
  const f=fixture(layout.berths[0]);
  try{
-  for(const ramp of layout.ramps.filter(ramp=>ramp.depth>1&&Math.abs(ramp.slope)>1e-6))for(const across of[-ramp.width/2+.215,0,ramp.width/2-.215])for(const direction of[-1,1]){
-   const angle=ramp.rotation||0,point=along=>localToWorld(island,{x:ramp.x+across*Math.cos(angle)+along*Math.sin(angle),z:ramp.z-across*Math.sin(angle)+along*Math.cos(angle)});
-   const length=ramp.depth-.75,start=point(-direction*length/2),end=point(direction*length/2);start.y=f.walk.groundAt(start);f.character.teleport(start,f.walk);f.world.step();
-   const initialRescues=f.rescues;let reached=false;
-   for(let frame=0;frame<Math.ceil((length/2.4+2)/DT);frame++){
-    const p=f.character.position,dx=end.x-p.x,dz=end.z-p.z,d=Math.hypot(dx,dz);if(d<.08){reached=true;break;}
+  for(const station of layout.railway.stations)for(const direction of[-1,1]){
+   const start=localToWorld(island,{x:station.boarding.x,z:station.boarding.z-direction*.8}),end=localToWorld(island,{x:station.boarding.x,z:station.boarding.z+direction*.8});
+   start.y=f.walk.groundAt(start);f.character.teleport(start,f.walk);f.world.step();const initialRescues=f.rescues;let reached=false;
+   for(let frame=0;frame<180;frame++){
+    const p=f.character.position,dx=end.x-p.x,dz=end.z-p.z,d=Math.hypot(dx,dz);if(d<.06){reached=true;break;}
     f.character.step({x:dx/d,z:dz/d},DT);f.world.step();f.character.afterStep();
-    assert.equal(f.rescues,initialRescues,`${ramp.id}: railing-side walking must stay supported`);
+    assert.equal(f.rescues,initialRescues);assert.ok(Math.abs(f.character.position.y-station.boarding.y)<.04,`${station.id}: platform feet stay level y=${f.character.position.y} expected=${station.boarding.y} p=${JSON.stringify(dockLocal(f.character.position,island))}`);
    }
-   assert.ok(reached,`${ramp.id}: direction ${direction}, lane ${across.toFixed(3)} blocked at ${JSON.stringify(dockLocal(f.character.position,island))}`);
+   assert.ok(reached,`${station.id}: direction ${direction} blocked at ${JSON.stringify(dockLocal(f.character.position,island))}`);
   }
  }finally{f.world.free();}
 });

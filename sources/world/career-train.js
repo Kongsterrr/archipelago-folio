@@ -14,17 +14,20 @@ export class CareerTrainVisual {
     this.controller=controller;this.group=new THREE.Group();this.group.name='career-train-view';scene.add(this.group);
     this.mountPoint=new THREE.Group();this.mountPoint.name='career-train-passenger';scene.add(this.mountPoint);
     this.model=null;this.cars=[];this.wheels=[];this.crossings=[];this.pose={};this.a=new THREE.Vector3();this.b=new THREE.Vector3();this.delta=new THREE.Vector3();
-    this.rail=new THREE.Vector3();this.railPose={};this.carInverse=CAREER_TRAIN.cars.map(()=>new THREE.Matrix4());
+    this.rail=new THREE.Vector3();this.railPose={};this.specs=controller.cars||CAREER_TRAIN.cars;this.carInverse=this.specs.map(()=>new THREE.Matrix4());this.chassis=null;
     this.coupling=new THREE.Mesh(new THREE.CylinderGeometry(.055,.055,1,8),new THREE.MeshStandardMaterial({color:'#9b8060',roughness:.36,metalness:.6}));
     this.coupling.name='career-train-moving-coupling';this.group.add(this.coupling);this.coupling.visible=false;
     this.update(1,{frozen:true});
   }
   bind(model){
-    const cars=CAREER_TRAIN.cars.map(car=>model.getObjectByName(car.name));
+    const cars=this.specs.map(car=>model.getObjectByName(car.name));
     if(cars.some(car=>!car))throw new Error('Career train model is missing an independent car root.');
     if(this.model){this.group.remove(this.model);disposeModel(this.model);}
-    this.model=model;this.group.add(model);this.cars=cars;this.wheels=[];
-    model.traverse(o=>{if(/^train-wheel-(engine|coach)-/.test(o.name)&&!o.isMesh)this.wheels.push({object:o,radius:o.name.includes('-engine-')?.42:.36,car:o.name.includes('-engine-')?0:1,base:o.position.clone()});if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});
+    this.model=model;this.group.add(model);this.cars=cars;this.wheels=[];this.chassis=model.getObjectByName('funicular-chassis')||null;
+    model.traverse(o=>{
+      if(/^train-wheel-(engine|coach|funicular)-/.test(o.name)&&!o.isMesh){let owner=o.parent;while(owner&&!cars.includes(owner))owner=owner.parent;const index=cars.indexOf(owner);if(index>=0)this.wheels.push({object:o,radius:this.specs[index].wheelRadius,car:index,base:o.position.clone(),funicular:o.name.includes('-funicular-')});}
+      if(o.isMesh){const materials=Array.isArray(o.material)?o.material:[o.material],glass=materials.every(m=>m.transparent&&m.opacity<.5);o.castShadow=!glass;o.receiveShadow=!glass;}
+    });
     this.update(1,{frozen:true});return this;
   }
   bindCrossings(model){
@@ -56,8 +59,8 @@ export class CareerTrainVisual {
   updateCrossings(distance){
     const length=this.controller.length;
     for(const crossing of this.crossings){
-      const ahead=((crossing.spec.distance-distance+length/2)%length+length)%length-length/2;
-      const rearClear=CAREER_TRAIN.coachOffset+CAREER_TRAIN.cars[1].halfLength+(crossing.spec.width||2)/2;
+      const ahead=this.controller.closed===false?(crossing.spec.distance-distance)*(this.controller.direction||1):((crossing.spec.distance-distance+length/2)%length+length)%length-length/2;
+      const rearClear=Math.max(...this.specs.map(car=>car.offset+car.halfLength))+(crossing.spec.width||2)/2;
       // The gate is down before the leading bumper reaches the crossing and
       // stays down until the complete trailing coach has cleared the lane.
       const closed=ahead>=0?smooth((12-ahead)/6):1-smooth((-ahead-rearClear)/3);
@@ -76,14 +79,25 @@ export class CareerTrainVisual {
     for(let index=0;index<this.cars.length;index++){
       const car=this.cars[index],pose=this.controller.carPose(index,interpolation,this.pose);
       car.position.set(pose.x,pose.y,pose.z);car.rotation.set(pose.pitch,pose.yaw,0,'YXZ');
+      if(this.chassis&&index===0)this.chassis.rotation.x=pose.trackPitch??pose.pitch;
       car.updateWorldMatrix(true,false);this.carInverse[index].copy(car.matrixWorld).invert();
     }
     const distance=this.controller.previousDistance+(this.controller.distance-this.controller.previousDistance)*interpolation;
+    const wheelDistance=Number.isFinite(this.controller.wheelDistance)?this.controller.previousWheelDistance+(this.controller.wheelDistance-this.controller.previousWheelDistance)*interpolation:distance-this.controller.initialDistance;
     for(const wheel of this.wheels){
-      wheel.object.rotation.x=-(distance-this.controller.initialDistance)/wheel.radius;
+      wheel.object.rotation.x=-wheelDistance/wheel.radius;
+      if(wheel.funicular){
+        const pose=this.controller.carPose(wheel.car,interpolation,this.pose),pitch=pose.trackPitch??0,cos=Math.cos(pitch),sin=Math.sin(pitch);
+        // A level cabin has unequal wheel heights. Advance to the real radial
+        // contact before adding the slope-normal wheel radius back to its hub.
+        const contactDistance=distance-this.specs[wheel.car].offset-(wheel.base.z-wheel.radius*sin)/cos;
+        const q=sampleTrainPath(this.controller.path,contactDistance,this.railPose),horizontal=Math.hypot(q.tangentX,q.tangentZ),offset=Math.sign(wheel.base.x)*this.controller.railway.train.gauge/2;
+        this.rail.set(q.x-q.tangentZ/horizontal*offset,q.y,q.z+q.tangentX/horizontal*offset);this.controller.worldPoint(this.rail,this.rail);this.rail.applyMatrix4(this.carInverse[wheel.car]);
+        wheel.object.position.set(this.rail.x,this.rail.y+wheel.radius*cos,this.rail.z+wheel.radius*sin);continue;
+      }
       // A few centimetres of suspension keeps each axle on the eased grade
       // while the carriage itself follows its independent centre tangent.
-      let axleDistance=distance-CAREER_TRAIN.cars[wheel.car].offset-wheel.base.z;
+      let axleDistance=distance-this.specs[wheel.car].offset-wheel.base.z;
       const offset=Math.sign(wheel.base.x)*this.controller.railway.train.gauge/2;
       for(let iteration=0;iteration<3;iteration++){
         const q=sampleTrainPath(this.controller.path,axleDistance,this.railPose),h=Math.hypot(q.tangentX,q.tangentZ);
@@ -94,6 +108,7 @@ export class CareerTrainVisual {
     }
     this.updateCrossings(distance);
     const seat=this.controller.seatPose(interpolation,this.pose);this.mountPoint.position.set(seat.x,seat.y,seat.z);this.mountPoint.rotation.set(seat.pitch,seat.yaw,0,'YXZ');this.mountPoint.updateMatrixWorld(true);
+    this.coupling.visible=false;
     if(this.cars.length===2){
       this.group.updateMatrixWorld(true);this.a.set(0,.65,1.72);this.b.set(0,.65,-1.70);this.cars[0].localToWorld(this.a);this.cars[1].localToWorld(this.b);
       this.coupling.position.copy(this.a).add(this.b).multiplyScalar(.5);this.delta.copy(this.b).sub(this.a);this.coupling.scale.y=this.delta.length();this.coupling.quaternion.setFromUnitVectors(Y_AXIS,this.delta.normalize());this.coupling.visible=true;

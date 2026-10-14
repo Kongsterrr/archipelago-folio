@@ -9,7 +9,7 @@ import {CameraTransition} from '../sources/core/camera-transition.js';
 import {Game} from '../sources/game.js';
 import {careerRailway} from '../scripts/lib/career-railway-layout.mjs';
 
-function fixture(){
+function fixture({open=true}={}){
  const island={id:'experience',x:-76,z:8,rotation:Math.PI/2},scene=new THREE.Scene(),events=[];
  const character={position:{x:0,y:.85,z:0},velocity:{x:0,z:0},enabled:true,seated:false,yaw:0,speed:0,enable(value){this.enabled=value;},hold(){this.speed=0;},teleport(point,walk){this.position={...point};this.walkWorld=walk;}};
  const boat={position:{x:10,y:0,z:10},yaw:0,speed:0},player=new PlayerController(boat,character);
@@ -20,7 +20,9 @@ function fixture(){
  Object.defineProperty(game,'frozen',{get(){return player.transitioning||player.pauseReasons.size>0||game.mode!=='exploring';}});
  const journey=new CareerJourney(game),path={type:'racetrack',center:[0,.85,0],halfStraight:16,radius:8};
  journey.island=island;journey.railway={path,stations:['harbor','visionx','beaconfire','amtrak'].map((id,index)=>({id,contentId:id==='harbor'?null:id,label:id,distance:index*24,boarding:{x:index*5,y:.85,z:10},exit:{x:index*5,y:.85,z:11,yaw:.3}})),cameraPoints:[{distance:0,azimuth:0},{distance:48,azimuth:.5},{distance:96,azimuth:1}]};
+ if(open)journey.railway=careerRailway();
  journey.walk={visible:()=>true,clear:()=>true,groundAt:()=>.85,layout:{stations:['visionx','beaconfire','amtrak'].map((contentId,index)=>({id:contentId,contentId,primary:true,readFull:true,x:5+index*5,y:.85,z:13,camera:{fitBounds:{min:[-1,0,-1],max:[1,3,1]}}}))}};
+ if(open)journey.walk.groundAt=point=>point.y;
  character.walkWorld=journey.walk;journey.controller=new CareerTrainController(journey.railway,{island});
  journey.visual={mountPoint:new THREE.Group(),update(){}};scene.add(journey.visual.mountPoint);
  journey.marker={visible:false,position:new THREE.Vector3()};journey.ready=true;game.journey=journey;game.careerTrain=journey.controller;game.trainVisual=journey.visual;
@@ -67,7 +69,7 @@ test('stopped train exits use validated platform support and restore ordinary ch
  const f=fixture();f.journey.board();f.finishTransition();
  f.journey.walk.clear=()=>false;assert.equal(f.journey.leave(),false,'a blocked platform does not eject Jack');
  f.journey.walk.clear=()=>true;f.journey.walk.groundAt=()=>3;assert.equal(f.journey.leave(),false,'a missing floor does not eject Jack');
- f.journey.walk.groundAt=()=>.85;assert.equal(f.journey.leave(),true);assert.equal(f.player.ridingTrain,true,'the train owns the actor until the commit');
+ f.journey.walk.groundAt=point=>point.y;assert.equal(f.journey.leave(),true);assert.equal(f.player.ridingTrain,true,'the train owns the actor until the commit');
  f.finishTransition();assert.equal(f.player.mode,'walking');assert.equal(f.player.activeActor,f.character);assert.equal(f.character.enabled,true);assert.equal(f.journey.controller.passenger,false);
  assert.deepEqual(f.character.position,f.journey.world(f.journey.railway.stations[0].exit));
 });
@@ -151,7 +153,7 @@ test('game Reset releases a travelling passenger at the island landing while the
  assert.equal(result.id,'experience');assert.equal(f.player.mode,'walking');assert.equal(f.root.parent,f.scene);assert.equal(f.journey.controller.passenger,false);
  assert.equal(f.journey.controller.distance,distance,'Reset cannot jump the visible train to the harbor');assert.equal(f.journey.controller.targetStationId,'harbor');
  assert.deepEqual(f.character.position,f.player.berth.landing);assert.equal(f.inputs.enabled,true);assert.equal(f.player.pauseReasons.size,0);
- f.journey.step(1);assert.ok(f.journey.controller.distance>distance,'the unoccupied train still uses its ordinary route');
+ f.journey.step(1);assert.ok(f.journey.controller.distance<distance,'the unoccupied cabin brakes and returns on the actual line');
 });
 
 for(const id of['harbor','visionx','beaconfire','amtrak'])test(`V20 ${id} boards the same train at the opaque midpoint even while an empty return is elsewhere`,()=>{
@@ -161,7 +163,7 @@ for(const id of['harbor','visionx','beaconfire','amtrak'])test(`V20 ${id} boards
  assert.equal(f.journey.board(),true);assert.equal(f.player.transition.duration,.4);assert.equal(f.journey.board(),false);
  f.player.tick(.19);f.journey.step(0,true);assert.equal(c.distance,original);assert.equal(c.passenger,false);
  f.player.tick(.07);assert.equal(f.player.transitionOpacity,1);assert.equal(c.currentStation.id,id);assert.equal(c.passenger,true);assert.equal(f.player.activeActor,c);
- assert.equal(c.distance,c.previousDistance);assert.equal(c.speed,0);assert.deepEqual(c.carPose(1,0),c.carPose(1,1));
+ assert.equal(c.distance,c.previousDistance);assert.equal(c.speed,0);assert.deepEqual(c.carPose(0,0),c.carPose(0,1));
  f.journey.step(0,true);assert.equal(f.journey.status().autoDepartureRemaining,.6,'boarding freeze does not consume its timer');
  f.player.tick(.2);assert.equal(f.player.mode,'riding-train');f.journey.step(.59);assert.equal(c.state,'stopped');
  f.journey.step(.01);assert.equal(c.state,'moving');assert.equal(c.targetStationId,c.stations[(c.stations.findIndex(s=>s.id===id)+1)%4].id);
@@ -182,11 +184,11 @@ for(const defect of['blocked','missing-floor','hidden-platform','left-platform']
 test('V20 successful entry cleans the train, passenger anchor, timer and both kinematic poses before the overview',()=>{
  const f=fixture(),c=f.journey.controller,poses=[];f.journey.board();f.finishTransition();f.journey.continue();f.journey.step(3);
  f.journey.visual.mountPoint.add(f.root);f.journey.returningPassenger=true;f.journey.scheduleDeparture('station',4);
- f.journey.colliders=[0,1].map(index=>({body:{setTranslation(p){poses[index]={position:{...p}};},setRotation(q){poses[index].rotation=q.clone();},setNextKinematicTranslation(p){poses[index].next={...p};},setNextKinematicRotation(q){poses[index].nextRotation=q.clone();}}}));
+ f.journey.colliders=c.cars.map((_,index)=>({body:{setTranslation(p){poses[index]={position:{...p}};},setRotation(q){poses[index].rotation=q.clone();},setNextKinematicTranslation(p){poses[index].next={...p};},setNextKinematicRotation(q){poses[index].nextRotation=q.clone();}}}));
  assert.equal(f.journey.prepareEntry(),true);assert.equal(c.currentStation.id,'harbor');assert.equal(c.passenger,false);assert.equal(c.mission,null);assert.equal(c.targetStationId,null);
  assert.equal(c.speed,0);assert.equal(c.distance,c.previousDistance);assert.deepEqual(c.velocity,{x:0,y:0,z:0});assert.equal(f.journey.autoDeparture,null);assert.equal(f.journey.returningPassenger,false);
  assert.equal(f.root.parent,f.scene);assert.equal(f.game.jack.pose,'idle');
- for(let index=0;index<2;index++){assert.deepEqual(poses[index].position,c.carPose(index));assert.deepEqual(poses[index].next,c.carPose(index));assert.deepEqual(poses[index].rotation,poses[index].nextRotation);}
+ for(let index=0;index<c.cars.length;index++){assert.deepEqual(poses[index].position,c.carPose(index));assert.deepEqual(poses[index].next,c.carPose(index));assert.deepEqual(poses[index].rotation,poses[index].nextRotation);assert.ok(Math.abs(poses[index].rotation.x)<1e-8,'entry collider remains level');}
 });
 
 test('V20 an uninterrupted tour waits four seconds at each employer and ends at the harbor',()=>{
@@ -197,7 +199,7 @@ test('V20 an uninterrupted tour waits four seconds at each employer and ends at 
   f.journey.step(1/60);seconds+=1/60;const c=f.journey.controller,id=c.currentStation?.id;
   if(id&&id!==previous){arrivals.push(id);previous=id;if(id==='harbor')break;assert.equal(f.journey.autoDeparture.duration,4);assert.equal(f.journey.autoDeparture.remaining,4);}
  }
- assert.deepEqual(arrivals,['visionx','beaconfire','amtrak','harbor']);assert.ok(seconds>=48&&seconds<=50,`automatic tour took ${seconds}s`);
+ assert.deepEqual(arrivals,['visionx','beaconfire','amtrak','harbor']);assert.ok(seconds>=47&&seconds<=48,`automatic tour took ${seconds}s`);
  assert.equal(f.journey.autoDeparture,null);const distance=f.journey.controller.distance;f.journey.step(10);assert.equal(f.journey.controller.distance,distance,'the tour does not silently start another lap');
 });
 
@@ -239,11 +241,37 @@ test('V20 preparing an empty train never relocates its body through a visitor be
  assert.equal(c.distance,distance,'late pedestrian entry prevents the opaque relocation');assert.equal(f.player.mode,'walking');assert.equal(c.passenger,false);
 });
 
-test('V20 moving camera uses the authored look target and bridge distance continuously through wrap',()=>{
- const f=fixture(),c=f.journey.controller;f.journey.railway.cameraPoints=[{distance:0,azimuth:.2,elevation:.56,viewDistance:32,lookAt:[0,3,0]},{distance:c.length/2,azimuth:.3,elevation:.60,viewDistance:36,lookAt:[8,5,4]}];
+test('legacy moving camera still interpolates authored look targets continuously through wrap',()=>{
+ const f=fixture({open:false}),c=f.journey.controller;f.journey.railway.cameraPoints=[{distance:0,azimuth:.2,elevation:.56,viewDistance:32,lookAt:[0,3,0]},{distance:c.length/2,azimuth:.3,elevation:.60,viewDistance:36,lookAt:[8,5,4]}];
  c.distance=c.length/4;c.stationId=null;c.state='moving';const view=f.journey.cameraView();
  assert.equal(view.distance,34);assert.ok(Math.abs(view.elevation-.58)<1e-8);const expected=f.journey.world({x:4,y:4,z:2});for(const axis of['x','y','z'])assert.ok(Math.abs(view.lookAt[axis]-expected[axis])<1e-8);
- const engine=c.carPose(0),coach=c.carPose(1);assert.equal(view.center.x,(engine.x+coach.x)/2);assert.equal(view.center.z,(engine.z+coach.z)/2);assert.ok(Math.abs(view.center.y-(engine.y+coach.y)/2-.6)<1e-8);
+ const cabin=c.carPose(0);assert.equal(view.center.x,cabin.x);assert.equal(view.center.z,cabin.z);assert.ok(Math.abs(view.center.y-cabin.y-c.spec.floorY)<1e-8);
  c.distance=c.length-1e-5;const end=f.journey.cameraView();c.distance=1e-5;const start=f.journey.cameraView();
  assert.ok(new THREE.Vector3(...Object.values(end.lookAt).slice(0,3)).distanceTo(new THREE.Vector3(...Object.values(start.lookAt).slice(0,3)))<1e-5);
+});
+
+test('open-line camera keys clamp independently at both ends and use the single level cabin center',()=>{
+ const f=fixture(),c=f.journey.controller;
+ f.journey.railway.cameraPoints=[{distance:5,azimuth:.1,elevation:.5,viewDistance:35,lookAt:[1,6,10]},{distance:35,azimuth:.3,elevation:.6,viewDistance:39,lookAt:[-2,22,-10]}];
+ for(const [distance,key]of[[-1,0],[0,0],[40,1],[c.length+1,1]]){
+  c.distance=c.previousDistance=distance;const view=f.journey.cameraView(),expected=f.journey.railway.cameraPoints[key],p=c.carPose(0),look=f.journey.world({x:expected.lookAt[0],y:expected.lookAt[1],z:expected.lookAt[2]});
+  assert.equal(view.azimuth,f.journey.island.rotation+expected.azimuth);assert.equal(view.distance,expected.viewDistance);assert.deepEqual(view.lookAt,look);assert.deepEqual(view.center,{x:p.x,y:p.y+c.spec.floorY,z:p.z});
+ }
+ c.distance=c.previousDistance=20;const up=f.journey.cameraView();c.direction=-1;assert.deepEqual(f.journey.cameraView(),up,'descent keeps the same authored angle and facing');
+});
+
+test('summit read holds automatic descent until Continue, then skips intermediate stops and stays aboard at Harbor',()=>{
+ const f=fixture(),c=f.journey.controller;f.character.teleport(f.journey.world(f.journey.station('beaconfire').boarding),f.journey.walk);
+ f.journey.board();f.finishTransition();f.journey.continue();while(c.state!=='stopped')f.journey.step(1/60);
+ assert.equal(c.currentStation.id,'amtrak');assert.equal(f.journey.autoDeparture.remaining,4);assert.equal(f.journey.status().progress,1);
+ f.journey.step(2);assert.equal(f.journey.read(),true);f.journey.step(5,true);f.journey.step(0,false);f.journey.step(10);assert.equal(c.currentStation.id,'amtrak');assert.equal(f.journey.autoDeparture,null);
+ assert.equal(f.journey.continue(),true);assert.equal(c.targetStationId,'harbor');assert.equal(c.direction,-1);
+ const stops=[];while(c.state!=='stopped'){f.journey.step(1/60);if(c.currentStation)stops.push(c.currentStation.id);assert.equal(f.journey.autoDeparture,null);}
+ assert.deepEqual(stops,['harbor']);assert.equal(f.player.mode,'riding-train');assert.equal(c.passenger,true);assert.equal(f.journey.status().progress,0);assert.equal(f.journey.autoDeparture,null);
+});
+
+test('pausing direct descent preserves Harbor target without creating intermediate dwell timers',()=>{
+ const f=fixture(),c=f.journey.controller;f.character.teleport(f.journey.world(f.journey.station('amtrak').boarding),f.journey.walk);f.journey.board();f.finishTransition();f.journey.continue();f.journey.step(3);
+ const distance=c.distance;f.journey.holdDeparture('hidden');f.journey.step(20,true);assert.equal(c.distance,distance);assert.equal(c.direction,-1);assert.equal(c.targetStationId,'harbor');assert.equal(c.speed,0);
+ f.journey.step(1/60,false);assert.ok(c.distance<distance);assert.ok(c.speed<=c.motion.acceleration/60+1e-8);assert.equal(f.journey.autoDeparture,null);
 });

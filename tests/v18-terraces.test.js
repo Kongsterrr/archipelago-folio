@@ -69,9 +69,9 @@ function containingTriangles(surface,x,z,strict=false) {
 test('the Experience terrain is a single-valued surface with one broad court and a higher station',()=>{
   assert.ok(layout.terrain?.indices.length>300,'Career Terraces must have a shared indexed terrain');
   const surface=new TerrainSurface(layout.terrain);
-  assert.ok(Math.abs(surface.sample(0,25).height-.85)<.001,'quay elevation remains unchanged');
-  assert.ok(Math.abs(surface.sample(11,-8).height-2.4)<.001,'court is genuinely elevated');
-  assert.ok(Math.abs(surface.sample(-11,-10).height-5.8)<.001,'station terrace rises above the court');
+  assert.ok(Math.abs(surface.sample(0,27).height-.85)<.001,'quay elevation remains unchanged');
+  assert.ok(Math.abs(surface.sample(17,12).height-8.05)<.001,'court is genuinely elevated');
+  assert.ok(Math.abs(surface.sample(4,-21).height-21.55)<.001,'station terrace rises above the court');
   assert.equal(layout.terrain.navigation?.maxClimbSlopeDegrees,undefined,'architectural stairs use the capsule and actual support, not mountain snapping');
   for(const triangle of surface.triangles) {
     const x=(triangle.a.x+triangle.b.x+triangle.c.x)/3,z=(triangle.a.z+triangle.b.z+triangle.c.z)/3;
@@ -107,7 +107,7 @@ for(const run of [false,true])for(const offset of [-1.45,0,1.45])test(`real Rapi
  const x=stair.x+offset,f=fixture({x,z:stairStart});try{const{highest,lowest}=walkRoute(f,[[x,stairEnd],[x,stairStart]],{run});assert.ok(highest>stair.backY-.04&&lowest<stair.frontY+.04);assert.equal(f.rescues,0);assert.ok(Math.abs(f.actor.position.y-stair.frontY)<.035);}finally{f.world.free();}
 });
 test('diagonal approaches cross real stair treads without turning a seam into an invisible wall',()=>{const f=fixture({x:stair.x-1.45,z:stairStart});try{const{highest}=walkRoute(f,[[stair.x+1.45,stairEnd],[stair.x-1.45,stairStart]]);assert.ok(highest>stair.backY-.04);assert.equal(f.rescues,0);}finally{f.world.free();}});
-test('leaving the stairs restores ordinary valley-street movement',()=>{const f=fixture({x:stair.x,z:stairStart});try{walkRoute(f,[[stair.x,stairEnd],[stair.x,stairStart],[-20,-2.9],[-3,-2.9],[-3,-3.6],[0,-3.6],[0,-3.15],[0,-.75],[0,2.75],[0,9.75],[0,10.25],[0,13.25],[0,16.75],[0,19.75],[0,26]],{run:true});assert.equal(f.rescues,0);assert.ok(Math.abs(f.actor.position.y-.85)<.035);}finally{f.world.free();}});
+test('leaving the stairs restores ordinary quay movement',()=>{const f=fixture({x:stair.x,z:stairStart});try{walkRoute(f,[[stair.x,stairEnd],[stair.x,stairStart],[stair.x,27.5],[0,27.5],[0,35.5]],{run:true});assert.equal(f.rescues,0);assert.ok(Math.abs(f.actor.position.y-.85)<.035);}finally{f.world.free();}});
 
 test('long architectural ramps preserve controlled walk and run speeds in either direction',()=>{
   for(const ramp of layout.ramps.filter(r=>r.depth>1.5))for(const run of [false,true])for(const direction of [-1,1]) {
@@ -135,7 +135,7 @@ test('long architectural ramps preserve controlled walk and run speeds in either
 });
 
 test('real ramp and stair movement agrees at 30, 60 and 120 rendering frames per second',()=>{
-  for(const scenario of [{start:{x:0,z:9.5},seconds:2.2,run:false,minY:1.5},{start:{x:stair.x,z:stairStart},seconds:3.2,run:false,minY:5},{start:{x:stair.x+1.45,z:stairStart},seconds:1.7,run:true,minY:5}]) {
+  for(const scenario of [{start:{x:stair.x,z:stairStart},seconds:2.2,run:false,minY:2.4},{start:{x:stair.x,z:stairStart},seconds:4.5,run:false,minY:3.4},{start:{x:stair.x+1.45,z:stairStart},seconds:2.5,run:true,minY:3.4}]) {
     const positions=[];
     for(const fps of [30,60,120]) {
       const f=fixture(scenario.start);
