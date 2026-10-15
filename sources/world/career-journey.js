@@ -16,7 +16,7 @@ export class CareerJourney {
   const g=this.game,island=g.loaded.get('experience')?.island,layout=g.walkLayouts?.get('experience');
   if(!island||!layout?.railway)return false;
   try{
-   const asset=await g.loader.loadAsync('/models/career-train.glb?v=21');
+   const asset=await g.loader.loadAsync('/models/career-train.glb?v=21.0.1');
    this.island=island;this.walk=g.ensureWalkWorld(island);this.railway=layout.railway;
    this.controller=new CareerTrainController(this.railway,{island});
    this.visual=new CareerTrainVisual(g.scene,this.controller);this.visual.bind(asset.scene);

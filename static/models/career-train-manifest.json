@@ -1,7 +1,7 @@
 {
   "version": 21,
   "file": "career-train.glb",
-  "bytes": 295200,
+  "bytes": 295204,
   "source": "Original single-cabin coastal funicular geometry",
   "coordinateSystem": "Y up, -Z uphill, level cabin; +Z downhill observation window; independent inclined chassis.",
   "designPitch": 0.4799821249263346,

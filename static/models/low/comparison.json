@@ -13,10 +13,10 @@
     },
     {
       "id": "experience",
-      "highTriangles": 177539,
-      "lowTriangles": 94348,
-      "highCompressedBytes": 1975724,
-      "lowCompressedBytes": 1119252,
+      "highTriangles": 177315,
+      "lowTriangles": 94192,
+      "highCompressedBytes": 1973808,
+      "lowCompressedBytes": 1117864,
       "drawCalls": 163,
       "animatedGeometry": "same named district and animation nodes",
       "dock": "same walkable footprint and collision metadata"
@@ -52,6 +52,6 @@
       "dock": "same walkable footprint and collision metadata"
     }
   ],
-  "highTotalBytes": 5903524,
-  "lowTotalBytes": 3808516
+  "highTotalBytes": 5901608,
+  "lowTotalBytes": 3807128
 }

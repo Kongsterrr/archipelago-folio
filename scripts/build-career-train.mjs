@@ -26,7 +26,7 @@ const torus=(r,t,x,y,z,m,p,rotation=[0,0,0])=>mesh(new THREE.TorusGeometry(r,t,6
 function rod(a,b,r,m,p){const av=new THREE.Vector3(...a),bv=new THREE.Vector3(...b),delta=bv.clone().sub(av),o=cyl(r,r,delta.length(),...av.clone().add(bv).multiplyScalar(.5).toArray(),m,p);o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),delta.normalize());return o;}
 function text(word,size,x,y,z,m,p,rotation=[0,0,0]){const geometry=new TextGeometry(word,{font,size,depth:.005,curveSegments:3,bevelEnabled:false});geometry.computeBoundingBox();geometry.translate(-(geometry.boundingBox.max.x+geometry.boundingBox.min.x)/2,0,0);return mesh(geometry,m,[x,y,z],p,rotation);}
 function rivet(x,y,z,p){mesh(new THREE.IcosahedronGeometry(.018,1),'copper',[x,y,z],p);}
-const DESIGN_PITCH=27.50095*Math.PI/180,FLOOR=1.65,DECK=.075,ROOF=3.48;
+const DESIGN_PITCH=27.50095*Math.PI/180,FLOOR=1.65,DECK=.075,FLOOR_BOARDS=.022,ROOF=3.48;
 const cabin=group('career-funicular'),chassis=group('funicular-chassis',cabin);chassis.rotation.x=DESIGN_PITCH;
 function roundedPanel(w,h,d,r,x,y,z,m,p,rotation=[0,0,0]){const s=new THREE.Shape();s.moveTo(-w/2+r,-h/2);s.lineTo(w/2-r,-h/2);s.quadraticCurveTo(w/2,-h/2,w/2,-h/2+r);s.lineTo(w/2,h/2-r);s.quadraticCurveTo(w/2,h/2,w/2-r,h/2);s.lineTo(-w/2+r,h/2);s.quadraticCurveTo(-w/2,h/2,-w/2,h/2-r);s.lineTo(-w/2,-h/2+r);s.quadraticCurveTo(-w/2,-h/2,-w/2+r,-h/2);const g=new THREE.ExtrudeGeometry(s,{depth:d,bevelEnabled:false,curveSegments:5});g.translate(0,0,-d/2);return mesh(g,m,[x,y,z],p,rotation);}
 
@@ -57,8 +57,12 @@ for(const[axle,z]of[-1.50,1.50].entries()){
  }
 }
 const deck=group('funicular-level-deck',cabin);
-box(2.08,DECK,4.82,0,FLOOR-DECK/2,0,'navy',deck);
-for(let n=0;n<18;n++)box(1.98,.022,.254,0,FLOOR-.011,-2.25+n*.265,n%3?'woodLight':'wood',deck);
+// The wood is the walking surface; the navy structure stops at its underside.
+// Keeping both top faces at FLOOR creates z-fighting after Meshopt quantization.
+// Recess the structure while retaining the original floor and deck-bottom Y.
+const substrate=DECK-FLOOR_BOARDS;
+box(2.08,substrate,4.82,0,FLOOR-FLOOR_BOARDS-substrate/2,0,'navy',deck);
+for(let n=0;n<18;n++)box(1.98,FLOOR_BOARDS,.254,0,FLOOR-FLOOR_BOARDS/2,-2.25+n*.265,n%3?'woodLight':'wood',deck);
 for(const side of[-1,1]){box(.045,.075,4.78,side*1.055,FLOOR-.005,0,'copper',deck);for(const z of[-2.46,2.46])box(.12,.13,.06,side*.73,FLOOR-.09,z,'steel',deck);}
 
 // Round low panels, deeply framed glazing and open central portals. The glass

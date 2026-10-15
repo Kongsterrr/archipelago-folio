@@ -57,3 +57,22 @@ test('V21 signed wheel rotation reverses on the same fixed-heading cabin and rem
  const phase=v.wheels[0].object.rotation.x;await v.bind(await model());assert.equal(v.mountPoint,anchor);assert.equal(avatar.parent,anchor);close(v.wheels[0].object.rotation.x,phase,1e-8);assert.equal(v.coupling.visible,false);
  c.passenger=false;c.parkAtStation('beaconfire');v.update(1);close(v.wheels[0].object.rotation.x,phase,1e-8);
 });
+
+test('decoded funicular floor has one visible wood surface above a recessed structural deck, with no coplanar layers',async()=>{
+ const scene=await model(),deck=scene.getObjectByName('funicular-level-deck'),ray=new THREE.Raycaster(),floor=CAREER_TRAIN.floorY;
+ assert.ok(deck);scene.updateMatrixWorld(true);
+ const sample=(x,z)=>{ray.set(new THREE.Vector3(x,floor+.10,z),new THREE.Vector3(0,-1,0));ray.far=.20;return ray.intersectObject(deck,true);};
+ for(let board=0;board<18;board++)for(const x of[-.84,-.31,.24,.82])for(const along of[-.09,.037,.10]){
+  const z=-2.25+board*.265+along,hits=sample(x,z),wood=hits.find(hit=>/^career_train_wood/.test(hit.object.material.name)),support=hits.find(hit=>hit.object.material.name==='career_train_navy');
+  assert.ok(wood&&support,`board ${board} has both real wood and underlying structure at ${x},${z}`);
+  close(wood.point.y,floor,.001);
+  assert.ok(wood.point.y-support.point.y>=.020,`board ${board} shares its visible plane with the structural deck: separation ${wood.point.y-support.point.y}`);
+  assert.ok(hits[0].object.material.name.startsWith('career_train_wood'),'the topmost rendered floor remains the original wood material');
+ }
+ // Board seams intentionally expose the recessed navy substrate. They must
+ // not be filled by another surface coplanar with the walking floor.
+ for(let seam=0;seam<17;seam++){
+  const hits=sample(.37,-2.25+(seam+.5)*.265);assert.ok(hits.length);
+  assert.equal(hits[0].object.material.name,'career_train_navy');assert.ok(floor-hits[0].point.y>=.020);
+ }
+});

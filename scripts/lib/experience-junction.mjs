@@ -34,11 +34,14 @@ export function buildExperienceJunction(api){
  layout.surfaces.push(...terrain.ramps.map(r=>({...r,width:r.width+.20,depth:r.depth+(r.slope?.08:0)})),...terrain.stairways.flatMap(s=>s.treads));
  for(const[material,indices]of Object.entries(terrain.materials))custom(terrain.vertices,indices,material,root);
  // Fine stone joints follow the exact shared floor, including graded streets.
- // These 6mm surface details have no collider and stop at gardens and risers.
+ // These 6mm surface details have no collider and stop at gardens, risers and
+ // boarding decks. Platforms use the terrain itself as their only floor face.
  {
   const vertices=[],indices=[],half=.011;
   function joint(x0,z0,x1,z1){
    const alongX=Math.abs(x1-x0)>Math.abs(z1-z0),points=alongX?[[x0,z0-half],[x1,z1-half],[x1,z1+half],[x0,z0+half]]:[[x0-half,z0],[x0+half,z0],[x1+half,z1],[x1-half,z1]];
+   const xs=points.map(p=>p[0]),zs=points.map(p=>p[1]);
+   if(layout.railway.stations.some(({platform:p})=>Math.max(...xs)>=p.x-p.width/2-.03&&Math.min(...xs)<=p.x+p.width/2+.03&&Math.max(...zs)>=p.z-p.depth/2-.03&&Math.min(...zs)<=p.z+p.depth/2+.03))return;
    if(!points.every(([x,z])=>terrain.isPaving(x,z)))return;
    const heights=points.map(([x,z])=>terrain.height(x,z)),mid=terrain.height((x0+x1)/2,(z0+z1)/2);
    if(Math.abs(mid-heights.reduce((sum,y)=>sum+y,0)/4)>.002||Math.max(...heights)-Math.min(...heights)>.17)return;
@@ -175,7 +178,9 @@ export function buildExperienceJunction(api){
  // Inclined sleepers, paired rails, and a central haul cable share the exact physical curve.
  for(let d=0;d<=length;d+=low?.75:.52){const q=sampleTrainPath(path,d),o=bx(2.18,.09,.17,q.x,q.y-.075,q.z,'junction_woodDark',D.amtrak);o.rotation.x=q.pitch;}
  for(let i=0;i<parts;i++){const a=sampleTrainPath(path,length*i/parts),c=sampleTrainPath(path,length*(i+1)/parts);for(const x of[-.81,.81])rod([x,a.y-.028,a.z],[x,c.y-.028,c.z],.032,'junction_metal',D.amtrak,6);rod([0,a.y-.045,a.z],[0,c.y-.045,c.z],.024,'junction_steel',D.amtrak,5);}
- for(const st of rw.stations){const p=st.platform,g=named('career_platform_'+st.id);bx(p.width,.12,p.depth,p.x,p.y-.06,p.z,'junction_stone',g);layout.surfaces.push({id:'platform-'+st.id,...p});const side=Math.sign(p.x),lampX=p.x+side*(p.width/2-.2);bx(.16,.013,5.5,side*1.44,p.y+.008,p.z,'junction_copper',g);for(const dz of[-2.55,2.55]){bx(.08,2.25,.08,lampX,p.y+1.125,p.z+dz,'junction_steel',g);obstruction('station lamp '+st.id,lampX,p.z+dz,.10,.10,2.4,p.y);b(.34,.35,.34,lampX,p.y+2.32,p.z+dz,'sunsetLantern',g);}const tag=named('career_platform_label_'+st.id,lampX,p.y+2.7,p.z-2.55,g);b(2.35,.5,.14,0,0,0,'junction_navy',tag);tx(st.label.toUpperCase(),st.id==='beaconfire'?.13:.16,0,-.06,.09,'junction_cream',tag);}
+ // The unified terrain already fills every boarding deck at exactly p.y.
+ // Keep its precise support surface, without a second coplanar rendered slab.
+ for(const st of rw.stations){const p=st.platform,g=named('career_platform_'+st.id);layout.surfaces.push({id:'platform-'+st.id,...p});const side=Math.sign(p.x),lampX=p.x+side*(p.width/2-.2);bx(.16,.013,5.5,side*1.44,p.y+.008,p.z,'junction_copper',g);for(const dz of[-2.55,2.55]){bx(.08,2.25,.08,lampX,p.y+1.125,p.z+dz,'junction_steel',g);obstruction('station lamp '+st.id,lampX,p.z+dz,.10,.10,2.4,p.y);b(.34,.35,.34,lampX,p.y+2.32,p.z+dz,'sunsetLantern',g);}const tag=named('career_platform_label_'+st.id,lampX,p.y+2.7,p.z-2.55,g);b(2.35,.5,.14,0,0,0,'junction_navy',tag);tx(st.label.toUpperCase(),st.id==='beaconfire'?.13:.16,0,-.06,.09,'junction_cream',tag);}
  for(let i=0;i<parts;i++){const a=sampleTrainPath(path,length*i/parts),c=sampleTrainPath(path,length*(i+1)/parts),z=(a.z+c.z)/2;for(const side of[-1,1]){if(rw.stations.some(st=>Math.sign(st.platform.x)===side&&Math.abs(z-st.platform.z)<2.9))continue;const x=side*1.43,ay=Math.max(a.y+.02,terrain.height(x,a.z)),cy=Math.max(c.y+.02,terrain.height(x,c.z));rail('funicular corridor',[x,a.z],[x,c.z],ay,cy,D.amtrak,Math.min(a.y-.2,ay),Math.min(c.y-.2,cy));}}
  for(const q of[path.from,path.to]){bx(2.65,.32,.22,0,q[1]+.28,q[2],'junction_woodDark',D.amtrak);obstruction('funicular buffer',0,q[2],2.8,.35,1.1,q[1]-.2);}
  layout.trainTrack={path,railY:null,points:Array.from({length:81},(_,i)=>{const q=sampleTrainPath(path,length*i/80);return[q.x,q.y,q.z];}),protected:true,crossings:[]};

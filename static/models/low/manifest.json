@@ -927,14 +927,14 @@
       "id": "experience",
       "name": "experience",
       "file": "experience.glb",
-      "bytes": 1119252,
-      "rawBytes": 4399960,
+      "bytes": 1117864,
+      "rawBytes": 4392112,
       "revision": "v21-terraced-summit",
-      "sourceMeshes": 4313,
+      "sourceMeshes": 4309,
       "drawCalls": 162,
       "staticDrawCalls": 13,
-      "vertices": 114148,
-      "triangles": 94348,
+      "vertices": 113932,
+      "triangles": 94192,
       "bounds": {
         "min": [
           -39,
@@ -4057,8 +4057,8 @@
       "triangleReductionPercent": 0
     }
   ],
-  "totalBytes": 3808516,
-  "totalTriangles": 283332,
+  "totalBytes": 3807128,
+  "totalTriangles": 283176,
   "quality": "low",
   "walkLayout": "walk-layout.json"
 }
