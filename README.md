@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V22.1 — Stable Stairs** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V22.2 — Solid Summit** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -78,6 +78,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
 | **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
 | **V21 — Terraced Summit** | A terraced coastal mountain, a single level-cabin funicular, chronological uphill stops, direct descent and connected hillside walks | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V22.2 — Solid Summit** | Removes stray stair masonry and makes the complete visible mountain rocks share collision and support geometry across both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V22.1 — Stable Stairs** | Stabilizes stair camera tracking and walk/run animation across all 12 Experience stairways | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V22 — Summit Express** | A shorter automatic tour, direct harbor boarding, short company visits and stable stair/wall cameras | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V20 — Career Valley Express** | A compact career valley, immediate platform boarding, automatic departure and brief company stops with accessible controls that hold the train when needed | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -95,6 +96,15 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V22.2 — Solid Summit
+
+- Removes three free-standing decorative arch strips that intersected the stairs, retaining the buildings’ real doors, windows and arcades. Four rock shoulders retreat from the full stair corridor and character clearance.
+- All **28 mountain rocks** now use the same complete closed mesh for rendering and collision in high and low quality. This replaces missing collision and undersized boxes, including the previously unprotected rock edges.
+- Reachable upper surfaces support Jack’s feet; steep faces remain solid. Height-aware support queries avoid snapping a character below an overhang onto its roof. Camera clearance separately reads the highest visible mountain surface.
+- Actual exported-model checks cover all **310 treads**, full path and platform widths, building entrances, and off-path rock interiors. Existing stair camera smoothing, short train tours, characters, other islands and saved records retain their behavior.
+
+See [validation notes](VALIDATION.md) for actual game evidence and the scope of verification.
 
 ### V22.1 — Stable Stairs
 

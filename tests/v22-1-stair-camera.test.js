@@ -112,7 +112,7 @@ function measure(track,width,height,zoom,fps,stable,verifyTerrain=false){
   // the full terrain sampler and bound the camera at all authored viewpoints.
   rig.update(1/fps,state({...b,position,landAzimuth:island.rotation,walkingStairs:stable,walkingIntent:stable?track.intent:null}),n===0);
   if(verifyTerrain&&n%10===0){
-   const pivot=new THREE.Vector3(position.x,position.y+.7,position.z),terrain=p=>walk.contains(p,0)?walk.groundAt(p):null;
+   const pivot=new THREE.Vector3(position.x,position.y+.7,position.z),terrain=p=>walk.contains(p,0)?walk.surfaceHeight(p):null;
    const clear=rig.walkCamera.clearFraction(pivot,rig.position,terrain);
    assert.equal(clear,1,`${track.id}/${track.direction}/zoom${zoom}: the smoothed eye retains actual terrain clearance`);
   }
@@ -168,7 +168,7 @@ test('diagonal stair contacts, stops, reversal and corners stay continuous at ev
    if(n===Math.round(1.4*fps)){
     const held=rig.position.clone(),lag=rig.walkCamera.horizontalLag.clone();rig.update(10,state({position,followPaused:true}));assert.deepEqual(rig.position,held);assert.deepEqual(rig.walkCamera.horizontalLag,lag);
    }
-   if(n%Math.round(fps/3)===0){const terrain=p=>walk.contains(p,0)?walk.groundAt(p):null,pivot=new THREE.Vector3(position.x,position.y+.7,position.z);assert.equal(rig.walkCamera.clearFraction(pivot,rig.position,terrain),1,`${track.id}: diagonal smoothed view clears real terrain`);}
+   if(n%Math.round(fps/3)===0){const terrain=p=>walk.contains(p,0)?walk.surfaceHeight(p):null,pivot=new THREE.Vector3(position.x,position.y+.7,position.z);assert.equal(rig.walkCamera.clearFraction(pivot,rig.position,terrain),1,`${track.id}: diagonal smoothed view clears real terrain`);}
   }
  }
  assert.ok(exits>10,'actual trajectories must leave the nearStairs margin onto landings');

@@ -1,3 +1,20 @@
+# V22.2 — Solid Summit · 2026-10-18
+
+## Cause and correction
+
+Three decorative masonry arch rows were placed across the garden stair rather than against a wall. They are removed; real building arches remain. Mountain collision also did not describe the visible rocks: twenty rock meshes had no solid collider and eight used undersized boxes. All 28 rocks now export their actual closed mesh as shared high/low geometry, collision and support data. Four rock shoulders retreat slightly to preserve the full stair corridor and capsule margin.
+
+Rapier now collides with those surfaces. Reachable gentle slopes support Jack; steep faces block him. Foot-height-aware sampling prevents snapping from below an overhang onto its top. Capsule/shell overlap and closed-solid containment checks prevent an entirely buried capsule from being considered clear. Camera terrain queries independently use the highest visible surface. The existing V22.1 stair motion filtering and V22 train timing remain; other islands retain their prior movement policy.
+
+## Verification
+
+- Complete Node 24 regression: **1,174 / 1,174 passed**, zero failures, skips or cancellations, **185.19 seconds**. Production build passed in **7.82 seconds**. `git diff --check` passes. Logs: `.sites-runtime/v22.2/final-regression.log` and `production-build.log`.
+- Actual exported high/low GLB checks cover all **12 stair groups / 310 treads**, four platforms, published paths, short visits and building entry routes. Rocks clear the full 3.4-unit stair width plus the 0.22-unit capsule margin on both sides. Render and physical rock vertices/winding match in both qualities; all 28 shells are closed manifolds, with 1,176 vertices and 2,240 triangles.
+- Existing **144 stair trajectories**, both complete island loops and stair/camera regressions remain passing. New physics checks cover cliff contact, fully enclosed positions, overhangs, supported ascent/descent, all twelve retaining-wall seams and idle stability. A separate deterministic sweep exercised **676 approach/climb trajectories / 202,800 fixed steps**, with **zero interior entries and zero last-safe rescues**; 175 trajectories rose onto supported slope surfaces. Another actual-model audit checked 437 entry/interior clearance volumes per quality against rocks.
+- Actual browser: Apple M3 Max, macOS / Codex Chromium, WebGPU. Walked the entire harbor-east → garden → east flights → summit-west → west flights → harbor-west loop, then repeated the harbor/garden approach using low quality and reduced motion. Captures include desktop and emulated portrait; the final portrait has a verified **390×844 content viewport**. Physical phones and WebGL2 were not re-tested. No sustained performance claim is made while concurrent CPU regression tests were running; the earlier WebGL2 limitation below remains documented.
+- Evidence is retained in ignored `.sites-runtime/v22.2/evidence/`: `garden-stair-fixed.png`, `east-cliff-stair-fixed.png` and `solid-summit-stairs-actual-game.webm`. These are real game frames/video, not generated concepts; the video includes inspection pauses. Geometry/contact audit JSON files are retained beside the logs.
+- Experience high/low assets are **1,722,844 / 1,180,948 bytes**, within the existing 2 MB / 1.2 MB limits. Only Experience models and shared metadata are rebuilt. Jack, train/vehicle models, coastline, company content and saved-record formats are unchanged.
+
 # V22.1 — Stable Stairs · 2026-10-17
 
 ## Cause and bounded correction

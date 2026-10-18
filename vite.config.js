@@ -6,7 +6,7 @@ import {pipeline} from 'node:stream/promises';
 import {fileURLToPath} from 'node:url';
 
 // Local QA only. The request contains recording bytes, never a destination path.
-const capturePath = fileURLToPath(new URL('./.sites-runtime/v22.1/evidence/stable-stairs-actual-game.webm', import.meta.url));
+const capturePath = fileURLToPath(new URL('./.sites-runtime/v22.2/evidence/solid-summit-actual-game.webm', import.meta.url));
 function localGameCapture() {
   let saving = false;
   return {
@@ -16,7 +16,7 @@ function localGameCapture() {
       server.middlewares.use(async (request, response, next) => {
         const frame=/^\/__dev\/capture\/summit-frame-(\d{2})\.png$/.exec(request.url||'');
         if (request.url !== '/__dev/capture/career-valley'&&!frame) return next();
-        const destination=frame?fileURLToPath(new URL(`./.sites-runtime/v22.1/evidence/summit-frame-${frame[1]}.png`,import.meta.url)):capturePath;
+        const destination=frame?fileURLToPath(new URL(`./.sites-runtime/v22.2/evidence/summit-frame-${frame[1]}.png`,import.meta.url)):capturePath;
         const reply = (status, body) => {
           response.writeHead(status, {'Content-Type': 'application/json', 'Cache-Control': 'no-store'});
           response.end(JSON.stringify(body));
@@ -50,7 +50,7 @@ function localGameCapture() {
           }), createWriteStream(temporaryPath, {flags: 'wx'}));
           if (!bytes) throw new Error('Recording is empty');
           await rename(temporaryPath, destination);
-          reply(200, {saved: true, bytes, path: frame?`.sites-runtime/v22.1/evidence/summit-frame-${frame[1]}.png`:'.sites-runtime/v22.1/evidence/stable-stairs-actual-game.webm'});
+          reply(200, {saved: true, bytes, path: frame?`.sites-runtime/v22.2/evidence/summit-frame-${frame[1]}.png`:'.sites-runtime/v22.2/evidence/solid-summit-actual-game.webm'});
         } catch (error) {
           await rm(temporaryPath, {force: true}).catch(() => {});
           if (!response.destroyed) reply(500, {error: error.message});

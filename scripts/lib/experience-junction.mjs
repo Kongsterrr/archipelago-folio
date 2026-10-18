@@ -181,18 +181,44 @@ export function buildExperienceJunction(api){
   layout.interiors.push({landmarkId:'career-station',floorY:y,bounds:{x:4,z:-21,width:24,depth:8},entrances:[{id:'station-front',x:0,z:-17,y,width:7.2,yaw:0},{id:'station-east',x:16,z:-21,y,width:4,yaw:Math.PI/2},{id:'station-west',x:-8,z:-21,y,width:4,yaw:-Math.PI/2}],cutawayGroups:[walls.name,rg.name,'occluder_junction_terminal_vault'],walkRoute:[[17.5,-21],[16,-21],[4,-21],[0,-19],[0,-16],[-5,-16],[-5,-14]]});
  }
  // Interlocking, blunt fractured masses create a broad ridge, not isolated spires.
- const decorativeRockMeshes=[];
- function rock(id,x,z,w,d,y,h,collision=true){const g=named('occluder_summit_rock_'+id),geometry=new THREE.IcosahedronGeometry(1,low?0:1),position=geometry.attributes.position;for(let i=0;i<position.count;i++){const xx=position.getX(i),yy=position.getY(i),zz=position.getZ(i),noise=1+.13*Math.sin(xx*11+yy*7+zz*17);position.setXYZ(i,xx*w*.5*noise,y+(yy+1)*h*.5,zz*d*.5*(1+.08*Math.sin(yy*13+xx*9)));}geometry.computeVertexNormals();decorativeRockMeshes.push(mesh(geometry,'junction_rock',[x,0,z],zero,g));if(collision)obstruction('summit rock '+id,x,z,w*.64,d*.64,h,y);}
+ const decorativeRockMeshes=[];layout.solidRocks=[];
+ function rock(id,x,z,w,d,y,h){
+  // The complete, closed rock is shared by rendering, support queries and
+  // collision. Core tessellation is identical at both quality levels: reducing
+  // it used to put low-quality slopes on a different physical surface.
+  const g=named('occluder_summit_rock_'+id),geometry=new THREE.IcosahedronGeometry(1,1),position=geometry.attributes.position;
+  for(let i=0;i<position.count;i++){const xx=position.getX(i),yy=position.getY(i),zz=position.getZ(i),noise=1+.13*Math.sin(xx*11+yy*7+zz*17);position.setXYZ(i,xx*w*.5*noise,y+(yy+1)*h*.5,zz*d*.5*(1+.08*Math.sin(yy*13+xx*9)));}
+  geometry.computeVertexNormals();
+  // Weld only exact duplicates for the physics export. This preserves every
+  // rendered face while connecting adjacent faces and avoiding repeated JSON.
+  const vertices=[],welded=new Map(),remap=[];
+  for(let i=0;i<position.count;i++){
+   const point=[position.getX(i)+x,position.getY(i),position.getZ(i)+z],key=point.join(',');
+   if(!welded.has(key)){welded.set(key,vertices.length/3);vertices.push(...point);}remap.push(welded.get(key));
+  }
+  const sourceIndices=geometry.index?[...geometry.index.array]:Array.from({length:position.count},(_,i)=>i),indices=sourceIndices.map(i=>remap[i]);
+  layout.solidRocks.push({id,vertices,indices});
+  decorativeRockMeshes.push(mesh(geometry,'junction_rock',[x,0,z],zero,g));
+ }
  for(const[id,x,z,w,d,y,h]of[['ridge-root',-19,-24,20,13,15,17],['west-ledge',-25,-23,12,11,11,16],['main-peak',-17,-26,13,10,28,13.5],['peak-left',-24,-25,10,9,24,11],['peak-right',-10,-28,11,5.5,24,12],['rear-ridge',-3,-28.5,9,4.8,21.5,8],['west-coast',-33,2,8,22,.5,11],['east-coast',33,-4,7,25,.4,13]])rock(id,x,z,w,d,y,h);
  // Lower rock shelves break the terrain silhouette below short white retaining bands.
- for(const[i,x,z,w,d,y,h]of[[0,10,-6,10,8,9,10],[1,19,-5,10,9,8.5,11],[2,23,-8,8,8,11,9],[3,5,-2,5,7,7,8],[4,-17,12.3,13,7,3,9],[5,-8,9,8,6,4,8],[6,22,21,7,5,1.4,5],[7,30,12,6,8,3,6]])rock('terrace-'+i,x,z,w,d,i<6?terrain.height(x,z)-h*.52:y,h,false);
- for(const[x,z,y,w,h,d]of[[7,-8,16,5,5,4],[12,-8,15,6,5.5,5],[18,-9,17,5,4.5,5],[24,-11,17,6,5,5],[9,-1,9,6,4,6],[17,0,8.5,7,5,5],[24,-1,10,6,4.7,6],[-23,12,7,5,5,5],[-18,12,4,6,6,5],[-13,12,6,5,4.5,5],[-8,10,8,4,4,4],[28,17,5,4,4,5]])rock('fissure-'+x+'-'+z,x,z,w,d,x===28?y:terrain.height(x,z)-h*.52,h,false);
+ for(const[i,x,z,w,d,y,h]of[[0,10,-6,10,8,9,10],[1,19,-5,10,9,8.5,11],[2,23,-8,8,8,11,9],[3,5,-2,5,7,7,8],[4,-17,12.3,13,7,3,9],[5,-8,9,8,6,4,8],[6,22,21,7,5,1.4,5],[7,30,12,6,8,3,6]]){
+  const clearX=i===2?22.4:x;
+  rock('terrace-'+i,clearX,z,w,d,i<6?terrain.height(clearX,z)-h*.52:y,h);
+ }
+ for(const[x,z,y,w,h,d]of[[7,-8,16,5,5,4],[12,-8,15,6,5.5,5],[18,-9,17,5,4.5,5],[24,-11,17,6,5,5],[9,-1,9,6,4,6],[17,0,8.5,7,5,5],[24,-1,10,6,4.7,6],[-23,12,7,5,5,5],[-18,12,4,6,6,5],[-13,12,6,5,4.5,5],[-8,10,8,4,4,4],[28,17,5,4,4,5]]){
+  // Preserve the rock IDs while pulling these shoulders back from the
+  // complete stair width, including Jack's capsule at the outside lanes.
+  const clearX=x===-23&&z===12?-22.2:x===24&&z===-1?23.35:x===24&&z===-11?23.3:x;
+  rock('fissure-'+x+'-'+z,clearX,z,w,d,x===28?y:terrain.height(clearX,z)-h*.52,h);
+ }
  // Root plants on the visible rock relief, including the newly exposed blocks.
  const decorationRay=new THREE.Raycaster();for(const m of decorativeRockMeshes)m.updateWorldMatrix(true,false);
  const decorationHeight=(x,z)=>{decorationRay.set(new THREE.Vector3(x,60,z),new THREE.Vector3(0,-1,0));const hit=decorationRay.intersectObjects(decorativeRockMeshes,false)[0];return Math.max(terrain.height(x,z),hit?.point.y??-Infinity);};
  for(const[x,z,y]of[[7,-5,12],[12,-7,15],[20,-8,17],[25,-9,16],[-23,10,10],[-17,10.5,11],[-13.8,11.8,12],[24.8,0,8],[17.5,1,7.5]])for(const[dx,dz,h]of[[-.8,.1,2.8],[.6,.2,3.6],[0,-.6,3.1]]){const rootY=decorationHeight(x+dx,z+dz);rod([x+dx,rootY,z+dz],[x+dx,rootY+h,z+dz],.055,'junction_woodDark',D.amtrak);for(const[k,r]of[[.35,.7],[.6,.55],[.82,.32]])cone(r,h*.58,x+dx,rootY+h*k,z+dz,'junction_leaf',low?6:9,D.amtrak);sph(.55,x+dx,rootY+.25,z+dz,'junction_leafLight',D.amtrak,[1.3,.5,.8]);}
- // Short arcaded cornices belong to the terrace edge; the mountain remains exposed.
- for(const[x,z,y,w]of[[-17,9.8,12.85,21],[19,21.7,6.35,13],[14,-11.7,19.85,17]])for(let dx=-w/2+1.4;dx<w/2;dx+=2.8)arch(x+dx,y,z,2.2,1.55,D.amtrak,false,'junction_stone');
+ // Retaining walls already provide the terrace edges. Free-standing decorative
+ // arch strips crossed the garden stair and floated above other approaches;
+ // reserve arches for the actual building portals, windows and workshop arcade.
  // Hanging foliage follows masonry joints and planted rock fissures.
  for(const[x,z,y]of[[-24,9.7,14.45],[-18,10.6,14.45],[-10,9.4,14.45],[10,-9.7,21.45],[19,-11,21.45],[25,-13,21.45],[11,18.7,7.95],[25,21.5,7.95]])for(let i=0;i<5;i++)sph(.42,x+Math.sin(i*2)*.23,y-i*.55,z+.18,'junction_leaf',D.amtrak,[.9,1.45,.5]);
  for(const[x,z,y,h]of[[-29,-15,16,4.5],[-23,-23,26,5],[-20,-28,30,4.5],[-14,-28,33,4],[-8,-28,27,4.5],[-29,-8,13,5],[-31,4,7,4],[8,-5,13,4.5],[15,-7,15,5],[23,-7,14,4.2],[31.5,-13,18,4.5],[31,9,9,3.5],[25,21,8.05,3]]){const rootY=decorationHeight(x,z),treeHeight=Math.min(h,(42.5-rootY)/1.1);rod([x,rootY,z],[x,rootY+treeHeight,z],.09,'junction_woodDark',D.amtrak);for(const[k,r]of[[.32,1.05],[.58,.85],[.8,.55]])cone(r,treeHeight*.6,x,rootY+treeHeight*k,z,'junction_leaf',low?7:10,D.amtrak);}

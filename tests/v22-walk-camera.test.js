@@ -102,7 +102,7 @@ for(const id of['harbor-east-stair','garden-front-stair','summit-west-stair'])fo
  assert.ok(reached,`${id} fixture must traverse the real stairs`);tracks.push({id,run,direction,frames});
 }
 world.free();
-const terrainHeight=p=>walk.contains(p,0)?walk.groundAt(p):null;
+const terrainHeight=p=>walk.contains(p,0)?walk.surfaceHeight(p):null;
 test('the entire open summit shoulder clears all three walking lanes, both headings and every zoom',()=>{
  const stair=layout.stairs.find(s=>s.id==='summit-west-stair');
  for(const [width,height]of[[1440,900],[1920,1080],[390,844],[844,390]])for(const zoom of[0,1,2])for(const lane of[-1.3,0,1.3])for(const direction of[-1,1]){

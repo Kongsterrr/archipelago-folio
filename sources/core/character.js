@@ -1,6 +1,7 @@
 import {ShapeUtils,Vector2} from 'three';
 import {pointInPolygon,dockLocal} from './dock.js';
 import {TerrainSurface} from './terrain.js';
+import {SolidRockSurface} from './solid-rock-surface.js';
 
 export const SEA_GROUP=0x00010001;
 export const WALK_GROUP=0x00020002;
@@ -10,7 +11,7 @@ function inRect(p,r,margin=0){const c=Math.cos(r.rotation||0),s=Math.sin(r.rotat
 
 // The two physics layers share one fixed clock, but never share false-height floors.
 export class IslandWalkWorld{
- constructor(R,world,island,layout){Object.assign(this,{R,world,island,layout});this.colliders=[];this.handles=new Set();this.obstacles=[];this.vehicles=new Set();
+ constructor(R,world,island,layout){Object.assign(this,{R,world,island,layout});this.colliders=[];this.handles=new Set();this.obstacles=[];this.rockColliders=[];this.vehicles=new Set();
   const body=world.createRigidBody(R.RigidBodyDesc.fixed().setTranslation(island.x,0,island.z).setRotation({x:0,y:Math.sin(island.rotation/2),z:0,w:Math.cos(island.rotation/2)}));this.body=body;
   const add=(desc,obstacle=false)=>{const c=world.createCollider(desc.setCollisionGroups(WALK_GROUP).setFriction(0),body);this.colliders.push(c);this.handles.add(c.handle);if(obstacle)this.obstacles.push(c);return c;};
   const points=(layout.shore||island.shore).map(([x,z])=>new Vector2(x,z)),y=layout.groundY??.85;
@@ -22,6 +23,10 @@ export class IslandWalkWorld{
   const vertices=new Float32Array(verticesList.flat()),indices=new Uint32Array(indicesList);
   this.terrain=layout.terrain?new TerrainSurface(layout.terrain):null;
   this.terrainCollider=add(R.ColliderDesc.trimesh(this.terrain?new Float32Array(layout.terrain.vertices):vertices,this.terrain?new Uint32Array(layout.terrain.colliderIndices??layout.terrain.indices):indices,R.TriMeshFlags.FIX_INTERNAL_EDGES));
+  // The full authored rock shells match both render qualities; reduced boxes
+  // let the capsule walk through their exposed shoulders.
+  this.rockSurface=layout.solidRocks?.length?new SolidRockSurface(layout.solidRocks):null;
+  for(const rock of layout.solidRocks||[])this.rockColliders.push(add(R.ColliderDesc.trimesh(new Float32Array(rock.vertices),new Uint32Array(rock.indices),R.TriMeshFlags.FIX_INTERNAL_EDGES),true));
   this.surfaces=layout.surfaces?.length?layout.surfaces:[{x:0,z:11.85,width:3,depth:7.9,y:.85}];
   for(const f of this.surfaces){
    const angle=f.rotation||0,pitch=-Math.atan(f.slope||0),cy=Math.cos(angle/2),sy=Math.sin(angle/2),cx=Math.cos(pitch/2),sx=Math.sin(pitch/2),c=Math.cos(angle),s=Math.sin(angle);
@@ -44,10 +49,15 @@ export class IslandWalkWorld{
    const angle=f.rotation||0,slope=f.slope||0,dz=(p.x-f.x)*Math.sin(angle)+(p.z-f.z)*Math.cos(angle),height=f.y+slope*dz;
    if(height>=result.height-1e-6){const size=Math.hypot(1,slope);result={height,normal:{x:-slope*Math.sin(angle)/size,y:1/size,z:-slope*Math.cos(angle)/size},slope:Math.atan(Math.abs(slope))};}
   }
+  // Feet may step onto a nearby ledge, but never jump to a roof above them.
+  const rock=this.rockSurface?.sample(p.x,p.z,Number.isFinite(point.y)?point.y+.20:Infinity);
+  if(rock&&rock.height>result.height+1e-6)result=rock;
   const c=Math.cos(this.island.rotation),s=Math.sin(this.island.rotation),n=result.normal;
   return{...result,normal:{x:n.x*c+n.z*s,y:n.y,z:-n.x*s+n.z*c}};
  }
  groundAt(point){return this.groundSample(point).height;}
+ // Visibility rays ask for the exposed surface, not a foot-reachable ledge.
+ surfaceHeight(point){return this.groundSample({x:point.x,z:point.z}).height;}
  // Stair treads are authored support boxes at exactly the rendered heights.
  // A narrow-step controller profile is local to this architectural surface.
  nearStairs(point){const p=dockLocal(point,this.island);return (this.layout.stairs||[]).some(stair=>inRect(p,stair,CHARACTER.radius+.4));}
@@ -57,21 +67,30 @@ export class IslandWalkWorld{
  // Authored mountain surfaces opt into one traversal policy for both actors.
  // Older flat islands and unprofiled terrain retain their original limits.
  get allTerrain(){return Number.isFinite(this.layout.terrain?.navigation?.maxClimbSlopeDegrees);}
- get climbSlope(){return this.allTerrain?this.layout.terrain.navigation.maxClimbSlopeDegrees*Math.PI/180:Math.PI/6;}
+ get climbSlope(){return this.allTerrain?this.layout.terrain.navigation.maxClimbSlopeDegrees*Math.PI/180:Math.PI/6+(this.rockSurface ? .004 : 0);}
  travelScale(point,x,z){const n=this.groundSample(point).normal;return Math.hypot(1,(n.x*x+n.z*z)/Math.max(.01,n.y));}
  safeGround(point,radius=.22,maxSlope=this.climbSlope){
   if(!this.contains(point,radius))return false;
   const center=this.groundSample(point);
-  for(let i=0;i<8;i++){const a=i*Math.PI/4,p={x:point.x+Math.cos(a)*radius,z:point.z+Math.sin(a)*radius},sample=this.groundSample(p);if(sample.slope>maxSlope+.004||Math.abs(sample.height-center.height)>radius*Math.tan(maxSlope)+.07)return false;}
+  for(let i=0;i<8;i++){const a=i*Math.PI/4,p={x:point.x+Math.cos(a)*radius,z:point.z+Math.sin(a)*radius},sample=this.groundSample({...p,y:point.y});if(sample.slope>maxSlope+.004||Math.abs(sample.height-center.height)>radius*Math.tan(maxSlope)+.07)return false;}
   return center.slope<=maxSlope+.004;
  }
  clear(point,radius=CHARACTER.radius){
   if(!this.contains(point,radius))return false;
   for(const car of this.vehicles||[]){const c=Math.cos(car.yaw),s=Math.sin(car.yaw),dx=point.x-car.position.x,dz=point.z-car.position.z;if(Math.abs(dx*c-dz*s)<car.spec.collisionHalfWidth+radius+.03&&Math.abs(dx*s+dz*c)<car.spec.collisionHalfLength+radius+.03)return false;}
   const p=dockLocal(point,this.island),feet=Number.isFinite(point.y)?point.y:this.groundAt(point),top=feet+CHARACTER.height+CHARACTER.offset*2;
+  if(this.rockIntersection({...point,y:feet},radius))return false;
   // Upper masonry is not a wall across a lower, open concourse. Match the
   // character's vertical capsule envelope as well as its horizontal footprint.
   return !(this.layout.obstacles||[]).some(o=>{const bottom=o.y??this.layout.groundY??.85;return feet<bottom+o.height&&top>bottom&&inRect(p,o,radius+.03);});
+ }
+ rockIntersection(point,radius=CHARACTER.radius,inset=0){
+  if(!this.rockColliders.length||!Number.isFinite(point.x)||!Number.isFinite(point.y)||!Number.isFinite(point.z))return null;
+  const local=dockLocal(point,this.island);
+  // Rapier's triangle intersections alone miss a capsule fully inside a shell.
+  if(this.rockSurface.contains(local.x,point.y+CHARACTER.height/2+CHARACTER.offset,local.z))return true;
+  const shape=new this.R.Capsule(Math.max(.01,CHARACTER.halfHeight-inset),Math.max(.01,radius-inset));
+  return this.world.intersectionWithShape({x:point.x,y:point.y+CHARACTER.height/2+CHARACTER.offset,z:point.z},{x:0,y:0,z:0,w:1},shape,undefined,WALK_GROUP,undefined,undefined,c=>this.rockColliders.includes(c));
  }
  visible(a,b){const ray=new this.R.Ray({x:a.x,y:a.y+.65,z:a.z},{x:b.x-a.x,y:(b.y??a.y)+.6-(a.y+.65),z:b.z-a.z});return !this.world.castRay(ray,1,true,undefined,WALK_GROUP,undefined,undefined,c=>this.obstacles.includes(c)||(!!this.terrain&&c.handle===this.terrainCollider.handle));}
  dispose(){this.world.removeRigidBody(this.body);}
@@ -84,16 +103,19 @@ export class CharacterController{
  }
  get position(){const p=this.body.translation();return{x:p.x,y:p.y-CHARACTER.height/2-CHARACTER.offset,z:p.z};}
  get speed(){return Math.hypot(this.velocity.x,this.velocity.z);}
- teleport(point,walkWorld=this.walkWorld){this.walkWorld=walkWorld;this.yaw=point.yaw||0;const y=point.y??walkWorld.groundAt(point);this.body.setTranslation({x:point.x,y:y+CHARACTER.height/2+CHARACTER.offset,z:point.z},true);this.body.setNextKinematicTranslation(this.body.translation());this.hold();this.previous={...this.position};this.lastSafe={...this.position,yaw:this.yaw};this.seated=false;}
+ teleport(point,walkWorld=this.walkWorld){this.walkWorld=walkWorld;this.controller.setMaxSlopeClimbAngle(walkWorld.rockSurface?walkWorld.climbSlope:Math.PI/6);this.yaw=point.yaw||0;const y=point.y??walkWorld.groundAt(point);this.body.setTranslation({x:point.x,y:y+CHARACTER.height/2+CHARACTER.offset,z:point.z},true);this.body.setNextKinematicTranslation(this.body.translation());this.hold();this.previous={...this.position};this.lastSafe={...this.position,yaw:this.yaw};this.seated=false;}
  enable(value){this.active=value;this.collider.setEnabled(value);this.hold();}
  hold(){this.previous={...this.position};this.velocity={x:0,y:0,z:0};this.body.setLinvel({x:0,y:0,z:0},true);this.body.setNextKinematicTranslation(this.body.translation());}
  step(input,dt){if(!this.active)return;const p=this.position;this.previous={...p};let x=input.x||0,z=input.z||0;const length=Math.hypot(x,z);if(length>.05&&this.seated)this.seated=false;if(this.seated){this.hold();return;}
   const scale=(input.run?CHARACTER.run:CHARACTER.walk)/Math.max(1,length);x*=scale;z*=scale;
   if(this.walkWorld.allTerrain){this.stepTerrain(p,x,z,dt);return;}
-  const safe=q=>this.walkWorld.contains(q)&&(!this.walkWorld.terrain||(this.walkWorld.safeGround(q,CHARACTER.radius)&&Math.abs(this.walkWorld.groundAt(q)-this.walkWorld.groundAt(p))<.18));
+  const safe=q=>{const grounded=this.walkWorld.rockSurface?{...q,y:p.y}:q;return this.walkWorld.contains(q)&&(!this.walkWorld.terrain||(this.walkWorld.safeGround(grounded,CHARACTER.radius)&&Math.abs(this.walkWorld.groundAt(grounded)-this.walkWorld.groundAt(p))<.18));};
   let next={x:p.x+x*dt,z:p.z+z*dt};if(!safe(next)){if(safe({x:next.x,z:p.z}))next.z=p.z;else if(safe({x:p.x,z:next.z}))next.x=p.x;else next={x:p.x,z:p.z};}
   const stairs=this.walkWorld.nearStairs(p)||this.walkWorld.nearStairs(next);
   const ramp=this.walkWorld.nearRamp(p)||this.walkWorld.nearRamp(next);
+  // Exposed gentle rock faces use the same small downward support request as
+  // ramps, so gravity cannot fight an otherwise valid climb.
+  const rockSupport=this.walkWorld.rockSurface&&(this.walkWorld.groundSample(p).rockId||this.walkWorld.groundSample({...next,y:p.y}).rockId);
   if(stairs!==this.stairProfile){this.controller.enableAutostep(.18,stairs ? .15 : .25,false);this.stairProfile=stairs;}
   // Strong downward motion fights the capsule against short vertical risers.
   // A small negative component preserves snap-to-ground while real autostep
@@ -106,7 +128,7 @@ export class CharacterController{
   // Follow stair descent at the walking pace instead of requesting free-fall:
   // a large vertical sweep is projected along the capsule's tread contact and
   // otherwise accelerates Jack horizontally at each nosing.
-  const downward=descendingStair?Math.max(.6,moveLength/dt*.55+.4)*dt:(stairs||ramp)?.6*dt:Math.max(.08,5*dt);
+  const downward=descendingStair?Math.max(.6,moveLength/dt*.55+.4)*dt:(stairs||ramp||rockSupport)?.6*dt:Math.max(.08,5*dt);
   this.controller.computeColliderMovement(this.collider,{x:next.x-p.x,y:-downward,z:next.z-p.z},undefined,WALK_GROUP,c=>this.walkWorld.handles.has(c.handle));
   const movement=this.controller.computedMovement(),body=this.body.translation();
   // Shorten the already-resolved descent vector when the rounded capsule nose
@@ -136,6 +158,6 @@ export class CharacterController{
   this.velocity={x:movement.x/dt,y:(height-p.y)/dt,z:movement.z/dt};
   if(this.speed>.06){const target=Math.atan2(-movement.x,-movement.z),delta=Math.atan2(Math.sin(target-this.yaw),Math.cos(target-this.yaw));this.yaw+=delta*Math.min(1,12*dt);}
  }
- afterStep(){const p=this.position;if(this.walkWorld.contains(p)&&Math.abs(p.y-this.walkWorld.groundAt(p))<.3)this.lastSafe={...p,yaw:this.yaw};else if(!this.walkWorld.contains(p,.18)||p.y<this.walkWorld.groundAt(p)-.4||!Number.isFinite(p.y))this.teleport(this.lastSafe);}
+ afterStep(){const p=this.position;if(this.walkWorld.rockIntersection(p,CHARACTER.radius,.025)){this.teleport(this.lastSafe);return;}if(this.walkWorld.contains(p)&&Math.abs(p.y-this.walkWorld.groundAt(p))<.3)this.lastSafe={...p,yaw:this.yaw};else if(!this.walkWorld.contains(p,.18)||p.y<this.walkWorld.groundAt(p)-.4||!Number.isFinite(p.y))this.teleport(this.lastSafe);}
  snapshot(){return{position:{...this.position},yaw:this.yaw,seated:this.seated};}
 }

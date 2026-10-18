@@ -26,7 +26,8 @@ test('V21 architecture follows the chosen right garden, left workshop and upper 
  assert.deepEqual(layout.stations.filter(s=>s.directory).sort((a,b)=>b.hitArea.y-a.hitArea.y).map(s=>s.contentId),['visionx','beaconfire','amtrak']);
  assert.deepEqual(layout.overviewBounds,{min:[-34,.43,-30],max:[34,43,38]});near(layout.overviewCamera.elevation,28*Math.PI/180);
  assert.ok(layout.terraces.regions.some(r=>r.id==='eastern-mountain'));
- assert.ok(layout.obstacles.some(o=>o.name==='summit rock main-peak'&&o.y+o.height>=40));
+ const peak=layout.solidRocks.find(rock=>rock.id==='main-peak');
+ assert.ok(peak&&Math.max(...peak.vertices.filter((_,i)=>i%3===1))>=40,'the complete physical peak retains its visible skyline');
 });
 
 test('mountain stairs maintain real accessible tread dimensions, rotated geometry and matched floors',()=>{
