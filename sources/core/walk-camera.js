@@ -3,14 +3,14 @@ import {Vector3,MathUtils} from 'three';
 export const WALK_CAMERA = Object.freeze({
   elevation:38*Math.PI/180,maxElevation:52*Math.PI/180,minFraction:.55,
   clearance:.35,probeSpacing:.3,recoveryDelay:.2,approachRate:14,recoveryRate:6,
-  followRate:8,anticipation:.2,
+  followRate:8,stairHorizontalRate:16,anticipation:.2,
 });
 
 // Camera composition can look ahead of Jack into a higher terrace. Only the
 // actual, interpolated head is a visibility origin; the composition target is
 // deliberately allowed to be below or inside scenery.
 export class WalkingCamera {
-  reset(){this.target=null;this.lastPoint=null;this.fraction=1;this.elevation=WALK_CAMERA.elevation;this.recovery=0;this.blocked=false;this.pose=null;}
+  reset(){this.target=null;this.lastPoint=null;this.horizontalLag=new Vector3();this.stairFollowWeight=0;this.fraction=1;this.elevation=WALK_CAMERA.elevation;this.recovery=0;this.blocked=false;this.pose=null;}
   constructor(){this.reset();}
 
   clearFraction(pivot,eye,terrainHeight){
@@ -24,19 +24,29 @@ export class WalkingCamera {
     return 1;
   }
 
-  update(dt,{position,pivot,target,distance,azimuth,terrainHeight,velocity={},paused=false,seed=null},snap=false){
+  update(dt,{position,pivot,target,distance,azimuth,terrainHeight,velocity={},stairs=false,paused=false,seed=null},snap=false){
     if(paused&&this.pose&&!snap)return this.pose;
     const first=!this.target;
     if(first||snap){
       this.reset();this.target=(snap?target:seed?.target||target).clone();
+      this.stairFollowWeight=stairs?1:0;
       this.followDistance=snap?distance:seed?.distance||distance;
       if(!snap&&Number.isFinite(seed?.elevation))this.elevation=MathUtils.clamp(seed.elevation,WALK_CAMERA.elevation,WALK_CAMERA.maxElevation);
     }else if(this.lastPoint){
-      this.target.x+=position.x-this.lastPoint.x;this.target.z+=position.z-this.lastPoint.z;
+      const delta=new Vector3(position.x-this.lastPoint.x,0,position.z-this.lastPoint.z),previousLag=this.horizontalLag.clone();
+      // Nosing contacts vary capsule speed even during a steady stair climb.
+      // Filter that short horizontal pulse, separately from the framing lead.
+      // Fade the filter's weight across each landing boundary: dropping the
+      // input abruptly would turn the old lag into a one-frame catch-up pulse.
+      // Once it fades out, ordinary ground keeps its immediate follow.
+      this.stairFollowWeight=MathUtils.damp(this.stairFollowWeight,stairs?1:0,WALK_CAMERA.stairHorizontalRate,dt);
+      this.horizontalLag.addScaledVector(delta,this.stairFollowWeight);
+      this.horizontalLag.multiplyScalar(Math.exp(-WALK_CAMERA.stairHorizontalRate*dt));
+      this.target.add(delta.add(previousLag).sub(this.horizontalLag));
     }
     this.lastPoint={x:position.x,z:position.z};
     const follow=snap?1:1-Math.exp(-WALK_CAMERA.followRate*dt);
-    this.target.lerp(target,follow);this.followDistance=Math.max(distance*WALK_CAMERA.minFraction,MathUtils.lerp(this.followDistance,distance,follow));
+    this.target.lerp(target.clone().sub(this.horizontalLag),follow);this.followDistance=Math.max(distance*WALK_CAMERA.minFraction,MathUtils.lerp(this.followDistance,distance,follow));
     const eyeAt=elevation=>this.target.clone().add(new Vector3(Math.sin(azimuth)*Math.cos(elevation),Math.sin(elevation),Math.cos(azimuth)*Math.cos(elevation)).multiplyScalar(this.followDistance));
     const future=new Vector3(velocity.x||0,0,velocity.z||0).multiplyScalar(WALK_CAMERA.anticipation).clampLength(0,.8);
     const predicted=pivot.clone().add(future);

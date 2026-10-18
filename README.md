@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V22 — Summit Express** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V22.1 — Stable Stairs** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -78,6 +78,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
 | **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
 | **V21 — Terraced Summit** | A terraced coastal mountain, a single level-cabin funicular, chronological uphill stops, direct descent and connected hillside walks | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V22.1 — Stable Stairs** | Stabilizes stair camera tracking and walk/run animation across all 12 Experience stairways | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V22 — Summit Express** | A shorter automatic tour, direct harbor boarding, short company visits and stable stair/wall cameras | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V20 — Career Valley Express** | A compact career valley, immediate platform boarding, automatic departure and brief company stops with accessible controls that hold the train when needed | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V19 — Career Railway** | A rideable coastal train links VisionX, BeaconFire and Amtrak in chronological order, with station visits, platform calls, independent car motion and a layered railway town | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -94,6 +95,15 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V22.1 — Stable Stairs
+
+- Uses steady walking intent for camera look-ahead on Experience stairs, preventing each riser’s brief contact slowdown from pulling the view backward.
+- Filters short horizontal contact pulses separately from height and framing. Stair entry/exit, stopping, turning and pause/reset transitions preserve continuous follow.
+- Keeps walk/run poses stable while climbing and advances foot animation by the distance actually rendered, including at 30/60/120 FPS. Releasing movement and sustained collisions still stop Jack.
+- Audits all **12 stair groups / 310 treads**, including uphill/downhill, left/center/right lanes, walking/running, three zoom levels and four viewport sizes. The physical treads, character proportions, other islands and V22 train pacing are unchanged.
+
+See [validation notes](VALIDATION.md) for measurements, actual game evidence and device limits.
 
 ### V22 — Summit Express
 

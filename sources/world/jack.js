@@ -119,6 +119,8 @@ export class JackAvatar {
     this.interactTime = this.standTime = 0;
     this.wasSeated = false;
     this.lastSeat = this.standFrom = null;
+    this.stairStridePoint = null;
+    this.stairStoppedTime = 0;
     this.forceFrame = true;
     this.setPose(name, 0);
     this.mixer.update(0);
@@ -141,7 +143,7 @@ export class JackAvatar {
     if (this.pose === 'interact') this.actions.get('interact')?.reset().play();
   }
 
-  update(dt, {player, boatVisual, quadBike, bicycle, trainVisual, character, alpha, reduced, frozen, lookTarget, practice}) {
+  update(dt, {player, boatVisual, quadBike, bicycle, trainVisual, character, alpha, reduced, frozen, lookTarget, practice, walkingIntent = null}) {
     if (!this.ready) return;
     const land = player.onLand;
     const cycling = !!player.ridingBicycle;
@@ -167,6 +169,10 @@ export class JackAvatar {
     const step = frozen ? 0 : dt;
     this.expression?.restore();
     this.estatePose?.restore();
+    // Game supplies this intent only on Experience's actual stairways. Other
+    // land, seats and vehicles retain their existing speed-based pose rules.
+    const stairWalking = land && !riding && !onTrain && !!walkingIntent && !character.seated && !practice;
+    if (!stairWalking) { this.stairStridePoint = null; this.stairStoppedTime = 0; }
     if (onTrain) {
       // A scene-owned passenger mount survives train/island quality replacement.
       const mount = trainVisual.mountPoint;
@@ -213,13 +219,28 @@ export class JackAvatar {
       }
       this.wasSeated = character.seated;
       if (character.seated) this.lastSeat = this.root.position.clone();
-      const running = this.pose === 'run' ? character.speed > 2.55 : character.speed > 2.85;
-      const desired = character.seated ? 'sit' : this.standTime > 0 ? 'stand' : this.interactTime > 0 ? 'interact' : character.speed > .1 ? (running ? 'run' : 'walk') : 'idle';
+      let moving = character.speed > .1;
+      const running = stairWalking ? !!walkingIntent.run : this.pose === 'run' ? character.speed > 2.55 : character.speed > 2.85;
+      let strideSpeed = character.speed;
+      if (stairWalking) {
+        this.stairStoppedTime = walkingIntent.moving && !moving ? this.stairStoppedTime + step : 0;
+        // Autostep briefly slows even a held run key, sometimes for one stopped
+        // tick. Keep its pose through that contact; a real wall still reaches
+        // idle promptly, and releasing movement or Shift responds immediately.
+        moving = !!walkingIntent.moving && (moving || this.stairStoppedTime < .08 && locomotion(this.pose));
+        const point = this.root.position, previous = this.stairStridePoint;
+        // A render frame can contain zero, one or several physics ticks. Read
+        // the distance actually displayed, not only the final tick's speed,
+        // so stair contact does not alias the animation cadence at 30/120 FPS.
+        strideSpeed = previous && step > 0 ? Math.hypot(point.x - previous.x, point.z - previous.z) / step : 0;
+        this.stairStridePoint = point.clone();
+      }
+      const desired = character.seated ? 'sit' : this.standTime > 0 ? 'stand' : this.interactTime > 0 ? 'interact' : moving ? (running ? 'run' : 'walk') : 'idle';
       this.setPose(desired);
       // Use one cycle rate for both strides during a blend. A collision that
       // stops the capsule also stops the feet.
       const stride = this.actions.get(this.pose === 'run' ? 'run' : 'walk');
-      const cycleRate = character.speed / ((this.pose === 'run' ? CHARACTER.run : CHARACTER.walk) * stride.getClip().duration);
+      const cycleRate = strideSpeed / ((this.pose === 'run' ? CHARACTER.run : CHARACTER.walk) * stride.getClip().duration);
       for (const [name, action] of this.actions) {
         if (locomotion(name)) action.setEffectiveTimeScale(cycleRate * action.getClip().duration);
         else if (name === 'idle' || name === 'sit') action.setEffectiveTimeScale(reduced ? 0 : 1);

@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {fitBoundsPose} from './focus-framing.js';
 import {arrivalOverviewPose,arrivalApproachPose} from './island-arrival-framing.js';
 import {BOAT_SPEED} from './boat.js';
+import {CHARACTER} from './character.js';
 import {WalkingCamera} from './walk-camera.js';
 
 const FOV = 28;
@@ -75,9 +76,10 @@ export class CameraRig {
     return Math.abs(projected.x) < .94 && projected.y > -.85 && projected.y < .82 && Math.abs(boat.x) < .7 && Math.abs(boat.y) < .68;
   }
 
-  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH, terrainHeight = null, arrival = null, trainView = null, walkingObstruction = false, visibilityPivot = null, followPaused = false}, snap = false) {
+  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH, terrainHeight = null, arrival = null, trainView = null, walkingObstruction = false, walkingStairs = false, walkingIntent = null, visibilityPivot = null, followPaused = false}, snap = false) {
     const boundedWalk=walkingObstruction&&locomotion==='walking'&&!focus&&!arrival&&!!terrainHeight;
     if(boundedWalk&&followPaused&&this.walkCamera.pose&&!snap)return;
+    if(!boundedWalk||snap||this.settings.reduced)this.stairLead=null;
     if(this.lastPoint&&!focus&&!this.lastFocus&&!snap){const delta=new THREE.Vector3(position.x-this.lastPoint.x,locomotion==='walking'&&walkingObstruction?0:position.y-this.lastPoint.y,position.z-this.lastPoint.z);this.position.add(delta);this.target.add(delta);}
     this.lastPoint={...position};this.lastFocus=!!focus;
     const azimuth = cameraAzimuth({focus, locomotion, landAzimuth});
@@ -139,7 +141,23 @@ export class CameraRig {
       this.heading.lerp(heading,snap?1:1-Math.exp(-5*dt)).normalize();
       const target=new THREE.Vector3(position.x,position.y+.60,position.z);
       target.addScaledVector(groundForward(azimuth),distance*Math.tan(THREE.MathUtils.degToRad(FOV/2))*.16/Math.sin(ELEVATION));
-      if(!this.settings.reduced)target.addScaledVector(this.heading,Math.min(1.2,speed*.3));
+      if(!this.settings.reduced){
+        const lead=this.heading.clone().multiplyScalar(Math.min(1.2,speed*.3));
+        if(boundedWalk&&walkingStairs&&walkingIntent){
+          const priorLead=lead.clone();
+          // Capsule speed pulses at every stair nosing. Feeding that speed into
+          // the lead moves the camera backward while Jack is still climbing.
+          // Intent is steady across those contacts. Filter changes to the lead
+          // vector briefly so stops and 180-degree turns cannot kick the eye.
+          const x=walkingIntent.x||0,z=walkingIntent.z||0,length=Math.hypot(x,z);
+          lead.set(x,0,z).multiplyScalar(length>.05?Math.min(1.2,(walkingIntent.run?CHARACTER.run:CHARACTER.walk)*.3)*Math.min(1,length)/length:0);
+          if(!this.stairLead)this.stairLead=(snap?lead:priorLead).clone();
+        }
+        if(this.stairLead){
+          this.stairLead.lerp(lead,1-Math.exp(-16*dt));target.add(this.stairLead);
+          if(!walkingStairs&&this.stairLead.distanceToSquared(lead)<1e-8)this.stairLead=null;
+        }else target.add(lead);
+      }
       this.distance=distance;desired={target,position:target.clone().addScaledVector(viewDirection(azimuth),distance)};
     } else {
       const moving = Math.hypot(velocity.x, velocity.z) > 2;
@@ -177,7 +195,7 @@ export class CameraRig {
     if(boundedWalk){
       const pivot=visibilityPivot?new THREE.Vector3(visibilityPivot.x,visibilityPivot.y,visibilityPivot.z):new THREE.Vector3(position.x,position.y+.7,position.z);
       const offset=this.position.clone().sub(this.target);
-      const pose=this.walkCamera.update(dt,{position,pivot,target:desired.target,distance:this.distance,azimuth,terrainHeight,velocity,paused:followPaused,seed:{target:this.target,distance:offset.length(),elevation:Math.atan2(offset.y,Math.hypot(offset.x,offset.z))}},snap);
+      const pose=this.walkCamera.update(dt,{position,pivot,target:desired.target,distance:this.distance,azimuth,terrainHeight,velocity,stairs:walkingStairs,paused:followPaused,seed:{target:this.target,distance:offset.length(),elevation:Math.atan2(offset.y,Math.hypot(offset.x,offset.z))}},snap);
       this.position.copy(pose.position);this.target.copy(pose.target);
     }else{
       this.walkCamera.reset();
