@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // A partition, rather than stacked plates: every X/Z belongs to exactly one
 // top patch. Vertical joins are then added only where adjacent heights differ.
-export function careerTerraces(shore,groundY=.85){
+export function careerTerraces(shore,groundY=.85,{shortTours=[]}={}){
  const eps=1e-8,regions=[];
  const area=p=>p.reduce((v,a,i)=>{const b=p[(i+1)%p.length];return v+a[0]*b[1]-b[0]*a[1];},0)/2;
  const ccw=p=>area(p)<0?[...p].reverse():p;
@@ -65,6 +65,11 @@ export function careerTerraces(shore,groundY=.85){
  region('east-summit-link',box(18,30,-21,-19),21.55);
  region('beacon-west-junction',box(-25.3,-23,-16.9,-7),14.55);
  region('beacon-west-top-landing',box(-29,-23,-16.9,-11.2),14.55);
+ // Open the camera-facing side of the summit stair. Its former 21.55m
+ // plateau enclosed the lower treads in a slot. A planar rock shoulder now
+ // follows the stair height and descends to the existing workshop terrace.
+ region('summit-stair-open-shoulder-base',box(-25,-7.32,-13.3,-9),14.55,'junction_lawn','mountain');
+ region('summit-stair-open-shoulder',[[-25,-13.3],[-7.32,-13.3],[-7.32,-9]],(x,z)=>14.55+(x+25)*7/17.68-(z+13.3)*7/4.3,'junction_rock','mountain');
  const summit=stair('summit-west-stair',-16.16,-15,3.4,17.68,14.55,21.55,52,-Math.PI/2);
  region('summit-west-top',box(-7.32,-3.8,-16.8,-9.8),21.55);
  const stairs=summit;
@@ -76,6 +81,21 @@ export function careerTerraces(shore,groundY=.85){
  function subdivide(a,b,c){const d=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1]);if(Math.max(d(a,b),d(b,c),d(c,a))<=6){patches.push({polygon:ccw([a,b,c]),region:base});return;}const mid=(p,q)=>[(p[0]+q[0])/2,(p[1]+q[1])/2],ab=mid(a,b),bc=mid(b,c),ca=mid(c,a);subdivide(a,ab,ca);subdivide(ab,b,bc);subdivide(ca,bc,c);subdivide(ab,bc,ca);}
  for(const ids of THREE.ShapeUtils.triangulateShape(shore.map(p=>new THREE.Vector2(...p)),[]))subdivide(...ids.map(i=>shore[i]));
  for(const r of regions){const next=[];for(const patch of patches){let overlap=patch.polygon;for(let i=0;i<r.polygon.length&&hasArea(overlap);i++)overlap=half(overlap,r.polygon[i],r.polygon[(i+1)%r.polygon.length],true);if(!hasArea(overlap)){next.push(patch);continue;}let remainder=patch.polygon;for(let i=0;i<r.polygon.length&&hasArea(remainder);i++){const a=r.polygon[i],b=r.polygon[(i+1)%r.polygon.length],outside=half(remainder,a,b,false);if(hasArea(outside))next.push({polygon:outside,region:patch.region});remainder=half(remainder,a,b,true);}if(hasArea(remainder))next.push({polygon:remainder,region:r});}patches=next;}
+ // Inlaid pale stone replaces each affected top patch; no second floor mesh
+ // is placed over the terrain. Preserve the original region's exact height.
+ const paving=[];
+ for(const tour of shortTours)for(let i=1;i<tour.points.length;i++){
+  const a=tour.points[i-1],b=tour.points[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]);if(length<.01)continue;
+  const nx=(b[1]-a[1])/length*tour.width/2,nz=-(b[0]-a[0])/length*tour.width/2;
+  const polygon=ccw([[a[0]+nx,a[1]+nz],[b[0]+nx,b[1]+nz],[b[0]-nx,b[1]-nz],[a[0]-nx,a[1]-nz]]);paving.push(polygon);
+  const next=[];for(const patch of patches){
+   if(!patch.polygon.every(([x,z])=>Math.abs(patch.region.height(x,z)-tour.y)<.001)){next.push(patch);continue;}
+   let overlap=patch.polygon;for(let j=0;j<polygon.length&&hasArea(overlap);j++)overlap=half(overlap,polygon[j],polygon[(j+1)%polygon.length],true);
+   if(!hasArea(overlap)){next.push(patch);continue;}let remainder=patch.polygon;
+   for(let j=0;j<polygon.length&&hasArea(remainder);j++){const outside=half(remainder,polygon[j],polygon[(j+1)%polygon.length],false);if(hasArea(outside))next.push({polygon:outside,region:patch.region});remainder=half(remainder,polygon[j],polygon[(j+1)%polygon.length],true);}
+   if(hasArea(remainder))next.push({polygon:remainder,region:{...patch.region,material:'junction_cream'}});
+  }patches=next;
+ }
  const vertices=[],indices=[],colliderIndices=[],materials={},edges=[],vertexMap=new Map();
  const add=(vs,ix,material,collider=true)=>{const ids=vs.map(v=>{const point=v.map(n=>+n.toFixed(6)),key=point.join(',');if(!vertexMap.has(key)){vertexMap.set(key,vertices.length);vertices.push(point);}return vertexMap.get(key);});const out=ix.map(i=>ids[i]);indices.push(...out);if(collider)colliderIndices.push(...out);(materials[material]??=[]).push(...out);};
  const cuts=(a,b)=>{const values=[0,1],dx=b[0]-a[0],dz=b[1]-a[1];for(const r of regions)for(let i=0;i<r.polygon.length;i++){const c=r.polygon[i],d=r.polygon[(i+1)%r.polygon.length],ux=d[0]-c[0],uz=d[1]-c[1],den=dx*uz-dz*ux;if(Math.abs(den)<eps)continue;const t=((c[0]-a[0])*uz-(c[1]-a[1])*ux)/den,u=((c[0]-a[0])*dz-(c[1]-a[1])*dx)/den;if(t>eps&&t<1-eps&&u>=-eps&&u<=1+eps)values.push(t);}return [...new Set(values.map(t=>+t.toFixed(9)))].sort((a,b)=>a-b);};
@@ -90,5 +110,5 @@ export function careerTerraces(shore,groundY=.85){
  }
  const lines=new Map();for(const e of edges){let dx=e.b[0]-e.a[0],dz=e.b[1]-e.a[1],length=Math.hypot(dx,dz);dx/=length;dz/=length;if(dx<-.0001||(Math.abs(dx)<.0001&&dz<0)){dx=-dx;dz=-dz;}const offset=-dz*e.a[0]+dx*e.a[1],key=[dx,dz,offset,e.top,e.bottom].map(v=>v.toFixed(5)).join(',');if(!lines.has(key))lines.set(key,{dx,dz,offset,top:e.top,bottom:e.bottom,region:e.region,outward:e.outward,intervals:[]});const line=lines.get(key),a=dx*e.a[0]+dz*e.a[1],b=dx*e.b[0]+dz*e.b[1];line.intervals.push([Math.min(a,b),Math.max(a,b)]);}
  const mergedEdges=[];for(const l of lines.values()){const intervals=l.intervals.sort((a,b)=>a[0]-b[0]),merged=[];for(const interval of intervals){const last=merged.at(-1);if(last&&interval[0]<=last[1]+.00002)last[1]=Math.max(last[1],interval[1]);else merged.push([...interval]);}for(const[a,b]of merged){const p=t=>[l.dx*t-l.dz*l.offset,l.dz*t+l.dx*l.offset];mergedEdges.push({a:p(a),b:p(b),top:l.top,bottom:l.bottom,region:l.region,outward:l.outward});}}
- return{terrain:{version:1,kind:'terraced-summit',vertices:vertices.flat(),indices,colliderIndices,bounds:{min:[Math.min(...shore.map(p=>p[0])),Math.min(groundY,...vertices.map(p=>p[1])),Math.min(...shore.map(p=>p[1]))],max:[Math.max(...shore.map(p=>p[0])),21.55,Math.max(...shore.map(p=>p[1]))]}},vertices,materials,edges:mergedEdges,ramps,stairs,stairways,routes,height,isPaving:(x,z)=>insideShore(x,z)&&profile(x,z).material==='junction_paving',regions:regions.map(r=>({id:r.id,polygon:r.polygon,kind:r.kind}))};
+ return{terrain:{version:1,kind:'terraced-summit',vertices:vertices.flat(),indices,colliderIndices,bounds:{min:[Math.min(...shore.map(p=>p[0])),Math.min(groundY,...vertices.map(p=>p[1])),Math.min(...shore.map(p=>p[1]))],max:[Math.max(...shore.map(p=>p[0])),21.55,Math.max(...shore.map(p=>p[1]))]}},vertices,materials,edges:mergedEdges,ramps,stairs,stairways,routes,height,isPaving:(x,z)=>insideShore(x,z)&&profile(x,z).material==='junction_paving'&&!paving.some(p=>contains(p,x,z)),regions:regions.map(r=>({id:r.id,polygon:r.polygon,kind:r.kind}))};
 }

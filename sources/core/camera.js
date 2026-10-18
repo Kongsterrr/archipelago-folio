@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {fitBoundsPose} from './focus-framing.js';
 import {arrivalOverviewPose,arrivalApproachPose} from './island-arrival-framing.js';
 import {BOAT_SPEED} from './boat.js';
+import {WalkingCamera} from './walk-camera.js';
 
 const FOV = 28;
 const AZIMUTH = Math.PI / 4;
@@ -31,6 +32,7 @@ export class CameraRig {
     this.direction = viewDirection(AZIMUTH);
     this.flatForward = groundForward(AZIMUTH);
     this.cooldown = 0;
+    this.walkCamera = new WalkingCamera();
     this.resize(width, height);
     this.distance = this.baseDistance;
   }
@@ -73,8 +75,10 @@ export class CameraRig {
     return Math.abs(projected.x) < .94 && projected.y > -.85 && projected.y < .82 && Math.abs(boat.x) < .7 && Math.abs(boat.y) < .68;
   }
 
-  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH, terrainHeight = null, arrival = null, trainView = null}, snap = false) {
-    if(this.lastPoint&&!focus&&!this.lastFocus&&!snap){const delta=new THREE.Vector3(position.x-this.lastPoint.x,position.y-this.lastPoint.y,position.z-this.lastPoint.z);this.position.add(delta);this.target.add(delta);}
+  update(dt, {position, velocity = {x:0,z:0}, yaw = 0, speed = 0, input = {}, focus = null, locomotion = 'sailing', landAzimuth = AZIMUTH, terrainHeight = null, arrival = null, trainView = null, walkingObstruction = false, visibilityPivot = null, followPaused = false}, snap = false) {
+    const boundedWalk=walkingObstruction&&locomotion==='walking'&&!focus&&!arrival&&!!terrainHeight;
+    if(boundedWalk&&followPaused&&this.walkCamera.pose&&!snap)return;
+    if(this.lastPoint&&!focus&&!this.lastFocus&&!snap){const delta=new THREE.Vector3(position.x-this.lastPoint.x,locomotion==='walking'&&walkingObstruction?0:position.y-this.lastPoint.y,position.z-this.lastPoint.z);this.position.add(delta);this.target.add(delta);}
     this.lastPoint={...position};this.lastFocus=!!focus;
     const azimuth = cameraAzimuth({focus, locomotion, landAzimuth});
     let desired;
@@ -157,7 +161,7 @@ export class CameraRig {
       this.distance = snap ? wantedDistance : THREE.MathUtils.damp(this.distance, wantedDistance, wantedDistance > this.distance ? 5 : 3, dt);
       desired = this.pose(this.distance, position, this.heading, ahead);
     }
-    if(terrainHeight){
+    if(terrainHeight&&!boundedWalk){
       // Raise the eye along the same azimuth rather than fading real cliff edges.
       let eyeY=desired.position.y;
       for(let n=2;n<=24;n++){
@@ -170,10 +174,18 @@ export class CameraRig {
       const overview=arrivalOverviewPose(arrival.bounds,{width:this.width,height:this.height,azimuth:azimuth+(arrival.camera?.azimuthOffset||0),near:this.camera.near,...(Number.isFinite(arrival.camera?.elevation)?{elevation:arrival.camera.elevation}:{})});
       desired=arrivalApproachPose(overview,desired,arrival.progress);this.distance=desired.distance;snap=true;
     }
-    const rate = snap ? 1 : 1-Math.exp(-(focus ? 4 : 8)*dt);
-    this.position.lerp(desired.position, rate);
-    this.target.lerp(desired.target, rate);
-    if(terrainHeight){
+    if(boundedWalk){
+      const pivot=visibilityPivot?new THREE.Vector3(visibilityPivot.x,visibilityPivot.y,visibilityPivot.z):new THREE.Vector3(position.x,position.y+.7,position.z);
+      const offset=this.position.clone().sub(this.target);
+      const pose=this.walkCamera.update(dt,{position,pivot,target:desired.target,distance:this.distance,azimuth,terrainHeight,velocity,paused:followPaused,seed:{target:this.target,distance:offset.length(),elevation:Math.atan2(offset.y,Math.hypot(offset.x,offset.z))}},snap);
+      this.position.copy(pose.position);this.target.copy(pose.target);
+    }else{
+      this.walkCamera.reset();
+      const rate = snap ? 1 : 1-Math.exp(-(focus ? 4 : 8)*dt);
+      this.position.lerp(desired.position, rate);
+      this.target.lerp(desired.target, rate);
+    }
+    if(terrainHeight&&!boundedWalk){
       for(let n=2;n<=24;n++){
         const t=n/24,q=this.target.clone().lerp(this.position,t),ground=terrainHeight(q);
         if(Number.isFinite(ground))this.position.y=Math.max(this.position.y,this.target.y+(ground+.5-this.target.y)/t);

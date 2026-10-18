@@ -120,7 +120,7 @@ for(const[index,berth]of layout.berths.entries())test(`railway berth ${index+1}:
     walkTo(f,plan,stops.find(s=>s.id===id).boarding);f.journey.nearby();assert.equal(f.game.canBoardTrain,true);assert.equal(f.journey.board(),true);f.finishTransition();
    }
   }
-  assert.ok(travelSeconds>=30&&travelSeconds<=45,`full motion time is ${travelSeconds.toFixed(2)}s`);
+  assert.ok(travelSeconds>=23&&travelSeconds<=27,`full motion time is ${travelSeconds.toFixed(2)}s`);
   walkTo(f,plan,berth.landing);assert.equal(f.player.walking,true);assert.ok(Math.abs(f.character.position.y-.85)<.04);
  }finally{f.world.free();}
 });

@@ -79,7 +79,7 @@ function toolsFixture({available3D=true,returnValue=true}={}){
 
 test('the railway WebMCP tool exposes passenger actions and keeps train status',async()=>{
  const f=toolsFixture();
- assert.deepEqual(f.tool.inputSchema.properties.action.enum,['board','get_off','continue','read','return_harbor','call']);
+ assert.deepEqual(f.tool.inputSchema.properties.action.enum,['board','get_off','continue','read','return_harbor','call','start_tour']);
  for(const action of f.tool.inputSchema.properties.action.enum){
   const request=action==='call'?{action,station:'visionx'}:{action},response=await f.tool.execute(request);
   assert.equal(response.train.currentStation,'harbor');assert.deepEqual(f.calls.at(-1),request);

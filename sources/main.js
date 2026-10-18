@@ -151,6 +151,13 @@ function openStudio(){if(!game)return;showPanel(`<span class="eyebrow">JACK’S 
 function toggleSound(value=!settings.sound){settings.sound=value;store.save();$('#sound-button').setAttribute('aria-pressed',String(value));$('#sound-button').title=value?'Sound on':'Sound off';$('#sound-button').setAttribute('aria-label',value?'Disable sound':'Enable sound');$('#sound-button').innerHTML=icon(value?'sound':'mute');if(value)sound();}
 function syncZoom(){const zoom=game?.zoom??settings.zoom;$('#zoom-label').textContent=ZOOM_NAMES[zoom];$('#zoom-in').disabled=zoom===0;$('#zoom-out').disabled=zoom===2;}
 // Career Railway has its own passenger controls; it never reuses vehicle throttle.
+function updateHarborTour(frozen){
+ const available=!!game?.player.walking&&game.player.island?.id==='experience'&&!frozen&&!game.frozen&&!$('#panel').open&&!game.practice?.active&&!!game.journey?.canStartFromHarbor();
+ const button=$('#train-start-tour');
+ if(!available&&document.activeElement===button)button.blur();
+ $('#harbor-tour').hidden=!available;button.disabled=!available;
+ return available;
+}
 function trainHUDState(status={}){
  const stopped=!!status.stopped,current=status.currentStation||'harbor',next=status.nextStation||'harbor';
  const display=stopped?current:next,entry=['visionx','beaconfire','amtrak'].includes(display)?content.find(item=>item.id===display):null;
@@ -158,7 +165,7 @@ function trainHUDState(status={}){
  const departure=stopped&&auto&&Number.isFinite(auto.remaining)&&Number.isFinite(auto.duration)&&auto.duration>0?{remaining:Math.max(0,Math.min(auto.duration,auto.remaining)),duration:auto.duration,phase:auto.phase}:null;
  return {
   current,next,display,stopped,departure,
-  phase:departure?.phase==='boarding'?'SETTLING IN':departure?`CONTINUING IN ${Math.ceil(departure.remaining)}s`:stopped?'AT THE PLATFORM':status.phase==='boarding'?'TAKE YOUR SEAT':status.phase==='reversing'?'RETURNING SAFELY':status.phase==='returning'||status.returningPassenger||status.mission==='return'||status.direction<0?'DOWN TO THE HARBOR':'UP THE MOUNTAIN',
+  phase:departure?.phase==='boarding'?'SETTLING IN':departure?`CONTINUING IN ${Math.min(departure.duration,Math.ceil(departure.remaining*10)/10)}s`:stopped?'AT THE PLATFORM':status.phase==='boarding'?'TAKE YOUR SEAT':status.phase==='reversing'?'RETURNING SAFELY':status.phase==='returning'||status.returningPassenger||status.mission==='return'||status.direction<0?'DOWN TO THE HARBOR':'UP THE MOUNTAIN',
   title,period:entry?.period||'A journey through my work',
   summary:entry?.summary||(stopped?(departure?'A mountain railway. Three chapters. We’ll set off as soon as you’re settled.':'You’re at the harbor. Step off to explore, or take another tour.'):'Enjoy the view on the way down. Your seat is yours until we reach the harbor.'),
   read:stopped&&!!status.canRead&&!!entry,getOff:stopped&&!!status.canGetOff,continue:stopped&&!!status.canContinue,
@@ -210,7 +217,7 @@ function updateTrainHUD(frozen){
  $('#train-options').disabled=frozen;
  const progress=$('#train-departure'),departure=view.departure;
  progress.hidden=!departure||departure.phase!=='station';
- if(departure){progress.style.setProperty('--departure-remaining',String(departure.remaining/departure.duration));progress.setAttribute('aria-valuemax',String(departure.duration));progress.setAttribute('aria-valuenow',String(Math.ceil(departure.remaining)));}
+ if(departure){progress.style.setProperty('--departure-remaining',String(departure.remaining/departure.duration));progress.setAttribute('aria-valuemax',String(departure.duration));progress.setAttribute('aria-valuenow',String(departure.remaining));}
 }
 function openTrainOptions(){
  if(!game?.player.ridingTrain||$('#panel').open||game.frozen)return false;
@@ -220,6 +227,12 @@ function openTrainOptions(){
 async function trainAction(action,station){
  if(!game?.player||!game.boat)return false;
  if($('#panel').open||game.frozen)return false;
+ if(action==='start_tour'){
+  if(typeof game.journey?.startFromHarbor!=='function'||!game.journey.canStartFromHarbor())return false;
+  inputs.clear();const result=await game.journey.startFromHarbor();
+  if(!$('#panel').open)$('#world').focus({preventScroll:true});
+  return result;
+ }
  const methods={board:'boardTrain',get_off:'leaveTrain',continue:'continueTrain',read:'readTrainExperience',return_harbor:'returnTrainHarbor',call:'callTrain'},method=methods[action];
  if(!method||typeof game[method]!=='function')return false;
  inputs.clear();
@@ -227,6 +240,7 @@ async function trainAction(action,station){
  if(!$('#panel').open)$('#world').focus({preventScroll:true});
  return result;
 }
+$('#train-start-tour').onclick=()=>trainAction('start_tour');
 $('#train-options').onclick=openTrainOptions;
 $('#train-read').onclick=()=>trainAction('read');
 $('#train-get-off').onclick=()=>trainAction('get_off');
@@ -270,7 +284,7 @@ const minimapView=new VoyageMinimap($('#minimap'),{islands,challenges,gates,lamp
 function drawMap(position=boatSpawn,yaw=boatSpawn.yaw){minimapView.update({position,yaw,game,visited:store.visited});}
 let lastUI=0,boundaryWarned=false;function frame({position,yaw,speed,now,frozen}){if(speed>1)$('.intro').classList.add('compact');if(now-lastUI<70)return;lastUI=now;drawMap(position,yaw);const arriving=!!game.arrival?.active&&!$('#panel').open;document.body.classList.toggle('arriving',arriving);$('#island-arrival').hidden=!arriving;if(arriving){$('#arrival-name').textContent=game.arrival.island.name;$('#arrival-places').textContent=arrivalCopy[game.arrival.island.id];$('#arrival-skip').textContent=settings.reduced?'Start exploring':'Skip overview';}const boundary=Math.hypot(position.x,position.z)>WORLD_RADIUS-12;if(boundary&&!boundaryWarned)toast('Open water ahead. Turn back toward the islands.');boundaryWarned=boundary;
  const labels=islands.map(i=>({i,p:game.project({x:i.x,y:9,z:i.z}),d:Math.hypot(position.x-i.x,position.z-i.z)})).filter(({p,d})=>p.z<1&&Math.abs(p.x)<.82&&p.y>-.35&&p.y<.75&&d<70).sort((a,b)=>a.d-b.d).slice(0,2);for(const i of islands){const n=$(`[data-label="${i.id}"]`),l=labels.find(l=>l.i.id===i.id);n.style.opacity=l&&!$('#panel').open?'1':'0';if(l){n.style.left=`${(l.p.x*.5+.5)*innerWidth}px`;n.style.top=`${(-l.p.y*.5+.5)*innerHeight}px`;}}
- updateTrainHUD(frozen);const trainRider=!!game.player.ridingTrain;
+ updateTrainHUD(frozen);updateHarborTour(frozen);const trainRider=!!game.player.ridingTrain;
  const walking=game.player.walking,riding=game.player.ridingVehicle,cycling=game.player.ridingBicycle,onLand=game.player.onLand;document.body.classList.toggle('walking',onLand);$('#horn-button').hidden=onLand;$('#horn-button').disabled=frozen||!!$('#panel').open||(game.fleet&&game.fleet.time-game.fleet.lastHorn<3);
  $('#walking-hud').hidden=!onLand||trainRider||$('#panel').open||game.practice.active;$('#walking-hud .eyebrow').textContent=game.player.ridingCar?'DRIVING WITH JACK':cycling?'CYCLING WITH JACK':riding?'OUT ON THE TRAIL WITH JACK':'ON FOOT WITH JACK';$('#walking-island').textContent=game.player.island?.name||'';$('#projects-guide').hidden=!(onLand&&game.player.island?.id==='projects'&&game.quadBikeSpawn&&Math.hypot(game.activeActor.position.x-game.quadBikeSpawn.x,game.activeActor.position.z-game.quadBikeSpawn.z)<16);$('#projects-guide').disabled=frozen;$('#return-boat').textContent=game.player.ridingCar?'Exit '+game.player.car.label:cycling?'Dismount bicycle':riding?'Dismount quad bike':'Return to boat';$('#return-boat').disabled=frozen;
  $('#move-label').textContent=cycling?'Cycle':riding?'Drive':walking?'Walk':'Sail';$('#speed-label').textContent=walking?'Run · 2×':'Boost · 2×';$('#brake-hint').hidden=onLand;$('#joystick').setAttribute('aria-label',game.player.ridingCar?'Car steering joystick':cycling?'Bicycle steering joystick':riding?'Quad bike steering joystick':walking?'Jack movement joystick':'Boat steering joystick');

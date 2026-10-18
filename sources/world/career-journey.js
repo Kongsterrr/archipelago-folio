@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {CareerTrainController,CAREER_TRAIN_MOTION} from '../core/career-train.js';
+import {CareerTrainController} from '../core/career-train.js';
 import {CareerTrainVisual} from './career-train.js';
 import {localToWorld,WALK_GROUP} from '../core/character.js';
 import {campusStationFocus} from '../core/campus-focus.js';
@@ -33,6 +33,25 @@ export class CareerJourney {
  }
  world(point){return localToWorld(this.island,point);}
  station(id){return this.railway?.stations.find(s=>s.id===id);}
+ supportedPlatform(station){
+  const boarding=station?.boarding||station?.approach;if(!boarding)return null;
+  const point=this.world(boarding),height=this.walk.groundAt(point);
+  if(!this.walk.clear(point)||!Number.isFinite(height)||Math.abs(height-point.y)>.25)return null;
+  return {...point,y:height};
+ }
+ harborEntryValid(){
+  const entry=this.railway?.harborEntry,g=this.game;
+  if(!this.ready||!entry||g.player.island?.id!=='experience')return false;
+  const actor=g.character.position,local=this.controller.localPoint(actor),height=this.walk.groundAt(actor);
+  return local.x>=entry.min[0]&&local.x<=entry.max[0]&&local.z>=entry.min[1]&&local.z<=entry.max[1]
+   &&Number.isFinite(height)&&Math.abs(actor.y-height)<.25&&Math.abs(height-entry.surfaceY)<.25
+   &&this.walk.clear(actor)&&!!this.supportedPlatform(this.station('harbor'));
+ }
+ canStartFromHarbor(){return !!(this.ready&&!this.game.frozen&&this.game.player.walking&&!this.controller.passenger&&this.harborEntryValid());}
+ startFromHarbor(){
+  if(!this.canStartFromHarbor())return false;
+  return this.beginBoard('harbor',{harborEntry:true});
+ }
  platformPoint(station){
   const g=this.game,p=g.player,boarding=station?.boarding||station?.approach;
   if(!boarding||p.island?.id!=='experience')return null;
@@ -88,18 +107,24 @@ export class CareerJourney {
   return {...point,y:height};
  }
  board(){
-  const g=this.game,c=this.controller,p=g.player;
+  const g=this.game,p=g.player;
   this.nearby();if(!g.canBoardTrain||!this.nearStation||g.frozen||!p.walking)return false;
-  const id=this.nearStation.id;this.cancelAutoDeparture('board');const request={id,kind:'board',held:false};this.boardingRequest=request;
+  return this.beginBoard(this.nearStation.id);
+ }
+ beginBoard(id,{harborEntry=false}={}){
+  const g=this.game,c=this.controller,p=g.player;
+  if(!this.ready||g.frozen||!p.walking||c.passenger)return false;
+  this.cancelAutoDeparture('board');const request={id,kind:'board',harborEntry,held:false};this.boardingRequest=request;
   g.cancelChallenge();g.inputs.setEnabled(false);g.character.hold();
   const began=p.begin('boarding-train',()=>{
    p.transition.destination='walking';
-   if(this.boardingRequest!==request||!this.platformPoint(this.station(id))||c.passenger){this.boardingRequest=null;return;}
+   const validOrigin=harborEntry?this.harborEntryValid():this.platformPoint(this.station(id));
+   if(this.boardingRequest!==request||!validOrigin||c.passenger){this.boardingRequest=null;return;}
    c.step(0,{paused:false});
    if(!this.prepareStation(id)||!c.board(id)){this.boardingRequest=null;return;}
    p.train=c;p.transition.destination='riding-train';g.character.enable(false);g.character.seated=false;
    this.returningPassenger=false;this.visual.update(1);g.jack.resetPose('sit');g.jack.forceFrame=true;g.resetCamera();
-   if(!request.held)this.scheduleDeparture('boarding',CAREER_TRAIN_MOTION.boardingDelay);
+   if(!request.held)this.scheduleDeparture('boarding',c.motion.boardingDelay);
    this.boardingRequest=null;
   },{duration:.4});
   if(!began){this.boardingRequest=null;g.inputs.setEnabled(!g.frozen);}return began;
@@ -174,7 +199,7 @@ export class CareerJourney {
   const arrived=previousState!=='stopped'&&c.state==='stopped';
   if(arrived&&c.passenger&&g.player.ridingTrain){
    if(c.currentStation.id==='harbor')this.cancelAutoDeparture('tour-complete');
-   else this.scheduleDeparture('station',CAREER_TRAIN_MOTION.stationDwell);
+   else this.scheduleDeparture('station',c.motion.stationDwell);
   }
   const timer=this.autoDeparture;if(!timer||arrived||dt<=0)return;
   if(!g.player.ridingTrain||!c.passenger||c.state!=='stopped'){this.cancelAutoDeparture('state-change');return;}
@@ -226,6 +251,6 @@ export class CareerJourney {
   if(!this.ready)return null;const g=this.game,c=this.controller,base=c.status(),riding=!!g.player.ridingTrain,stopped=c.state==='stopped';
   const automatic=this.autoDeparture?{phase:this.autoDeparture.phase,remaining:this.autoDeparture.remaining,duration:this.autoDeparture.duration}:null;
   const progress=c.closed?base.distance/c.length:Math.max(0,Math.min(1,(c.distance-c.minDistance)/(c.maxDistance-c.minDistance)));
-  return {...base,phase:c.state,stopped,canContinue:riding&&stopped&&!g.frozen,canGetOff:riding&&stopped&&!g.frozen&&!!this.exitPoint(),canRead:riding&&stopped&&c.currentStation?.id!=='harbor'&&!g.frozen,autoDeparture:automatic,autoDepartureRemaining:automatic?.remaining??null,autoDepartureDuration:automatic?.duration??null,departureHoldReason:this.departureHoldReason,progress,nearStation:this.nearStation?.id||null,boardingPoints:c.stations.map(s=>({id:s.id,position:this.world(s.boarding||s.approach)})),position:{...c.position},passengerPose:c.seatPose(),length:c.length,returningPassenger:this.returningPassenger};
+  return {...base,phase:c.state,stopped,canStartFromHarbor:this.canStartFromHarbor(),canContinue:riding&&stopped&&!g.frozen,canGetOff:riding&&stopped&&!g.frozen&&!!this.exitPoint(),canRead:riding&&stopped&&c.currentStation?.id!=='harbor'&&!g.frozen,autoDeparture:automatic,autoDepartureRemaining:automatic?.remaining??null,autoDepartureDuration:automatic?.duration??null,departureHoldReason:this.departureHoldReason,progress,nearStation:this.nearStation?.id||null,boardingPoints:c.stations.map(s=>({id:s.id,position:this.world(s.boarding||s.approach)})),position:{...c.position},passengerPose:c.seatPose(),length:c.length,returningPassenger:this.returningPassenger};
  }
 }

@@ -111,7 +111,7 @@ test('architectural clearance agrees with Rapier beneath an elevated wall and be
 for(const[index,berth]of layout.berths.entries())test(`V21 berth ${index+1}: walk the full summit, all platforms, company readers and every stairway`,()=>{
  const f=fixture(berth),plan=navigator(f);
  try{
-  assert.equal(layout.railway.version,3,'use the current summit funicular assets');
+  assert.equal(layout.railway.version,4,'use the current summit funicular assets with harbor entry and short visits');
   const actors=layout.stations.map(station=>{const position=localToWorld(island,station);return{id:station.id,station,kind:station.type,position,distance:p=>Math.hypot(p.x-position.x,p.z-position.z)};});
   // Real movement across the authored streets, then every published platform
   // route in both directions. No test teleport is used to repair a failed path.

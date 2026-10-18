@@ -1,8 +1,8 @@
 import {sampleTrainPath,trainPathLength} from './train-path.js';
 
 export const CAREER_TRAIN_MOTION = Object.freeze({
-  cruiseSpeed:3, curveSpeed:3, acceleration:1.2, braking:1.5,
-  boardingDelay:.6, stationDwell:4,
+  cruiseSpeed:4.5, curveSpeed:4.5, acceleration:2.2, braking:2.6,
+  boardingDelay:.6, stationDwell:2.5,
 });
 export const CAREER_TRAIN = Object.freeze({
   coachOffset:0, floorY:1.65, seatSurfaceY:2.17, passengerCarIndex:0,

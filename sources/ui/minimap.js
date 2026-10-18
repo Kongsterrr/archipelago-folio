@@ -7,6 +7,13 @@ const EXPERIENCE_TERRACE_COLORS=['#dfd3b6','#c5c9a4','#b4b995','#b3ab96','#98998
 
 export const careerTerrainBand=height=>height<4?0:height<11?1:height<18?2:height<26?3:4;
 export const trainMapHeading=train=>(train.yaw||0)+(train.direction<0?Math.PI:0);
+const shortVisit=road=>road.short===true||road.kind==='visit';
+export function mapRoadStyle(road,scale,career=false){
+ if(career&&shortVisit(road))return {color:'#a66d3e',width:Math.max(2.8,scale*(road.width||2)),outline:1.8};
+ if(career&&(road.scenic===true||road.kind==='scenic'))return {color:'#f6ebd2',width:Math.min(1.5,Math.max(1.1,scale)),outline:0};
+ return {color:road.kind==='drive'?'#7e8586':'#fff3d5',width:Math.max(2.5,scale*road.width),outline:0};
+}
+export const mapLegend=islandId=>islandId==='experience'?'<span><i class="legend-you"></i>You</span><span><i class="legend-visit"></i>Short visit</span><span><i class="legend-scenic"></i>Scenic walk</span>':'<span><i class="legend-you"></i>You</span><span><i class="legend-stop"></i>Places</span><span><i class="legend-dock"></i>Dock</span>';
 
 // Keep the mountain railway's labels outside its route and numbered platforms.
 // World geometry remains north-up; only these screen-space captions move.
@@ -69,6 +76,7 @@ export class VoyageMinimap {
    this.button.setAttribute('aria-label',island?`${island.name} island map. Open world map`:'Open archipelago map');
    this.canvas.setAttribute('aria-label',island?`${island.name}: paths, places to explore, dock and your position. North is up.`:'Four islands and your position. North is up.');
    this.legend.hidden=!island;
+   this.legend.innerHTML=mapLegend(island?.id);
   }
   const w=this.canvas.clientWidth,h=this.canvas.clientHeight;if(!w||!h)return;
   const dpr=Math.min(globalThis.devicePixelRatio||1,3),bw=Math.round(w*dpr),bh=Math.round(h*dpr);
@@ -121,10 +129,20 @@ export class VoyageMinimap {
    }
    for(const band of g.mapPaths.bands){c.fillStyle=band.color;c.fill(band.path);}
   }
-  for(const road of g.roads.length?g.roads:[{points:g.route,width:2.05}])if(road.points.length){c.beginPath();road.points.forEach((p,n)=>{const q=projection.project(p);n?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y);});c.lineWidth=Math.max(2.5,projection.scale*road.width);c.strokeStyle=road.kind==='drive'?'#7e8586':'#fff3d5';c.stroke();}
+  const roads=g.roads.length?g.roads:[{points:g.route,width:2.05}],drawRoad=road=>{
+   if(!road.points.length)return;
+   c.beginPath();road.points.forEach((p,n)=>{const q=projection.project(p);n?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y);});
+   const style=mapRoadStyle(road,projection.scale,career);
+   if(style.outline){c.lineWidth=style.width+style.outline;c.strokeStyle=PAPER;c.stroke();}
+   c.lineWidth=style.width;c.strokeStyle=style.color;c.stroke();
+  };
+  for(const road of roads)if(!career||!shortVisit(road))drawRoad(road);
   for(const area of g.parkingAreas){this.polygon(area.polygon,projection);c.fillStyle='#c6c5b8';c.fill();for(const stall of area.stalls){this.polygon(stall.polygon,projection);c.strokeStyle='#faf4df';c.lineWidth=.9;c.stroke();}}
   for(const o of g.obstacles){if(o.width*o.depth<2||o.height<1.4)continue;this.polygon(o.polygon,projection);c.fillStyle=o.mapColor||'#98afa0';c.fill();c.strokeStyle='#718b80';c.lineWidth=.7;c.stroke();}
   for(const landmark of g.landmarks){if(g.parkingAreas.some(area=>area.id===landmark.id))continue;this.polygon(landmark.polygon,projection);c.fillStyle=landmark.id==='duan-center'?'#718c9f':'#b5ac91';c.fill();c.strokeStyle='#566b71';c.lineWidth=.8;c.stroke();}
+  // Short station visits remain legible above the simplified building footprints;
+  // the wider island walk is deliberately a quieter, thinner option.
+  if(career)for(const road of roads)if(shortVisit(road))drawRoad(road);
   for(const track of g.tracks){c.beginPath();track.points.forEach((p,n)=>{const q=projection.project(p);n?c.lineTo(q.x,q.y):c.moveTo(q.x,q.y);});c.strokeStyle='#505969';c.lineWidth=2.4;c.stroke();c.strokeStyle='#d6c4a5';c.lineWidth=.8;c.setLineDash([1,2]);c.stroke();c.setLineDash([]);}
   for(const track of g.tracks)for(const stop of track.stops||[]){const p=projection.project(stop);this.dot(p,5.2,'#5b4b3e',PAPER);c.fillStyle=PAPER;c.font='700 8px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(stop.label,p.x,p.y+.4);}
   // Company reader/action dots repeat the railway platforms on this island

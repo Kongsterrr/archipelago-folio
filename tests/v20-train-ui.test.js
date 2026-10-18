@@ -20,7 +20,7 @@ function fixture(overrides={}){
   return nodes.get(id);
  };
  node('#panel').open=false;
- const status={stopped:true,currentStation:'visionx',nextStation:'beaconfire',canRead:true,canGetOff:true,canContinue:true,autoDeparture:{remaining:4,duration:4,phase:'station'},...overrides};
+ const status={stopped:true,currentStation:'visionx',nextStation:'beaconfire',canRead:true,canGetOff:true,canContinue:true,autoDeparture:{remaining:2.5,duration:2.5,phase:'station'},...overrides};
  const game={player:{ridingTrain:true},frozen:false,trainStatus:()=>status,journey:{holdDeparture(reason){holds.push(reason);status.autoDeparture=null;}}};
  const context=vm.createContext({game,document,content,$:node});
  vm.runInContext(hudSource,context);
@@ -34,23 +34,26 @@ function fixture(overrides={}){
 test('V20 starts after settling without a second Start journey action',()=>{
  const f=fixture({currentStation:'harbor',autoDeparture:{remaining:.6,duration:.6,phase:'boarding'}});
  const view=f.view();assert.equal(view.phase,'SETTLING IN');assert.equal(view.continueLabel,'Continue now');
- f.render();assert.equal(f.node('#train-departure').hidden,true,'the brief seat settle does not show a four-second station bar');
+ f.render();assert.equal(f.node('#train-departure').hidden,true,'the brief seat settle does not show a 2.5-second station bar');
  assert.doesNotMatch(html,/Start journey/);
 });
 
-test('company dwell shows a quiet four-second progress without a growing card or live countdown spam',()=>{
+test('company dwell shows a quiet 2.5-second progress without a growing card or live countdown spam',()=>{
  const f=fixture();f.render();
- assert.equal(f.node('#train-phase').textContent,'CONTINUING IN 4s');
+ assert.equal(f.node('#train-phase').textContent,'CONTINUING IN 2.5s');
  assert.equal(f.node('#train-continue span').textContent,'Continue now');
  assert.equal(f.node('#train-departure').hidden,false);
  assert.equal(f.node('#train-departure').style['--departure-remaining'],'1');
+ assert.equal(f.node('#train-departure').attributes['aria-valuemax'],'2.5');
+ assert.equal(f.node('#train-departure').attributes['aria-valuenow'],'2.5','fractional dwell cannot round up to three seconds above its maximum');
  f.status.autoDeparture.remaining=2.25;f.render();
- assert.equal(f.node('#train-phase').textContent,'CONTINUING IN 3s');
- assert.equal(f.node('#train-departure').style['--departure-remaining'],String(2.25/4));
- assert.equal(f.node('#train-departure').attributes['aria-valuenow'],'3');
- assert.match(html,/id="train-departure" role="progressbar"[^>]*aria-valuemax="4"/);
+ assert.equal(f.node('#train-phase').textContent,'CONTINUING IN 2.3s');
+ assert.equal(f.node('#train-departure').style['--departure-remaining'],String(2.25/2.5));
+ assert.equal(f.node('#train-departure').attributes['aria-valuenow'],'2.25');
+ assert.match(html,/id="train-departure" role="progressbar"[^>]*aria-valuemax="2.5"/);
  assert.doesNotMatch(html,/<[^>]+id="train-(?:phase|departure)"[^>]*aria-live/);
  assert.match(css,/\.train-departure\{[^}]*position:absolute[^}]*height:3px/);
+ for(const remaining of [2.51,2.499,1.01,.01,-.01]){f.status.autoDeparture.remaining=remaining;f.render();const progress=f.node('#train-departure');assert.ok(Number(progress.attributes['aria-valuenow'])>=0&&Number(progress.attributes['aria-valuenow'])<=Number(progress.attributes['aria-valuemax']));}
 });
 
 test('keyboard entry into a stop action cancels auto departure and keeps that control focused',()=>{
@@ -66,7 +69,7 @@ test('keyboard entry into a stop action cancels auto departure and keeps that co
 test('existing keyboard focus at arrival holds the new stop but pointer focus does not',()=>{
  for(const modality of ['keyboard','pointer']){
   const f=fixture({stopped:false,autoDeparture:null});f.modality(modality);f.focus('#train-options');
-  f.status.stopped=true;f.status.autoDeparture={remaining:4,duration:4,phase:'station'};f.render();
+  f.status.stopped=true;f.status.autoDeparture={remaining:2.5,duration:2.5,phase:'station'};f.render();
   assert.equal(f.holds.length,modality==='keyboard'?1:0);
   assert.equal(f.document.activeElement,f.node('#train-options'),'the HUD never steals focus from an available control');
  }
@@ -78,7 +81,7 @@ test('departure releases unavailable stop controls without carrying their focus 
  f.status.stopped=false;f.status.autoDeparture=null;f.render();
  assert.equal(f.node('#train-continue').hidden,true);assert.equal(f.document.activeElement,null);
  assert.equal(f.node('#train-continue').blurred,1);
- f.status.stopped=true;f.status.currentStation='beaconfire';f.status.autoDeparture={remaining:4,duration:4,phase:'station'};f.render();
+ f.status.stopped=true;f.status.currentStation='beaconfire';f.status.autoDeparture={remaining:2.5,duration:2.5,phase:'station'};f.render();
  assert.equal(f.holds.length,0);assert.equal(f.document.activeElement,null);
  assert.equal(f.node('#train-continue').hidden,false);
  f.focus('#train-options');f.game.player.ridingTrain=false;f.render();
@@ -87,7 +90,7 @@ test('departure releases unavailable stop controls without carrying their focus 
 
 test('a deliberate pointer press on Read or Get off holds a nearly expired stop before click',()=>{
  for(const id of ['#train-read','#train-get-off','#train-options','#train-continue']){
-  const f=fixture({autoDeparture:{remaining:.01,duration:4,phase:'station'}});f.modality('pointer');f.focus(id);
+  const f=fixture({autoDeparture:{remaining:.01,duration:2.5,phase:'station'}});f.modality('pointer');f.focus(id);
   const held=vm.runInContext('holdTrainForPointer(document.activeElement)',f.context);
   assert.equal(held,id!=='#train-continue');assert.equal(f.holds.length,id==='#train-continue'?0:1);
  }

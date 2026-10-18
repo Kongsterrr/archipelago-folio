@@ -33,6 +33,7 @@ export const daylightEnvironment=sunsetEnvironment;
 export class BayLighting {
  constructor(scene,renderer,camera,quality){
   Object.assign(this,{scene,renderer,camera,quality});
+  this.contactStrength=uniform(.48);
   renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.0;
   this.fill=new THREE.HemisphereLight(SUNSET.fill,SUNSET.ground,1.15);scene.add(this.fill);
   // Broad sky bounce preserves faces and hull detail on the camera-facing side
@@ -60,7 +61,13 @@ export class BayLighting {
   // a blank composite after rapid switches. Low quality bypasses it entirely;
   // its bounded targets are retained only if high quality was used previously.
  }
- update(p,walking,distance=30){
+ update(p,walking,distance=30,{experienceOverview=false,experienceView=experienceOverview,viewDistance=distance}={}){
+  // At the mountain overview's scale GTAO's .42m depth kernel is smaller than
+  // a few pixels and aliases flat rock faces into a grid. Fade only that view;
+  // keep following its actual eye distance while the camera returns to Jack.
+  this.overviewContactFade=experienceView&&(experienceOverview||!!this.overviewContactFade);
+  this.contactStrength.value=this.overviewContactFade?.48*(1-THREE.MathUtils.smoothstep(viewDistance,45,90)):.48;
+  if(!experienceOverview&&viewDistance<=45)this.overviewContactFade=false;
   const extent=walking?14:Math.max(26,Math.min(64,distance*.75));
   const c=this.sun.shadow.camera;
   if(c.right!==extent){Object.assign(c,{left:-extent,right:extent,top:extent,bottom:-extent});c.updateProjectionMatrix();}
@@ -85,7 +92,7 @@ export class BayLighting {
   this.ao=ao(depth,null,this.camera);this.ao.resolutionScale=.5;
   this.ao.radius.value=.42;this.ao.thickness.value=.65;this.ao.distanceExponent.value=1.8;
   this.pipeline=new THREE.RenderPipeline(this.renderer);
-  const shaded=vec4(color.rgb.mul(mix(1,this.ao.getTextureNode().r,mask.select(.48,0))),color.a);
+  const shaded=vec4(color.rgb.mul(mix(1,this.ao.getTextureNode().r,mask.select(this.contactStrength,0))),color.a);
   this.antialias=fxaa(renderOutput(shaded,THREE.ACESFilmicToneMapping,THREE.SRGBColorSpace));
   this.pipeline.outputNode=this.antialias;this.pipeline.outputColorTransform=false;
  }

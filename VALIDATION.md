@@ -1,3 +1,37 @@
+# V22 — Summit Express · 2026-10-17
+
+## Scope and measured behavior
+
+- The V21 mountain, inclined cabin, company content and coastline remain. Forty non-Experience GLB hashes are unchanged. Experience high/low exports are **1,787,756 / 1,152,916 bytes**, within the 2 MB / 1.2 MB budgets; the cabin model is unchanged.
+- Motion is 4.5 units/s, acceleration 2.2, braking 2.6. The fixed-step uninterrupted tour is approximately **33.1 seconds**, including the 0.4-second boarding transition, 0.6-second settle and three 2.5-second stops. The 30/60/120 FPS simulations all remain inside 30–35 seconds. The actual browser completed the chronological tour and direct return without input, and its renderer stream was recorded; the video includes inspection time before/after the journey, so its file duration is not the tour timing measurement.
+- Real Rapier characters, with the actual train colliders and no rescue teleport, completed all three ordinary-speed short visits in **17.43 seconds**. VisionX: **8.12 s** total / **2.35 s** to the reader; BeaconFire: **6.47 / 1.38 s**; Amtrak: **2.85 / 1.43 s**. E reading, F devices, return-to-door boarding priority, reboarding, collision and actual high/low GLB visibility were checked.
+- Walking camera vertical movement is smoothed separately from X/Z, with the interpolated head as the terrain visibility pivot. Normal elevation is 38 degrees, maximum 52 degrees, minimum distance 55% of the chosen zoom, and recovery delay 0.2 seconds. Three real stair trajectories cover walking/running in both directions at 30/60/120 FPS and all four viewport sizes. The full west summit stair additionally covers three lateral lanes, two directions and three zoom levels. The camera-facing rock shoulder was lowered without changing its 52 supported treads.
+- Short-route paving is assigned to the terrain itself rather than overlaid slabs. Exported high/low floor tests and 640 actual-model train sweep samples retain the V21.0.1 platform/deck flicker fix.
+- A final high-quality overview comparison identified distant GTAO reconstruction stripes on the rock faces. Experience overview contact shading now fades smoothly over the real 45–90-unit camera distance and returns as the camera closes in; directional-shadow parameters remain unchanged. The final real overview is clean, and six targeted overview/render-recovery checks passed after this bounded refinement.
+
+## Automated checks
+
+The full regression executed **1,123 cases**: 1,121 passed immediately; two full-island walk cases still required layout version 3. After updating that version assertion to the exported version 4, the entire affected **148-case** stair/walk-world file passed, including both complete berth-to-summit-and-back journeys. No runtime assertion was relaxed. The production build passed. Logs are retained locally under `.sites-runtime/v22/`.
+
+The new harbor shortcut is checked before starting and again inside the opaque commit: the actor must still be on foot in the correct welcome area, with supported feet and clear origin/platform space. Tests cover repeated requests, cancellation, late invalidation, menus/background, ordinary E proximity and stale callbacks. Existing history and content have no migration.
+
+## Actual browser checks and limits
+
+Host: **Apple M3 Max, macOS 27.0.1, Codex Chromium in-app browser**, local Vite. Verified WebGPU high/low, reduced motion, actual page viewports **1440×900, 1920×1080, 390×844, 844×390**, harbor Start tour, automatic three-stop return, reading cancelling auto-departure, staying stopped after closing, disembarkation, west-stair descent and running ascent, and quality changes. Phone viewports are desktop emulation; physical phones, mobile Safari, cold-network loading and sustained thermal behavior were not measured.
+
+A high-quality 1440×900 train sample reported **60 FPS**, p50 **16.3 ms**, p95 **19.2 ms**. A later warm 1440×852 harbor sample reported **128 FPS**, p50 **7.3 ms**, p95 **11.2 ms**. The first 1920×1080 stair sample during quality loading and concurrent regression work dropped to **25 FPS** (p50 31.5 ms, p95 78.8 ms); these short samples do not certify sustained 60 FPS on all devices.
+
+**WebGL2 limitation:** two forced-WebGL2 starts in this browser lost the graphics context before entering the island. The HTML fallback retained all stories, education details and résumé access. This run does not claim successful WebGL2 playthrough verification. WebGPU remained usable after reload. The existing Rapier initialization deprecation warning also remains.
+
+Real renderer evidence is retained locally (not generated concepts):
+
+- `.sites-runtime/v22/evidence/summit-express-actual-game.webm` — complete automatic ascent, stops and descent.
+- `.sites-runtime/v22/evidence/01-beaconfire-train.png` — station/cabin framing.
+- `.sites-runtime/v22/evidence/02-portrait-390x844-low.png` and `03-landscape-844x390-low.png` — emulated phone views.
+- `.sites-runtime/v22/evidence/04-stairs-1920x1080-high.png` — actual stair follow view.
+- `.sites-runtime/v22/evidence/05-overview-low.png` — complete retained mountain layout.
+- `.sites-runtime/v22/evidence/06-overview-high-final.png` — final high-quality overview with distant contact-shading artifacts removed.
+
 # V21.0.1 — Stable Platforms · 2026-10-15
 
 - **Cause:** each of the four platform slab tops occupied the same plane as the terrain below. The train’s navy substrate and wooden floorboards also shared their upper plane; the old compressed GLB separated them by only about 0.236 mm. Camera and depth quantization could alternately expose the competing materials.

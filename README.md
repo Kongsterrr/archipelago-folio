@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V21.0.1 — Stable Platforms** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V22 — Summit Express** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -78,6 +78,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V15.1.3 — Graphite Finish & Deeper Seating** | Lighter graphite G63 roof with body-matched surface response; both drivers sit farther back with extended arms | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/8369032b7b89c970dfec982c6eadd5f736b334d4) |
 | **V15.2 — Four-Car Garage** | Ferrari Purosangue in bay 03 and Ford Raptor in bay 04, individually fitted drivers and independently rolling/steering wheels | [Source](https://github.com/Kongsterrr/archipelago-folio/tree/f73f32b41273636ffa666be11b33050af3516b08) |
 | **V21 — Terraced Summit** | A terraced coastal mountain, a single level-cabin funicular, chronological uphill stops, direct descent and connected hillside walks | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V22 — Summit Express** | A shorter automatic tour, direct harbor boarding, short company visits and stable stair/wall cameras | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V20 — Career Valley Express** | A compact career valley, immediate platform boarding, automatic departure and brief company stops with accessible controls that hold the train when needed | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V19 — Career Railway** | A rideable coastal train links VisionX, BeaconFire and Amtrak in chronological order, with station visits, platform calls, independent car motion and a layered railway town | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V18 — Career Terraces** | Connects Experience around a three-level courtyard, broad stairs, architectural streets and a rear railway with independently turning cars | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
@@ -93,6 +94,17 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V14 — Campus Shores** | Walkable BU and CMU campus precincts, recognizable landmarks, school-specific education panels, The Fence interaction and a campus minimap | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V13.3 — Clear Project Stops** | Front-facing Research exhibit, working harbor overview, unobstructed directory and quad mounting priority beside signs | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V12.4 — Island Field Maps** | Larger high-density minimap, automatic island maps, real paths and exhibits, parked vehicle markers | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+
+### V22 — Summit Express
+
+- Keeps the terraced mountain, central funicular and chronological company stops. The uninterrupted tour now targets **30–35 seconds**, including boarding, settling and **2.5-second** company stops. Reading, getting off, keyboard focus and menus still hold departure until the visitor chooses to continue.
+- Adds **Start tour** in the Experience harbor welcome area. A checked, opaque boarding transition seats Jack directly; ordinary nearby-platform boarding remains available at every stop.
+- Adds short, level station visits to the company reading exhibits and concept controls, with matching copper paving and distinct **Short visit / Scenic walk** map routes. The long hillside stairs remain an optional scenic walk.
+- Smooths walking camera height independently of the stair treads. Terrain avoidance uses Jack's interpolated head, anticipates nearby obstructions and restores distance gradually. Experience keeps its fixed island direction, with bounded camera elevation instead of a sudden overhead jump.
+- Regrades the rock shoulder beside the western summit stairs to clear the camera view. The island coastline, principal buildings, railway, cabin, character, other islands and saved-record schema remain unchanged.
+- Fades distant contact shading during the mountain overview to remove rock-face grid artifacts, restoring the original near-view detail as the camera approaches Jack.
+
+Actual-model, character-controller and browser measurements are recorded in [validation notes](VALIDATION.md).
 
 ### V21.0.1 — Stable Platforms
 

@@ -88,7 +88,7 @@ test('Career Railway modestly extends the rear coast while preserving the harbor
 
 test('high and low Experience exports share scene contracts and meet compressed byte budgets', async () => {
   const high = metadata('high'), low = metadata('low');
-  assert.match(high.revision, /^v21-/);
+  assert.match(high.revision, /^v22-/);
   assert.equal(low.revision, high.revision);
   assert.equal(manifests.high.walkLayout, manifests.low.walkLayout);
   for (const key of ['dock','shorePolygon','districts','occluders']) assert.deepEqual(high[key], low[key], key);

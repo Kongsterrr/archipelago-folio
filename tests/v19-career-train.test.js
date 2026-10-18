@@ -42,7 +42,7 @@ test('authored open plan segments clamp while legacy stadium and ellipse motion 
  const legacy={trackCentre:[3,0,-8],trackRadii:[4,2]},a=sampleTrainMotion(legacy,0,12),b=sampleTrainMotion(legacy,12,12);close(a.x,b.x);close(a.z,b.z);
 });
 
-test('single cabin ascends chronologically, descends directly and meets the 34.6 second motion budget',()=>{
+test('single cabin ascends chronologically, descends directly and meets the 24.6 second motion budget',()=>{
  const train=fixture();assert.equal(train.currentStation.id,'harbor');assert.equal(train.continue(),false);assert.equal(train.board('visionx'),false);assert.equal(train.board(),true);
  let seconds=0;const legs=[];
  for(const stop of['visionx','beaconfire','amtrak','harbor']){
@@ -51,7 +51,7 @@ test('single cabin ascends chronologically, descends directly and meets the 34.6
   while(train.state!=='stopped'&&frames<3000){const speed=train.speed;train.step(DT);frames++;assert.ok(train.speed-speed<=CAREER_TRAIN_MOTION.acceleration*DT+1e-8);assert.ok(speed-train.speed<=CAREER_TRAIN_MOTION.braking*DT+1e-8,'arrival reaches zero smoothly');}
   assert.equal(train.currentStation?.id,stop);close(train.speed,0);close(train.distance,train.targetDistance);legs.push(frames*DT);seconds+=frames*DT;
  }
- assert.ok(seconds>34.4&&seconds<34.8,`${seconds}: ${legs}`);close(train.distance,train.minDistance);close(train.odometer,2*(train.maxDistance-train.minDistance),1e-5);close(train.wheelDistance,0,1e-5);
+ assert.ok(seconds>24.4&&seconds<24.8,`${seconds}: ${legs}`);close(train.distance,train.minDistance);close(train.odometer,2*(train.maxDistance-train.minDistance),1e-5);close(train.wheelDistance,0,1e-5);
  assert.equal(train.passenger,true);const stopped=train.distance;train.step(60);close(train.distance,stopped);assert.equal(train.nextStation.id,'visionx');
 });
 
@@ -61,12 +61,12 @@ test('an empty call works in either direction without boarding or visiting inter
  assert.equal(train.board(),true);assert.equal(train.direction,1);assert.equal(train.nextStation.id,'beaconfire');
 });
 
-test('a moving return brakes for two seconds before reversing with a stable cabin heading',()=>{
- const train=fixture();train.call('amtrak');train.step(3);close(train.speed,3);const distance=train.distance,yaw=train.yaw;
+test('a moving return brakes at the configured rate before reversing with a stable cabin heading',()=>{
+ const train=fixture();train.call('amtrak');train.step(3);close(train.speed,train.motion.cruiseSpeed);const distance=train.distance,yaw=train.yaw;
  train.cancelRide();assert.equal(train.state,'reversing');assert.equal(train.direction,1);assert.equal(train.targetStationId,'harbor');assert.equal(train.distance,distance);
  let braking=0,last=train.distance;
  while(train.direction===1&&braking<180){const old=train.speed;train.step(DT);braking++;close(train.yaw,yaw);assert.ok(old-train.speed<=train.motion.braking*DT+1e-8);if(train.direction===1){assert.ok(train.distance>=last);last=train.distance;}else assert.ok(train.speed<=train.motion.acceleration*DT+1e-8);}
- assert.ok(braking>=120&&braking<=122,`reversal took ${braking} frames`);close(last-distance,3,1e-6);assert.equal(train.direction,-1);arrive(train);assert.equal(train.currentStation.id,'harbor');
+ const expectedFrames=Math.ceil(train.motion.cruiseSpeed/train.motion.braking/DT);assert.ok(braking>=expectedFrames&&braking<=expectedFrames+2,`reversal took ${braking} frames`);close(last-distance,train.motion.cruiseSpeed**2/(2*train.motion.braking),.001);assert.equal(train.direction,-1);arrive(train);assert.equal(train.currentStation.id,'harbor');
 });
 
 test('returns requested close to the upper terminal stop before the endpoint and reverse without snapping',()=>{
@@ -136,7 +136,7 @@ test('visual replacement preserves single Jack, reverse wheel phase and level pa
 });
 
 test('a late empty-call target inside braking distance is reached by a smooth stop and reversal',()=>{
- const train=fixture();train.call('amtrak');const station=train.stations[1];while(station.distance-train.distance>1.5)train.step(DT);close(train.speed,3);
+ const train=fixture();train.call('amtrak');const station=train.stations[1];while(station.distance-train.distance>1.5)train.step(DT);close(train.speed,train.motion.cruiseSpeed);
  train.call('visionx');assert.equal(train.reversing,true);let overshot=false,reversed=false;
  for(let n=0;n<1000&&train.state!=='stopped';n++){const speed=train.speed;train.step(DT);assert.ok(speed-train.speed<=train.motion.braking*DT+1e-8,'retarget cannot snap to a nearby platform');overshot ||=train.distance>station.distance;reversed ||=train.direction===-1;}
  assert.ok(overshot&&reversed);assert.equal(train.currentStation.id,'visionx');close(train.distance,station.distance);

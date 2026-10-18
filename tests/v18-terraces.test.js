@@ -160,7 +160,7 @@ for(const berth of layout.berths)test(`both directions of the complete Career Te
     const tour=layout.route;
     walkRoute(f,[...tour,...[...tour].reverse(),[berth.landing.x,berth.landing.z]]);
     assert.equal(f.rescues,0,'the complete circuit must not rescue visitors across a broken seam');
-    assert.ok(Math.abs(f.actor.position.y-.85)<.035,'tour returns to the original dock level');
+    assert.ok(Math.abs(f.actor.position.y-.85)<.035,`tour returns to the original dock level: ${JSON.stringify({feet:f.actor.position,ground:f.walk.groundAt(f.actor.position),landing:berth.landing})}`);
   } finally {f.world.free();}
 });
 

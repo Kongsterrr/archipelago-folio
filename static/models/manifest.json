@@ -927,14 +927,14 @@
       "id": "experience",
       "name": "experience",
       "file": "experience.glb",
-      "bytes": 1973808,
-      "rawBytes": 8103144,
-      "revision": "v21-terraced-summit",
-      "sourceMeshes": 5139,
-      "drawCalls": 163,
-      "staticDrawCalls": 14,
-      "vertices": 214260,
-      "triangles": 177315,
+      "bytes": 1787756,
+      "rawBytes": 7018952,
+      "revision": "v22-short-summit-visits",
+      "sourceMeshes": 5159,
+      "drawCalls": 176,
+      "staticDrawCalls": 15,
+      "vertices": 183430,
+      "triangles": 158796,
       "bounds": {
         "min": [
           -39,
@@ -1004,9 +1004,9 @@
         {
           "name": "anim_packet_0",
           "position": [
-            -4,
+            5,
             15.75,
-            0
+            -1.35
           ],
           "rotation": [
             0,
@@ -1028,9 +1028,9 @@
         {
           "name": "anim_packet_1",
           "position": [
-            -2.8500000000000014,
+            5.85,
             15.75,
-            0
+            -1.35
           ],
           "rotation": [
             0,
@@ -1052,9 +1052,9 @@
         {
           "name": "anim_packet_2",
           "position": [
-            -1.6999999999999993,
+            6.699999999999999,
             15.75,
-            0
+            -1.35
           ],
           "rotation": [
             0,
@@ -1462,9 +1462,9 @@
         {
           "name": "anim_packet_0",
           "position": [
-            -4,
+            5,
             15.75,
-            0
+            -1.35
           ],
           "rotation": [
             0,
@@ -1486,9 +1486,9 @@
         {
           "name": "anim_packet_1",
           "position": [
-            -2.8500000000000014,
+            5.85,
             15.75,
-            0
+            -1.35
           ],
           "rotation": [
             0,
@@ -1510,9 +1510,9 @@
         {
           "name": "anim_packet_2",
           "position": [
-            -1.6999999999999993,
+            6.699999999999999,
             15.75,
-            0
+            -1.35
           ],
           "rotation": [
             0,
@@ -4053,8 +4053,8 @@
       ]
     }
   ],
-  "totalBytes": 5901608,
-  "totalTriangles": 443573,
+  "totalBytes": 5715556,
+  "totalTriangles": 425054,
   "quality": "high",
   "walkLayout": "walk-layout.json"
 }
