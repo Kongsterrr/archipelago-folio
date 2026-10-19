@@ -4,8 +4,8 @@
     {
       "id": "experience",
       "quality": "high",
-      "bytes": 1722844,
-      "triangles": 152316,
+      "bytes": 1722616,
+      "triangles": 152292,
       "drawCalls": 176,
       "routeSeconds": 183.4,
       "connectedFromDock": true,
@@ -27,8 +27,8 @@
     {
       "id": "experience",
       "quality": "low",
-      "bytes": 1180948,
-      "triangles": 93694,
+      "bytes": 1180656,
+      "triangles": 93660,
       "drawCalls": 175,
       "routeSeconds": 183.4,
       "connectedFromDock": true,
@@ -48,5 +48,5 @@
       "railwayCrossings": 0
     }
   ],
-  "totalBytes": 2903792
+  "totalBytes": 2903272
 }

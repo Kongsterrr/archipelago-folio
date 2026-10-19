@@ -1,3 +1,9 @@
+# V22.2.1 — Amtrak paving cleanup · 2026-10-18
+
+- Removed only the pale short-visit floor inlay in front of the Amtrak reader, restoring the terrace paving and joints. The Amtrak route remains in navigation/map data; its ground elevation, reading point and boarding point are unchanged. Only Experience high/low models and associated metadata were rebuilt.
+- **21/21 targeted tests passed**: actual high/low GLB floor/material consistency, short visits, staircase clearance, rock/route consistency and reading access. Production build passed. This visual hotfix does not claim a new full-suite run; V22.2's 1,174-case baseline remains below.
+- Actual local WebGPU/high verification: rode to Amtrak, disembarked, walked across the cleaned area and opened Amtrak using the normal nearby reading action. Real frame: `.sites-runtime/v22.2.1/evidence/amtrak-floor-clean.png`. Test/build logs are retained in the same ignored QA directory. Physical mobile and WebGL2 were not re-tested for this visual cleanup.
+
 # V22.2 — Solid Summit · 2026-10-18
 
 ## Cause and correction

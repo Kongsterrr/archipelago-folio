@@ -31,7 +31,9 @@ export function buildExperienceJunction(api){
  const sph=(r,x,y,z,m='junction_leaf',p=D.amtrak,scale=[1,1,1])=>{const o=mesh(new THREE.SphereGeometry(r,low?6:9,low?4:6),m,[x,y,z],zero,p);o.scale.set(...scale);return o;};
  layout.railway=careerRailway();layout.landmarks=[];layout.interiors=[];layout.paths=[];layout.crossings=[];layout.crossing=null;
  layout.shortTours=careerShortTours(layout.railway);
- const terrain=careerTerraces(layout.shore,Y,{shortTours:layout.shortTours});layout.terrain=terrain.terrain;layout.ramps=terrain.ramps;layout.stairs=terrain.stairways;layout.terraces={quayY:Y,courtY:14.55,gardenY:8.05,stationY:21.55,concourseY:21.55,regions:terrain.regions};
+ // Amtrak's short approach uses the surrounding paving, without a pale strip
+ // beneath the reader. Keep its route in the navigation and map data.
+ const terrain=careerTerraces(layout.shore,Y,{shortTours:layout.shortTours.filter(t=>t.contentId!=='amtrak')});layout.terrain=terrain.terrain;layout.ramps=terrain.ramps;layout.stairs=terrain.stairways;layout.terraces={quayY:Y,courtY:14.55,gardenY:8.05,stationY:21.55,concourseY:21.55,regions:terrain.regions};
  // Continuous sloped support avoids trimesh seam sweeps while matching the rendered planes.
  layout.surfaces.push(...terrain.ramps.map(r=>({...r,width:r.width+.20,depth:r.depth+(r.slope?.08:0)})),...terrain.stairways.flatMap(s=>s.treads));
  for(const[material,indices]of Object.entries(terrain.materials))custom(terrain.vertices,indices,material,root);

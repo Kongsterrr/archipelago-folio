@@ -43,7 +43,7 @@ test('short visit paving and scenic routes keep distinct navigation roles',()=>{
  assert.ok(layout.paths.filter(p=>p.kind==='stair').every(p=>p.scenic===true));
 });
 
-for(const quality of['high','low'])test(`${quality}: pale short-route paving is a single decoded GLB surface at the physical floor`,async()=>{
+for(const quality of['high','low'])test(`${quality}: short-route paving is a single decoded GLB floor and Amtrak blends into the terrace`,async()=>{
  const bytes=await fs.readFile(new URL(`../static/models/${quality==='low'?'low/':''}experience.glb`,import.meta.url));
  const scene=(await new GLTFLoader().setMeshoptDecoder(MeshoptDecoder).parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.byteLength),'')).scene;
  scene.updateMatrixWorld(true);const ray=new THREE.Raycaster();
@@ -52,10 +52,10 @@ for(const quality of['high','low'])test(`${quality}: pale short-route paving is 
   for(let d=.17;d<length;d+=.53){
    const t=d/length,x=a[0]+(b[0]-a[0])*t,z=a[1]+(b[1]-a[1])*t;
    ray.set(new THREE.Vector3(x,tour.y+.035,z),new THREE.Vector3(0,-1,0));ray.far=.07;
-   const hits=ray.intersectObject(scene,true),floors=new Set(hits.map(h=>h.object.name));
+   const hits=ray.intersectObject(scene,true).filter(h=>h.object.name!=='career_stone_paving_joints'),floors=new Set(hits.map(h=>h.object.name));
    assert.equal(floors.size,1,`${tour.id}: overlapping floor materials at ${x},${z}: ${[...floors]}`);
    assert.ok(hits.length&&hits.every(h=>Math.abs(h.point.y-tour.y)<.0035));
-   assert.equal(hits[0].object.material.name,'junction_cream',`${tour.id}: its light stone must be part of the terrain`);
+   assert.equal(hits[0].object.material.name,tour.contentId==='amtrak'?'junction_paving':'junction_cream',`${tour.id}: its paving must be part of the terrain`);
   }
  }
 });
