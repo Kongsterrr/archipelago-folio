@@ -31,9 +31,9 @@ export function buildExperienceJunction(api){
  const sph=(r,x,y,z,m='junction_leaf',p=D.amtrak,scale=[1,1,1])=>{const o=mesh(new THREE.SphereGeometry(r,low?6:9,low?4:6),m,[x,y,z],zero,p);o.scale.set(...scale);return o;};
  layout.railway=careerRailway();layout.landmarks=[];layout.interiors=[];layout.paths=[];layout.crossings=[];layout.crossing=null;
  layout.shortTours=careerShortTours(layout.railway);
- // Amtrak's short approach uses the surrounding paving, without a pale strip
- // beneath the reader. Keep its route in the navigation and map data.
- const terrain=careerTerraces(layout.shore,Y,{shortTours:layout.shortTours.filter(t=>t.contentId!=='amtrak')});layout.terrain=terrain.terrain;layout.ramps=terrain.ramps;layout.stairs=terrain.stairways;layout.terraces={quayY:Y,courtY:14.55,gardenY:8.05,stationY:21.55,concourseY:21.55,regions:terrain.regions};
+ // Short visits use the surrounding stone paving, without pale floor strips.
+ // Keep their routes in the navigation and map data.
+ const terrain=careerTerraces(layout.shore,Y);layout.terrain=terrain.terrain;layout.ramps=terrain.ramps;layout.stairs=terrain.stairways;layout.terraces={quayY:Y,courtY:14.55,gardenY:8.05,stationY:21.55,concourseY:21.55,regions:terrain.regions};
  // Continuous sloped support avoids trimesh seam sweeps while matching the rendered planes.
  layout.surfaces.push(...terrain.ramps.map(r=>({...r,width:r.width+.20,depth:r.depth+(r.slope?.08:0)})),...terrain.stairways.flatMap(s=>s.treads));
  for(const[material,indices]of Object.entries(terrain.materials))custom(terrain.vertices,indices,material,root);
@@ -115,8 +115,8 @@ export function buildExperienceJunction(api){
   const color={amtrak:'junction_navy',beaconfire:'junction_copper',visionx:'junction_teal'}[contentId],compact=width<2;
   b(width,1.8,.065,0,1.46,0,'junction_cream',g);bx(.07,1.62,.015,-width/2+.16,1.46,.041,color,g);
   tx(contentId==='beaconfire'?'BEACONFIRE':contentId.toUpperCase(),compact?.14:.25,0,1.97,.045,color,g);
-  lines.forEach((line,i)=>tx(line,compact?.06:width<3?.08:.095,0,1.62-i*.19,.045,'junction_steel',g));
-  bx(width-.25,.31,.018,0,.91,.045,color,g);tx('VIEW EXPERIENCE',compact?.075:width<3?.11:.14,0,.86,.06,'junction_cream',g);
+  lines.forEach((line,i)=>tx(line,compact?.06:width<2.7?.08:.095,0,1.62-i*.19,.045,'junction_steel',g));
+  bx(width-.25,.31,.018,0,.91,.045,color,g);tx('VIEW EXPERIENCE',compact?.075:width<2.7?.11:.14,0,.86,.06,'junction_cream',g);
   if(stand){for(const xx of[-width*.32,width*.32])bx(.07,.6,.07,xx,.3,0,'junction_steel',g);obstruction('reader '+id,x,z,width,.10,2.36,y,yaw);}
   layout.stations.push({id,type:'read',contentId,label:contentId==='beaconfire'?'BeaconFire':contentId==='amtrak'?'Amtrak':'VisionX',primary:true,readFull:true,readLabel:'View experience',x:approach[0],z:approach[1],y,...cameras[contentId],hitArea:{x:x+Math.sin(yaw)*.055,y:y+lift+1.46,z:z+Math.cos(yaw)*.055,width:width+.02,height:1.82,yaw}});
  }
@@ -230,14 +230,15 @@ export function buildExperienceJunction(api){
  for(let i=0;i<parts;i++){const a=sampleTrainPath(path,length*i/parts),c=sampleTrainPath(path,length*(i+1)/parts);for(const x of[-.81,.81])rod([x,a.y-.028,a.z],[x,c.y-.028,c.z],.032,'junction_metal',D.amtrak,6);rod([0,a.y-.045,a.z],[0,c.y-.045,c.z],.024,'junction_steel',D.amtrak,5);}
  // The unified terrain already fills every boarding deck at exactly p.y.
  // Keep its precise support surface, without a second coplanar rendered slab.
- for(const st of rw.stations){const p=st.platform,g=named('career_platform_'+st.id);layout.surfaces.push({id:'platform-'+st.id,...p});const side=Math.sign(p.x),lampX=p.x+side*(p.width/2-.2);bx(.16,.013,5.5,side*1.44,p.y+.008,p.z,'junction_copper',g);for(const dz of[-2.55,2.55]){bx(.08,2.25,.08,lampX,p.y+1.125,p.z+dz,'junction_steel',g);obstruction('station lamp '+st.id,lampX,p.z+dz,.10,.10,2.4,p.y);b(.34,.35,.34,lampX,p.y+2.32,p.z+dz,'sunsetLantern',g);}const tag=named('career_platform_label_'+st.id,lampX,p.y+2.7,p.z-2.55,g);b(2.35,.5,.14,0,0,0,'junction_navy',tag);tx(st.label.toUpperCase(),st.id==='beaconfire'?.13:.16,0,-.06,.09,'junction_cream',tag);}
+ // BeaconFire keeps its rear station lamp; a front lamp would obscure its wider reader.
+ for(const st of rw.stations){const p=st.platform,g=named('career_platform_'+st.id);layout.surfaces.push({id:'platform-'+st.id,...p});const side=Math.sign(p.x),lampX=p.x+side*(p.width/2-.2);bx(.16,.013,5.5,side*1.44,p.y+.008,p.z,'junction_copper',g);for(const dz of(st.id==='beaconfire'?[-2.55]:[-2.55,2.55])){bx(.08,2.25,.08,lampX,p.y+1.125,p.z+dz,'junction_steel',g);obstruction('station lamp '+st.id,lampX,p.z+dz,.10,.10,2.4,p.y);b(.34,.35,.34,lampX,p.y+2.32,p.z+dz,'sunsetLantern',g);}const tag=named('career_platform_label_'+st.id,lampX,p.y+2.7,p.z-2.55,g);b(2.35,.5,.14,0,0,0,'junction_navy',tag);tx(st.label.toUpperCase(),st.id==='beaconfire'?.13:.16,0,-.06,.09,'junction_cream',tag);}
  for(let i=0;i<parts;i++){const a=sampleTrainPath(path,length*i/parts),c=sampleTrainPath(path,length*(i+1)/parts),z=(a.z+c.z)/2;for(const side of[-1,1]){if(rw.stations.some(st=>Math.sign(st.platform.x)===side&&Math.abs(z-st.platform.z)<2.9))continue;const x=side*1.43,ay=Math.max(a.y+.02,terrain.height(x,a.z)),cy=Math.max(c.y+.02,terrain.height(x,c.z));rail('funicular corridor',[x,a.z],[x,c.z],ay,cy,D.amtrak,Math.min(a.y-.2,ay),Math.min(c.y-.2,cy));}}
  for(const q of[path.from,path.to]){bx(2.65,.32,.22,0,q[1]+.28,q[2],'junction_woodDark',D.amtrak);obstruction('funicular buffer',0,q[2],2.8,.35,1.1,q[1]-.2);}
  layout.trainTrack={path,railY:null,points:Array.from({length:81},(_,i)=>{const q=sampleTrainPath(path,length*i/80);return[q.x,q.y,q.z];}),protected:true,crossings:[]};
  // A small off-axis lower station leaves the ascending carriage visible from the quay.
  {const p=D.amtrak,y=3.85,g=named('occluder_summit_lower_station',0,0,0,p);for(const x of[-9.4,-3.6])wall('lower station side',x,22,.25,4,y,3.3,g);wall('lower station rear',-6.5,20,6,.25,y,3.3,g);for(const x of[-8.55,-4.45])wall('lower station front',x,24,1.8,.25,y,3.3,g);arch(-6.5,y,24.15,2.4,2.9,g,false);roof(-6.5,22,7,5,y+3.35,1.7,g);tx('SUMMIT LINE',.27,-6.5,y+3.6,24.55,'junction_cream',g);}
  reader('visionx:plants','visionx',7,15.8,8.05,0,[7,16.7],['SOFTWARE ENGINEER INTERN','MAY 2023 - AUG 2023','PLANT RECOMMENDATIONS'],0,{stand:true});
- reader('beaconfire:fullstack','beaconfire',-5.1,2.7,14.55,0,[-4.8,3.6],['FULL STACK ENGINEER','FEB 2024 - SEP 2024','SERVICES / MESSAGING / AI'],0,{width:1.35,stand:true});
+ reader('beaconfire:fullstack','beaconfire',-4.3,2.7,14.55,0,[-4.8,3.6],['FULL STACK ENGINEER','FEB 2024 - SEP 2024','SERVICES / MESSAGING / AI'],0,{width:2.8,stand:true});
  reader('amtrak:experience','amtrak',-5.8,-11.5,21.55,0,[-5.8,-10.4],['FULL STACK ENGINEER','NOV 2024 - PRESENT','WORKFORCE SYSTEMS'],0,{width:2.4,stand:true});
  layout.stations.push({id:'amtrak:dispatch',type:'action',contentId:'amtrak',action:'career-train',label:'Board funicular',x:-3.4,z:-12,y:21.55});
  {const g=named('station_experience:directory',-4,.85,26.9,D.amtrak);b(4.8,2.55,.25,0,1.6,0,'junction_stone',g);tx('TERRACED SUMMIT',.27,0,2.65,.15,'junction_navy',g);tx('START TOUR / 3 STOPS',.12,0,.40,.18,'junction_teal',g);for(const[i,id]of['visionx','beaconfire','amtrak'].entries()){const yy=2.13-i*.63,row=named('station_'+id+':directory',0,yy,0,g);bx(4.4,.54,.025,0,0,.15,'junction_navy',row);tx(`0${i+1} ${id.toUpperCase()}`,.23,0,-.06,.18,'junction_cream',row);layout.stations.push({id:id+':directory',type:'read',contentId:id,label:id,directory:true,primary:false,readFull:true,readLabel:'View experience',x:-4,z:28.1,y:.85,hitArea:{x:-4,y:.85+yy,z:27.08,width:4.4,height:.54,yaw:0}});}layout.stations.push({id:'experience:directory',type:'read',contentId:'experience',label:'Terraced Summit',readLabel:'Experience overview',readFull:true,directoryOverview:true,x:-4,z:28.1,y:.85});obstruction('port directory',-4,26.9,4.8,.3,3,.85);}

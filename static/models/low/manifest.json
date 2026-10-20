@@ -927,14 +927,14 @@
       "id": "experience",
       "name": "experience",
       "file": "experience.glb",
-      "bytes": 1180656,
-      "rawBytes": 4465388,
-      "revision": "v22-2-1-amtrak-paving",
-      "sourceMeshes": 4131,
-      "drawCalls": 175,
-      "staticDrawCalls": 14,
-      "vertices": 115895,
-      "triangles": 93660,
+      "bytes": 1175676,
+      "rawBytes": 4451752,
+      "revision": "v22-2-2-experience-paving",
+      "sourceMeshes": 4128,
+      "drawCalls": 174,
+      "staticDrawCalls": 13,
+      "vertices": 115561,
+      "triangles": 93324,
       "bounds": {
         "min": [
           -39,
@@ -4057,8 +4057,8 @@
       "triangleReductionPercent": 0
     }
   ],
-  "totalBytes": 3869920,
-  "totalTriangles": 282644,
+  "totalBytes": 3864940,
+  "totalTriangles": 282308,
   "quality": "low",
   "walkLayout": "walk-layout.json"
 }
