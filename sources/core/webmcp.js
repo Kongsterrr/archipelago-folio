@@ -1,7 +1,7 @@
 import {CONTENT_IDS,groupFor,islandIdFor} from '../portfolio-groups.js';
 
 // Public navigation bridge: content IDs stay valid as districts share four islands.
-export function createVoyageTools({islands,read,travel,status:readStatus,close,play,interact,dock,steer,walk,board,practice,skipArrival,careerTrain}){
+export function createVoyageTools({islands,read,travel,status:readStatus,close,play,interact,dock,steer,walk,board,practice,skipArrival,careerTrain,experienceDemo}){
  const physicalIds=islands.map(i=>i.id),contentIds=CONTENT_IDS.filter(id=>physicalIds.includes(islandIdFor(id)));
  const choices=[...physicalIds,...contentIds];
  const status=()=>({...readStatus(),islands:islands.map(i=>({id:i.id,name:i.name,entryIds:groupFor(i.id)?.entryIds||[]})),contentMapping:Object.fromEntries(contentIds.map(id=>[id,islandIdFor(id)]))});
@@ -16,6 +16,17 @@ export function createVoyageTools({islands,read,travel,status:readStatus,close,p
   if(!status().available3D)throw Error('The railway is unavailable. Experience stories remain readable from the menu.');
   const result=await careerTrain(input);
   if(result===false)throw Error('That train action is unavailable here. Use the Experience harbor welcome area for Start tour or a nearby station platform for boarding, and close any panel first.');
+  return status();
+ }});
+ if(experienceDemo)tools.push({name:'experience_example',title:'Try a career example',description:'Open or run one of six local concept illustrations while Jack is on foot beside its Experience worktable, or close the example. Uses the same visibility, distance, pause and preset checks as the page. Does not send email or access employer systems.',inputSchema:{type:'object',properties:{action:{type:'string',enum:['open','play','close']},companyId:{type:'string',enum:['visionx','beaconfire','amtrak']},presetId:{type:'string',enum:['low-light','sunny-balcony','subscription','retrieval','valid','duplicate']}},required:['action'],additionalProperties:false},annotations:{readOnlyHint:false,untrustedContentHint:false},async execute(input){
+  if(!input||!['open','play','close'].includes(input.action))throw Error('Choose open, play or close.');
+  const presets={visionx:['low-light','sunny-balcony'],beaconfire:['subscription','retrieval'],amtrak:['valid','duplicate']};
+  if(input.action!=='close'&&!presets[input.companyId])throw Error('Choose a known company.');
+  if(input.action==='play'&&!presets[input.companyId].includes(input.presetId))throw Error('Choose a preset belonging to that company.');
+  if(input.action==='open'&&input.presetId!==undefined)throw Error('A preset is used only with play.');
+  if(input.action==='close'&&(input.companyId!==undefined||input.presetId!==undefined))throw Error('Close does not take a company or preset.');
+  if(!status().available3D)throw Error('Examples require the 3D island. Work experience remains readable from the menu.');
+  if(await experienceDemo(input)===false)throw Error('Walk beside the matching worktable and close any panel before trying this example.');
   return status();
  }});
  return tools;

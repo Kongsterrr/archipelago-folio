@@ -4,7 +4,7 @@
 
 Drive a speedboat between four large themed islands: About Jack Kong, Experience, Projects, and Education. Go ashore as Jack, walk through outdoor exhibits, sit for a moment, return to the boat, or cruise alongside the bay’s boats and marine life. Every portfolio entry is also available without playing the game.
 
-**Current version: V22.2.2 — Clearer experience entrances** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
+**Current version: V23 — Career Showcase** · [Live portfolio](https://kongsterrr.com) · [Résumé](static/resume.pdf) · [Validation notes](VALIDATION.md)
 
 The portfolio is publicly available at **kongsterrr.com**, without sign-in. You can also run the complete project locally using the instructions below.
 
@@ -26,6 +26,12 @@ The portfolio is publicly available at **kongsterrr.com**, without sign-in. You 
 - **Exploration records:** 13 island/discovery/challenge stamps plus separate Sea Life and four-island Island Walks journals. Legacy physical visits merge into their new parent island; individual story-reading records remain intact.
 - **Island field maps:** a larger, sharper north-up minimap switches from the bay to the current island at its dock. Real shoreline, paths, exhibit districts, Jack, the parked boat and quad make on-foot exploration easier; click it to open world navigation.
 - **Direct access:** navigation, map shortcuts, dock panels, résumé download, and complete 2D reading mode.
+
+## V23 — Career Showcase
+
+Experience now shares one newest-first reading overview across navigation, the map and the harbor. Details show each role, location, dates, work, impact and complete technology list. Shareable links open the reading panel before 3D loading: [overview](https://kongsterrr.com/?view=experience), [Amtrak](https://kongsterrr.com/?view=amtrak), [BeaconFire](https://kongsterrr.com/?view=beaconfire), [VisionX](https://kongsterrr.com/?view=visionx).
+
+The harbor has a wall-mounted three-company timeline. Nearby worktables offer two eight-second, local concept illustrations each: personalization, service/message/retrieval flows, and workforce validation. Move or press Escape to leave; reading and settings pause the example. No employer systems, AI APIs or email service are contacted. Amtrak adds an entrance canopy, mounted results wall and workflow desk. The homepage, mountain routes, stair stability, train cabin and approximately 33-second automatic tour remain unchanged.
 
 ## Version history
 
@@ -80,6 +86,7 @@ These milestones describe the actual source history. “V2.1” names the boat r
 | **V21 — Terraced Summit** | A terraced coastal mountain, a single level-cabin funicular, chronological uphill stops, direct descent and connected hillside walks | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V22.2.1 — Amtrak paving cleanup** | Removes the pale floor strip in front of the Amtrak reader while retaining the route and boarding point | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V22.2.2 — Clearer experience entrances** | Removes the remaining pale floor strips at BeaconFire and VisionX; widens BeaconFire’s reader and keeps a clear route beside it | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
+| **V23 — Career Showcase** | Unified experience reading and direct links, a harbor career timeline, six local concept examples and a refined Amtrak exhibit, with the existing short funicular tour | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V22.2 — Solid Summit** | Removes stray stair masonry and makes the complete visible mountain rocks share collision and support geometry across both quality levels | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V22.1 — Stable Stairs** | Stabilizes stair camera tracking and walk/run animation across all 12 Experience stairways | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |
 | **V22 — Summit Express** | A shorter automatic tour, direct harbor boarding, short company visits and stable stair/wall cameras | [Current source](https://github.com/Kongsterrr/archipelago-folio/tree/main) |

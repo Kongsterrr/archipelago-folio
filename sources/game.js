@@ -1,4 +1,5 @@
 import {CareerJourney} from './world/career-journey.js';
+import {EXPERIENCE_DEMOS,experiencePreset} from './core/experience-demo.js';
 import {campusInteriorAt,isInteriorCutaway} from './core/campus-cutaway.js';
 import {campusStationFocus} from './core/campus-focus.js';
 import {EstatePracticeController} from './core/estate-practice.js';
@@ -112,7 +113,7 @@ export class Game {
  async loadModelNow(id,force=false){
   const item=id==='boat'?null:this.loaded.get(id);const quality=this.settings.quality,revision=item?(item.revision=(item.revision||0)+1):0;if(item){item.requested=true;item.requestedQuality=quality;}
   try{
-   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='about'?'16':id==='education'?'14.3':id==='projects'?'13.3':id==='experience'?'22.2.2':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
+   const gltf=await this.loader.loadAsync('/models/'+(id!=='boat'&&quality==='low'?'low/':'')+id+'.glb?v='+(id==='about'?'16':id==='education'?'14.3':id==='projects'?'13.3':id==='experience'?'23.0.0':'11'));if(item&&item.revision!==revision){gltf.scene.traverse(o=>{if(o.isMesh){o.geometry.dispose();for(const m of Array.isArray(o.material)?o.material:[o.material])m.dispose();}});return;}gltf.scene.traverse(o=>{if(o.isMesh){
     const materials=Array.isArray(o.material)?o.material:[o.material];
     const glazing=id==='boat'&&materials.some(m=>m.transparent);
     // The clear windscreen should reveal the helm, including in the shadow pass.
@@ -162,7 +163,7 @@ export class Game {
     const candidates=actions.filter(a=>(!ridingVehicle(this.player)||a.station?.readFull)&&a.distance(p)<=12&&a.available());
     const hits=candidates.flatMap(a=>this.raycaster.intersectObject(a.hitObject||a.object,true).map(hit=>({a,distance:hit.distance}))).sort((a,b)=>a.distance-b.distance);
     const hit=hits.find(({a})=>walk.visible(p,a.position));
-    if(hit){if(exhibitHeightReachable(hit.a,p)&&hit.a.distance(p)<=exhibitRange(hit.a,ridingVehicle(this.player),hit.a===this.nearStation))hit.a.run({direct:true});else if(hit.a.station?.readFull)this.events.trigger('message',['Move closer to view']);}
+    if(hit){if(exhibitHeightReachable(hit.a,p)&&hit.a.distance(p)<=exhibitRange(hit.a,ridingVehicle(this.player),hit.a===this.nearStation))hit.a.run({direct:true});else if(hit.a.station?.readFull||hit.a.station?.demoId)this.events.trigger('message',['Move closer to view']);}
    }else{
     const hit=this.interactables.filter(i=>i.object&&i.available()&&i.distance(this.activeActor.position)<10).find(i=>this.raycaster.intersectObject(i.object,true).length);hit?.run();
    }
@@ -191,11 +192,15 @@ export class Game {
   if(this.mode==='exploring'&&!this.player.pauseReasons.size&&!this.player.transitioning&&!ridingVehicle(this.player)&&!this.player.ridingTrain&&!this.cameraTransition.active)this.challenges.updateClock();
   if(this.mode==='exploring'&&!this.player.pauseReasons.size&&!this.player.transitioning&&!this.cameraTransition.active)this.practice.advanceCountdown(dt);
   const frozen=this.frozen,input=this.player.walking||this.player.ridingTrain?{}:this.inputs.read(this.activeActor.yaw,this.cameraRig.yaw);
+  this.validateExperienceDemo(frozen);
   if(frozen)this.journey?.step(0,true);
   if(!frozen){this.accumulator+=dt;while(this.accumulator>=STEP){
     const before={...this.boat.position};this.prev.set(before.x,before.y,before.z);this.prevYaw=this.boat.yaw;this.simTime+=STEP;
     this.fleet?.beforeStep(STEP,this.boat);const actor=this.activeActor;this.marine?.step(STEP,{position:actor.position,velocity:actor.velocity,yaw:actor.yaw,canCompanion:!this.player.onLand});
-    this.props.beforeStep(before);this.journey?.step(STEP,false);
+    this.props.beforeStep(before);const trainWasMoving=this.careerTrain?.state!=='stopped';this.journey?.step(STEP,false);
+    const experience=this.controllers.get('experience');
+    if(trainWasMoving&&this.careerTrain?.state==='stopped'&&this.careerTrain.currentStation?.id==='amtrak'&&this.player.ridingTrain)experience?.experienceArrived();
+    experience?.stepExperienceDemo(STEP,{reduced:this.settings.reduced});
     if(this.practice?.active)this.stepPractice(STEP);else if(this.player.walking)this.character.step(this.inputs.readWalking(this.cameraRig.yaw),STEP);else if(this.player.ridingTrain){}else if(ridingVehicle(this.player))landVehicle(this)?.step(this.inputs.read(landVehicle(this).yaw,this.cameraRig.yaw,{groundVehicle:true,forwardSpeed:landVehicle(this).forwardSpeed}),STEP);else{this.boat.step(this.inputs.read(this.boat.yaw,this.cameraRig.yaw),STEP);this.enforceBoundary(before);}
     this.world.step(this.queue);if(this.player.walking){this.character.afterStep();this.player.ashoreTime+=STEP;if(this.player.ashoreTime>=1)this.discovery?.land(this.player.island.id);}else if(ridingVehicle(this.player))landVehicle(this)?.afterStep();
     this.props.afterStep(this.queue,this.boat.collider,this.boat.position);if(!this.player.onLand)this.challenges.tick(before,this.boat.position,STEP,this.challenges.kind==='cargo'?this.props.cargoData():[]);
@@ -303,8 +308,10 @@ export class Game {
   this.scene.updateMatrixWorld();const hit=new Set(),interior=!this.focus&&this.player.onLand?campusInteriorAt(this.player.island,this.walkLayouts.get(this.player.island.id),p):null,cutaway=new Set();
   if(interior)for(const object of candidates)if(isInteriorCutaway(object,interior)){hit.add(object);cutaway.add(object);}
   if(!this.focus&&!this.arrival?.active)for(const target of probes){const direction=target.clone().sub(this.camera.position),distance=direction.length(),ray=new THREE.Raycaster(this.camera.position,direction.normalize(),0,distance-.15);for(const h of ray.intersectObjects(candidates,false)){hit.add(h.object);let group=h.object.parent;while(group&&!group.name.startsWith('occluder_'))group=group.parent;if(group)group.traverse(o=>{if(candidates.includes(o))hit.add(o);});}}
-  for(const object of this.occluded||[])if(!hit.has(object))for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=m.userData.occlusionBaseOpacity??1;
-  for(const object of hit)for(const m of Array.isArray(object.material)?object.material:[object.material])m.opacity=(cutaway.has(object)?.025:.2)*(m.userData.occlusionBaseOpacity??1);
+  for(const object of this.occluded||[])if(!hit.has(object))for(const m of Array.isArray(object.material)?object.material:[object.material]){m.opacity=m.userData.occlusionBaseOpacity??1;m.depthWrite=m.userData.occlusionBaseDepthWrite??m.depthWrite;}
+  // A faded wall must not leave an invisible depth mask over the exhibits
+  // behind it. Keep depth testing, and restore the authored write flag on exit.
+  for(const object of hit)for(const m of Array.isArray(object.material)?object.material:[object.material]){m.userData.occlusionBaseDepthWrite??=m.depthWrite;m.opacity=(cutaway.has(object)?.025:.2)*(m.userData.occlusionBaseOpacity??1);m.depthWrite=false;}
   this.occluded=hit;if(this.boatOutline)this.boatOutline.visible=hit.size>0&&!this.focus&&!this.player.onLand;this.jack.outline(hit.size>0&&!this.focus&&this.player.onLand&&!interior);
  }
  activateIsland(id){
@@ -350,7 +357,7 @@ export class Game {
  cancelChallenge(){this.recovery=null;this.marine?.onTravel();this.challenges.cancel();this.snapshot=null;this.pendingResume=null;this.props?.resetCargo();}
  cancelTravel(){this.travelEpoch=(this.travelEpoch||0)+1;this.arrival?.cancel();this.player?.pauseReasons.delete('travel');}
  beginTravel(){
-  this.cancelTravel();this.journey?.prepareTravel();this.boarding?.cancel();this.cancelPractice(false);this.cancelChallenge();
+  this.cancelExperienceDemo?.();this.cancelTravel();this.journey?.prepareTravel();this.boarding?.cancel();this.cancelPractice(false);this.cancelChallenge();
   this.player.pauseReasons.delete('read');this.snapshot=null;this.pendingResume=null;this.pause('travel');return this.travelEpoch;
  }
  async travelToIsland(island,epoch=this.beginTravel()){
@@ -375,7 +382,7 @@ export class Game {
  }
  skipArrival(){if(!this.arrival?.active)return false;this.arrival.cancel();this.resetCamera();this.inputs.setEnabled(!this.frozen);return true;}
  teleport(point){
-  this.cancelTravel();this.journey?.cancel();this.cancelPractice(false);
+  this.cancelExperienceDemo?.();this.cancelTravel();this.journey?.cancel();this.cancelPractice(false);
   const wasHidden=this.player?.pauseReasons.has('hidden');this.boarding?.cancel();for(const car of this.garageCars||[]){car.park(true);car.setOccupied(false);}if(this.quadBike)this.quadBike.park(true);if(this.bicycle)this.bicycle.park(true);this.player?.toSailing();this.player?.pauseReasons.clear();this.boat.park?.(false);this.cancelChallenge();this.fleet?.onTravel();this.marine?.onTravel();this.docks?.reset();this.focus=null;this.mode='exploring';this.props.resetNear(point);point=this.safePoint(point);this.boat.teleport(point);this.accumulator=0;this.clearWake();this.feedback.clear();this.resetCamera();this.updateNearby(0,performance.now(),false);this.inputs.setEnabled(true);if(wasHidden)this.pause('hidden');this.last=performance.now();
  }
  safePoint(point){
@@ -385,7 +392,7 @@ export class Game {
   const free=candidates.find(p=>Math.hypot(p.x,p.z)<WORLD_RADIUS-5&&!this.world.intersectionWithShape({x:p.x,y:.35,z:p.z},q,shape,undefined,SEA_GROUP,this.boat.collider,this.boat.body));
   if(!free)throw new Error('No safe water at destination');return free;
  }
- reset(){this.journey?.cancel();this.cancelTravel();this.cancelPractice(false);this.snapshot=null;this.pendingResume=null;this.boarding?.cancel();if(ridingVehicle(this.player)&&landVehicle(this)){const vehicle=landVehicle(this);const point=vehicle.safeReset?.()||(!vehicle.safeReset?vehicle.spawn:null);if(!point){vehicle.hold();this.events.trigger('message',['No clear garage bay. Move into an open space first.']);return this.player.island;}vehicle.park(false);vehicle.teleport(point);this.player.pauseReasons.clear();this.mode='exploring';this.focus=null;this.inputs.setEnabled(true);this.resetCamera();return this.player.island;}if(this.player?.walking){this.character.teleport(this.player.berth.landing);this.jack?.resetPose('idle');this.player.pauseReasons.clear();this.mode='exploring';this.focus=null;this.inputs.setEnabled(true);this.resetCamera();return this.player.island;}const i=nearestIsland(this.boat.position);this.teleport({...i.dock,yaw:i.yaw});return i;}
+ reset(){this.cancelExperienceDemo?.();this.journey?.cancel();this.cancelTravel();this.cancelPractice(false);this.snapshot=null;this.pendingResume=null;this.boarding?.cancel();if(ridingVehicle(this.player)&&landVehicle(this)){const vehicle=landVehicle(this);const point=vehicle.safeReset?.()||(!vehicle.safeReset?vehicle.spawn:null);if(!point){vehicle.hold();this.events.trigger('message',['No clear garage bay. Move into an open space first.']);return this.player.island;}vehicle.park(false);vehicle.teleport(point);this.player.pauseReasons.clear();this.mode='exploring';this.focus=null;this.inputs.setEnabled(true);this.resetCamera();return this.player.island;}if(this.player?.walking){this.character.teleport(this.player.berth.landing);this.jack?.resetPose('idle');this.player.pauseReasons.clear();this.mode='exploring';this.focus=null;this.inputs.setEnabled(true);this.resetCamera();return this.player.island;}const i=nearestIsland(this.boat.position);this.teleport({...i.dock,yaw:i.yaw});return i;}
  startChallenge(id){const config=challenges.find(c=>c.id===id);if(!config)return;this.teleport(config.spawn);this.challenges.start(id);this.inputs.setEnabled(!this.challenges.frozen);}
  startRace(){this.startChallenge('buoy');}
  practiceEvent(event){
@@ -430,7 +437,7 @@ export class Game {
   return campusStationFocus(this.practiceIsland,{...local,camera:{practice:true,azimuth:this.practiceIsland.rotation,elevation:.8,fitBounds}});
  }
  setZoom(index){if(this.player?.onLand)this.settings.walkZoom=Math.max(0,Math.min(2,index));else this.cameraRig.setZoom(index);this.discovery?.save();this.events.trigger('zoom',[this.settings.zoom]);}
- async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=22.2.2');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
+ async loadWalkLayouts(){try{const r=await fetch('/models/walk-layout.json?v=23.0.0');if(!r.ok)throw new Error('Walk layout unavailable');const data=await r.json();this.walkLayouts=new Map((data.islands||data).map(i=>[i.id,i]));}catch(e){console.warn(e.message);this.walkLayouts=new Map();}}
  async prepareAshore(island){this.inputs.setEnabled(false);this.events.trigger('message',['Preparing '+island.name+' for a little walk…']);
   if(!this.walkLayouts?.size)await this.loadWalkLayouts();await Promise.all([this.loadModel(island.id),this.jack.load()]);const layout=this.walkLayouts.get(island.id);if(!layout||!this.loaded.get(island.id).model||!this.jack.ready)throw new Error('The island is still loading. You can read it now or try going ashore again.');
   const walk=this.ensureWalkWorld(island);if(island.id==='projects')await this.installQuadBike(island,walk);if(island.id==='education')await this.installBicycle(island,walk);if(island.id==='about')await this.installGarageCars(island,walk);if(island.id==='experience')await this.journey.load();return walk;
@@ -553,7 +560,7 @@ export class Game {
  selectBerth(island,walk){const candidates=(walk.layout.berths||[{boat:{x:-3,z:14,yaw:0},landing:{x:-.6,z:14,y:.85,yaw:0}},{boat:{x:3,z:14,yaw:0},landing:{x:.6,z:14,y:.85,yaw:0}}]).map(b=>({boat:localToWorld(island,b.boat),landing:localToWorld(island,{...b.landing,yaw:0})})).sort((a,b)=>Math.hypot(a.boat.x-this.boat.position.x,a.boat.z-this.boat.position.z)-Math.hypot(b.boat.x-this.boat.position.x,b.boat.z-this.boat.position.z));
   this.world.propagateModifiedBodyPositionsToColliders();this.world.updateSceneQueries();return candidates.find(b=>walk.clear(b.landing)&&!this.world.intersectionWithShape({x:b.boat.x,y:.35,z:b.boat.z},{x:0,y:Math.sin(b.boat.yaw/2),z:0,w:Math.cos(b.boat.yaw/2)},new RAPIER.Cuboid(.85,.7,2.1),undefined,SEA_GROUP,this.boat.collider,this.boat.body));
  }
- commitBoarding(kind,island,berth,walk){if(kind==='ashore'){
+ commitBoarding(kind,island,berth,walk){this.cancelExperienceDemo?.();if(kind==='ashore'){
   this.boat.teleport(berth.boat);this.boat.park(true);this.character.teleport(berth.landing,walk);this.character.enable(true);this.player.island=island;this.player.berth=berth;this.player.ashoreTime=0;this.jack?.resetPose('idle');
   if(island.id==='experience')this.journey?.prepareEntry();
   if(this.arrival)this.arrival.start(island,arrivalBounds(island,new THREE.Box3().setFromObject(this.loaded.get(island.id).group,true),walk?.layout?.overviewBounds),walk?.layout?.overviewCamera);
@@ -584,14 +591,16 @@ export class Game {
   const point=localToWorld(island,station.type==='bench'?station.approach:{...station,y:station.y??layout.groundY??.85});const kind=station.type;
   const marker=label(kind==='read'?'E':'F',{width:64,height:64,worldWidth:.45,fontSize:32,background:'#fff5dd',color:'#254f62'});marker.position.set(point.x,point.y+1.65,point.z);marker.visible=false;this.scene.add(marker);
   const action=new Interactable({id:island.id+':'+station.id,label:station.label,position:point,range:1.8,object:marker,run:({direct=false}={})=>{if(this.frozen||(!this.player.walking&&!(ridingVehicle(this.player)&&kind==='read'&&station.readFull)))return;this.inputs.clear();this.activeActor.hold();if(!ridingVehicle(this.player))this.jack.interact();
-   if(kind==='read')this.events.trigger('exhibit',[{island:island.id,station:station.directory&&!direct?{...station,contentId:island.id}:station,position:point}]);else if(kind==='practice')this.events.trigger('practiceopen',[station.practiceId]);else if(kind==='studio')this.events.trigger('studio');else if(kind==='challenge')this.events.trigger('challengeopen',['lighthouse']);else if(kind==='bench'){this.character.teleport({...point,y:this.character.walkWorld.groundAt(point),yaw:(station.yaw||0)+island.rotation});const seat=localToWorld(island,station);this.character.seatYaw=(station.yaw||0)+island.rotation+Math.PI;this.character.seatVisual=this.jack.seatPosition(seat,station.y+.06,this.character.seatYaw);this.character.seated=true;this.character.seatAction=station.action||null;if(station.action==='education-study')this.controllers.get('education')?.setStudySeated(true);if(station.contentId==='affirmation')this.activateIsland('affirmation');}else{this.activateIsland(station.action||station.contentId);if(station.action==='rag')this.events.trigger('message',['Concept illustration · Retrieve, add context, and respond.']);}
+   if(station.demoId)this.openExperienceDemo(station.demoId);else if(kind==='read')this.events.trigger('exhibit',[{island:island.id,station:station.directory&&!direct?{...station,contentId:island.id}:station,position:point}]);else if(kind==='practice')this.events.trigger('practiceopen',[station.practiceId]);else if(kind==='studio')this.events.trigger('studio');else if(kind==='challenge')this.events.trigger('challengeopen',['lighthouse']);else if(kind==='bench'){this.character.teleport({...point,y:this.character.walkWorld.groundAt(point),yaw:(station.yaw||0)+island.rotation});const seat=localToWorld(island,station);this.character.seatYaw=(station.yaw||0)+island.rotation+Math.PI;this.character.seatVisual=this.jack.seatPosition(seat,station.y+.06,this.character.seatYaw);this.character.seated=true;this.character.seatAction=station.action||null;if(station.action==='education-study')this.controllers.get('education')?.setStudySeated(true);if(station.contentId==='affirmation')this.activateIsland('affirmation');}else{this.activateIsland(station.action||station.contentId);if(station.action==='rag')this.events.trigger('message',['Concept illustration · Retrieve, add context, and respond.']);}
   }});action.kind=kind;action.station=station;
   if(station.hitArea){
    const h=station.hitArea,center=localToWorld(island,h);
-   const proxy=new THREE.Mesh(new THREE.PlaneGeometry(h.width,h.height),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+   const proxy=new THREE.Mesh(station.demoId?new THREE.BoxGeometry(h.width,h.height,h.depth||.8):new THREE.PlaneGeometry(h.width,h.height),new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
    proxy.position.set(center.x,center.y,center.z);proxy.rotation.y=island.rotation+(h.yaw||0);this.scene.add(proxy);action.hitObject=proxy;
-   const highlight=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(h.width+.1,h.height+.1)),new THREE.LineBasicMaterial({color:'#ffe3a6',transparent:true,opacity:.9}));
-   highlight.position.copy(proxy.position);highlight.rotation.copy(proxy.rotation);highlight.translateZ(.025);highlight.visible=false;this.scene.add(highlight);action.highlight=highlight;
+   if(!station.demoId){
+    const highlight=new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(h.width+.1,h.height+.1)),new THREE.LineBasicMaterial({color:'#ffe3a6',transparent:true,opacity:.9}));
+    highlight.position.copy(proxy.position);highlight.rotation.copy(proxy.rotation);highlight.translateZ(.025);highlight.visible=false;this.scene.add(highlight);action.highlight=highlight;
+   }
   }
   if(station.primary){
    const sign=label(`${station.number?station.number+'  ':''}${station.label}  /  ${exhibitReadLabel({station}).toUpperCase()}`,{width:1024,height:110,worldWidth:4.2,fontSize:34,background:'#fff5dd',color:'#254f62'});
@@ -613,12 +622,46 @@ export class Game {
  readSchool(schoolId){this.controllers.get('education')?.readSchool(schoolId);}
  endSchoolRead(){this.controllers.get('education')?.readSchool(null);}
  setLivery(id){const livery=this.appearance?.setLivery(id);this.discovery?.save();return livery;}
+ experienceDemoAction(companyId){
+  if(!EXPERIENCE_DEMOS[companyId]||!this.player?.walking||this.player.island?.id!=='experience')return null;
+  const position=this.character.position,walk=this.character.walkWorld;
+  return (this.landActions.get('experience')||[]).find(action=>action.station?.demoId===companyId&&action.available()&&exhibitHeightReachable(action,position)&&action.distance(position)<=exhibitRange(action,false,true)&&walk.visible(position,action.position))||null;
+ }
+ openExperienceDemo(companyId){
+  if(this.frozen||!this.experienceDemoAction(companyId))return false;
+  const controller=this.controllers?.get('experience');
+  if(controller?.experienceDemo.companyId===companyId&&controller.experienceDemo.status!=='idle')return true;
+  if(!controller?.experienceDemo.open(companyId))return false;
+  this.inputs.clear();this.character.hold();controller.refreshExperienceFeedback(this.settings.reduced);
+  this.events.trigger('experiencedemoopen',[{companyId}]);return true;
+ }
+ playExperienceDemo(companyId,presetId){
+  if(this.frozen||!experiencePreset(companyId,presetId)||!this.experienceDemoAction(companyId))return false;
+  const controller=this.controllers?.get('experience'),previous=controller?.experienceDemo.snapshot();if(!controller?.experienceDemo.play(companyId,presetId,{reduced:this.settings.reduced}))return false;
+  this.inputs.clear();this.character.hold();this.jack.interact();controller.refreshExperienceFeedback(this.settings.reduced);
+  if(previous.status==='idle'||previous.companyId!==companyId||previous.presetId!==presetId)this.events.trigger('experiencedemoopen',[{companyId,presetId}]);return true;
+ }
+ experienceDemoState(){return this.controllers?.get('experience')?.experienceDemo.snapshot({paused:this.frozen})||{companyId:null,presetId:null,status:'idle',stage:0,elapsed:0,duration:8,progress:0,paused:false};}
+ cancelExperienceDemo(){
+  const controller=this.controllers?.get('experience');if(!controller?.experienceDemo.cancel())return false;
+  controller.refreshExperienceFeedback(this.settings.reduced);this.events.trigger('experiencedemoclose');return true;
+ }
+ validateExperienceDemo(frozen){
+  const state=this.controllers?.get('experience')?.experienceDemo;
+  if(!state||state.status==='idle')return;
+  if(!this.player.walking||this.player.island?.id!=='experience'||this.player.transitioning){this.cancelExperienceDemo();return;}
+  // A modal freezes the exact active stage. Returning to the page does not
+  // consume an old held key because pause/resume already clears Inputs.
+  if(frozen)return;
+  const input=this.inputs.readWalking(this.cameraRig.yaw);
+  if(Math.hypot(input.x,input.z)>.001||!this.experienceDemoAction(state.companyId))this.cancelExperienceDemo();
+ }
  trainStatus(){return this.journey?.status();}
- boardTrain(){return this.journey?.board()||false;}
+ boardTrain(){const boarded=this.journey?.board()||false;if(boarded)this.cancelExperienceDemo?.();return boarded;}
  leaveTrain(){return this.journey?.leave()||false;}
  continueTrain(){return this.journey?.continue()||false;}
  callTrain(station){return this.journey?.call(station)||false;}
  readTrainExperience(){return this.journey?.read()||false;}
  returnTrainHarbor(){return this.journey?.returnToHarbor()||false;}
- status(){return{train:this.trainStatus(),practice:this.practice?.status(),player:{cars:(this.garageCars||[]).map(car=>({...car.status(),access:car.accessPoints(),rider:this.player.ridingCar&&this.player.car===car?this.jack.carPose.contactStatus(car):null})),nearCar:this.nearCar?.id||null,car:this.player.ridingCar?this.player.car?.id:null,mode:this.player.mode,position:{...this.activeActor.position},heading:this.activeActor.yaw,speed:this.activeActor.speed,island:this.player.island?.id||null,parkedBoat:this.boat.parked?{...this.boat.position}:null,quadBike:this.quadBike?{position:{...this.quadBike.position},parked:this.quadBike.parked,quality:this.quadBike.quality,heading:this.quadBike.yaw,wheelAngle:this.quadBike.wheelAngle||0,wheels:this.quadBike.wheelPivots.length,rider:this.player.ridingQuad?this.jack.quadContactStatus(this.quadBike):null,spawn:{...this.quadBikeSpawn}}:null,bicycle:this.bicycle?{...this.bicycle.status(),rider:this.player.ridingBicycle?this.jack.bicycleContactStatus(this.bicycle):null}:null,seated:this.character.seated,ashore:[...(this.discovery?.ashore||[])],transitionEpoch:this.player.transitionEpoch,pauseReasons:[...this.player.pauseReasons],jackReady:this.jack.ready,stations:this.player.island?(this.landActions.get(this.player.island.id)||[]).map(a=>({id:a.id,type:a.kind,label:a.label,position:a.position})):[],nearStation:this.nearStation?.id||null,canBoard:this.canBoard,canRideQuad:this.canRideQuad,canDismountQuad:this.canDismountQuad,canRideBicycle:this.canRideBicycle,canDismountBicycle:this.canDismountBicycle},performance:{frameTimeMs:this.frameTimes?.length?{p50:[...this.frameTimes].sort((a,b)=>a-b)[Math.floor(this.frameTimes.length*.5)],p95:[...this.frameTimes].sort((a,b)=>a-b)[Math.floor(this.frameTimes.length*.95)]}:null,surfaces:this.surfaces.stats(),contactShading:this.lighting.quality!=='low'&&!this.lighting.failed,fpsWindow:this.fpsHistory||[],drawCalls:this.renderer.info.render.drawCalls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,loadedIslands:[...this.loaded.values()].filter(i=>i.model).length,detailVariants:[...this.details.items.values()].reduce((n,i)=>n+i.cache.size,0)},livery:this.settings.livery,fleet:this.fleet?.status(),seaLife:{...this.marine?.status(),sightings:[...(this.discovery?.seaLife||[])]},simulationTime:this.simTime,available3D:true,renderer:this.renderer.backend.isWebGPUBackend?'WebGPU':'WebGL2',fps:this.fps,quality:this.settings.quality,cameraDistance:this.cameraRig.distance,arrival:this.arrival?.active?{island:this.arrival.island.id,elapsed:this.arrival.elapsed,progress:this.arrival.progress}:null,travelPending:this.player.pauseReasons.has('travel'),cameraView:{azimuth:this.cameraRig.yaw,landAzimuth:this.player.onLand?this.player.island?.rotation:null,transitioning:!!this.cameraTransition?.active,fade:this.cameraTransition?.opacity||0},viewport:{width:innerWidth,height:innerHeight},mode:this.mode,position:{...this.boat.position},speed:this.boat.speed,heading:this.boat.yaw,nearby:this.nearby?.id||null,action:this.nearAction?{id:this.nearAction.id,label:this.nearAction.label}:null,challenge:{kind:this.challenges.kind,state:this.challenges.state,index:this.challenges.index,elapsed:this.challenges.elapsed},zoom:this.settings.zoom,readyMs:this.readyMs,stamps:this.discovery?.stamps||0};}
+ status(){return{experienceDemo:this.experienceDemoState(),train:this.trainStatus(),practice:this.practice?.status(),player:{cars:(this.garageCars||[]).map(car=>({...car.status(),access:car.accessPoints(),rider:this.player.ridingCar&&this.player.car===car?this.jack.carPose.contactStatus(car):null})),nearCar:this.nearCar?.id||null,car:this.player.ridingCar?this.player.car?.id:null,mode:this.player.mode,position:{...this.activeActor.position},heading:this.activeActor.yaw,speed:this.activeActor.speed,island:this.player.island?.id||null,parkedBoat:this.boat.parked?{...this.boat.position}:null,quadBike:this.quadBike?{position:{...this.quadBike.position},parked:this.quadBike.parked,quality:this.quadBike.quality,heading:this.quadBike.yaw,wheelAngle:this.quadBike.wheelAngle||0,wheels:this.quadBike.wheelPivots.length,rider:this.player.ridingQuad?this.jack.quadContactStatus(this.quadBike):null,spawn:{...this.quadBikeSpawn}}:null,bicycle:this.bicycle?{...this.bicycle.status(),rider:this.player.ridingBicycle?this.jack.bicycleContactStatus(this.bicycle):null}:null,seated:this.character.seated,ashore:[...(this.discovery?.ashore||[])],transitionEpoch:this.player.transitionEpoch,pauseReasons:[...this.player.pauseReasons],jackReady:this.jack.ready,stations:this.player.island?(this.landActions.get(this.player.island.id)||[]).map(a=>({id:a.id,type:a.kind,label:a.label,position:a.position,demoId:a.station?.demoId||null})):[],nearStation:this.nearStation?.id||null,canBoard:this.canBoard,canRideQuad:this.canRideQuad,canDismountQuad:this.canDismountQuad,canRideBicycle:this.canRideBicycle,canDismountBicycle:this.canDismountBicycle},performance:{frameTimeMs:this.frameTimes?.length?{p50:[...this.frameTimes].sort((a,b)=>a-b)[Math.floor(this.frameTimes.length*.5)],p95:[...this.frameTimes].sort((a,b)=>a-b)[Math.floor(this.frameTimes.length*.95)]}:null,surfaces:this.surfaces.stats(),contactShading:this.lighting.quality!=='low'&&!this.lighting.failed,fpsWindow:this.fpsHistory||[],drawCalls:this.renderer.info.render.drawCalls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,loadedIslands:[...this.loaded.values()].filter(i=>i.model).length,detailVariants:[...this.details.items.values()].reduce((n,i)=>n+i.cache.size,0)},livery:this.settings.livery,fleet:this.fleet?.status(),seaLife:{...this.marine?.status(),sightings:[...(this.discovery?.seaLife||[])]},simulationTime:this.simTime,available3D:true,renderer:this.renderer.backend.isWebGPUBackend?'WebGPU':'WebGL2',fps:this.fps,quality:this.settings.quality,cameraDistance:this.cameraRig.distance,arrival:this.arrival?.active?{island:this.arrival.island.id,elapsed:this.arrival.elapsed,progress:this.arrival.progress}:null,travelPending:this.player.pauseReasons.has('travel'),cameraView:{azimuth:this.cameraRig.yaw,landAzimuth:this.player.onLand?this.player.island?.rotation:null,transitioning:!!this.cameraTransition?.active,fade:this.cameraTransition?.opacity||0},viewport:{width:innerWidth,height:innerHeight},mode:this.mode,position:{...this.boat.position},speed:this.boat.speed,heading:this.boat.yaw,nearby:this.nearby?.id||null,action:this.nearAction?{id:this.nearAction.id,label:this.nearAction.label}:null,challenge:{kind:this.challenges.kind,state:this.challenges.state,index:this.challenges.index,elapsed:this.challenges.elapsed},zoom:this.settings.zoom,readyMs:this.readyMs,stamps:this.discovery?.stamps||0};}
 }

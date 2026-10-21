@@ -1,3 +1,46 @@
+# V23 — Career Showcase · 2026-10-21
+
+## Scope and retained behavior
+
+Experience now uses one newest-first overview for navigation, map reading and the harbor directory, with role/location/date metadata, distinct contribution and impact sections, four initial core technologies and an expandable complete list. The four supported `?view=` links open before 3D initialization and remain readable in HTML fallback. The homepage entry flow and navigation order are retained.
+
+The harbor's three-company timeline uses a horizontal stone wall and individually clickable inset panels. VisionX and BeaconFire refine their existing worktables; Amtrak gains a separate workflow desk, entrance depth and canopy details, and a wall-mounted workforce display. Each company offers two local, eight-second concept examples. These are illustrative sample data, not production employer systems or externally generated answers. Amtrak's 8,000+ figure remains the supported union-employee population; VisionX's engagement and support-satisfaction metrics remain separate.
+
+The mountain, coastline, central railway, company reading approaches, stair geometry and saved-record schema remain. A 60 Hz controller simulation measures the unchanged automatic tour at **33.15 seconds**, including boarding, settling and three 2.5-second stops. This is a simulation timing measurement, not the duration of the recorded evidence video.
+
+Only Experience's two model variants and associated metadata were regenerated. High/low compressed sizes are **1,926,880 / 1,191,120 bytes**, within the 2 MB / 1.2 MB limits. SHA-256 checks confirm that **84 non-Experience GLBs are byte-identical** to the pre-change versions. Low quality reduces small decorative tessellation while retaining the same geometry for terrain, stairs, solid rocks, routes and interaction locations.
+
+## Regression and corrections found during verification
+
+- Complete Node regression after the cutaway correction: **1,218 / 1,218 passed**, zero failures, skips or cancellations, **153.88 seconds**. Log: `test-results/v23/final-release-tests.log`. The subsequent keyboard-focus correction passed **28 / 28 targeted tests**, including six new keyboard cases, with no failures, skips or cancellations (`test-results/v23/final-keyboard-tests.log`). This gives **1,224 distinct passing cases across the full run and final targeted run**, not a claim that all 1,224 ran together after the last correction. The production build also passed; its output is retained in `test-results/v23/build.log`.
+- Actual exported-model checks cover **all 310 stair treads in both quality levels**, full platform/path widths and complete mountain shells. The wider harbor display initially intersected the first west stair; its wall was shortened to 8.4 units while keeping the dock-side edge at X=-1.6. The full-width staircase is unchanged, with 0.3 units between its edge and the wall. The strict rendered-corridor checks pass.
+- Real Rapier routes cover both dock landings, the full three-panel frontage, the shared E overview and the optional Amtrak workflow approach/return without rescue teleports. Each timeline panel now measures pointer reach from its own column. The three original ordinary-speed short visits still total **19.15 seconds**.
+- All six concept presets are covered for selection, playback, result, replay, pause, cancellation, reduced motion and model replacement. Named stage/sample materials belong to their own company; the independent `amtrak:workflow` action does not reuse train dispatch. Demo completion does not mark an experience as read.
+- Nine reading-integration tests exercise the actual entry/lifecycle functions: shared overview routes, detail/back history and focus, all four direct links, no-3D mode, deferred initialization, renderer failure, close-before-ready and unknown parameters. These controlled dependency tests do not constitute a cold-network measurement.
+- Actual Amtrak inspection revealed that faded wall materials still wrote depth, hiding the desk's raised cards and stages. Faded occluders now disable depth writes and restore each material's original setting when cleared. High/low actual-model tests and the existing campus cutaway lifecycle checks cover the correction; the final Amtrak valid/duplicate result captures show the table feedback through the cutaway.
+
+## Actual browser coverage and evidence
+
+Host: **Apple M3 Max, macOS, Codex Chromium**, local Vite. Actual WebGPU checks use **1440×900, 1920×1080, 390×844 and 844×390** content viewports, with high and low quality. The phone dimensions are desktop emulation, not physical-phone tests. The full chronological train journey and direct descent were recorded from the real renderer. A forced **WebGL2** run successfully boarded and ascended to Amtrak; this is an ascent check, not a second complete return-tour recording.
+
+All six presets were exercised in the actual browser. The final keyboard check selected VisionX's Sunny balcony with Space, Tab and Enter, started playback, and retained a usable focus target on Read experience. Opening settings paused the example; enabling reduced motion produced its static completed result, and Run again immediately returned the complete eight-second state without animation. The final harbor check verified E opens the shared overview and clicking the BeaconFire inset opens its correct detail. Actual no-3D BeaconFire reading was also checked; asynchronous renderer failure is covered by the integration tests above.
+
+Real page/game captures are retained in ignored `test-results/v23/`:
+
+- `experience-overview-1440.jpg`, `amtrak-reading-1440.jpg` and `beaconfire-mobile-reading.jpg` — overview, detail and emulated-phone reading.
+- `harbor-overview.jpg` and `harbor-timeline.jpg` — the retained mountain composition and new directory frontage.
+- `visionx-example-1920.jpg`, `beaconfire-example-choice.jpg`, `beaconfire-mobile-result.jpg` and `beaconfire-landscape-result.jpg` — example controls and results at desktop and emulated-phone sizes.
+- `visionx-reduced-motion-result.jpg` — final actual reduced-motion result after settings pause and keyboard operation.
+- `amtrak-valid-result.jpg` and `amtrak-duplicate-result.jpg` — workflow results after the cutaway depth fix.
+- `webgl-amtrak-arrival.jpg` and `webgl-fallback-reading.jpg` — successful forced-WebGL2 ascent and direct Amtrak reading. Despite the second filename, it is not a renderer-failure fallback capture.
+- `.sites-runtime/v23/evidence/career-showcase-actual-game.webm` — full real-renderer journey, including inspection time; no generated concept frames are substituted.
+
+## Bounded performance comparison and limits
+
+Two short, warm samples use the same Apple M3 Max, **1440×900, high quality, WebGPU, Standard zoom**, and Experience bridge position. Baseline: **p50 7.0 ms / p95 12.8 ms**, 285 draw calls, 441,184 triangles, sampled 115 FPS. V23: **p50 6.9 ms / p95 10.1 ms**, 308 draw calls, 447,104 triangles, sampled 142 FPS. Raw snapshots are `test-results/v23/performance-baseline.json` and `performance-v23.json`. Temporal variation, sea animation and browser scheduling affect these short windows; they show the added draw/triangle cost and do **not** establish a performance improvement or sustained frame-rate guarantee.
+
+Physical phones, mobile Safari, cold-network loading and sustained thermal behavior were not measured. WebGL2 coverage is limited to the successful ascent described above; the older WebGL2 failures documented below remain historical results from those earlier runs.
+
 # V22.2.2 — Clearer experience entrances · 2026-10-19
 
 - Removed the remaining pale short-visit inlays at BeaconFire and VisionX. All three company approaches now use the surrounding terrace stone and joints; map routes, floor elevations and reading identities remain. Only Experience high/low models and associated metadata were rebuilt.

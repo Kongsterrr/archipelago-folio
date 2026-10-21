@@ -88,7 +88,7 @@ test('Career Railway modestly extends the rear coast while preserving the harbor
 
 test('high and low Experience exports share scene contracts and meet compressed byte budgets', async () => {
   const high = metadata('high'), low = metadata('low');
-  assert.match(high.revision, /^v22-/);
+  assert.match(high.revision, /^v23-/);
   assert.equal(low.revision, high.revision);
   assert.equal(manifests.high.walkLayout, manifests.low.walkLayout);
   for (const key of ['dock','shorePolygon','districts','occluders']) assert.deepEqual(high[key], low[key], key);
@@ -456,7 +456,8 @@ for(const quality of ['high','low'])test(`${quality}: platform lamps leave the d
  const scene=await model(quality),ray=new THREE.Raycaster(),direction=new THREE.Vector3(0,Math.sin(38*Math.PI/180),Math.cos(38*Math.PI/180));
  const lamps=layout.obstacles.filter(obstacle=>obstacle.name.startsWith('station lamp ')),lampMeshes=[];
  scene.traverse(mesh=>{if(mesh.isMesh&&['sunsetLantern','junction_steel'].includes(mesh.material.name))lampMeshes.push(mesh);});
- assert.equal(lamps.length,layout.railway.stations.length*2);assert.ok(lampMeshes.some(mesh=>mesh.material.name==='sunsetLantern'),'real exported lamp shades must be tested');
+ for(const station of layout.railway.stations)assert.equal(lamps.filter(lamp=>lamp.name==='station lamp '+station.id).length,station.id==='beaconfire'?1:2,'BeaconFire keeps only its rear lamp so the widened reader is clear');
+ assert.ok(lampMeshes.some(mesh=>mesh.material.name==='sunsetLantern'),'real exported lamp shades must be tested');
  const isLampHit=hit=>hit.object.material.name==='sunsetLantern'||lamps.some(lamp=>Math.abs(hit.point.x-lamp.x)<=lamp.width/2+.005&&Math.abs(hit.point.z-lamp.z)<=lamp.depth/2+.005&&hit.point.y>=lamp.y&&hit.point.y<=lamp.y+2.25);
  for(const station of layout.railway.stations)for(const height of [.08,.30,.55,.80,1.05])for(const across of [-.15,0,.15]){
   const target=new THREE.Vector3(station.boarding.x+across,station.boarding.y+height,station.boarding.z);

@@ -38,6 +38,10 @@
     "eyebrow": "Full Stack Engineer · New York, NY",
     "category": "experience",
     "period": "Nov 2024 - Present",
+    "theme": "Enterprise workforce systems",
+    "trainTheme": "Enterprise workflows",
+    "workSummary": "A unified workforce platform for job postings, bids, award decisions, and seniority management.",
+    "featuredTechnologies": ["Angular Signals", "TypeScript", "Spring Boot", "PostgreSQL"],
     "summary": "Digitizing workforce operations for 8,000+ union employees, from job postings and bids to awards and seniority.",
     "contributions": [
       "Led development of workforce workflows that replace legacy manual processes.",
@@ -76,6 +80,10 @@
     "eyebrow": "Full Stack Engineer · East Windsor, NJ",
     "category": "experience",
     "period": "Feb 2024 - Sep 2024",
+    "theme": "Connected services & AI search",
+    "trainTheme": "Connected services",
+    "workSummary": "Full-stack services, operational dashboards, and document-based AI search for an e-commerce news interface.",
+    "featuredTechnologies": ["React", "Flask", "RabbitMQ", "LangChain"],
     "summary": "Built full-stack services, operational dashboards, and document-based AI search for an e-commerce news interface.",
     "contributions": [
       "Built and deployed Flask REST APIs with SQLAlchemy, AWS RDS, and S3 for a news interface and admin dashboard.",
@@ -110,6 +118,10 @@
     "eyebrow": "Software Engineer Intern · San Jose, CA",
     "category": "experience",
     "period": "May 2023 - Aug 2023",
+    "theme": "Personalized digital experiences",
+    "trainTheme": "Personalized experiences",
+    "workSummary": "Personalized plant recommendations and a conversational assistant for the Smart Planting platform.",
+    "featuredTechnologies": ["Python", "Django", "ChatGPT", "AWS"],
     "summary": "Developed personalized plant recommendations and a conversational assistant for the Smart Planting platform.",
     "contributions": [
       "Built a Django data mining system to improve user profiling and recommendation targeting.",

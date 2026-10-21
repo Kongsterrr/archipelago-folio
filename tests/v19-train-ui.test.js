@@ -16,7 +16,7 @@ const hudState=vm.runInNewContext(hudSource+';trainHUDState',{content});
 test('the train card uses the actual chronological career content at each stop',()=>{
  for(const id of ['visionx','beaconfire','amtrak']){
   const actual=content.find(entry=>entry.id===id),view=hudState({stopped:true,currentStation:id,canRead:true,canGetOff:true,canContinue:true});
-  assert.equal(view.title,actual.title);assert.equal(view.period,actual.period);assert.equal(view.summary,actual.summary);
+  assert.equal(view.title,actual.title);assert.equal(view.period,actual.period);assert.equal(view.summary,actual.trainTheme);
   assert.equal(view.display,id);assert.equal(view.phase,'AT THE PLATFORM');
   assert.equal(view.read,true);assert.equal(view.getOff,true);assert.equal(view.continue,true);
  }

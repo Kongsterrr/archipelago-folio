@@ -21,7 +21,7 @@ export function installCapture(canvas,getGame=()=>null) {
       const recording = new Blob(chunks, {type: recorder.mimeType});
       const link = document.createElement('a');
       link.href = URL.createObjectURL(recording);
-      link.download = 'v22.2.2-experience-paving-actual-game.webm';
+      link.download = 'v23-career-showcase-actual-game.webm';
       link.textContent = 'Download actual game recording';
       link.style.cssText = button.style.cssText + ';top:136px';
       link.onclick = () => setTimeout(() => {URL.revokeObjectURL(link.href);link.remove();}, 1000);
