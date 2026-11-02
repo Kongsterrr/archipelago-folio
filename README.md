@@ -33,6 +33,12 @@ Experience now shares one newest-first reading overview across navigation, the m
 
 The harbor has a wall-mounted three-company timeline. Nearby worktables offer two eight-second, local concept illustrations each: personalization, service/message/retrieval flows, and workforce validation. Move or press Escape to leave; reading and settings pause the example. No employer systems, AI APIs or email service are contacted. Amtrak adds an entrance canopy, mounted results wall and workflow desk. The homepage, mountain routes, stair stability, train cabin and approximately 33-second automatic tour remain unchanged.
 
+### Island overview refinement · 2026-11-02
+
+Projects, Experience, About and Education now open their island view directly from the main navigation. The extra “Island overview” action is removed; detail pages and their return arrow retain the parent island view. All four cameras frame the full island, including while 3D loading finishes behind an already-open reading panel.
+
+Opaque buildings now remain in the opaque rendering pass until they actually fade to reveal Jack, then restore their original material flags. Whole-island cameras smoothly increase depth precision and reduce undersampled contact shading; About/Education paving also receives a narrowly scoped depth bias. These changes remove the reproduced overview surface conflicts without rebuilding models, moving floors or changing collision.
+
 ## Version history
 
 These milestones describe the actual source history. “V2.1” names the boat refinement between V2 and V3; these are source milestones, with no GitHub release tags. Package versions track releases from V4 onward.

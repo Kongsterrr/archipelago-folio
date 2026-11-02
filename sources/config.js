@@ -15,7 +15,7 @@ export const islands=portfolioGroups.map(group=>{
  if(!model)throw new Error('Build the V11 four-island assets before starting the world: '+group.id);
  const i={...group,...placements[group.id],kind:group.id,shore:model.shorePolygon,pier:model.dock,approach:model.clearApproach,districts:model.districts||[]};
  const spawn=model.clearApproach.spawn,p=toWorld(i,spawn[0],spawn[2]);
- return {...i,r:Math.max(...i.shore.map(([x,z])=>Math.hypot(x,z))),dock:{x:p.x,z:p.z},yaw:i.rotation+Math.PI,camera:{distance:145,azimuth:Math.PI/4,elevation:.68,height:2.5,...(['about','experience'].includes(i.id)?{fitBounds:overviewBounds(i,model)}:{})},action:toWorld(i,5,model.dock.endZ+6)};
+ return {...i,r:Math.max(...i.shore.map(([x,z])=>Math.hypot(x,z))),dock:{x:p.x,z:p.z},yaw:i.rotation+Math.PI,camera:{distance:145,azimuth:Math.PI/4,elevation:.68,height:2.5,fitBounds:overviewBounds(i,model)},action:toWorld(i,5,model.dock.endZ+6)};
 });
 export function resolveIsland(id){return islands.find(i=>i.id===islandIdFor(id));}
 export function contentFocus(id){

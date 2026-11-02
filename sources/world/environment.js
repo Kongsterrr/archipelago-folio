@@ -18,7 +18,7 @@ export class Environment {
  createArch(){
   const p=secretPlaces.arch,g=new THREE.Group();g.position.set(p.x,0,p.z);this.scene.add(g);
   for(const x of [-6,6]){const m=mesh(g,new THREE.IcosahedronGeometry(1,1),'#aab6a4',[x,2.5,0]);m.scale.set(2.1,3.2,2.2);this.collider(p.x+x,p.z,1.8,1.8);}
-  const arch=mesh(g,new THREE.TorusGeometry(6,1.5,5,12,Math.PI),'#bdc4ad',[0,4,0]);arch.material=arch.material.clone();arch.material.transparent=true;this.occluders.push(arch);
+  const arch=mesh(g,new THREE.TorusGeometry(6,1.5,5,12,Math.PI),'#bdc4ad',[0,4,0]);arch.material=arch.material.clone();this.occluders.push(arch);
   const text=label('SLOW · SECRET PASSAGE',{worldWidth:5.5,fontSize:23});text.position.set(0,2,5);g.add(text);
  }
  createCargo(){

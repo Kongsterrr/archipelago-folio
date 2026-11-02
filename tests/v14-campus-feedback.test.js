@@ -139,7 +139,7 @@ test('actual high/low campus walls join roof occlusion, including the default-ca
    const owner=model.getObjectByName('occluder_campus_'+name);assert.ok(owner,`${quality}: ${name} keeps an occlusion owner`);
    const body=[];owner.traverse(mesh=>{if(mesh.isMesh&&(Array.isArray(mesh.material)?mesh.material:[mesh.material]).some(m=>m.name===materialName))body.push(mesh);});
    assert.ok(body.length>0,`${quality}: ${name} includes its actual wall geometry, not only the roof`);
-   for(const mesh of body){assert.ok(controller.occluders.includes(mesh),`${quality}: ${name} wall is collected for runtime fading`);for(const material of(Array.isArray(mesh.material)?mesh.material:[mesh.material]))assert.ok(material.transparent);}
+   for(const mesh of body){assert.ok(controller.occluders.includes(mesh),`${quality}: ${name} wall is collected for runtime fading`);for(const material of(Array.isArray(mesh.material)?mesh.material:[mesh.material]))if(material.name===materialName)assert.equal(material.transparent,false,'walls stay in the opaque pass until they actually fade');}
   }
   // Reproduce the reported fixed land-camera viewpoint, with the same chest
   // probe and endpoint clearance as Game.updateOcclusion, against actual GLB.

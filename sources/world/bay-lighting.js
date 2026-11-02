@@ -61,13 +61,10 @@ export class BayLighting {
   // a blank composite after rapid switches. Low quality bypasses it entirely;
   // its bounded targets are retained only if high quality was used previously.
  }
- update(p,walking,distance=30,{experienceOverview=false,experienceView=experienceOverview,viewDistance=distance}={}){
-  // At the mountain overview's scale GTAO's .42m depth kernel is smaller than
-  // a few pixels and aliases flat rock faces into a grid. Fade only that view;
-  // keep following its actual eye distance while the camera returns to Jack.
-  this.overviewContactFade=experienceView&&(experienceOverview||!!this.overviewContactFade);
-  this.contactStrength.value=this.overviewContactFade?.48*(1-THREE.MathUtils.smoothstep(viewDistance,45,90)):.48;
-  if(!experienceOverview&&viewDistance<=45)this.overviewContactFade=false;
+ update(p,walking,distance=30,{viewDistance=distance}={}){
+  // The contact kernel undersamples island-scale views. Follow the rendered
+  // eye distance through both transitions, retaining full shading up close.
+  this.contactStrength.value=.48*(1-THREE.MathUtils.smoothstep(viewDistance,45,90));
   const extent=walking?14:Math.max(26,Math.min(64,distance*.75));
   const c=this.sun.shadow.camera;
   if(c.right!==extent){Object.assign(c,{left:-extent,right:extent,top:extent,bottom:-extent});c.updateProjectionMatrix();}

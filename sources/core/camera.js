@@ -11,6 +11,10 @@ const ELEVATION = THREE.MathUtils.degToRad(38);
 export const ZOOM_LEVELS = [0.85, 1, 1.25];
 export const ZOOM_NAMES = ['Close', 'Standard', 'Wide'];
 const clamp = THREE.MathUtils.clamp;
+// Preserve centimetre-scale paving/trim separation when framing a whole island.
+// Derive this from the rendered eye (not the next target) so returning to Jack
+// restores the close clipping plane smoothly throughout the camera transition.
+export const cameraNearForDistance = (distance,baseNear=.2) => Math.max(baseNear, Math.min(20, distance * .02 * THREE.MathUtils.smoothstep(distance,45,90)));
 const viewDirection = azimuth => new THREE.Vector3(Math.sin(azimuth) * Math.cos(ELEVATION), Math.sin(ELEVATION), Math.cos(azimuth) * Math.cos(ELEVATION));
 const groundForward = azimuth => new THREE.Vector3(-Math.sin(azimuth), 0, -Math.cos(azimuth));
 
@@ -25,11 +29,12 @@ export function cameraAzimuth({focus = null, locomotion = 'sailing', landAzimuth
 export class CameraRig {
   constructor(camera, settings, width = 1440, height = 900) {
     this.camera = camera;
+    this.baseNear = camera.near;
     this.settings = settings;
     this.target = new THREE.Vector3();
     this.position = new THREE.Vector3();
     this.heading = new THREE.Vector3(0, 0, -1);
-    this.probe = new THREE.PerspectiveCamera(FOV, width / height, .2, 600);
+    this.probe = new THREE.PerspectiveCamera(FOV, width / height, this.baseNear, 600);
     this.direction = viewDirection(AZIMUTH);
     this.flatForward = groundForward(AZIMUTH);
     this.cooldown = 0;
@@ -89,15 +94,16 @@ export class CameraRig {
       const desktopDistance=16;
       if(this.width>this.height)point.addScaledVector(right,(this.width>=900?460:360)/this.height*desktopDistance*Math.tan(THREE.MathUtils.degToRad(FOV/2)));
       if(this.height>this.width)point.addScaledVector(this.flatForward,-4.5);
-      const distance=this.width>=900?desktopDistance:this.height>this.width?24:16;desired={target:point,position:point.clone().addScaledVector(this.direction,distance)};
+      const distance=this.width>=900?desktopDistance:this.height>this.width?24:16;this.distance=distance;desired={target:point,position:point.clone().addScaledVector(this.direction,distance)};
     } else if (focus?.camera?.fitBounds) {
-      desired=fitBoundsPose(focus.camera.fitBounds,{width:this.width,height:this.height,fov:FOV,azimuth,elevation:focus.camera.elevation??.66,near:this.camera.near,...(focus.camera.practice?{rect:{left:24,right:this.width-24,top:Math.min(190,this.height*.28),bottom:this.height-Math.min(170,this.height*.24)}}:{})});
+      desired=fitBoundsPose(focus.camera.fitBounds,{width:this.width,height:this.height,fov:FOV,azimuth,elevation:focus.camera.elevation??.66,near:this.baseNear,...(focus.camera.practice?{rect:{left:24,right:this.width-24,top:Math.min(190,this.height*.28),bottom:this.height-Math.min(170,this.height*.24)}}:{})});
       this.distance=desired.distance;
     } else if (focus) {
       const cfg = focus.camera || {};
       const az = azimuth;
       const el = cfg.elevation ?? .64;
       const distance = (cfg.distance || 47) * Math.max(1, this.height / this.width * .9);
+      this.distance = distance;
       const right = new THREE.Vector3(Math.cos(az), 0, -Math.sin(az));
       const target = new THREE.Vector3(focus.x, cfg.height || 3, focus.z);
       if (this.width >= 900) target.addScaledVector(right, focus.exhibit?460/this.height*distance*Math.tan(THREE.MathUtils.degToRad(FOV/2)):7.4);
@@ -189,7 +195,7 @@ export class CameraRig {
       desired.position.y=eyeY;
     }
     if(arrival&&!focus){
-      const overview=arrivalOverviewPose(arrival.bounds,{width:this.width,height:this.height,azimuth:azimuth+(arrival.camera?.azimuthOffset||0),near:this.camera.near,...(Number.isFinite(arrival.camera?.elevation)?{elevation:arrival.camera.elevation}:{})});
+      const overview=arrivalOverviewPose(arrival.bounds,{width:this.width,height:this.height,azimuth:azimuth+(arrival.camera?.azimuthOffset||0),near:this.baseNear,...(Number.isFinite(arrival.camera?.elevation)?{elevation:arrival.camera.elevation}:{})});
       desired=arrivalApproachPose(overview,desired,arrival.progress);this.distance=desired.distance;snap=true;
     }
     if(boundedWalk){
@@ -209,6 +215,8 @@ export class CameraRig {
         if(Number.isFinite(ground))this.position.y=Math.max(this.position.y,this.target.y+(ground+.5-this.target.y)/t);
       }
     }
+    const near=cameraNearForDistance(this.position.distanceTo(this.target),this.baseNear);
+    if(this.camera.near!==near&&(near===this.baseNear||Math.abs(this.camera.near-near)>1e-6)){this.camera.near=near;this.camera.updateProjectionMatrix();}
     this.camera.position.copy(this.position);
     this.camera.lookAt(this.target);
     this.camera.updateMatrixWorld();

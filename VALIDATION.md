@@ -1,3 +1,13 @@
+# V23 overview navigation and rendering repair · 2026-11-02
+
+All four navigation categories now open their complete island view directly. The separate “Island overview” action is removed, including directory and HTML fallback listings. Detail/back navigation retains its parent view, and a panel opened before 3D initialization applies only its current camera focus when loading completes; closing the panel prevents stale camera restoration.
+
+Two independently reproduced rendering problems were corrected. Opaque occluder architecture was unconditionally marked transparent even at full opacity; it now switches render mode only during an actual fade and restores authored opacity, transparency and depth-write flags afterward. Real glass retains its authored transparency. About's 25 mm paving/grass separation also exceeded the useful precision of the old distant camera near plane. The near plane now follows actual interpolated eye distance, preserves the authored close plane, and stays safely before the entire fitted island. A two-step depth bias is limited to estate paving/asphalt and campus paving. Contact shading fades with actual eye distance for every island. Models, physical surfaces, driver controls and renderer dependencies are unchanged.
+
+Browser verification: macOS / Codex Chromium; WebGPU high and low quality, WebGL2 high quality, 1440×900 and 1920×1080 desktop views, plus 390×844 and 844×390 responsive viewports. About and Education were inspected after textures reached ready state, through repeated navigation and quality changes. Projects and Experience also open their correct complete island views. Portrait reading keeps the existing full-screen panel layout. Physical phones, Safari and sustained performance were not measured.
+
+Real screenshots are in ignored `test-results/overview-fix/`: `about-after.png`, `education-after.png`, `about-low.png`, `education-low.png`, `about-webgl2.png`, `education-webgl2.png`, `education-portrait.png`, `education-landscape.png`, `projects-direct.png` and `experience-direct.png`. These are actual rendered page captures. Production build passed in 3.49 seconds. The final complete regression passed **1,257 / 1,257**, with zero failures, skips or cancellations, in **294.60 seconds**. The focused 71-case render/material/camera suite also passed, including real high/low GLBs, fade restoration, material ownership, all four island bounds at all four aspect ratios and smooth overview entry/exit. Logs are retained in `test-results/overview-fix/release-tests.log` and `release-build.log`.
+
 # V23 — Career Showcase · 2026-10-21
 
 ## Scope and retained behavior

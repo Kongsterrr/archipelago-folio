@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {applyPavingDepthBias} from './paving-depth.js';
 
 // These are restrained surface colors, not a second orange light filter.
 // Golden highlights and violet shade belong to the shared Sunset Bay lighting.
@@ -110,7 +111,7 @@ export function applySunsetMaterials(model, kind = model?.userData?.island || 'w
       if (!variations) clones.set(source, variations = new Map());
       const signature = JSON.stringify(plan);
       if (!variations.has(signature)) {
-        const material = source.clone();
+        const material = applyPavingDepthBias(source.clone());
         const base = source.userData?.sunsetMaterial?.sourceColor || source.color.toArray();
         material.color.fromArray(base);
         // Unknown multicolor batches must not be flattened by a palette override.

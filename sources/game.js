@@ -7,6 +7,7 @@ import {EstatePracticeView,installEstateNet} from './world/estate-practice-view.
 import {dockLocal} from './core/dock.js';
 import {duanThemes} from './campus-landmarks.js';
 import * as THREE from 'three/webgpu';
+import {setOcclusionOpacity} from './world/occlusion-material.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
 import RAPIER from '@dimforge/rapier3d-compat/rapier.es.js';
@@ -222,10 +223,8 @@ export class Game {
   this.fleet?.update(alpha,p,this.settings.reduced?0:this.simTime);this.marine?.update(alpha,p,this.camera,this.settings.reduced?0:this.simTime,[...this.loaded.values()].map(i=>i.group).concat(this.fleet?.items.map(i=>i.group)||[]));this.details?.update(frozen?0:dt,p,this.simTime,this.settings.reduced?0:this.simTime,this.controllers);
   this.updateWake(frozen);this.feedback.update(frozen?0:dt);this.updateCamera(dt,cameraFade);this.updateNearby(dt,now,frozen);this.environment.update(this.challenges,this.simTime,p,this.nearAction);this.updateOcclusion(now);
   const lightTarget=this.focus?.boatStudio?this.boat.position:(this.focus||this.arrival?.active)?this.cameraRig.target:p;
-  const experienceView=(this.focus?(this.focus.islandId||this.focus.id):this.player.onLand?this.player.island?.id:null)==='experience';
-  const experienceOverview=experienceView&&!!(this.focus?.camera?.fitBounds||!this.focus&&this.arrival?.active);
   const viewDistance=this.cameraRig.position?.distanceTo(this.cameraRig.target)??this.cameraRig.distance;
-  this.lighting.update(lightTarget,!this.focus&&this.player.onLand&&!this.arrival?.active,this.cameraRig.distance,{experienceOverview,experienceView,viewDistance});
+  this.lighting.update(lightTarget,!this.focus&&this.player.onLand&&!this.arrival?.active,this.cameraRig.distance,{viewDistance});
   this.events.trigger('frame',[{position:p,yaw:this.activeActor.yaw,speed:this.activeActor.speed,dt,now,frozen}]);this.renderer.info.reset();this.lighting.render();
   if(!frozen&&this.challenges.kind==='cargo'&&this.challenges.state==='running'){const lost=this.props.outOfBounds();if(lost){this.pause('recovery');if(this.props.recoverCargo(lost,boat)){this.snapshot.props=this.props.snapshot();this.resume();this.events.trigger('message',['Cargo recovered. Resuming your run…']);}else{this.recovery=lost;this.events.trigger('message',['No clear recovery berth. Use Reset cargo for a fresh start.']);}}}
   if(this.recovery&&this.mode==='recovery'&&this.props.recoverCargo(this.recovery,boat)){this.recovery=null;this.snapshot.props=this.props.snapshot();this.resume();}
@@ -308,10 +307,10 @@ export class Game {
   this.scene.updateMatrixWorld();const hit=new Set(),interior=!this.focus&&this.player.onLand?campusInteriorAt(this.player.island,this.walkLayouts.get(this.player.island.id),p):null,cutaway=new Set();
   if(interior)for(const object of candidates)if(isInteriorCutaway(object,interior)){hit.add(object);cutaway.add(object);}
   if(!this.focus&&!this.arrival?.active)for(const target of probes){const direction=target.clone().sub(this.camera.position),distance=direction.length(),ray=new THREE.Raycaster(this.camera.position,direction.normalize(),0,distance-.15);for(const h of ray.intersectObjects(candidates,false)){hit.add(h.object);let group=h.object.parent;while(group&&!group.name.startsWith('occluder_'))group=group.parent;if(group)group.traverse(o=>{if(candidates.includes(o))hit.add(o);});}}
-  for(const object of this.occluded||[])if(!hit.has(object))for(const m of Array.isArray(object.material)?object.material:[object.material]){m.opacity=m.userData.occlusionBaseOpacity??1;m.depthWrite=m.userData.occlusionBaseDepthWrite??m.depthWrite;}
+  for(const object of this.occluded||[])if(!hit.has(object))for(const m of Array.isArray(object.material)?object.material:[object.material])setOcclusionOpacity(m);
   // A faded wall must not leave an invisible depth mask over the exhibits
   // behind it. Keep depth testing, and restore the authored write flag on exit.
-  for(const object of hit)for(const m of Array.isArray(object.material)?object.material:[object.material]){m.userData.occlusionBaseDepthWrite??=m.depthWrite;m.opacity=(cutaway.has(object)?.025:.2)*(m.userData.occlusionBaseOpacity??1);m.depthWrite=false;}
+  for(const object of hit)for(const m of Array.isArray(object.material)?object.material:[object.material])setOcclusionOpacity(m,cutaway.has(object)?.025:.2);
   this.occluded=hit;if(this.boatOutline)this.boatOutline.visible=hit.size>0&&!this.focus&&!this.player.onLand;this.jack.outline(hit.size>0&&!this.focus&&this.player.onLand&&!interior);
  }
  activateIsland(id){

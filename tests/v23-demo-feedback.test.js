@@ -97,22 +97,22 @@ for(const quality of ['high','low'])test(`${quality}: the actual Amtrak cutaway 
  const camera=new THREE.PerspectiveCamera(28,1.6,.2,600);camera.position.set(eye.x,eye.y,eye.z);camera.lookAt(position.x,position.y+.7,position.z);camera.updateMatrixWorld(true);
  const game={scene,camera,activeActor:{position},player:{walking:true,onLand:true,island},walkLayouts:new Map([['experience',layout]]),environment:{occluders:[]},controllers:new Map([['experience',controller]]),jack:{root:{position},outline(){}},focus:null};
  const upper=controller.occluders.filter(mesh=>isInteriorCutaway(mesh,interior)),matList=mesh=>Array.isArray(mesh.material)?mesh.material:[mesh.material];
- const original=new Map(controller.occluders.flatMap(mesh=>matList(mesh).map(m=>[m,{opacity:m.opacity,depthWrite:m.depthWrite,depthTest:m.depthTest}])));
+ const original=new Map(controller.occluders.flatMap(mesh=>matList(mesh).map(m=>[m,{opacity:m.opacity,transparent:m.transparent,depthWrite:m.depthWrite,depthTest:m.depthTest}])));
  assert.ok(upper.length>0);
  try{
   controller.experienceDemo.play('amtrak','valid');tick(controller,8);
   Game.prototype.updateOcclusion.call(game,1000);
-  for(const mesh of upper)for(const m of matList(mesh)){assert.equal(m.depthWrite,false,'faded wall/roof cannot reject the desk fragments');assert.equal(m.depthTest,original.get(m).depthTest);assert.equal(m.opacity,.025*(m.userData.occlusionBaseOpacity??1));}
+  for(const mesh of upper)for(const m of matList(mesh)){assert.equal(m.transparent,true);assert.equal(m.depthWrite,false,'faded wall/roof cannot reject the desk fragments');assert.equal(m.depthTest,original.get(m).depthTest);assert.equal(m.opacity,.025*(m.userData.occlusionBaseOpacity??1));}
   for(const role of ['stage','card'])for(let i=0;i<3;i++){
    const group=model.getObjectByName(`anim_experience_amtrak_${role}_${i}`);assert.ok(group);
    for(let ancestor=group;ancestor;ancestor=ancestor.parent)assert.equal(ancestor.visible,true);
    group.traverse(mesh=>{if(!mesh.isMesh)return;assert.ok(!upper.includes(mesh),'worktable is outside the structural cutaway');for(const m of matList(mesh)){assert.equal(m.depthTest,true,'ordinary furniture still respects real scene depth');assert.ok(m.opacity>0);}});
   }
   game.focus={id:'amtrak'};Game.prototype.updateOcclusion.call(game,1200);assert.equal(game.occluded.size,0);
-  for(const[m,base]of original){assert.equal(m.depthWrite,base.depthWrite);assert.equal(m.opacity,base.opacity);assert.equal(m.depthTest,base.depthTest);}
+  for(const[m,base]of original){assert.equal(m.transparent,base.transparent);assert.equal(m.depthWrite,base.depthWrite);assert.equal(m.opacity,base.opacity);assert.equal(m.depthTest,base.depthTest);}
   game.focus=null;Game.prototype.updateOcclusion.call(game,1400);assert.ok(upper.every(mesh=>matList(mesh).every(m=>m.depthWrite===false)));
   game.player.onLand=false;game.player.walking=false;game.arrival={active:true};Game.prototype.updateOcclusion.call(game,1600);assert.equal(game.occluded.size,0);
-  for(const[m,base]of original)assert.equal(m.depthWrite,base.depthWrite);
+  for(const[m,base]of original){assert.equal(m.transparent,base.transparent);assert.equal(m.depthWrite,base.depthWrite);}
  }finally{controller.release();}
 });
 
@@ -123,9 +123,9 @@ test('temporary occlusion restores both opaque and originally non-writing glass 
  const scene=new THREE.Scene();scene.add(model);const camera=new THREE.PerspectiveCamera();camera.position.set(0,1,3);camera.lookAt(0,1,0);camera.updateMatrixWorld(true);
  const game={scene,camera,activeActor:{position:{x:0,y:0,z:0}},player:{onLand:false,walking:false},environment:{occluders:[]},controllers:new Map([['test',controller]]),jack:{outline(){}}};
  try{
-  const bound=mesh.material;assert.equal(bound[0].depthWrite,true);assert.equal(bound[1].depthWrite,false);
-  Game.prototype.updateOcclusion.call(game,1000);assert.equal(game.occluded.size,1);assert.ok(bound.every(m=>!m.depthWrite&&m.depthTest));
+  const bound=mesh.material;assert.equal(bound[0].transparent,false);assert.equal(bound[1].transparent,true);assert.equal(bound[0].depthWrite,true);assert.equal(bound[1].depthWrite,false);
+  Game.prototype.updateOcclusion.call(game,1000);assert.equal(game.occluded.size,1);assert.ok(bound.every(m=>m.transparent&&!m.depthWrite&&m.depthTest));assert.equal(bound[0].opacity,.2);assert.equal(bound[1].opacity,.4*.2);
   Game.prototype.updateOcclusion.call(game,1200);game.focus={id:'test'};Game.prototype.updateOcclusion.call(game,1400);
-  assert.equal(bound[0].depthWrite,true);assert.equal(bound[1].depthWrite,false);assert.equal(bound[0].opacity,1);assert.equal(bound[1].opacity,.4);
+  assert.equal(bound[0].transparent,false);assert.equal(bound[1].transparent,true);assert.equal(bound[0].depthWrite,true);assert.equal(bound[1].depthWrite,false);assert.equal(bound[0].opacity,1);assert.equal(bound[1].opacity,.4);
  }finally{controller.release();}
 });

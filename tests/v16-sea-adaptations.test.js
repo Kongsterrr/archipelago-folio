@@ -9,8 +9,9 @@ import {segmentCrossesGate} from '../sources/core/race.js';
 import {waterClear} from '../sources/world/water-space.js';
 import {COURSE_KEYS,DISCOVERY_STORAGE_KEY,DiscoveryStore} from '../sources/core/discovery.js';
 
-test('About directory framing includes the full model and coast while story cameras follow their new places',()=>{
- const island=islands.find(i=>i.id==='about'),model=modelManifest.models.find(m=>m.id==='about'),focus=contentFocus('about'),bounds=focus.camera.fitBounds;
+for(const island of islands)test(`${island.name} overview frames the full model and coast across viewport orientations`,()=>{
+ const model=modelManifest.models.find(m=>m.id===island.id),focus=contentFocus(island.id),bounds=focus.camera.fitBounds;
+ assert.ok(bounds,'every island overview supplies its complete framing bounds');
  const points=island.shore.map(([x,z])=>toWorld(island,x*1.17,z*1.17,-.055));
  for(const x of[model.bounds.min[0],model.bounds.max[0]])for(const y of[model.bounds.min[1],model.bounds.max[1]])for(const z of[model.bounds.min[2],model.bounds.max[2]])points.push(toWorld(island,x,z,y));
  for(const p of points)for(const[axis,n]of[['x',0],['y',1],['z',2]])assert.ok(p[axis]>=bounds.min[n]-1e-8&&p[axis]<=bounds.max[n]+1e-8);
@@ -22,11 +23,15 @@ test('About directory framing includes the full model and coast while story came
    assert.ok(x>=rect.left&&x<=rect.right&&y>=rect.top&&y<=rect.bottom,'the island stays clear of the reading panel');
   }
  }
+});
+
+test('About story cameras follow their places without changing animation roots or inheriting island bounds',()=>{
+ const island=islands.find(i=>i.id==='about');
  for(const[id,local]of[['harbor',[-4,-16]],['connect',[0,18]]]){
   const story=contentFocus(id),expected=toWorld(island,...local);assert.equal(story.x,expected.x);assert.equal(story.z,expected.z);
+  assert.equal(story.camera.fitBounds,undefined);
  }
  assert.ok(island.districts.every(d=>d.x===0&&d.z===0),'camera framing does not move animation roots');
- for(const id of['projects','education'])assert.equal(contentFocus(id).camera.fitBounds,undefined);
 });
 
 test('expanded About coast and its water halo leave the complete first race corridor open',()=>{

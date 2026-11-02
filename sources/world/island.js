@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {islandActions,toWorld} from '../config.js';
 import {sampleTrainMotion,trainDuration} from '../core/train-path.js';
 import {ExperienceDemoController} from '../core/experience-demo.js';
+import {rememberOcclusionMaterial} from './occlusion-material.js';
 const LEGACY_TRAIN_CARS=[{trainOffset:0}];
 
 export class IslandController {
@@ -30,7 +31,7 @@ export class IslandController {
     if(occludes||campusWindow||studyLight||experienceName){
      o.material=Array.isArray(o.material)?o.material.map(m=>this.ownMaterial(m)):this.ownMaterial(o.material);
      const mats=Array.isArray(o.material)?o.material:[o.material];
-     if(occludes){for(const m of mats){m.userData.occlusionBaseOpacity=m.opacity;m.userData.occlusionBaseDepthWrite=m.depthWrite;m.transparent=true;}this.occluders.push(o);}
+     if(occludes){for(const m of mats)rememberOcclusionMaterial(m);this.occluders.push(o);}
      if(experienceName)for(const m of mats)if(m.emissive)this.experienceMaterials.push({name:experienceName,material:m,emissive:m.emissive.clone(),intensity:m.emissiveIntensity});
      if(studyLight)for(const m of mats)if(m.emissive)this.studyLights.push({material:m,emissive:m.emissive.clone(),intensity:m.emissiveIntensity});
      if(campusWindow)for(const m of mats)if(m.emissive)this.campusWindows.push({material:m,emissive:m.emissive.clone(),intensity:m.emissiveIntensity});
